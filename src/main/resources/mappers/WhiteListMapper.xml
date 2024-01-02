@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.whitelist.WhiteListMapper">
+    <insert id="newWhiteListObject" useGeneratedKeys="true" keyProperty="whiteListId"
+            parameterType="com.realtime.protection.configuration.entity.whitelist.WhiteListObject">
+        insert into t_white_list(white_list_name, white_list_system_name,
+                                 white_list_ip, white_list_port,
+                                 white_list_url, white_list_protocol,
+                                 white_list_audit_status)
+        values (#{object.whiteListName}, #{object.whiteListSystemName},
+                INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
+                #{object.whiteListUrl}, #{object.whiteListProtocol},
+                0)
+    </insert>
+</mapper>
