@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.rule.staticrule.StaticRuleMapper">
+
+    <insert id="newStaticRuleObject" useGeneratedKeys="true" keyProperty="staticRuleId"
+            parameterType="com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject">
+
+        insert into t_static_rule(static_rule_name, static_rule_create_time,
+                                  static_rule_create_username, static_rule_create_depart,
+                                  static_rule_create_user_id, static_rule_sip, static_rule_msip,
+                                  static_rule_sport,static_rule_msport,
+                                  static_rule_dip,static_rule_mdip,static_rule_dport,static_rule_mdport,
+                                  static_rule_protocol,static_rule_mprotocol,static_rule_dns,
+                                  static_rule_url,static_rule_priority,static_rule_range,
+                                  static_rule_frequency,static_rule_protect_level,static_rule_audit_status)
+        values (#{object.staticRuleName}, #{object.staticRuleCreateTime},#{object.staticRuleCreateUsername},
+                #{object.staticRuleCreateDepart},#{object.staticRuleCreateUserId},INET_ATON(#{object.staticRuleSip}),
+                INET_ATON(#{object.staticRuleMsip}),#{object.staticRuleSport},#{object.staticRuleMsport},
+                INET_ATON(#{object.staticRuleDip}),INET_ATON(#{object.staticRuleMdip}),#{object.staticRuleDport},
+                #{object.staticRuleMdport},#{object.staticRuleProtocol},#{object.staticRuleMprotocol},
+                #{object.staticRuleDns},#{object.staticRuleURL},#{object.staticRulePriority},
+                #{object.staticRuleRange},#{object.staticRuleFrequency},#{object.staticRuleProtectLevel},
+                #{object.staticAuditStatus})
+    </insert>
+</mapper>
