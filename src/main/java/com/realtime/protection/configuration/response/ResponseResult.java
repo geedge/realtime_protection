@@ -30,7 +30,7 @@ public class ResponseResult implements Serializable {
     }
 
     public static ResponseResult ok() {
-        return new ResponseResult(200, "request succeeded");
+        return new ResponseResult(200, "request succeed");
     }
 
     public static ResponseResult ok(String message) {
@@ -39,6 +39,14 @@ public class ResponseResult implements Serializable {
 
     public static ResponseResult error() {
         return new ResponseResult(500, "request failed");
+    }
+
+    public static ResponseResult invalid() {
+        return new ResponseResult(400, "invalid request");
+    }
+
+    public static ResponseResult unAuthorized() {
+        return new ResponseResult(401, "UnAuthorized User");
     }
 
     public static ResponseResult error(String message) {

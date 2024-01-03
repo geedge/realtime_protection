@@ -19,4 +19,21 @@
                    #{template.templateName}, #{template.templateName},
                    #{template.defaultOp})
     </insert>
+
+    <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.Template">
+        <id column="strategy_template_id" property="templateId"/>
+        <result column="strategy_template_name" property="templateName"/>
+        <result column="strategy_template_used_times" property="templateUsedTimes"/>
+        <result column="strategy_template_running_tasks" property="templateRunningTasks"/>
+    </resultMap>
+
+    <select id="queryTemplates" resultMap="templateMap">
+        SELECT * FROM t_strategy_template
+        <where>
+            <if test="template_name != null">
+                AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
+            </if>
+        </where>
+        LIMIT ${(page - 1) * page_size}, #{page_size}
+    </select>
 </mapper>

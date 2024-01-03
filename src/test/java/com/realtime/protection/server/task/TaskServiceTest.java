@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,7 +34,7 @@ class TaskServiceTest {
         task.setTaskEndTime(taskEndTime);
         task.setTaskAct("阻断");
         task.setTaskType("静态任务");
-        task.setStaticRuleIds(new Integer[]{1});
+        task.setStaticRuleIds(new Integer[]{1, 2});
         task.setDynamicRuleIds(new Integer[]{});
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
@@ -53,5 +54,12 @@ class TaskServiceTest {
             Integer taskId = taskService.newTask(task);
             assertTrue(taskId > 0);
         });
+    }
+
+    @Test
+    void testQueryTasks() {
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, 1, 5);
+        assertEquals(5, tasks.size());
+        assertTrue(tasks.get(0).getTaskId() > 0);
     }
 }

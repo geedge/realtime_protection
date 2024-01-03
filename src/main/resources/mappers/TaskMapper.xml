@@ -9,30 +9,112 @@
                            task_act, task_type,
                            task_create_time, task_modify_time,
                            task_create_userid, task_create_username, task_create_depart)
-        VALUE(#{task.taskName}, #{task.taskStartTime}, #{task.taskEndTime},
-               #{task.taskAct}, #{task.taskType},
-               #{task.taskCreateTime}, #{task.taskModifyTime},
-               #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart})
+            VALUE (#{task.taskName}, #{task.taskStartTime}, #{task.taskEndTime},
+                   #{task.taskAct}, #{task.taskType},
+                   NOW(), NOW(),
+                   #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart})
     </insert>
 
-    <insert id="newTaskProobjConcat">
-        <if test="proobj_ids != null">
-            INSERT INTO t_task_project_object(task_id, protect_object_id)
-            VALUES
-            <foreach collection="proobj_ids" item="proobj_id" separator=",">
-                (#{task_id}, #{proobj_id})
-            </foreach>
-        </if>
+    <insert id="newTaskProtectObjectConcat">
+        INSERT INTO t_task_project_object(task_id, protect_object_id)
+        VALUES
+        <foreach collection="proobj_ids" item="proobj_id" separator="," index="index">
+            (#{task_id}, #{proobj_id})
+        </foreach>
     </insert>
 
     <update id="newTaskStaticRuleConcat">
         UPDATE t_static_rule
-        SET static_rule_used_task_id = #{task_id}
+        <set>
+            <if test="task_id != null"> static_rule_used_task_id = #{task_id}, </if>
+        </set>
         WHERE static_rule_id IN
-              <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
-                  #{rule_id}
-              </foreach>
+        <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
+            #{rule_id}
+        </foreach>
     </update>
 
-    <update id="newTaskDynamicRuleConcat"/>
+    <update id="newTaskDynamicRuleConcat">
+        <!-- todo: will be written after fulfilling t_dynamic_rule table -->
+    </update>
+
+    <resultMap id="taskMap" type="com.realtime.protection.configuration.entity.task.Task">
+        <id column="task_id" property="taskId"/>
+        <result column="task_name" property="taskName"/>
+        <result column="task_type" property="taskType"/>
+
+        <result column="task_status" property="taskStatus"/>
+
+        <result column="task_start_time" property="taskStartTime"/>
+        <result column="task_end_time" property="taskEndTime"/>
+
+        <result column="task_create_username" property="taskCreateUsername"/>
+        <result column="task_create_depart" property="taskCreateDepart"/>
+    </resultMap>
+
+    <select id="queryTasks" resultMap="taskMap">
+        SELECT * FROM t_task
+        <where>
+            <if test="task_status != null">
+                AND task_status = #{task_status}
+            </if>
+            <if test="task_type != null">
+                AND task_type = #{task_type}
+            </if>
+            <if test="task_name != null">
+                AND task_name LIKE CONCAT('%', #{task_name}, '%')
+            </if>
+            <if test="task_creator != null">
+                AND task_create_username = #{task_creator}
+            </if>
+        </where>
+        LIMIT ${(page - 1) * page_size}, #{page_size}
+    </select>
+
+    <select id="queryTask" resultMap="taskMap">
+        SELECT * FROM t_task
+        WHERE task_id = #{task_id}
+    </select>
+
+    <select id="queryTaskConcatProtectObjectIds" resultType="java.lang.Integer">
+        SELECT protect_object_id FROM t_task_project_object
+        WHERE task_id = #{task_id}
+    </select>
+
+    <select id="queryTaskConcatDynamicRuleIds" resultType="java.lang.Integer">
+        <!-- todo: will be written after fulfilling t_dynamic_rule table -->
+    </select>
+
+    <select id="queryTaskConcatStaticRuleIds" resultType="java.lang.Integer">
+        SELECT static_rule_id FROM t_static_rule
+        WHERE static_rule_used_task_id = #{task_id}
+    </select>
+
+    <update id="updateTask">
+        UPDATE t_task
+        <set>
+            <if test="task.taskName != null">task_name = #{task.taskName},</if>
+            <if test="task.taskType != null">task_type = #{task.taskType},</if>
+            <if test="task.taskAct != null">task_act = #{task.taskAct},</if>
+            <if test="task.taskCreateTime != null">task_create_time = #{task.taskCreateTime},</if>
+            <if test="task.taskEndTime != null">task_end_time = #{task.taskEndTime},</if>
+            task_modify_time = NOW()
+        </set>
+        WHERE task_id = #{task.taskId}
+    </update>
+
+    <update id="clearTaskProtectObjectConcat">
+        DELETE FROM t_task_project_object
+        WHERE task_id = #{task_id}
+    </update>
+
+    <update id="clearTaskConnectedStaticRule">
+        UPDATE t_static_rule
+        SET static_rule_used_task_id = null
+        WHERE static_rule_used_task_id = #{task_id}
+    </update>
+
+    <update id="clearTaskConnectedDynamicRule">
+<!-- todo: will be written after fulfilling t_dynamic_rule table -->
+    </update>
 </mapper>

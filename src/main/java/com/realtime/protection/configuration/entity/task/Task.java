@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class Task {
@@ -53,13 +54,13 @@ public class Task {
     // -----------------------------------------------------------
 
     @JsonProperty("static_rule_ids")
-    private Integer[] staticRuleIds;
+    private List<Integer> staticRuleIds;
 
     @JsonProperty("dynamic_rule_ids")
-    private Integer[] dynamicRuleIds;
+    private List<Integer> dynamicRuleIds;
 
     @JsonProperty("protect_object_ids")
-    private Integer[] protectObjectIds;
+    private List<Integer> protectObjectIds;
 
     @JsonProperty("task_status")
     private Integer taskStatus;
