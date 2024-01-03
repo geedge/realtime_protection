@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.defense.template.TemplateMapper">
+    <insert id="newTemplate" useGeneratedKeys="true" keyProperty="templateId">
+        INSERT INTO t_strategy_template(strategy_template_name,
+                                        has_protect_object_ip, has_protect_object_port,
+                                        has_peer_ip, has_peer_port,
+                                        has_protocol, has_url, has_dns,
+                                        strategy_template_create_user_id,
+                                        strategy_template_create_username, strategy_template_create_depart,
+                                        default_op)
+            VALUE (#{template.templateName},
+                   #{template.hasProtectObjectIP}, #{template.hasProtectObjectPort},
+                   #{template.hasPeerIP}, #{template.hasPeerPort},
+                   #{template.hasProtocol}, #{template.hasURL}, #{template.hasDNS},
+                   0,
+                   #{template.templateName}, #{template.templateName},
+                   #{template.defaultOp})
+    </insert>
+</mapper>
