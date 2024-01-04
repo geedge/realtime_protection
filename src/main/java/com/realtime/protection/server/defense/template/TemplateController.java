@@ -3,10 +3,9 @@ package com.realtime.protection.server.defense.template;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/deftac")
@@ -39,5 +38,19 @@ public class TemplateController {
         return ResponseResult.error()
                 .setData("template_id", null)
                 .setData("success", false);
+    }
+
+    @GetMapping("/query")
+    public ResponseResult queryTemplate(@RequestParam(value = "template_name", required = false) String templateName,
+                                        @RequestParam("page") Integer page,
+                                        @RequestParam("page_size") Integer pageSize) {
+        if (page <= 0 || pageSize <= 0) {
+            return ResponseResult.invalid()
+                    .setData("template_list", null);
+        }
+        List<Template> templates = templateService.queryTemplates(templateName, page, pageSize);
+
+        return ResponseResult.ok()
+                .setData("templates", templates);
     }
 }

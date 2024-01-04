@@ -4,8 +4,13 @@ import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface TemplateMapper {
-
     void newTemplate(@Param("template") Template template);
+
+    List<Template> queryTemplates(@Param("template_name") String templateName,
+                                  @Param("page") Integer page,
+                                  @Param("page_size") Integer pageSize);
 }

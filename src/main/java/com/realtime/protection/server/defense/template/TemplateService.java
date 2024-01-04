@@ -4,6 +4,7 @@ import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class TemplateService {
@@ -41,5 +42,9 @@ public class TemplateService {
             return 0;
         }
         return template.getTemplateId();
+    }
+
+    public List<Template> queryTemplates(String templateName, Integer page, Integer pageSize) {
+        return templateMapper.queryTemplates(templateName, page, pageSize);
     }
 }

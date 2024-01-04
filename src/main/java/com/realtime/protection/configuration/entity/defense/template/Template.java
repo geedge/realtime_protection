@@ -20,17 +20,23 @@ public class Template {
     @NotNull(message = "default_op should not be empty")
     private String defaultOp;
 
-    private boolean hasProtectObjectIP;
+    @JsonProperty("template_running_tasks")
+    private Integer templateRunningTasks;
 
-    private boolean hasProtectObjectPort;
+    @JsonProperty("template_used")
+    private Integer templateUsedTimes;
 
-    private boolean hasPeerIP;
+    private Boolean hasProtectObjectIP;
 
-    private boolean hasPeerPort;
+    private Boolean hasProtectObjectPort;
 
-    private boolean hasProtocol;
+    private Boolean hasPeerIP;
 
-    private boolean hasURL;
+    private Boolean hasPeerPort;
 
-    private boolean hasDNS;
+    private Boolean hasProtocol;
+
+    private Boolean hasURL;
+
+    private Boolean hasDNS;
 }

@@ -3,9 +3,10 @@ package com.realtime.protection.server.task;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.coyote.Response;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/task")
@@ -17,7 +18,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @RequestMapping("/new")
+    @PostMapping("/new")
     public ResponseResult newTask(@RequestBody @Valid Task task) {
         Integer taskId = taskService.newTask(task);
 
@@ -32,5 +33,53 @@ public class TaskController {
                 .setData("task_name", task.getTaskName())
                 .setData("task_id", 0)
                 .setData("success", false);
+    }
+
+    @GetMapping("/query")
+    public ResponseResult queryTasks(@RequestParam(value = "task_status", required = false) Integer taskStatus,
+                                     @RequestParam(value = "task_type", required = false) String taskType,
+                                     @RequestParam(value = "task_name", required = false) String taskName,
+                                     @RequestParam(value = "task_creator", required = false) String taskCreator,
+                                     @RequestParam("page") Integer page,
+                                     @RequestParam("page_size") Integer pageSize) {
+        if (page <= 0 || pageSize <= 0) {
+            return new ResponseResult(400, "page or page_size is invalid")
+                    .setData("task_list", null);
+        }
+        List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
+        return ResponseResult.ok()
+                .setData("task_list", tasks);
+    }
+
+    @GetMapping("/{id}/query")
+    public ResponseResult queryTask(@PathVariable("id") Integer id) {
+        Task task = taskService.queryTask(id);
+
+        if (task == null) {
+            return ResponseResult.invalid().setMessage("Task ID is invalid");
+        }
+
+        return ResponseResult.ok()
+                .setData("task_id", task.getTaskId())
+                .setData("task_name", task.getTaskName())
+                .setData("task_type", task.getTaskType())
+                .setData("task_status", task.getTaskStatus())
+                .setData("task_creator", task.getTaskCreateUsername())
+                .setData("task_creator_depart", task.getTaskCreateDepart())
+                .setData("task_start_time", task.getTaskStartTime())
+                .setData("task_end_time", task.getTaskEndTime())
+                .setData("task_static_rule_ids", task.getStaticRuleIds())
+                .setData("task_dynamic_rule_ids", task.getDynamicRuleIds())
+                .setData("task_protect_object_ids", task.getProtectObjectIds());
+    }
+
+    @PostMapping("/{id}/update")
+    public ResponseResult updateTask(@PathVariable("id") Integer taskId, @RequestBody Task task) {
+        task.setTaskId(taskId);
+        taskService.updateTask(task);
+
+        return ResponseResult.ok()
+                .setData("task_id", taskId)
+                .setData("success", true);
     }
 }
