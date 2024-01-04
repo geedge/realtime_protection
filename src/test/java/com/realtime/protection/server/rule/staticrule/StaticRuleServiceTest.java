@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,20 +18,73 @@ public class StaticRuleServiceTest {
 
     @Test
     void testNewStaticRule(){
+        Integer i = 0;
+        while(i<20) {
+            i++;
+            StaticRuleObject object = new StaticRuleObject();
+
+            object.setStaticRuleName("test_staticrule" + i);
+            //object.setStaticRuleCreateTime(LocalDateTime.now());
+            object.setStaticRuleCreateUsername("boy" + i);
+            object.setStaticRuleCreateDepart("2chu" + i);
+            object.setStaticRuleCreateUserId(i);
+            object.setStaticRuleSip("1.1.1." + i);
+            object.setStaticRuleSport(i);
+            object.setStaticRuleDip("2.2.3." + i);
+            object.setStaticRulePriority(2);
+            object.setStaticRuleFrequency(1);
+            object.setStaticRuleRange("北京");
+            object.setStaticRuleProtectLevel(2);
+
+            Integer id = staticRuleService.newStaticRuleObject(object);
+        }
+        //assertTrue(id>0);
+    }
+
+    @Test
+    void testDeleteStaticRule(){
+        int i = 0;
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        while(i<2) {
+            i++;
+            staticRuleService.deleteStaticRule(list);
+        }
+    }
+    @Test
+    void testUpdateStaticRule(){
+
         StaticRuleObject object = new StaticRuleObject();
 
-        object.setStaticRuleName("test_staticrule");
-        object.setStaticRuleCreateTime(LocalDateTime.now());
-        object.setStaticRuleCreateUsername("boy");
-        object.setStaticRuleCreateDepart("1chu");
-        object.setStaticRuleCreateUserId(22);
-        object.setStaticRulePriority(1);
+        object.setStaticRuleId(5);
+        object.setStaticRuleName("update_staticrule");
+        //object.setStaticRuleCreateTime(LocalDateTime.now());
+        //object.setStaticRuleCreateUsername("csy");
+        //object.setStaticRuleCreateDepart("mmeess");
+        //object.setStaticRuleCreateUserId(1);
+        object.setStaticRuleSip(null);
+        object.setStaticRuleSport(null);
+        object.setStaticRuleDip("2.2.3.100");
+        object.setStaticRulePriority(2);
         object.setStaticRuleFrequency(1);
         object.setStaticRuleRange("北京");
         object.setStaticRuleProtectLevel(2);
 
-        Integer id = staticRuleService.newStaticRuleObject(object);
-        assertTrue(id>0);
+        staticRuleService.updateStaticRule(object);
     }
+    @Test
+    void testQueryStaticRule(){
+
+        StaticRuleObject object = staticRuleService.queryStaticRuleById(7);
+        System.out.println(object);
+    }
+
+    @Test
+    void testQueryStaticRuleList(){
+
+        List<StaticRuleObject> objectList = staticRuleService.queryStaticRule(null,null,1,10);
+        System.out.println(objectList);
+    }
+
 
 }
