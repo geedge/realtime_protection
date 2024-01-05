@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @Order(2)
-    @ExceptionHandler(value = HandlerMethodValidationException.class)
+    @ExceptionHandler(value = {HandlerMethodValidationException.class, IllegalArgumentException.class})
     public ResponseResult handleHandlerMethodValidationException(HandlerMethodValidationException e) {
         return ResponseResult.invalid().setMessage(e.getMessage());
     }

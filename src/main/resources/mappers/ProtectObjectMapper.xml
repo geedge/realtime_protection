@@ -3,8 +3,96 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.realtime.protection.server.defense.object.ProtectObjectMapper">
+    <insert id="newProtectObject"
+            parameterType="com.realtime.protection.configuration.entity.defense.object.ProtectObject"
+            useGeneratedKeys="true" keyProperty="protectObjectId">
+        INSERT INTO t_protect_object(protect_object_id, protect_object_name, protect_object_system_name,
+                                     protect_object_ip, protect_object_port, protect_object_url,
+                                     protect_object_protocol,
+                                     protect_object_create_username, protect_object_create_depart,
+                                     protect_object_create_user_id)
+            VALUE (#{proobj.protectObjectId}, #{proobj.protectObjectName}, #{proobj.protectObjectSystemName},
+                   INET_ATON(#{proobj.protectObjectIPAddress}), #{proobj.protectObjectPort}, #{proobj.protectObjectURL},
+                   #{proobj.protectObjectProtocol},
+                   #{proobj.protectObjectCreateUsername}, #{proobj.protectObjectCreateDepart},
+                   #{proobj.protectObjectCreateUserId})
+    </insert>
+
+    <insert id="newProtectObjects" parameterType="List">
+        INSERT INTO t_protect_object(protect_object_id, protect_object_name, protect_object_system_name,
+                                     protect_object_ip, protect_object_port, protect_object_url,
+                                     protect_object_protocol,
+                                     protect_object_create_username, protect_object_create_depart,
+                                     protect_object_create_user_id)
+            VALUES
+            <foreach collection="proobjs" item="proobj" separator=",">
+                (#{proobj.protectObjectId}, #{proobj.protectObjectName}, #{proobj.protectObjectSystemName},
+                INET_ATON(#{proobj.protectObjectIPAddress}), #{proobj.protectObjectPort}, #{proobj.protectObjectURL},
+                #{proobj.protectObjectProtocol},
+                #{proobj.protectObjectCreateUsername}, #{proobj.protectObjectCreateDepart},
+                #{proobj.protectObjectCreateUserId})
+            </foreach>
+    </insert>
+
+    <resultMap id="protectObjectMap" type="com.realtime.protection.configuration.entity.defense.object.ProtectObject">
+        <id column="protect_object_id" property="protectObjectId"/>
+        <result column="protect_object_name" property="protectObjectName"/>
+        <result column="protect_object_system_name" property="protectObjectSystemName"/>
+        <result column="protect_object_ip" property="protectObjectIPAddress"/>
+        <result column="protect_object_port" property="protectObjectPort"/>
+        <result column="protect_object_url" property="protectObjectURL"/>
+        <result column="protect_object_protocol" property="protectObjectProtocol"/>
+        <result column="protect_object_audit_status" property="protectObjectAuditStatus"/>
+    </resultMap>
+
+    <select id="queryProtectObjects" resultMap="protectObjectMap">
+        SELECT * FROM t_protect_object
+        <where>
+            <if test="proobj_name != null">protect_object_name LIKE CONCAT('%', #{proobj_name}, '%')</if>
+            <if test="proobj_id != null">protect_object_id = #{proobj_id}</if>
+        </where>
+        LIMIT ${(page-1) * page_size}, #{page_size}
+    </select>
+
+    <select id="queryProtectObject" resultMap="protectObjectMap">
+        SELECT * FROM t_protect_object
+        WHERE protect_object_id = #{proobj_id}
+    </select>
+
+    <update id="updateProtectObject">
+        UPDATE t_protect_object
+        <set>
+            <if test="proobj.protectObjectName != null">protect_object_name = #{proobj.protectObjectName},</if>
+            <if test="proobj.protectObjectSystemName != null">
+                protect_object_system_name = #{proobj.protectObjectSystemName},
+            </if>
+            <if test="proobj.protectObjectIPAddress">protect_object_ip = INET_ATON(#{proobj.protectObjectIPAddress}),
+            </if>
+            <if test="proobj.protectObjectPort">protect_object_port = #{proobj.protectObjectPort},</if>
+            <if test="proobj.protectObjectURL">protect_object_url = #{proobj.protectObjectURL},</if>
+            <if test="proobj.protectObjectProtocol">protect_object_protocol = #{proobj.protectObjectProtocol},</if>
+        </set>
+        <where>
+            <if test="proobj.protectObjectId != null">protect_object_id = #{proobj.protectObjectId}</if>
+        </where>
+    </update>
+
     <delete id="deleteProtectObject">
         DELETE FROM t_protect_object
         WHERE protect_object_id = #{proobj_id}
     </delete>
+
+    <delete id="deleteProtectObjects">
+        DELETE FROM t_protect_object
+        WHERE protect_object_id IN
+        <foreach collection="proobj_ids" item="proobj_id" separator="," open="(" close=")">
+            #{proobj_id}
+        </foreach>
+    </delete>
+
+    <update id="changeProtectObjectAuditStatus">
+        UPDATE t_protect_object
+        SET protect_object_audit_status = #{proobj_audit_status}
+        WHERE protect_object_id = #{proobj_id}
+    </update>
 </mapper>

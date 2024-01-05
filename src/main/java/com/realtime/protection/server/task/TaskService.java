@@ -82,11 +82,11 @@ public class TaskService {
 
         taskMapper.clearTaskProtectObjectConcat(task.getTaskId());
         taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
-        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
+//        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
 
         task.getProtectObjectIds().forEach(
                 proobjId -> taskMapper.newTaskProtectObjectConcat(task.getTaskId(), proobjId));
         taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
-        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+//        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
     }
 }

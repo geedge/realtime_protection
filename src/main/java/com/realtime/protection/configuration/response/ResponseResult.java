@@ -4,13 +4,14 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Data
 public class ResponseResult implements Serializable {
 
     private int code;
     private String message;
-    private LinkedHashMap<String, Object> data;
+    private Map<String, Object> data;
 
     public ResponseResult(int code, String message, LinkedHashMap<String, Object> data) {
         this.code = code;
@@ -45,6 +46,10 @@ public class ResponseResult implements Serializable {
         return new ResponseResult(400, "invalid request");
     }
 
+    public static ResponseResult invalid(String message) {
+        return new ResponseResult(400, message);
+    }
+
     public static ResponseResult unAuthorized() {
         return new ResponseResult(401, "UnAuthorized User");
     }
@@ -68,7 +73,7 @@ public class ResponseResult implements Serializable {
         return this;
     }
 
-    public ResponseResult setDataMap(LinkedHashMap<String, Object> data) {
+    public ResponseResult setDataMap(Map<String, Object> data) {
         this.data = data;
         return this;
     }
