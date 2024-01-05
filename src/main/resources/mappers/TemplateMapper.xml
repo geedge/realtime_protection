@@ -36,4 +36,33 @@
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
+
+    <update id="updateTemplateInformation">
+        UPDATE t_strategy_template
+        <set>
+            <!-- update template name and default op -->
+            <if test="template.templateName != null">strategy_template_name = #{template.templateName}, </if>
+            <if test="template.defaultOp != null">default_op = #{template.defaultOp},</if>
+
+            <!-- update template elements -->
+            <if test="template.hasProtectObjectIP != null">has_protect_object_ip = #{template.hasProtectObjectIP},</if>
+            <if test="template.hasProtectObjectPort != null">
+                has_protect_object_port = {template.hasProtectObjectPort},
+            </if>
+            <if test="template.hasPeerIP != null">has_peer_ip = #{template.hasPeerIP},</if>
+            <if test="template.hasPeerPort != null">has_peer_port = #{template.hasPeerPort},</if>
+            <if test="template.hasProtocol != null">has_protocol = #{template.hasProtocol},</if>
+            <if test="template.hasURL != null">has_url = #{template.hasURL},</if>
+            <if test="template.hasDNS != null">has_dns = #{template.hasDNS},</if>
+        </set>
+        <where>
+            AND strategy_template_id = #{template.templateId}
+        </where>
+    </update>
+
+    <update id="addTemplateUsedTimes">
+        UPDATE t_strategy_template
+        SET strategy_template_used_times = strategy_template_used_times + #{add_times}
+        WHERE strategy_template_id = #{template_id}
+    </update>
 </mapper>

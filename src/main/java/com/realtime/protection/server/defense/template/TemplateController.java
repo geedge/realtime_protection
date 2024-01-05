@@ -3,6 +3,7 @@ package com.realtime.protection.server.defense.template;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,16 +42,32 @@ public class TemplateController {
     }
 
     @GetMapping("/query")
-    public ResponseResult queryTemplate(@RequestParam(value = "template_name", required = false) String templateName,
-                                        @RequestParam("page") Integer page,
-                                        @RequestParam("page_size") Integer pageSize) {
-        if (page <= 0 || pageSize <= 0) {
-            return ResponseResult.invalid()
-                    .setData("template_list", null);
-        }
+    public ResponseResult queryTemplates(@RequestParam(value = "template_name", required = false) String templateName,
+                                        @RequestParam("page") @Min(1) Integer page,
+                                        @RequestParam("page_size") @Min(1) Integer pageSize) {
         List<Template> templates = templateService.queryTemplates(templateName, page, pageSize);
 
         return ResponseResult.ok()
                 .setData("templates", templates);
     }
+
+    @PostMapping("/{id}/update")
+    public ResponseResult updateTemplate(@PathVariable("id") @Min(1) Integer templateId,
+                                         @RequestBody @Valid Template template) {
+        Boolean success = templateService.updateTemplate(templateId, template);
+        return ResponseResult.ok()
+                .setData("template_id", templateId)
+                .setData("success", success);
+    }
+
+    @GetMapping("/{id}/addUsedTimes")
+    public ResponseResult addTemplateUsedTimes(@PathVariable("id") @Min(1) Integer templateId,
+                                               @RequestParam(value = "add_num") @Min(0) Integer addNum) {
+        Boolean success = templateService.addTemplateUsedTimes(templateId, addNum);
+        return ResponseResult.ok()
+                .setData("template_id", templateId)
+                .setData("success", success);
+    }
+
+
 }

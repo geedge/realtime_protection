@@ -3,13 +3,13 @@ package com.realtime.protection.configuration.exception;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.SaTokenException;
 import com.realtime.protection.configuration.response.ResponseResult;
-import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.stream.Collectors;
 
@@ -45,6 +45,12 @@ public class GlobalExceptionHandler {
                 e.getBindingResult().getAllErrors().stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining())
         );
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = HandlerMethodValidationException.class)
+    public ResponseResult handleHandlerMethodValidationException(HandlerMethodValidationException e) {
+        return ResponseResult.invalid().setMessage(e.getMessage());
     }
 
     @Order(2)

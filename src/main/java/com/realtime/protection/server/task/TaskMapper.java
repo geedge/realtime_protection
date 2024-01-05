@@ -10,7 +10,7 @@ import java.util.List;
 public interface TaskMapper {
     void newTask(@Param("task") Task task);
 
-    void newTaskProtectObjectConcat(@Param("task_id") Integer taskId, @Param("proobj_ids") List<Integer> proobjIds);
+    void newTaskProtectObjectConcat(@Param("task_id") Integer taskId, @Param("proobj_id") Integer proobjId);
 
     void newTaskStaticRuleConcat(@Param("task_id") Integer taskId,
                                  @Param("rule_ids") List<Integer> staticRuleIds);

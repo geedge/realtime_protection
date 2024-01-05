@@ -4,6 +4,7 @@ import com.realtime.protection.configuration.entity.task.Task;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,9 +25,11 @@ public class TaskService {
         try {
             taskMapper.newTask(task);
 
-            taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
+            task.getProtectObjectIds().forEach(
+                    proobjId -> taskMapper.newTaskProtectObjectConcat(task.getTaskId(), proobjId));
 
             taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+//            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
 
             session.commit();
         } catch (Exception e) {
@@ -73,34 +76,17 @@ public class TaskService {
         return task;
     }
 
+    @Transactional
     public void updateTask(Task task) {
-        SqlSession session = sqlSessionFactory.openSession(false);
-        TaskMapper taskMapper = session.getMapper(TaskMapper.class);
-        try {
-            taskMapper.updateTask(task);
+        taskMapper.updateTask(task);
 
-            taskMapper.clearTaskProtectObjectConcat(task.getTaskId());
-            taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
-//            taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
+        taskMapper.clearTaskProtectObjectConcat(task.getTaskId());
+        taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
+        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
 
-            if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
-                taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
-            }
-
-            if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
-                taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
-            }
-
-            if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
-                taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
-            }
-
-            session.commit();
-        } catch (Exception e) {
-            session.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
+        task.getProtectObjectIds().forEach(
+                proobjId -> taskMapper.newTaskProtectObjectConcat(task.getTaskId(), proobjId));
+        taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
     }
 }

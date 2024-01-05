@@ -3,7 +3,7 @@ package com.realtime.protection.server.task;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,19 +40,15 @@ public class TaskController {
                                      @RequestParam(value = "task_type", required = false) String taskType,
                                      @RequestParam(value = "task_name", required = false) String taskName,
                                      @RequestParam(value = "task_creator", required = false) String taskCreator,
-                                     @RequestParam("page") Integer page,
-                                     @RequestParam("page_size") Integer pageSize) {
-        if (page <= 0 || pageSize <= 0) {
-            return new ResponseResult(400, "page or page_size is invalid")
-                    .setData("task_list", null);
-        }
+                                     @RequestParam("page") @Min(1) Integer page,
+                                     @RequestParam("page_size") @Min(1) Integer pageSize) {
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks);
     }
 
     @GetMapping("/{id}/query")
-    public ResponseResult queryTask(@PathVariable("id") Integer id) {
+    public ResponseResult queryTask(@PathVariable("id") @Min(1) Integer id) {
         Task task = taskService.queryTask(id);
 
         if (task == null) {
@@ -74,7 +70,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/update")
-    public ResponseResult updateTask(@PathVariable("id") Integer taskId, @RequestBody Task task) {
+    public ResponseResult updateTask(@PathVariable("id") @Min(1) Integer taskId, @RequestBody @Valid Task task) {
         task.setTaskId(taskId);
         taskService.updateTask(task);
 

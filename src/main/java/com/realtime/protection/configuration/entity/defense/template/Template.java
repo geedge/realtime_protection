@@ -4,20 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class Template {
     @JsonProperty("template_id")
     private Integer templateId;
 
     @JsonProperty("template_name")
-    @NotNull(message = "template name should not be empty")
+    @NotNull(message = "template name should not be empty.")
     private String templateName;
 
     @JsonProperty("template_elements")
-    private String[] templateElements;
+    private List<String> templateElements;
 
     @JsonProperty("default_op")
-    @NotNull(message = "default_op should not be empty")
+    @NotNull(message = "default_op should not be empty.")
     private String defaultOp;
 
     @JsonProperty("template_running_tasks")

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -24,7 +26,7 @@ class TemplateServiceTest {
         template = new Template();
 
         template.setTemplateName("反射型DDOS攻击");
-        template.setTemplateElements(new String[]{"对端IP", "协议", "URL"});
+        template.setTemplateElements(List.of("对端IP", "协议", "URL"));
         template.setDefaultOp("阻断");
     }
 
@@ -36,10 +38,26 @@ class TemplateServiceTest {
 
     @Test
     void testNewTemplateIllegalArgument() {
-        template.setTemplateElements(new String[]{"DDNS"});
+        template.setTemplateElements(List.of("DDNS"));
         assertThrows(IllegalArgumentException.class, () -> {
             Integer templateId = templateService.newTemplate(template);
             assertTrue(templateId > 0);
         });
+    }
+
+    @Test
+    void testUpdateTemplateSuccess() {
+        template.setTemplateName("洪泛型DDOS攻击");
+        assertTrue(templateService.updateTemplate(3, template));
+    }
+
+    @Test
+    void testAddTemplateUsedTimes() {
+        List<Template> templates = templateService.queryTemplates("洪泛型DDOS攻击", 1, 1);
+        Template originalTemplate = templates.get(0);
+        Boolean success = templateService.addTemplateUsedTimes(3, 4);
+        templates = templateService.queryTemplates("洪泛型DDOS攻击", 1, 1);
+        assertEquals(templates.get(0).getTemplateUsedTimes(), originalTemplate.getTemplateUsedTimes() + 4);
+        assertTrue(success);
     }
 }

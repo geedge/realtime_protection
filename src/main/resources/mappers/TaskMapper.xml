@@ -17,10 +17,7 @@
 
     <insert id="newTaskProtectObjectConcat">
         INSERT INTO t_task_project_object(task_id, protect_object_id)
-        VALUES
-        <foreach collection="proobj_ids" item="proobj_id" separator="," index="index">
-            (#{task_id}, #{proobj_id})
-        </foreach>
+        VALUES (#{task_id}, #{proobj_id})
     </insert>
 
     <update id="newTaskStaticRuleConcat">
@@ -28,14 +25,29 @@
         <set>
             <if test="task_id != null"> static_rule_used_task_id = #{task_id}, </if>
         </set>
-        WHERE static_rule_id IN
-        <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
-            #{rule_id}
-        </foreach>
+        <where>
+            <if test="rule_ids != null and rule_ids.size() > 0">
+                AND static_rule_id IN
+                <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
+                    #{rule_id}
+                </foreach>
+            </if>
+        </where>
     </update>
 
     <update id="newTaskDynamicRuleConcat">
-        <!-- todo: will be written after fulfilling t_dynamic_rule table -->
+        UPDATE t_dynamic_rule
+        <set>
+            <if test="task_id != null"> dynamic_rule_used_task_id = #{task_id}, </if>
+        </set>
+        <where>
+            <if test="rule_ids != null and rule_ids.size() > 0">
+                AND dynamic_rule_id IN
+                <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
+                    #{rule_id}
+                </foreach>
+            </if>
+        </where>
     </update>
 
     <resultMap id="taskMap" type="com.realtime.protection.configuration.entity.task.Task">

@@ -34,12 +34,12 @@ class TaskServiceTest {
         task.setTaskEndTime(taskEndTime);
         task.setTaskAct("阻断");
         task.setTaskType("静态任务");
-        task.setStaticRuleIds(new Integer[]{1, 2});
-        task.setDynamicRuleIds(new Integer[]{});
+        task.setStaticRuleIds(List.of(1, 2));
+        task.setDynamicRuleIds(List.of());
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
-        task.setProtectObjectIds(new Integer[]{1});
+        task.setProtectObjectIds(List.of(1));
     }
 
     @Test

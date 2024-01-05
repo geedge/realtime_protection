@@ -22,6 +22,28 @@ public class TemplateService {
             throw new IllegalArgumentException();
         }
 
+        setTemplateElements(template);
+
+        templateMapper.newTemplate(template);
+
+        if (template.getTemplateId() == null) {
+            return 0;
+        }
+        return template.getTemplateId();
+    }
+
+    public List<Template> queryTemplates(String templateName, Integer page, Integer pageSize) {
+        return templateMapper.queryTemplates(templateName, page, pageSize);
+    }
+
+    public Boolean updateTemplate(Integer templateId, Template template) {
+        setTemplateElements(template);
+        template.setTemplateId(templateId);
+
+        return templateMapper.updateTemplateInformation(template);
+    }
+
+    private void setTemplateElements(Template template) {
         for (String choice : template.getTemplateElements()) {
             switch (choice) {
                 case "防护对象IP" -> template.setHasProtectObjectIP(true);
@@ -35,16 +57,10 @@ public class TemplateService {
                 default -> throw new IllegalArgumentException();
             }
         }
-
-        templateMapper.newTemplate(template);
-
-        if (template.getTemplateId() == null) {
-            return 0;
-        }
-        return template.getTemplateId();
     }
 
-    public List<Template> queryTemplates(String templateName, Integer page, Integer pageSize) {
-        return templateMapper.queryTemplates(templateName, page, pageSize);
+    public Boolean addTemplateUsedTimes(Integer templateId, Integer addTimes) {
+        return templateMapper.addTemplateUsedTimes(templateId, addTimes);
     }
+
 }

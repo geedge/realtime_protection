@@ -13,15 +13,15 @@ public class Task {
     private Integer taskId;
 
     @JsonProperty("task_name")
-    @NotNull(message = "task_name should not be empty")
+    @NotNull(message = "task_name should not be empty.")
     private String taskName;
 
     @JsonProperty("task_start_time")
-    @NotNull(message = "task_start_time should not be empty")
+    @NotNull(message = "task_start_time should not be empty.")
     private LocalDateTime taskStartTime;
 
     @JsonProperty("task_end_time")
-    @NotNull(message = "task_end_time should not be empty")
+    @NotNull(message = "task_end_time should not be empty.")
     private LocalDateTime taskEndTime;
 
     @JsonProperty("task_create_time")
@@ -31,27 +31,21 @@ public class Task {
     private LocalDateTime taskModifyTime;
 
     @JsonProperty("task_type")
-    @NotNull(message = "task_type should not be empty")
+    @NotNull(message = "task_type should not be empty.")
     private String taskType;
 
     @JsonProperty("task_act")
-    @NotNull(message = "task_act should not be empty")
+    @NotNull(message = "task_act should not be empty.")
     private String taskAct;
 
-    // These three attributes will be gained by user in the future
-    // -----------------------------------------------------------
     @JsonProperty("task_create_username")
-    @NotNull(message = "task_create_username should not be empty")
     private String taskCreateUsername;
 
     @JsonProperty("task_create_depart")
-    @NotNull(message = "task_create_depart should not be empty")
     private String taskCreateDepart;
 
     @JsonProperty("task_create_userid")
-    @NotNull(message = "task_create_userid should not be empty")
     private Integer taskCreateUserId;
-    // -----------------------------------------------------------
 
     @JsonProperty("static_rule_ids")
     private List<Integer> staticRuleIds;

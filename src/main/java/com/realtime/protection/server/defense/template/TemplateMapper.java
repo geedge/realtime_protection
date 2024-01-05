@@ -13,4 +13,10 @@ public interface TemplateMapper {
     List<Template> queryTemplates(@Param("template_name") String templateName,
                                   @Param("page") Integer page,
                                   @Param("page_size") Integer pageSize);
+
+    Boolean updateTemplateInformation(@Param("template") Template template);
+
+    void countTemplateRunningTasks(@Param("template_id") Integer templateId);
+
+    Boolean addTemplateUsedTimes(@Param("template_id") Integer templateId, @Param("add_times") Integer addTimes);
 }
