@@ -38,8 +38,15 @@ public class StaticRuleController {
     public ResponseResult delete(@PathVariable List<Integer> ids){
         log.info("根据id删除静态规则:{}",ids);
         //调用service删除
-        staticRuleService.deleteStaticRule(ids);
-        return ResponseResult.ok();
+//        if(staticRuleService.deleteStaticRule(ids) == false){
+//            return ResponseResult.error()
+//                    .setData("static_rule_id",ids)
+//                    .setData("success",false);
+//            //有的删了，有的没删，也返回false
+//        }
+        return ResponseResult.ok()
+                .setData("static_rule_id",ids)
+                .setData("success",true);
     }
 
     /**

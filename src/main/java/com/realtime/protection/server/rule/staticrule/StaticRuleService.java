@@ -1,16 +1,20 @@
 package com.realtime.protection.server.rule.staticrule;
 
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class StaticRuleService {
-    @Autowired
-    private StaticRuleMapper staticRuleMapper;
+
+    private final StaticRuleMapper staticRuleMapper;
+
+    public StaticRuleService(StaticRuleMapper staticRuleMapper) {
+        this.staticRuleMapper = staticRuleMapper;
+    }
 
 
     /*
@@ -28,13 +32,16 @@ public class StaticRuleService {
         return object.getStaticRuleId();
     }
 
-    public void deleteStaticRule(List<Integer> ids) {
+    @Transactional
+    public Boolean deleteStaticRule(List<Integer> staticRuleIds) {
         //判断当前静态规则是否能够删除---是否存在任务选择的静态规则？？
 
         //删除静态规则
-        for (Integer id : ids) {
-            staticRuleMapper.deleteStaticRule(id);
-        }
+//        for (Integer id : staticRuleIds) {
+//            staticRuleMapper.deleteStaticRule(id);
+//        }
+        return staticRuleIds.stream().allMatch(staticRuleMapper::deleteStaticRule);
+
 
     }
 
@@ -47,6 +54,7 @@ public class StaticRuleService {
     }
 
     public StaticRuleObject queryStaticRuleById(Integer id) {
+
         return staticRuleMapper.queryStaticRuleById(id);
     }
 

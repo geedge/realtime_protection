@@ -1,21 +1,151 @@
 package com.realtime.protection.server.whitelist;
 
+import com.alibaba.excel.util.ListUtils;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
+import com.realtime.protection.configuration.utils.AuditStatusValidator;
+import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class WhiteListService {
 
     private final WhiteListMapper whiteListMapper;
+    private final StaticRuleMapper staticRuleMapper;
 
-    public WhiteListService(WhiteListMapper whiteListMapper) {
+    private final SqlSessionWrapper sqlSessionWrapper;
+
+    public WhiteListService(WhiteListMapper whiteListMapper,
+                            StaticRuleMapper staticRuleMapper,
+                            SqlSessionWrapper sqlSessionWrapper) {
         this.whiteListMapper = whiteListMapper;
+        this.staticRuleMapper = staticRuleMapper;
+        this.sqlSessionWrapper = sqlSessionWrapper;
     }
 
+    //新建一个whitelist
     public Integer newWhiteListObject(WhiteListObject object) {
 
         whiteListMapper.newWhiteListObject(object);
 
         return object.getWhiteListId();
     }
+    //批量新建多个whitelist
+    public Boolean newWhiteListObjects(List<WhiteListObject> whiteListObjectList) {
+        Function<WhiteListMapper, Function<List<WhiteListObject>, Boolean>> newWhiteListObjectFunction =
+                mapper -> list -> {
+                    if (list == null || list.isEmpty()) {
+                        return false;
+                    }
+
+                    List<WhiteListObject> WhiteListBatch = ListUtils.newArrayListWithExpectedSize(100);
+                    for (WhiteListObject whiteListObject : whiteListObjectList) {
+                        WhiteListBatch.add(whiteListObject);
+                        if (WhiteListBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.newWhiteListObjects(WhiteListBatch);
+                        WhiteListBatch.clear();
+                    }
+                    if (!WhiteListBatch.isEmpty()) {
+                        mapper.newWhiteListObjects(WhiteListBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(WhiteListMapper.class, newWhiteListObjectFunction, whiteListObjectList);
+    }
+
+    public Integer deleteWhiteListObjectById(Integer id) {
+        return whiteListMapper.deleteWhiteListObject(id);
+    }
+
+    //@Transactional
+    public Boolean deleteWhiteListObjects(List<Integer> whiteListObjIds) {
+//        for (Integer id : whiteobj_ids) {
+//            whiteListMapper.deleteWhiteListObject(id);
+//        }
+        Function<WhiteListMapper, Function<List<Integer>, Boolean>> deleteWhiteListObjectFunction =
+                mapper -> list -> {
+                    if (list == null || list.isEmpty()) {
+                        return false;
+                    }
+
+                    List<Integer> WhiteListBatch = ListUtils.newArrayListWithExpectedSize(100);
+                    for (Integer whiteListObjId : list) {
+                        WhiteListBatch.add(whiteListObjId);
+                        if (WhiteListBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.deleteWhiteListObjects(WhiteListBatch);
+                        WhiteListBatch.clear();
+                    }
+                    if (!WhiteListBatch.isEmpty()) {
+                        mapper.deleteWhiteListObjects(WhiteListBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(WhiteListMapper.class, deleteWhiteListObjectFunction, whiteListObjIds);
+
+    }
+
+    public Integer updateWhiteListObject(WhiteListObject object) {
+        return whiteListMapper.updateWhiteListObject(object);
+    }
+
+    public List<WhiteListObject> queryWhiteListObject(String whiteListName, Integer whiteListId,
+                                                      Integer page, Integer pageSize) {
+        return whiteListMapper.queryWhiteListObject(whiteListName, whiteListId, page, pageSize);
+    }
+
+    public WhiteListObject queryWhiteListObjectById(Integer id) {
+        return whiteListMapper.queryWhiteListObjectById(id);
+    }
+
+    public List<String> existWhiteListObject(List<Integer> ruleIds) {
+
+        List<String> ip_list = new ArrayList<>();
+
+        for (Integer id : ruleIds) {
+            StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(id);
+            if (staticRuleObject != null) {
+                String whiteListIp = whiteListMapper.existWhiteListObject(staticRuleObject);
+                if (whiteListIp != null) {
+                    ip_list.add(whiteListIp);
+                }
+            }
+        }
+        return ip_list;
+    }
+
+    @Transactional
+    public Map<String, Object> updateWhiteListObjectAuditStatus(Integer id, Integer auditStatus) {
+        //查询目前curStatus
+        Integer originalAuditStatus = whiteListMapper.queryWhiteListObjectAuditStuatusById(id);
+        //判断是否可以修改
+        if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+            throw new IllegalArgumentException("invalid audit status");
+        }
+
+        Boolean success = whiteListMapper.updateWhiteListObjectAuditStatus(id, auditStatus);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", success);
+        resultMap.put("audit_status", auditStatus);
+
+        return resultMap;
+    }
+
+
 }

@@ -14,4 +14,106 @@
                 #{object.whiteListUrl}, #{object.whiteListProtocol},
                 0)
     </insert>
+
+    <insert id="newWhiteListObjects">
+        insert into t_white_list(white_list_name, white_list_system_name,
+                                 white_list_ip, white_list_port,
+                                 white_list_url, white_list_protocol,
+                                 white_list_audit_status)
+        values
+        <foreach collection="whiteListObjects" item="object" separator=",">
+            (#{object.whiteListName}, #{object.whiteListSystemName},
+            INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
+            #{object.whiteListUrl}, #{object.whiteListProtocol},
+            0)
+        </foreach>
+    </insert>
+
+    <delete id="deleteWhiteListObjects">
+        delete from t_white_list
+        where white_list_id in
+        <foreach collection="whiteListIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <resultMap id="whiteListMap" type="com.realtime.protection.configuration.entity.whitelist.WhiteListObject">
+        <id column="white_list_id" property="whiteListId"/>
+        <result column="white_list_name" property="whiteListName"/>
+        <result column="white_list_system_name" property="whiteListSystemName"/>
+        <result column="white_list_ip" property="whiteListIP"/>
+        <result column="white_list_port" property="whiteListPort"/>
+        <result column="white_list_url" property="whiteListUrl"/>
+        <result column="white_list_protocol" property="whiteListProtocol"/>
+<!--        <result column="white_list_audit_status" property="whiteListAuditStatus"/>-->
+    </resultMap>
+
+    <select id="queryWhiteListObject" resultMap="whiteListMap">
+        select * from t_white_list
+        <where>
+            <if test="whiteListName != null">
+                white_list_name like concat('%', #{whiteListName}, '%')
+            </if>
+            <if test="whiteListId != null">
+                and white_list_id = #{whiteListId}
+            </if>
+        </where>
+        LIMIT ${(page - 1) * pageSize}, #{pageSize}
+    </select>
+
+    <select id="queryWhiteListObjectById" resultMap="whiteListMap">
+        select * from t_white_list
+        where white_list_id = #{whiteListId}
+    </select>
+
+    <update id="updateWhiteListObject">
+        update t_white_list
+        <set>
+            <if test="object.whiteListName != null">
+                white_list_name = #{object.whiteListName},
+            </if>
+            <if test="object.whiteListSystemName != null">
+                white_list_system_name = #{object.whiteListSystemName},
+            </if>
+            <if test="object.whiteListIP != null">
+                white_list_ip = INET_ATON(#{object.whiteListIP}),
+            </if>
+            <if test="object.whiteListPort != null">
+                white_list_port = #{object.whiteListPort},
+            </if>
+            <if test="object.whiteListUrl != null">
+                white_list_url = #{object.whiteListUrl},
+            </if>
+            <if test="object.whiteListProtocol != null">
+                white_list_protocol = #{object.whiteListProtocol},
+            </if>
+            <if test="object.whiteListAuditStatus != null">
+                white_list_audit_status = #{object.whiteListAuditStatus},
+            </if>
+        </set>
+        where white_list_id = #{object.whiteListId}
+    </update>
+    <update id="updateWhiteListObjectAuditStatus">
+        update t_white_list
+        set white_list_audit_status = #{status}
+        where white_list_id = #{id}
+    </update>
+
+    <select id="existWhiteListObject" resultType="java.lang.String">
+        select INET_NTOA(white_list_ip) from t_white_list
+        <where>
+            <if test="staticRuleObject.staticRuleSip != null">
+                white_list_ip = #{staticRuleObject.staticRuleSip}
+            </if>
+            <if test="staticRuleObject.staticRuleDip != null">
+                or white_list_ip = #{staticRuleObject.staticRuleDip}
+            </if>
+        </where>
+    </select>
+    <select id="queryWhiteListObjectAuditStuatusById" resultType="java.lang.Integer">
+        select white_list_audit_status from t_white_list
+        where white_list_id = #{id}
+    </select>
+
 </mapper>

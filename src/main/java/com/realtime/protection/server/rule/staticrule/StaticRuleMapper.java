@@ -9,22 +9,24 @@ import java.util.List;
 
 @Mapper
 public interface StaticRuleMapper {
-    /**
-     * 新建静态规则
-     */
+
+    //新建静态规则
     void newStaticRuleObject(@Param("object") StaticRuleObject object);
 
-    /**
-     * 根据主键删除菜品数据
-     */
+    //根据主键删除静态规则
     @Delete("delete from t_static_rule where static_rule_id = #{id}")
-    void deleteStaticRule(Integer id);
+    Boolean deleteStaticRule(Integer id);
 
+    //修改静态规则
     void updateStaticRule(StaticRuleObject object);
 
+    //按id查询静态规则
     //@Select("select * from t_static_rule where static_rule_id = #{id}")
     StaticRuleObject queryStaticRuleById(Integer id);
 
+    //多页查询静态规则
     List<StaticRuleObject> queryStaticRule(String static_rule_name, Integer static_rule_id,
                                            Integer page, Integer pageSize);
+
+
 }
