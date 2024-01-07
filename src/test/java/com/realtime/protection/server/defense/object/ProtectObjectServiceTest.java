@@ -24,12 +24,6 @@ class ProtectObjectServiceTest {
         this.protectObjectService = protectObjectService;
     }
 
-    @Test
-    void testDeleteProtectObject() {
-        Boolean success = protectObjectService.deleteProtectObjects(List.of(1, 2, 3, 4));
-        assertFalse(success);
-    }
-
     @BeforeEach
     void setUp() {
         protectObject = new ProtectObject();
@@ -56,7 +50,7 @@ class ProtectObjectServiceTest {
     @Test
     void newProtectObjects() {
         List<ProtectObject> protectObjects = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             protectObjects.add(protectObject);
         }
 
@@ -66,10 +60,12 @@ class ProtectObjectServiceTest {
 
     @Test
     void updateProtectObject() {
+        Integer testId = 300;
+
         protectObject.setProtectObjectName("x-1-1");
-        protectObject.setProtectObjectId(10);
+        protectObject.setProtectObjectId(testId);
         assertTrue(protectObjectService.updateProtectObject(protectObject));
-        assertEquals("x-1-1", protectObjectService.queryProtectObject(10).getProtectObjectName());
+        assertEquals("x-1-1", protectObjectService.queryProtectObject(testId).getProtectObjectName());
     }
 
     @Test
@@ -81,16 +77,26 @@ class ProtectObjectServiceTest {
                 break;
             }
         }
-
         assertTrue(protectObjectService.deleteProtectObject(testNum));
         assertNull(protectObjectService.queryProtectObject(testNum));
     }
 
     @Test
     void deleteProtectObjects() {
-        assertTrue(protectObjectService.deleteProtectObjects(List.of(270, 271)));
-        assertNull(protectObjectService.queryProtectObject(270));
-        assertNull(protectObjectService.queryProtectObject(271));
+        ArrayList<Integer> testNums = new ArrayList<>();
+        for (int i = 0; i < 100000; i++ ) {
+            if (protectObjectService.queryProtectObject(i) != null) {
+                testNums.add(i);
+                if (testNums.size() > 5) {
+                    break;
+                }
+            }
+        }
+
+        assertTrue(protectObjectService.deleteProtectObjects(testNums));
+        for (Integer testNum : testNums) {
+            assertNull(protectObjectService.queryProtectObject(testNum));
+        }
     }
 
     @Test

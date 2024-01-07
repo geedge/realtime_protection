@@ -1,15 +1,18 @@
 package com.realtime.protection.server.defense.object;
 
 import com.alibaba.excel.EasyExcel;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -38,11 +41,23 @@ public class ProtectObjectController {
                 .setData("success", true);
     }
 
-    @PutMapping("/new")
-    public ResponseResult newProtectObjectFromFile(MultipartFile updateFile) throws IOException {
-        EasyExcel.read(updateFile.getInputStream(), ProtectObject.class,
+    @PostMapping("/upload")
+    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
+        EasyExcel.read(uploadFile.getInputStream(), ProtectObject.class,
                 new ProjectObjectDataListener(protectObjectService)).sheet().doRead();
         return ResponseResult.ok();
+    }
+
+    @GetMapping("/download")
+    public void downloadTemplate(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("防护对象", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+        EasyExcel.write(response.getOutputStream(), ProtectObject.class)
+                .sheet("防护对象")
+                .doWrite(List.of());
     }
 
     @GetMapping("/query")
@@ -88,7 +103,7 @@ public class ProtectObjectController {
     }
 
     @PostMapping("/delete")
-    public ResponseResult deleteProtectObject(@RequestBody @JsonProperty("proobj_ids") List<Integer> protectObjectIds) {
+    public ResponseResult deleteProtectObject(@RequestBody List<Integer> protectObjectIds) {
         return ResponseResult.ok()
                 .setData("proobj_ids", protectObjectIds)
                 .setData("success", protectObjectService.deleteProtectObjects(protectObjectIds));

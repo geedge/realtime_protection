@@ -5,7 +5,6 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class ProjectObjectDataListener implements ReadListener<ProtectObject> {
     private void saveData() {
         Boolean success = protectObjectService.newProtectObjects(cachedDataList);
         if (!success) {
-            throw new RuntimeException("Error reading data in newProtectObjects");
+            throw new RuntimeException("Error reading data in /proobj/new");
         }
     }
 }

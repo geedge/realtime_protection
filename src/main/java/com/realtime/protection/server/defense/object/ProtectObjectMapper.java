@@ -23,7 +23,7 @@ public interface ProtectObjectMapper {
 
     Boolean deleteProtectObject(@Param("proobj_id") Integer protectObjectId);
 
-    Boolean deleteProtectObjects(@Param("proobj_ids") List<Integer> protectObjectIds);
+    void deleteProtectObjects(@Param("proobj_ids") List<Integer> protectObjectIds);
 
     Boolean changeProtectObjectAuditStatus(@Param("proobj_id") Integer protectObjectId,
                                            @Param("proobj_audit_status") Integer protectObjectAuditStatus);

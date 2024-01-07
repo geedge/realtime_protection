@@ -4,6 +4,7 @@ import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.utils.AuditStatusValidator;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +35,22 @@ public class ProtectObjectService {
 
     public Boolean newProtectObjects(List<ProtectObject> protectObjectList) {
         Function<ProtectObjectMapper, Function<List<ProtectObject>, Boolean>> newProtectObjectFunction = mapper -> list -> {
+            if (list == null || list.isEmpty()) {
+                return false;
+            }
+
             List<ProtectObject> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(100);
             for (ProtectObject protectObject : protectObjectList) {
                 protectObjectBatch.add(protectObject);
-                if (protectObjectBatch.size() < 1000) {
+                if (protectObjectBatch.size() < 100) {
                     continue;
                 }
                 mapper.newProtectObjects(protectObjectBatch);
                 protectObjectBatch.clear();
             }
-            mapper.newProtectObjects(protectObjectBatch);
+            if (!protectObjectBatch.isEmpty()) {
+                mapper.newProtectObjects(protectObjectBatch);
+            }
             return true;
         };
 
@@ -67,10 +74,12 @@ public class ProtectObjectService {
     }
 
     public Boolean deleteProtectObjects(List<Integer> protectObjectIds) {
-        Function<ProtectObjectMapper, Function<List<Integer>, Void>> deleteProtectObjectFunction = mapper -> list -> {
+        Function<ProtectObjectMapper, Function<List<Integer>, Boolean>> deleteProtectObjectFunction = mapper -> list -> {
             if (list == null || list.isEmpty()) {
-                return null;
+                return false;
             }
+            boolean success = true;
+            Integer result;
 
             List<Integer> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(100);
             for (Integer protectObjectId : list) {
@@ -78,15 +87,16 @@ public class ProtectObjectService {
                 if (protectObjectBatch.size() < 100) {
                     continue;
                 }
-                mapper.deleteProtectObjects(protectObjectIds);
+                mapper.deleteProtectObjects(protectObjectBatch);
                 protectObjectBatch.clear();
             }
-            mapper.deleteProtectObjects(protectObjectBatch);
-            return null;
+            if (!protectObjectBatch.isEmpty()) {
+                mapper.deleteProtectObjects(protectObjectBatch);;
+            }
+            return success;
         };
 
-        sqlSessionWrapper.startBatchSession(ProtectObjectMapper.class, deleteProtectObjectFunction, protectObjectIds);
-        return true;
+        return sqlSessionWrapper.startBatchSession(ProtectObjectMapper.class, deleteProtectObjectFunction, protectObjectIds);
     }
 
     @Transactional
