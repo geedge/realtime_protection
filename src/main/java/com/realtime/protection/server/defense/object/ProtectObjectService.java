@@ -2,9 +2,8 @@ package com.realtime.protection.server.defense.object;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
-import com.realtime.protection.configuration.utils.AuditStatusValidator;
+import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
-import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,12 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class ProtectObjectService {
     private final ProtectObjectMapper protectObjectMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
+    private static final Integer batchSize = 100;
 
     public ProtectObjectService(ProtectObjectMapper protectObjectMapper, SqlSessionWrapper sqlSessionWrapper) {
         this.protectObjectMapper = protectObjectMapper;
@@ -39,10 +38,10 @@ public class ProtectObjectService {
                 return false;
             }
 
-            List<ProtectObject> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(100);
+            List<ProtectObject> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(batchSize);
             for (ProtectObject protectObject : protectObjectList) {
                 protectObjectBatch.add(protectObject);
-                if (protectObjectBatch.size() < 100) {
+                if (protectObjectBatch.size() < batchSize) {
                     continue;
                 }
                 mapper.newProtectObjects(protectObjectBatch);
@@ -81,10 +80,10 @@ public class ProtectObjectService {
             boolean success = true;
             Integer result;
 
-            List<Integer> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(100);
+            List<Integer> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(batchSize);
             for (Integer protectObjectId : list) {
                 protectObjectBatch.add(protectObjectId);
-                if (protectObjectBatch.size() < 100) {
+                if (protectObjectBatch.size() < batchSize) {
                     continue;
                 }
                 mapper.deleteProtectObjects(protectObjectBatch);

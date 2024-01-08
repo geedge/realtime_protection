@@ -65,17 +65,28 @@ public class TaskController {
                 .setData("task_start_time", task.getTaskStartTime())
                 .setData("task_end_time", task.getTaskEndTime())
                 .setData("task_static_rule_ids", task.getStaticRuleIds())
-                .setData("task_dynamic_rule_ids", task.getDynamicRuleIds())
-                .setData("task_protect_object_ids", task.getProtectObjectIds());
+                .setData("task_dynamic_rule_ids", task.getDynamicRuleIds());
     }
 
     @PostMapping("/{id}/update")
     public ResponseResult updateTask(@PathVariable("id") @Min(1) Integer taskId, @RequestBody @Valid Task task) {
         task.setTaskId(taskId);
-        taskService.updateTask(task);
-
         return ResponseResult.ok()
                 .setData("task_id", taskId)
-                .setData("success", true);
+                .setData("success", taskService.updateTask(task));
+    }
+
+    @GetMapping("/{taskId}/{auditStatus}/audit")
+    public ResponseResult changeTaskAuditStatus(@PathVariable Integer auditStatus, @PathVariable Integer taskId) {
+        return ResponseResult.ok()
+                .setData("task_id", taskId)
+                .setData("success", taskService.changeTaskAuditStatus(taskId, auditStatus));
+    }
+
+    @GetMapping("/{id}/delete")
+    public ResponseResult deleteTask(@PathVariable("id") Integer taskId) {
+        return ResponseResult.ok()
+                .setData("task_id", taskId)
+                .setData("success", taskService.deleteTask(taskId));
     }
 }

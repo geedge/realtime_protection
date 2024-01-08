@@ -55,9 +55,6 @@ public class Task {
     @JsonProperty("dynamic_rule_ids")
     private List<Integer> dynamicRuleIds;
 
-    @JsonProperty("protect_object_ids")
-    private List<Integer> protectObjectIds;
-
     @JsonProperty("task_status")
     private Integer taskStatus;
 

@@ -15,30 +15,31 @@ public class Template {
     @NotNull(message = "template name should not be empty.")
     private String templateName;
 
-    @JsonProperty("template_elements")
-    private List<String> templateElements;
-
-    @JsonProperty("default_op")
-    @NotNull(message = "default_op should not be empty.")
-    private String defaultOp;
-
     @JsonProperty("template_running_tasks")
     private Integer templateRunningTasks;
 
     @JsonProperty("template_used")
     private Integer templateUsedTimes;
 
-    private Boolean hasProtectObjectIP;
+    @JsonProperty("source_system")
+    @NotNull(message = "source_system should not be empty. ")
+    private String sourceSystem;
 
-    private Boolean hasProtectObjectPort;
+    @JsonProperty("protect_level_low")
+    @NotNull(message = "protect_level_low should not be empty. ")
+    private ProtectLevel protectLevelLow;
 
-    private Boolean hasPeerIP;
+    @JsonProperty("protect_level_medium")
+    @NotNull(message = "protect_level_medium should not be empty. ")
+    private ProtectLevel protectLevelMedium;
 
-    private Boolean hasPeerPort;
+    @JsonProperty("protect_level_high")
+    @NotNull(message = "protect_level_high should not be empty. ")
+    private ProtectLevel protectLevelHigh;
 
-    private Boolean hasProtocol;
+    private Integer createUserId;
 
-    private Boolean hasURL;
+    private String createUsername;
 
-    private Boolean hasDNS;
+    private String createDepart;
 }

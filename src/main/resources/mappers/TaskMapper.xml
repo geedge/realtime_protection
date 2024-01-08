@@ -15,15 +15,10 @@
                    #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart})
     </insert>
 
-    <insert id="newTaskProtectObjectConcat">
-        INSERT INTO t_task_project_object(task_id, protect_object_id)
-        VALUES (#{task_id}, #{proobj_id})
-    </insert>
-
     <update id="newTaskStaticRuleConcat">
         UPDATE t_static_rule
         <set>
-            <if test="task_id != null"> static_rule_used_task_id = #{task_id}, </if>
+            <if test="task_id != null">static_rule_used_task_id = #{task_id},</if>
         </set>
         <where>
             <if test="rule_ids != null and rule_ids.size() > 0">
@@ -38,7 +33,7 @@
     <update id="newTaskDynamicRuleConcat">
         UPDATE t_dynamic_rule
         <set>
-            <if test="task_id != null"> dynamic_rule_used_task_id = #{task_id}, </if>
+            <if test="task_id != null">dynamic_rule_used_task_id = #{task_id},</if>
         </set>
         <where>
             <if test="rule_ids != null and rule_ids.size() > 0">
@@ -56,16 +51,27 @@
         <result column="task_type" property="taskType"/>
 
         <result column="task_status" property="taskStatus"/>
+        <result column="task_audit_status" property="taskAuditStatus"/>
 
         <result column="task_start_time" property="taskStartTime"/>
         <result column="task_end_time" property="taskEndTime"/>
 
         <result column="task_create_username" property="taskCreateUsername"/>
         <result column="task_create_depart" property="taskCreateDepart"/>
+
+        <collection property="staticRuleIds" ofType="java.lang.Integer">
+            <id column="static_rule_id"/>
+        </collection>
+
+        <collection property="dynamicRuleIds" ofType="java.lang.Integer">
+            <id column="dynamic_rule_id"/>
+        </collection>
     </resultMap>
 
     <select id="queryTasks" resultMap="taskMap">
         SELECT * FROM t_task
+        LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
+        LEFT JOIN realtime_protection.t_dynamic_rule tdr on t_task.task_id = tdr.dynamic_rule_used_task_id
         <where>
             <if test="task_status != null">
                 AND task_status = #{task_status}
@@ -84,22 +90,11 @@
     </select>
 
     <select id="queryTask" resultMap="taskMap">
-        SELECT * FROM t_task
-        WHERE task_id = #{task_id}
-    </select>
-
-    <select id="queryTaskConcatProtectObjectIds" resultType="java.lang.Integer">
-        SELECT protect_object_id FROM t_task_project_object
-        WHERE task_id = #{task_id}
-    </select>
-
-    <select id="queryTaskConcatDynamicRuleIds" resultType="java.lang.Integer">
-        <!-- todo: will be written after fulfilling t_dynamic_rule table -->
-    </select>
-
-    <select id="queryTaskConcatStaticRuleIds" resultType="java.lang.Integer">
-        SELECT static_rule_id FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id}
+        SELECT *
+        FROM t_task
+                 LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
+                 LEFT JOIN realtime_protection.t_dynamic_rule tdr on t_task.task_id = tdr.dynamic_rule_used_task_id
+        WHERE t_task.task_id = #{task_id}
     </select>
 
     <update id="updateTask">
@@ -115,11 +110,6 @@
         WHERE task_id = #{task.taskId}
     </update>
 
-    <update id="clearTaskProtectObjectConcat">
-        DELETE FROM t_task_project_object
-        WHERE task_id = #{task_id}
-    </update>
-
     <update id="clearTaskConnectedStaticRule">
         UPDATE t_static_rule
         SET static_rule_used_task_id = null
@@ -127,6 +117,19 @@
     </update>
 
     <update id="clearTaskConnectedDynamicRule">
-<!-- todo: will be written after fulfilling t_dynamic_rule table -->
+        UPDATE t_dynamic_rule
+        SET dynamic_rule_used_task_id = null
+        WHERE dynamic_rule_used_task_id = #{task_id}
     </update>
+
+    <update id="changeTaskAuditStatus">
+        UPDATE t_task
+        SET task_audit_status = #{audit_status}
+        WHERE task_id = #{task_id}
+    </update>
+
+    <delete id="deleteTask">
+        DELETE FROM t_task
+        WHERE task_id = #{task_id}
+    </delete>
 </mapper>

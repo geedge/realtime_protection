@@ -42,7 +42,9 @@ public class ProtectObjectController {
     }
 
     @PostMapping("/upload")
-    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
+    public ResponseResult uploadFile(
+            @NotNull(message = "uploadFile cannot be null") MultipartFile uploadFile
+    ) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), ProtectObject.class,
                 new ProjectObjectDataListener(protectObjectService)).sheet().doRead();
         return ResponseResult.ok();
@@ -52,11 +54,12 @@ public class ProtectObjectController {
     public void downloadTemplate(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
-        String fileName = URLEncoder.encode("防护对象", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        String fileName = URLEncoder.encode("防护对象上传模板", StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 
         EasyExcel.write(response.getOutputStream(), ProtectObject.class)
-                .sheet("防护对象")
+                .sheet("防护对象上传模板")
                 .doWrite(List.of());
     }
 

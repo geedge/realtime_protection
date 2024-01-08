@@ -3,7 +3,7 @@ package com.realtime.protection.server.whitelist;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
-import com.realtime.protection.configuration.utils.AuditStatusValidator;
+import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;

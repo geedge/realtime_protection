@@ -71,6 +71,7 @@
             <if test="proobj.protectObjectPort">protect_object_port = #{proobj.protectObjectPort},</if>
             <if test="proobj.protectObjectURL">protect_object_url = #{proobj.protectObjectURL},</if>
             <if test="proobj.protectObjectProtocol">protect_object_protocol = #{proobj.protectObjectProtocol},</if>
+            modify_time = NOW()
         </set>
         <where>
             <if test="proobj.protectObjectId != null">protect_object_id = #{proobj.protectObjectId}</if>

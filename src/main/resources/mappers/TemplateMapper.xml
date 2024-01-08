@@ -4,20 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.realtime.protection.server.defense.template.TemplateMapper">
     <insert id="newTemplate" useGeneratedKeys="true" keyProperty="templateId">
-        INSERT INTO t_strategy_template(strategy_template_name,
-                                        has_protect_object_ip, has_protect_object_port,
-                                        has_peer_ip, has_peer_port,
-                                        has_protocol, has_url, has_dns,
-                                        strategy_template_create_user_id,
-                                        strategy_template_create_username, strategy_template_create_depart,
-                                        default_op)
-            VALUE (#{template.templateName},
-                   #{template.hasProtectObjectIP}, #{template.hasProtectObjectPort},
-                   #{template.hasPeerIP}, #{template.hasPeerPort},
-                   #{template.hasProtocol}, #{template.hasURL}, #{template.hasDNS},
-                   0,
-                   #{template.templateName}, #{template.templateName},
-                   #{template.defaultOp})
+        INSERT INTO t_strategy_template(strategy_template_name, strategy_template_source_system,
+                                        strategy_template_low_level_id, strategy_template_medium_level_id,
+                                        strategy_template_high_level_id,
+                                        strategy_template_create_user_id, strategy_template_create_username,
+                                        strategy_template_create_depart)
+            VALUE (#{template.templateName}, #{template.sourceSystem},
+                   #{template.protectLevelLow.protectLevelId}, #{template.protectLevelMedium.protectLevelId},
+                   #{template.protectLevelHigh.protectLevelId},
+                   #{template.createUserId}, #{template.createUsername}, #{template.createDepart})
+    </insert>
+
+    <insert id="newProtectLevel" useGeneratedKeys="true" keyProperty="protectLevelId">
+        INSERT INTO t_protect_level(has_protect_object_ip, has_protect_object_port,
+                                    has_protocol, has_url, has_dns,
+                                    has_peer_ip, has_peer_port)
+            VALUE (#{level.hasProtectObjectIP}, #{level.hasProtectObjectPort},
+                   #{level.hasProtocol}, #{level.hasURL}, #{level.hasDNS},
+                   #{level.hasPeerIP}, #{level.hasPeerPort})
     </insert>
 
     <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.Template">
@@ -25,35 +29,87 @@
         <result column="strategy_template_name" property="templateName"/>
         <result column="strategy_template_used_times" property="templateUsedTimes"/>
         <result column="strategy_template_running_tasks" property="templateRunningTasks"/>
+        <result column="strategy_template_low_level_id" property="protectLevelLow.protectLevelId"/>
+        <result column="strategy_template_medium_level_id" property="protectLevelMedium.protectLevelId"/>
+        <result column="strategy_template_high_level_id" property="protectLevelHigh.protectLevelId"/>
+
+        <association property="protectLevelLow"
+                     javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
+            <id column="protect_level_id" property="protectLevelId"/>
+            <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+            <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+            <result column="has_peer_ip" property="hasPeerIP"/>
+            <result column="has_peer_port" property="hasPeerPort"/>
+            <result column="has_protocol" property="hasProtocol"/>
+            <result column="has_url" property="hasURL"/>
+            <result column="has_dns" property="hasDNS"/>
+        </association>
+
+        <association property="protectLevelMedium"
+                     javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
+            <id column="protect_level_id" property="protectLevelId"/>
+            <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+            <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+            <result column="has_peer_ip" property="hasPeerIP"/>
+            <result column="has_peer_port" property="hasPeerPort"/>
+            <result column="has_protocol" property="hasProtocol"/>
+            <result column="has_url" property="hasURL"/>
+            <result column="has_dns" property="hasDNS"/>
+        </association>
+
+        <association property="protectLevelHigh"
+                     javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
+            <id column="protect_level_id" property="protectLevelId"/>
+            <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+            <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+            <result column="has_peer_ip" property="hasPeerIP"/>
+            <result column="has_peer_port" property="hasPeerPort"/>
+            <result column="has_protocol" property="hasProtocol"/>
+            <result column="has_url" property="hasURL"/>
+            <result column="has_dns" property="hasDNS"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="protectLevelMap" type="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
+        <id column="protect_level_id" property="protectLevelId"/>
+        <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+        <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+        <result column="has_peer_ip" property="hasPeerIP"/>
+        <result column="has_peer_port" property="hasPeerPort"/>
+        <result column="has_protocol" property="hasProtocol"/>
+        <result column="has_url" property="hasURL"/>
+        <result column="has_dns" property="hasDNS"/>
     </resultMap>
 
     <select id="queryTemplates" resultMap="templateMap">
-        SELECT * FROM t_strategy_template
+        <!-- 关联查询 -->
+        SELECT * FROM t_strategy_template AS tst
+        LEFT JOIN realtime_protection.t_protect_level low_tpl on low_tpl.protect_level_id =
+        tst.strategy_template_low_level_id
+        LEFT JOIN realtime_protection.t_protect_level medium_tpl on medium_tpl.protect_level_id =
+        tst.strategy_template_medium_level_id
+        LEFT JOIN realtime_protection.t_protect_level high_tpl on high_tpl.protect_level_id =
+        tst.strategy_template_high_level_id
         <where>
             <if test="template_name != null">
-                AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
+                AND tst.strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
 
+    <select id="queryProtectLevel" resultMap="protectLevelMap">
+        SELECT *
+        FROM t_protect_level
+        WHERE protect_level_id = #{level_id}
+    </select>
+
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template
         <set>
-            <!-- update template name and default op -->
-            <if test="template.templateName != null">strategy_template_name = #{template.templateName}, </if>
-            <if test="template.defaultOp != null">default_op = #{template.defaultOp},</if>
-
-            <!-- update template elements -->
-            <if test="template.hasProtectObjectIP != null">has_protect_object_ip = #{template.hasProtectObjectIP},</if>
-            <if test="template.hasProtectObjectPort != null">
-                has_protect_object_port = {template.hasProtectObjectPort},
-            </if>
-            <if test="template.hasPeerIP != null">has_peer_ip = #{template.hasPeerIP},</if>
-            <if test="template.hasPeerPort != null">has_peer_port = #{template.hasPeerPort},</if>
-            <if test="template.hasProtocol != null">has_protocol = #{template.hasProtocol},</if>
-            <if test="template.hasURL != null">has_url = #{template.hasURL},</if>
-            <if test="template.hasDNS != null">has_dns = #{template.hasDNS},</if>
+            <if test="template.templateName != null">strategy_template_name = #{template.templateName},</if>
+            <if test="template.sourceSystem != null">strategy_template_source_system = #{template.sourceSystem},</if>
+            modify_time = NOW()
         </set>
         <where>
             AND strategy_template_id = #{template.templateId}

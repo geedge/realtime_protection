@@ -1,8 +1,8 @@
 package com.realtime.protection.server.task;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.realtime.protection.configuration.entity.task.Task;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
+import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,38 +10,19 @@ import java.util.List;
 
 @Service
 public class TaskService {
-
-    private final SqlSessionFactory sqlSessionFactory;
     private final TaskMapper taskMapper;
 
-    public TaskService(SqlSessionFactory sqlSessionFactory, TaskMapper taskMapper) {
-        this.sqlSessionFactory = sqlSessionFactory;
+    public TaskService(TaskMapper taskMapper) {
         this.taskMapper = taskMapper;
     }
 
+    @Transactional
     public Integer newTask(Task task) {
-        SqlSession session = sqlSessionFactory.openSession(false);
-        TaskMapper taskMapper = session.getMapper(TaskMapper.class);
-        try {
-            taskMapper.newTask(task);
+        taskMapper.newTask(task);
 
-            task.getProtectObjectIds().forEach(
-                    proobjId -> taskMapper.newTaskProtectObjectConcat(task.getTaskId(), proobjId));
+        taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
 
-            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
-//            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
-
-            session.commit();
-        } catch (Exception e) {
-            session.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
-
-        if (task.getTaskId() == null) {
-            return 0;
-        }
         return task.getTaskId();
     }
 
@@ -52,41 +33,32 @@ public class TaskService {
     }
 
     public Task queryTask(Integer id) {
-        SqlSession session = sqlSessionFactory.openSession(false);
-        TaskMapper taskMapper = session.getMapper(TaskMapper.class);
-        Task task;
-
-        try {
-            task = taskMapper.queryTask(id);
-            if (task == null) {
-                return null;
-            }
-            task.setProtectObjectIds(taskMapper.queryTaskConcatProtectObjectIds(task.getTaskId()));
-//            task.setDynamicRuleIds(taskMapper.queryTaskConcatDynamicRuleIds(task.getTaskId()));
-            task.setStaticRuleIds(taskMapper.queryTaskConcatStaticRuleIds(task.getTaskId()));
-
-            session.commit();
-        } catch (Exception e) {
-            session.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
-
-        return task;
+        return taskMapper.queryTask(id);
     }
 
     @Transactional
-    public void updateTask(Task task) {
+    public Boolean updateTask(Task task) {
         taskMapper.updateTask(task);
 
-        taskMapper.clearTaskProtectObjectConcat(task.getTaskId());
         taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
-//        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
+        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
 
-        task.getProtectObjectIds().forEach(
-                proobjId -> taskMapper.newTaskProtectObjectConcat(task.getTaskId(), proobjId));
         taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
-//        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+
+        return true;
+    }
+
+    @Transactional
+    public Boolean changeTaskAuditStatus(Integer taskId, Integer taskAuditStatus) {
+        if (AuditStatusValidator.setOriginal(taskMapper.queryTask(taskId).getTaskAuditStatus()).checkValidate(taskAuditStatus))
+            taskMapper.changeTaskAuditStatus(taskId, taskAuditStatus);
+        else return false;
+
+        return true;
+    }
+
+    public Boolean deleteTask(Integer taskId) {
+        return taskMapper.deleteTask(taskId);
     }
 }

@@ -1,4 +1,4 @@
-package com.realtime.protection.configuration.utils;
+package com.realtime.protection.configuration.utils.status;
 
 public class AuditStatusValidator {
 

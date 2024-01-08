@@ -1,5 +1,6 @@
 package com.realtime.protection.server.defense.template;
 
+import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,26 +24,36 @@ class TemplateServiceTest {
 
     @BeforeEach
     void mockTemplate() {
+
         template = new Template();
 
         template.setTemplateName("反射型DDOS攻击");
-        template.setTemplateElements(List.of("对端IP", "协议", "URL"));
-        template.setDefaultOp("阻断");
+        template.setSourceSystem("xxxx系统");
+
+        ProtectLevel protectLevelLow = new ProtectLevel();
+        protectLevelLow.setHasPeerPort(true);
+
+        ProtectLevel protectLevelMedium = new ProtectLevel();
+        protectLevelMedium.setHasProtectObjectIP(true);
+
+        ProtectLevel protectLevelHigh = new ProtectLevel();
+        protectLevelHigh.setHasDNS(true);
+
+        template.setProtectLevelLow(protectLevelLow);
+        template.setProtectLevelMedium(protectLevelMedium);
+        template.setProtectLevelHigh(protectLevelHigh);
     }
 
     @Test
-    void testNewTemplateSuccess() {
+    void testNewTemplate() {
         Integer templateId = templateService.newTemplate(template);
         assertTrue(templateId > 0);
     }
 
     @Test
-    void testNewTemplateIllegalArgument() {
-        template.setTemplateElements(List.of("DDNS"));
-        assertThrows(IllegalArgumentException.class, () -> {
-            Integer templateId = templateService.newTemplate(template);
-            assertTrue(templateId > 0);
-        });
+    void testQueryTemplate() {
+        List<Template> templates = templateService.queryTemplates("DDOS", 1, 5);
+        System.out.println(templates);
     }
 
     @Test

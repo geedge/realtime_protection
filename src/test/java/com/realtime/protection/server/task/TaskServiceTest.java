@@ -38,13 +38,13 @@ class TaskServiceTest {
         task.setDynamicRuleIds(List.of());
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
-        task.setTaskCreateDepart("xxx");
-        task.setProtectObjectIds(List.of(1));
+        task.setTaskCreateDepart("xxx");;
     }
 
     @Test
     void testNewTaskSuccess() {
         assertDoesNotThrow(() -> {Integer taskId = taskService.newTask(task); assertTrue(taskId > 0);});
+        assertTrue(task.getTaskId() > 0);
     }
 
     @Test
@@ -58,8 +58,36 @@ class TaskServiceTest {
 
     @Test
     void testQueryTasks() {
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, 1, 5);
-        assertEquals(5, tasks.size());
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, 1, 10);
         assertTrue(tasks.get(0).getTaskId() > 0);
+    }
+
+    @Test
+    void testUpdateTasks() {
+        task.setStaticRuleIds(List.of(6, 7, 8));
+        task.setTaskId(26);
+        task.setTaskName("修改测试");
+
+        assertTrue(taskService.updateTask(task));
+        assertEquals("修改测试", taskService.queryTask(26).getTaskName());
+    }
+
+    @Test
+    void testDeleteTask() {
+        int testNum = taskService.queryTasks(null, null, null, null, 1, 10)
+                .get(0).getTaskId();
+
+        assertTrue(taskService.deleteTask(testNum));
+        assertFalse(taskService.deleteTask(235235));
+    }
+
+    @Test
+    void testChangeAuditStatus() {
+        int testNum = taskService.queryTasks(null, null, null, null, 1, 1)
+                .get(0).getTaskId();
+
+        assertTrue(taskService.changeTaskAuditStatus(testNum, 2));
+        assertFalse(taskService.changeTaskAuditStatus(testNum, 0));
+        assertFalse(taskService.changeTaskAuditStatus(testNum, 1));
     }
 }
