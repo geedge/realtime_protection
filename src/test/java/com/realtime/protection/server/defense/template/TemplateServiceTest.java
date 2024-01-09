@@ -53,22 +53,31 @@ class TemplateServiceTest {
     @Test
     void testQueryTemplate() {
         List<Template> templates = templateService.queryTemplates("DDOS", 1, 5);
-        System.out.println(templates);
+        assertEquals(5, templates.size());
+        for (Template template : templates) {
+            assertTrue(template.getTemplateId() > 0);
+        }
     }
 
     @Test
     void testUpdateTemplateSuccess() {
-        template.setTemplateName("洪泛型DDOS攻击");
-        assertTrue(templateService.updateTemplate(3, template));
+        List<Template> templates = templateService.queryTemplates("反射", 1, 6);
+        Template testTemplate = templates.get(0);
+        testTemplate.setTemplateName("洪泛型DDOS攻击");
+
+        assertTrue(templateService.updateTemplate(testTemplate.getTemplateId(), testTemplate));
     }
 
     @Test
     void testAddTemplateUsedTimes() {
-        List<Template> templates = templateService.queryTemplates("洪泛型DDOS攻击", 1, 1);
+        template.setTemplateName("add test");
+        templateService.newTemplate(template);
+
+        List<Template> templates = templateService.queryTemplates("add", 1, 1);
         Template originalTemplate = templates.get(0);
-        Boolean success = templateService.addTemplateUsedTimes(3, 4);
-        templates = templateService.queryTemplates("洪泛型DDOS攻击", 1, 1);
-        assertEquals(templates.get(0).getTemplateUsedTimes(), originalTemplate.getTemplateUsedTimes() + 4);
+        Boolean success = templateService.addTemplateUsedTimes(originalTemplate.getTemplateId(), 4);
+        templates = templateService.queryTemplates("add", 1, 1);
+        assertEquals(originalTemplate.getTemplateUsedTimes() + 4, templates.get(0).getTemplateUsedTimes());
         assertTrue(success);
     }
 }

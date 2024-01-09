@@ -76,7 +76,7 @@ public class TaskController {
                 .setData("success", taskService.updateTask(task));
     }
 
-    @GetMapping("/{taskId}/{auditStatus}/audit")
+    @GetMapping("/{taskId}/audit/{auditStatus}")
     public ResponseResult changeTaskAuditStatus(@PathVariable Integer auditStatus, @PathVariable Integer taskId) {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
@@ -88,5 +88,12 @@ public class TaskController {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
                 .setData("success", taskService.deleteTask(taskId));
+    }
+
+    @GetMapping("/{taskId}/running/{state}")
+    public ResponseResult changeTaskStatus(@PathVariable Integer state, @PathVariable Integer taskId) {
+        return ResponseResult.ok()
+                .setData("task_id", taskId)
+                .setData("success", taskService.changeTaskStatus(taskId, state));
     }
 }

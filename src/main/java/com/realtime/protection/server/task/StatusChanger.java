@@ -1,6 +1,6 @@
-package com.realtime.protection.configuration.utils.status;
+package com.realtime.protection.server.task;
 
-import com.realtime.protection.configuration.utils.status.state.State;
+import com.realtime.protection.server.task.state.State;
 
 public class StatusChanger {
 

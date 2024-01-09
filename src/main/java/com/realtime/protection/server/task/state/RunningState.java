@@ -1,4 +1,4 @@
-package com.realtime.protection.configuration.utils.status.state;
+package com.realtime.protection.server.task.state;
 
 public class RunningState implements State {
     @Override

@@ -1,14 +1,14 @@
-package com.realtime.protection.configuration.utils.status.state;
+package com.realtime.protection.server.task.state;
 
 public class StopState implements State {
 
     @Override
     public Boolean handle(State newState) {
-        if (!(newState instanceof RunningState)) {
-            return false;
+        if (newState instanceof RunningState) {
+            return handleRun();
         }
 
-        return handleRun();
+        return false;
     }
 
     public Boolean handleRun() {

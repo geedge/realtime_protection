@@ -19,6 +19,12 @@ spring:
           url: jdbc:oracle:thin:@//10.26.22.45:1521/ORCL
           hikari:
             is-auto-commit: false
+        doris:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          url: jdbc:mysql://10.26.22.133:9030
+          hikari:
+            is-auto-commit: false
       aop:
         enabled: true
       primary: mysql
