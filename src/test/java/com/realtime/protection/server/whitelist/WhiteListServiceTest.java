@@ -1,5 +1,6 @@
 package com.realtime.protection.server.whitelist;
 
+import com.realtime.protection.configuration.entity.task.Command;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,12 +64,24 @@ class WhiteListServiceTest {
     @Test
     void testExistWhiteList() {
         List<Integer> ruleIds = List.of(6,7,8);
-        List<String> ip_list = whiteListService.existWhiteListObject(ruleIds);
-        System.out.println(ip_list);
+//        List<String> ip_list = whiteListService.existWhiteListObject(ruleIds);
+//        System.out.println(ip_list);
     }
 
     @Test
     void testUpdateWhiteListAuditStatus() {
         whiteListService.updateWhiteListObjectAuditStatus(7, 1);
     }
+
+    @Test
+    void testWhiteListCommandJudge() {
+        Command command = new Command();
+        command.setDestinationIP("128.1.1.123");
+        command.setMaskDestinationIP("255.255.255.0");
+        command.setDestinationPort("81");
+
+        List<WhiteListObject> whitelists = whiteListService.whiteListCommandJudge(command);
+        System.out.println(whitelists);
+    }
+
 }
