@@ -14,9 +14,15 @@ public class AuditStatusValidator {
 
     public Boolean checkValidate(Integer auditStatusNow) {
         switch (auditStatusNow) {
-            case 0, 1 -> {return auditStatusOriginal != 2;}
-            case 2 -> {return auditStatusOriginal != 1;}
-            default -> {return false;}
+            case 0, 1 -> {
+                return auditStatusOriginal != 2;
+            }
+            case 2 -> {
+                return auditStatusOriginal != 1;
+            }
+            default -> {
+                return false;
+            }
         }
     }
 }

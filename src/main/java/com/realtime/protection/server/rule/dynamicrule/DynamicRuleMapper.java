@@ -16,13 +16,13 @@ public interface DynamicRuleMapper {
     //新建动态规则与保护对象关联
     void newDynamicRulProtectObjectConcat(long dynamicRuleId, Integer protectObjectId);
 
-    void deleteDynamicRuleObject( Integer dynamicRuleId);
+    void deleteDynamicRuleObject(Integer dynamicRuleId);
 
     DynamicRuleObject queryDynamicRuleById(Integer dynamicRuleId);
 
     List<ProtectObject> queryProtectObjectByRuleId(Integer dynamicRuleId);
 
-    void updateDynamicRuleObject(@Param("dynamicRuleId") Integer dynamicRuleId,@Param("object") DynamicRuleObject dynamicRuleObject);
+    void updateDynamicRuleObject(@Param("dynamicRuleId") Integer dynamicRuleId, @Param("object") DynamicRuleObject dynamicRuleObject);
 
     void newDynamicRules(List<DynamicRuleObject> dynamicRuleObjects);
 

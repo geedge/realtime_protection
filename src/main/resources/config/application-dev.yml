@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+logging:
+  level:
+    com.realtime.protection: debug
+
 spring:
   datasource:
     dynamic:
@@ -12,17 +16,10 @@ spring:
           url: jdbc:mysql://192.168.107.89:3306/realtime_protection
           hikari:
             is-auto-commit: false
-        oracle:
-          driver-class-name: oracle.jdbc.driver.OracleDriver
-          username: z2_509pz
-          password: 123
-          url: jdbc:oracle:thin:@//10.26.22.45:1521/ORCL
-          hikari:
-            is-auto-commit: false
         doris:
           driver-class-name: com.mysql.cj.jdbc.Driver
           username: root
-          url: jdbc:mysql://10.26.22.133:9030
+          url: jdbc:mysql://10.26.22.133:9030/command
           hikari:
             is-auto-commit: false
       aop:

@@ -1,5 +1,6 @@
 package com.realtime.protection.server.task;
 
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,31 +28,37 @@ class TaskServiceTest {
         this.task = new Task();
         task.setTaskName("静态测试");
 
-        LocalDateTime taskStartTime = LocalDateTime.parse("2023-12-24T11:45:14");
-        LocalDateTime taskEndTime = LocalDateTime.parse("2023-12-29T11:45:12");
+        LocalDateTime taskStartTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime taskEndTime = LocalDateTime.now().plusDays(5);
 
         task.setTaskStartTime(taskStartTime);
         task.setTaskEndTime(taskEndTime);
         task.setTaskAct("阻断");
-        task.setTaskType("静态任务");
-        task.setStaticRuleIds(List.of(1, 2));
+        task.setTaskType(1);
+        task.setStaticRuleIds(List.of(1L, 2L));
         task.setDynamicRuleIds(List.of());
-        task.setTaskCreateUserId(1);
+        task.setTaskCreateUserId(1L);
         task.setTaskCreateUsername("xxx");
-        task.setTaskCreateDepart("xxx");;
+        task.setTaskCreateDepart("xxx");
     }
 
     @Test
     void testNewTaskSuccess() {
-        assertDoesNotThrow(() -> {Integer taskId = taskService.newTask(task); assertTrue(taskId > 0);});
-        assertTrue(task.getTaskId() > 0);
+        for (int i = 0; i < 100; i++){
+            LocalDateTime taskStartTime = LocalDateTime.now().plusDays(i);
+            LocalDateTime taskEndTime = LocalDateTime.now().plusDays(i+10);
+            task.setTaskStartTime(taskStartTime);
+            task.setTaskEndTime(taskEndTime);
+            assertDoesNotThrow(() -> {Long taskId = taskService.newTask(task); assertTrue(taskId > 0);});
+            assertTrue(task.getTaskId() > 0);
+        }
     }
 
     @Test
     void testNewTaskLostData() {
         this.task.setTaskStartTime(null);
         assertThrows(PersistenceException.class, () -> {
-            Integer taskId = taskService.newTask(task);
+            Long taskId = taskService.newTask(task);
             assertTrue(taskId > 0);
         });
     }
@@ -64,30 +71,37 @@ class TaskServiceTest {
 
     @Test
     void testUpdateTasks() {
-        task.setStaticRuleIds(List.of(6, 7, 8));
-        task.setTaskId(26);
-        task.setTaskName("修改测试");
+        Task originalTask = taskService.queryTask(38L);
 
-        assertTrue(taskService.updateTask(task));
-        assertEquals("修改测试", taskService.queryTask(26).getTaskName());
+        originalTask.setStaticRuleIds(List.of(16L, 17L, 18L, 19L));
+        originalTask.setTaskName("修改测试");
+
+        assertTrue(taskService.updateTask(originalTask));
+        assertEquals("修改测试", taskService.queryTask(38L).getTaskName());
     }
 
     @Test
     void testDeleteTask() {
-        int testNum = taskService.queryTasks(null, null, null, null, 1, 10)
+        long  testNum = taskService.queryTasks(null, null, null, null, 1, 10)
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));
-        assertFalse(taskService.deleteTask(235235));
+        assertFalse(taskService.deleteTask(235235L));
     }
 
     @Test
     void testChangeAuditStatus() {
-        int testNum = taskService.queryTasks(null, null, null, null, 1, 1)
+        long testNum = taskService.queryTasks(null, null, null, null, 1, 1)
                 .get(0).getTaskId();
 
         assertTrue(taskService.changeTaskAuditStatus(testNum, 2));
         assertFalse(taskService.changeTaskAuditStatus(testNum, 0));
         assertFalse(taskService.changeTaskAuditStatus(testNum, 1));
+    }
+
+    @Test
+    void testGetStaticCommands() {
+        List<TaskCommandInfo> taskCommandInfos = taskService.getStaticCommandInfos(26L);
+        assertEquals(3, taskCommandInfos.size());
     }
 }

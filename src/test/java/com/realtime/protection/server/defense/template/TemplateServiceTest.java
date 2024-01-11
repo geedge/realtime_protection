@@ -2,6 +2,7 @@ package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ class TemplateServiceTest {
 
     private final TemplateService templateService;
     private Template template;
+    private Long startTime;
+
 
     @Autowired
     TemplateServiceTest(TemplateService templateService) {
@@ -42,6 +45,14 @@ class TemplateServiceTest {
         template.setProtectLevelLow(protectLevelLow);
         template.setProtectLevelMedium(protectLevelMedium);
         template.setProtectLevelHigh(protectLevelHigh);
+
+        startTime = System.currentTimeMillis();
+    }
+
+    @AfterEach
+    void summary() {
+        Long endTime = System.currentTimeMillis();
+        System.out.printf("total time: %d ms", endTime - startTime);
     }
 
     @Test
@@ -56,6 +67,8 @@ class TemplateServiceTest {
         assertEquals(5, templates.size());
         for (Template template : templates) {
             assertTrue(template.getTemplateId() > 0);
+            assertNotNull(template.getTemplateRunningTasks());
+            assertNotNull(template.getTemplateUsedTimes());
         }
     }
 
@@ -68,16 +81,4 @@ class TemplateServiceTest {
         assertTrue(templateService.updateTemplate(testTemplate.getTemplateId(), testTemplate));
     }
 
-    @Test
-    void testAddTemplateUsedTimes() {
-        template.setTemplateName("add test");
-        templateService.newTemplate(template);
-
-        List<Template> templates = templateService.queryTemplates("add", 1, 1);
-        Template originalTemplate = templates.get(0);
-        Boolean success = templateService.addTemplateUsedTimes(originalTemplate.getTemplateId(), 4);
-        templates = templateService.queryTemplates("add", 1, 1);
-        assertEquals(originalTemplate.getTemplateUsedTimes() + 4, templates.get(0).getTemplateUsedTimes());
-        assertTrue(success);
-    }
 }

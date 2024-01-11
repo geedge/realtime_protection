@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class Template {
     @JsonProperty("template_id")
@@ -36,6 +34,12 @@ public class Template {
     @JsonProperty("protect_level_high")
     @NotNull(message = "protect_level_high should not be empty. ")
     private ProtectLevel protectLevelHigh;
+
+    @JsonProperty("template_used_times")
+    private Integer usedTimes;
+
+    @JsonProperty("running_tasks")
+    private Integer runningTasks;
 
     private Integer createUserId;
 

@@ -1,25 +1,32 @@
 package com.realtime.protection.configuration.entity.task;
 
+import com.realtime.protection.configuration.utils.enums.ProtocolEnum;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class Command {
-    private Integer id;
+    private FiveTupleWithMask fiveTupleWithMask;
+    private Long taskId;
 
-    private Integer type;
-    private String sourceIP;
-    private String sourcePort;
-    private String destinationIP;
-    private String destinationPort;
-    private Integer protocol;
+    private String operation;
+    private LocalDateTime validTime;
+    private LocalDateTime invalidTime;
 
-    private String maskSourceIP;
-    private String maskSourcePort;
-    private String maskDestinationIP;
-    private String maskDestinationPort;
-    private Integer direction;
+    public static Command generateCommand(TaskCommandInfo info, LocalDateTime validTime) {
+        Command command = new Command();
 
-    private LocalDateTime datetime;
+        FiveTupleWithMask fiveTupleWithMask = info.getFiveTupleWithMask();
+        if (fiveTupleWithMask.getProtocol() != null)
+            fiveTupleWithMask.setProtocolNum(ProtocolEnum.valueOf(fiveTupleWithMask.getProtocol()).getProtocolNumber());
+
+        command.setFiveTupleWithMask(fiveTupleWithMask);
+        command.setTaskId(info.getTaskId());
+        command.setOperation(info.getOperation());
+        command.setValidTime(validTime);
+        command.setInvalidTime(info.getEndTime());
+
+        return command;
+    }
 }

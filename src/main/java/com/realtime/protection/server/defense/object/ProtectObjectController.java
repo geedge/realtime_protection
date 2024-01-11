@@ -3,6 +3,7 @@ package com.realtime.protection.server.defense.object;
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.EntityUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -76,21 +77,15 @@ public class ProtectObjectController {
 
     }
 
-    @GetMapping("/{id}/query")
-    public ResponseResult queryProtectObject(@PathVariable("id") Integer protectObjectId) {
+    @GetMapping("/{protectObjectId}/query")
+    public ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) throws IllegalAccessException {
         ProtectObject protectObject = protectObjectService.queryProtectObject(protectObjectId);
         return ResponseResult.ok()
-                .setData("proobj_id", protectObject.getProtectObjectId())
-                .setData("proobj_name", protectObject.getProtectObjectName())
-                .setData("proobj_system_name", protectObject.getProtectObjectSystemName())
-                .setData("proobj_ip_address", protectObject.getProtectObjectIPAddress())
-                .setData("proobj_port", protectObject.getProtectObjectPort())
-                .setData("proobj_url", protectObject.getProtectObjectURL())
-                .setData("proobj_protocol", protectObject.getProtectObjectProtocol());
+                .setDataMap(EntityUtils.entityToMap(protectObject));
     }
 
-    @PostMapping("/{id}/update")
-    public ResponseResult updateProtectObject(@PathVariable("id") Integer protectObjectId,
+    @PostMapping("/{protectObjectId}/update")
+    public ResponseResult updateProtectObject(@PathVariable Integer protectObjectId,
                                               @RequestBody @Valid ProtectObject protectObject) {
         protectObject.setProtectObjectId(protectObjectId);
         return ResponseResult.ok()
@@ -98,8 +93,8 @@ public class ProtectObjectController {
                 .setData("success", protectObjectService.updateProtectObject(protectObject));
     }
 
-    @DeleteMapping("/{id}/delete")
-    public ResponseResult deleteProtectObject(@PathVariable("id") Integer protectObjectId) {
+    @DeleteMapping("/{protectObjectId}/delete")
+    public ResponseResult deleteProtectObject(@PathVariable Integer protectObjectId) {
         return ResponseResult.ok()
                 .setData("proobj_id", protectObjectId)
                 .setData("success", protectObjectService.deleteProtectObject(protectObjectId));
@@ -112,9 +107,9 @@ public class ProtectObjectController {
                 .setData("success", protectObjectService.deleteProtectObjects(protectObjectIds));
     }
 
-    @PostMapping("/{id}/audit/{status}")
-    public ResponseResult changeProtectObjectAuditStatus(@PathVariable("id") Integer protectObjectId,
-                                                         @PathVariable("status") Integer auditStatus) {
+    @PostMapping("/{protectObjectId}/audit/{auditStatus}")
+    public ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
+                                                         @PathVariable Integer auditStatus) {
         return ResponseResult.ok()
                 .setDataMap(protectObjectService.changeProtectObjectAuditStatus(protectObjectId, auditStatus))
                 .setData("proobj_id", protectObjectId);

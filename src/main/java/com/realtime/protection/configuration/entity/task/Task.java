@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class Task {
     @JsonProperty("task_id")
-    private Integer taskId;
+    private Long taskId;
 
     @JsonProperty("task_name")
     @NotNull(message = "task_name should not be empty. ")
@@ -19,6 +19,7 @@ public class Task {
 
     @JsonProperty("task_start_time")
     @NotNull(message = "task_start_time should not be empty. ")
+    @Future(message = "task_start_time should be a future time")
     private LocalDateTime taskStartTime;
 
     @JsonProperty("task_end_time")
@@ -34,7 +35,7 @@ public class Task {
 
     @JsonProperty("task_type")
     @NotNull(message = "task_type should not be empty. ")
-    private String taskType;
+    private Integer taskType;
 
     @JsonProperty("task_act")
     @NotNull(message = "task_act should not be empty. ")
@@ -47,13 +48,13 @@ public class Task {
     private String taskCreateDepart;
 
     @JsonProperty("task_create_userid")
-    private Integer taskCreateUserId;
+    private Long taskCreateUserId;
 
     @JsonProperty("static_rule_ids")
-    private List<Integer> staticRuleIds;
+    private List<Long> staticRuleIds;
 
     @JsonProperty("dynamic_rule_ids")
-    private List<Integer> dynamicRuleIds;
+    private List<Long> dynamicRuleIds;
 
     @JsonProperty("task_status")
     private Integer taskStatus;

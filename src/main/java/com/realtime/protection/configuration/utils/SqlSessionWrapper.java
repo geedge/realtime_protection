@@ -16,13 +16,15 @@ public class SqlSessionWrapper {
         this.sqlSessionFactory = sqlSessionFactory;
     }
 
-    /** 启动批量SQL会话
-     * @param mapperClass MyBatis Mapper类型
+    /**
+     * 启动批量SQL会话
+     *
+     * @param mapperClass   MyBatis Mapper类型
      * @param batchFunction 批量函数（批量添加、批量删除、批量更新等）
-     * @param arguments 函数附带的所有参数，可以使用Map进行包装
-     * @param <M> Mapper class
-     * @param <I> Function input
-     * @param <O> Function output
+     * @param arguments     函数附带的所有参数，可以使用Map进行包装
+     * @param <M>           Mapper class
+     * @param <I>           Function input
+     * @param <O>           Function output
      * @return 被包装的批量函数返回值
      */
     public <M, I, O> O startBatchSession(Class<M> mapperClass,

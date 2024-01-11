@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.command.CommandMapper">
+    <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.Command">
+        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP, MASK_SRC_PORT,
+                              MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
+                              CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
+        values (UUID(), DEFAULT,
+                #{command.fiveTupleWithMask.sourceIP},
+                #{command.fiveTupleWithMask.sourcePort}, #{command.fiveTupleWithMask.destinationIP},
+                #{command.fiveTupleWithMask.destinationPort},
+                #{command.fiveTupleWithMask.protocolNum}, #{command.fiveTupleWithMask.maskSourceIP},
+                #{command.fiveTupleWithMask.maskSourcePort},
+                #{command.fiveTupleWithMask.maskDestinationIP}, #{command.fiveTupleWithMask.maskDestinationPort}, TRUE,
+                #{command.validTime}, #{command.invalidTime}, FALSE, NOW(), NOW(), FALSE, #{command.taskId})
+    </insert>
+
+    <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.Command">
+        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP, MASK_SRC_PORT,
+                              MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
+                              CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
+        values
+        <foreach collection="commands" item="command" separator=",">
+            (UUID(), DEFAULT,
+            #{command.fiveTupleWithMask.sourceIP},
+            #{command.fiveTupleWithMask.sourcePort}, #{command.fiveTupleWithMask.destinationIP},
+            #{command.fiveTupleWithMask.destinationPort},
+            #{command.fiveTupleWithMask.protocolNum}, #{command.fiveTupleWithMask.maskSourceIP},
+            #{command.fiveTupleWithMask.maskSourcePort},
+            #{command.fiveTupleWithMask.maskDestinationIP}, #{command.fiveTupleWithMask.maskDestinationPort}, TRUE,
+            #{command.validTime}, #{command.invalidTime}, FALSE, NOW(), NOW(), FALSE, #{command.taskId})
+        </foreach>
+    </insert>
+
+    <update id="stopCommandsByTaskId">
+        UPDATE t_command
+        SET IS_VALID = FALSE
+        WHERE TASK_ID = #{task_id} AND IS_DELETED = FALSE
+    </update>
+
+    <update id="startCommandsByTaskId">
+        UPDATE t_command
+        SET IS_VALID = TRUE
+        WHERE TASK_ID = #{task_id} AND IS_DELETED = FALSE
+    </update>
+
+    <update id="removeCommandsByTaskId">
+        UPDATE t_command
+        SET IS_DELETED = TRUE
+        WHERE TASK_ID = #{task_id}
+    </update>
+</mapper>
+
+<!--
+
+-->

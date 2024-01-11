@@ -1,11 +1,8 @@
 package com.realtime.protection.server.task;
 
 import com.realtime.protection.configuration.entity.task.Task;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
-import com.realtime.protection.server.task.state.PauseState;
-import com.realtime.protection.server.task.state.RunningState;
-import com.realtime.protection.server.task.state.State;
-import com.realtime.protection.server.task.state.StopState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +17,7 @@ public class TaskService {
     }
 
     @Transactional
-    public Integer newTask(Task task) {
+    public Long newTask(Task task) {
         taskMapper.newTask(task);
 
         taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
@@ -35,7 +32,7 @@ public class TaskService {
         return taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
     }
 
-    public Task queryTask(Integer id) {
+    public Task queryTask(Long id) {
         return taskMapper.queryTask(id);
     }
 
@@ -46,47 +43,46 @@ public class TaskService {
         taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
         taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
 
-        taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
-        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+        if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty())
+            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+
+        if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty())
+            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
 
         return true;
     }
 
     @Transactional
-    public Boolean changeTaskAuditStatus(Integer taskId, Integer taskAuditStatus) {
-        if (AuditStatusValidator.setOriginal(taskMapper.queryTask(taskId).getTaskAuditStatus()).checkValidate(taskAuditStatus))
+    public Boolean changeTaskAuditStatus(Long taskId, Integer taskAuditStatus) {
+        Integer originalAuditStatus = taskMapper.queryTaskAuditStatus(taskId);
+        if (originalAuditStatus == null) {
+            throw new IllegalArgumentException("cannot find audit status of task " + taskId + ", maybe task doesn't exist?");
+        }
+
+        if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))
             taskMapper.changeTaskAuditStatus(taskId, taskAuditStatus);
         else return false;
 
         return true;
     }
 
-    public Boolean deleteTask(Integer taskId) {
+    public Boolean deleteTask(Long taskId) {
         return taskMapper.deleteTask(taskId);
     }
 
-    @Transactional
-    public Boolean changeTaskStatus(Integer taskId, Integer stateNum) {
-        State originalState = switch (taskMapper.queryTask(taskId).getTaskStatus()) {
-            // 运行中
-            case 1 -> new RunningState();
-            // 暂停中
-            case 2 -> new PauseState();
-            // 停止中
-            case 3 -> new StopState();
-            default -> throw new IllegalArgumentException();
-        };
+    public Boolean changeTaskStatus(Long taskId, Integer stateNum) {
+        return taskMapper.changeTaskStatus(taskId, stateNum);
+    }
 
-        State newState = switch (stateNum) {
-            // 运行中
-            case 1 -> new RunningState();
-            // 暂停中
-            case 2 -> new PauseState();
-            // 停止中
-            case 3 -> new StopState();
-            default -> throw new IllegalArgumentException();
-        };
+    public List<TaskCommandInfo> getStaticCommandInfos(Long taskId) {
+        return taskMapper.getStaticCommands(taskId);
+    }
 
-        return StatusChanger.setOriginal(originalState).changeState(newState);
+    public Integer queryTaskAuditStatus(Long taskId) {
+        return taskMapper.queryTaskAuditStatus(taskId);
+    }
+
+    public Integer queryTaskStatus(Long taskId) {
+        return taskMapper.queryTaskStatus(taskId);
     }
 }

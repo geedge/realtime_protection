@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +39,7 @@ public class WhiteListController {
                 new WhiteListDataListener(whiteListService)).sheet().doRead();
         return ResponseResult.ok();
     }
+
     //下载模板文件
     @GetMapping("/download")
     public void downloadTemplate(HttpServletResponse response) throws IOException {
@@ -54,10 +54,10 @@ public class WhiteListController {
     }
 
     @RequestMapping("/query")
-    public ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false)String whiteListName,
-                                               @RequestParam(value = "page_size", required = false)Integer whiteListId,
-                                               @RequestParam(value = "page", defaultValue = "1")Integer page,
-                                               @RequestParam(value = "page_size", defaultValue = "10")Integer pageSize) {
+    public ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false) String whiteListName,
+                                               @RequestParam(value = "page_size", required = false) Integer whiteListId,
+                                               @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                               @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
         if (page <= 0 || pageSize <= 0) {
             return new ResponseResult(400, "page or page_size is invalid")
                     .setData("whiteobj_list", null);
@@ -103,7 +103,7 @@ public class WhiteListController {
     }
 
     @PostMapping("/delete")
-    public ResponseResult deleteWhiteListObjects( @RequestBody List<Integer> whiteListObjIds) {
+    public ResponseResult deleteWhiteListObjects(@RequestBody List<Integer> whiteListObjIds) {
         //Post不支持body为json。。。 body只能是[9,10]
 
         return ResponseResult.ok()
@@ -111,7 +111,7 @@ public class WhiteListController {
                 .setData("success", whiteListService.deleteWhiteListObjects(whiteListObjIds));
     }
 
-    @PostMapping ("/{id}/update")
+    @PostMapping("/{id}/update")
     public ResponseResult updateWhiteListObject(@PathVariable Integer id,
                                                 @RequestBody WhiteListObject object) {
         object.setWhiteListId(id);
@@ -122,7 +122,6 @@ public class WhiteListController {
         }
         return ResponseResult.ok();
     }
-
 
 
     //查询ip是否存在于白名单
@@ -153,7 +152,6 @@ public class WhiteListController {
                 .setDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
                 .setData("whiteobj_id", id);
     }
-
 
 
 }

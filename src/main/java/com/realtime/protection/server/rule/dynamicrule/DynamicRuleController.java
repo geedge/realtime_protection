@@ -43,11 +43,9 @@ public class DynamicRuleController {
     }
 
 
-
-
     //id删除
     @RequestMapping("/{dynamicRuleId}/delete")
-    public ResponseResult deleteDynamicRuleObject(@PathVariable Integer dynamicRuleId ) {
+    public ResponseResult deleteDynamicRuleObject(@PathVariable Integer dynamicRuleId) {
         log.info("删除动态规则: {}", dynamicRuleId);
         //调用service删除
         dynamicRuleService.deleteDynamicRuleObject(dynamicRuleId);
@@ -62,7 +60,7 @@ public class DynamicRuleController {
         //调用service删除
 
         return ResponseResult.ok()
-                .setData("success",dynamicRuleService.deleteDynamicRuleObjects(dynamicRuleIds));
+                .setData("success", dynamicRuleService.deleteDynamicRuleObjects(dynamicRuleIds));
     }
 
     //修改

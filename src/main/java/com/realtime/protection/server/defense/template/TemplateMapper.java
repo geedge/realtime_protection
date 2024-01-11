@@ -21,7 +21,7 @@ public interface TemplateMapper {
 
     Boolean updateTemplateInformation(@Param("template") Template template);
 
-    void countTemplateRunningTasks(@Param("template_id") Integer templateId);
+    Template queryTemplate(@Param("template_id") Integer templateId);
 
-    Boolean addTemplateUsedTimes(@Param("template_id") Integer templateId, @Param("add_times") Integer addTimes);
+    Boolean deleteTemplate(@Param("template_id") Integer templateId);
 }

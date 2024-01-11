@@ -1,9 +1,14 @@
 package com.realtime.protection.server.task;
 
 import com.realtime.protection.configuration.entity.task.Task;
+import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.EntityUtils;
+import com.realtime.protection.server.task.status.StateChangeService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,14 +18,16 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final StateChangeService stateChangeService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, StateChangeService stateChangeService) {
         this.taskService = taskService;
+        this.stateChangeService = stateChangeService;
     }
 
     @PostMapping("/new")
     public ResponseResult newTask(@RequestBody @Valid Task task) {
-        Integer taskId = taskService.newTask(task);
+        Long taskId = taskService.newTask(task);
 
         if (taskId > 0) {
             return ResponseResult.ok()
@@ -48,7 +55,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}/query")
-    public ResponseResult queryTask(@PathVariable("id") @Min(1) Integer id) {
+    public ResponseResult queryTask(@PathVariable @Min(1) Long id) throws IllegalAccessException {
         Task task = taskService.queryTask(id);
 
         if (task == null) {
@@ -56,44 +63,39 @@ public class TaskController {
         }
 
         return ResponseResult.ok()
-                .setData("task_id", task.getTaskId())
-                .setData("task_name", task.getTaskName())
-                .setData("task_type", task.getTaskType())
-                .setData("task_status", task.getTaskStatus())
-                .setData("task_creator", task.getTaskCreateUsername())
-                .setData("task_creator_depart", task.getTaskCreateDepart())
-                .setData("task_start_time", task.getTaskStartTime())
-                .setData("task_end_time", task.getTaskEndTime())
-                .setData("task_static_rule_ids", task.getStaticRuleIds())
-                .setData("task_dynamic_rule_ids", task.getDynamicRuleIds());
+                .setDataMap(EntityUtils.entityToMap(task));
     }
 
-    @PostMapping("/{id}/update")
-    public ResponseResult updateTask(@PathVariable("id") @Min(1) Integer taskId, @RequestBody @Valid Task task) {
-        task.setTaskId(taskId);
+    @PostMapping("/update")
+    public ResponseResult updateTask(@RequestBody @Valid Task task) {
         return ResponseResult.ok()
-                .setData("task_id", taskId)
+                .setData("task_id", task.getTaskId())
                 .setData("success", taskService.updateTask(task));
     }
 
     @GetMapping("/{taskId}/audit/{auditStatus}")
-    public ResponseResult changeTaskAuditStatus(@PathVariable Integer auditStatus, @PathVariable Integer taskId) {
+    public ResponseResult changeTaskAuditStatus(@PathVariable @NotNull @Max(10) Integer auditStatus,
+                                                @PathVariable @NotNull @Min(1) Long taskId) {
+
         return ResponseResult.ok()
                 .setData("task_id", taskId)
-                .setData("success", taskService.changeTaskAuditStatus(taskId, auditStatus));
+                .setData("success", taskService.changeTaskAuditStatus(taskId, auditStatus))
+                .setData("audit_status", taskService.queryTaskAuditStatus(taskId));
     }
 
-    @GetMapping("/{id}/delete")
-    public ResponseResult deleteTask(@PathVariable("id") Integer taskId) {
+    @GetMapping("/{taskId}/delete")
+    public ResponseResult deleteTask(@PathVariable @NotNull @Min(1) Long taskId) {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
                 .setData("success", taskService.deleteTask(taskId));
     }
 
-    @GetMapping("/{taskId}/running/{state}")
-    public ResponseResult changeTaskStatus(@PathVariable Integer state, @PathVariable Integer taskId) {
+    @GetMapping("/{taskId}/running/{stateNum}")
+    public ResponseResult changeTaskStatus(@PathVariable @NotNull Integer stateNum,
+                                           @PathVariable @NotNull Long taskId) throws DorisStartException {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
-                .setData("success", taskService.changeTaskStatus(taskId, state));
+                .setData("success", stateChangeService.changeState(stateNum, taskId))
+                .setData("status_now", taskService.queryTaskStatus(taskId));
     }
 }

@@ -4,8 +4,6 @@ import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.Transient;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -41,8 +39,11 @@ public class TemplateService {
         return templateMapper.updateTemplateInformation(template);
     }
 
-    public Boolean addTemplateUsedTimes(Integer templateId, Integer addTimes) {
-        return templateMapper.addTemplateUsedTimes(templateId, addTimes);
+    public Template queryTemplate(Integer templateId) {
+        return templateMapper.queryTemplate(templateId);
     }
 
+    public Boolean deleteTemplate(Integer templateId) {
+        return templateMapper.deleteTemplate(templateId);
+    }
 }

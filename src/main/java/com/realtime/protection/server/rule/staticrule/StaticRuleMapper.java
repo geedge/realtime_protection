@@ -16,8 +16,6 @@ public interface StaticRuleMapper {
     //根据主键删除静态规则
     @Delete("delete from t_static_rule where static_rule_id = #{id}")
     Boolean deleteStaticRuleById(Integer id);
-    
-    
 
 
     //修改静态规则

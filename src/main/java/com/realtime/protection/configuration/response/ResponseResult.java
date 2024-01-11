@@ -12,6 +12,7 @@ public class ResponseResult implements Serializable {
     private int code;
     private String message;
     private Map<String, Object> data;
+    private ResponseResult another;
 
     public ResponseResult(int code, String message, LinkedHashMap<String, Object> data) {
         this.code = code;

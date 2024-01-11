@@ -6,8 +6,8 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,6 +22,7 @@ import java.util.List;
 public class StaticRuleController {
 
     private final StaticRuleService staticRuleService;
+
     public StaticRuleController(StaticRuleService staticRuleService) {
         this.staticRuleService = staticRuleService;
     }
@@ -30,11 +31,11 @@ public class StaticRuleController {
      * 新增静态规则
      */
     @PostMapping("/new")
-    public ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object){
-        log.info("新增静态规则: {}" , object);
+    public ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object) {
+        log.info("新增静态规则: {}", object);
         //调用service新增
         staticRuleService.newStaticRuleObject(object);
-        return ResponseResult.ok().setData("static_rule_name",object.getStaticRuleName());
+        return ResponseResult.ok().setData("static_rule_name", object.getStaticRuleName());
     }
 
     //以Excel方式批量导入静态规则
@@ -44,6 +45,7 @@ public class StaticRuleController {
                 new StaticRuleDataListener(staticRuleService)).sheet().doRead();
         return ResponseResult.ok();
     }
+
     //下载模板文件
     @GetMapping("/download")
     public void downloadTemplate(HttpServletResponse response) throws IOException {
@@ -62,20 +64,20 @@ public class StaticRuleController {
      * 删除静态规则（有的删了，有的没删，也返回false）
      */
     @DeleteMapping("/{ids}")
-    public ResponseResult delete(@PathVariable List<Integer> ids){
-        log.info("根据id删除静态规则:{}",ids);
-           //
+    public ResponseResult delete(@PathVariable List<Integer> ids) {
+        log.info("根据id删除静态规则:{}", ids);
+        //
         return ResponseResult.ok()
-                .setData("static_rule_id",ids)
-                .setData("success",staticRuleService.deleteStaticRules(ids));
+                .setData("static_rule_id", ids)
+                .setData("success", staticRuleService.deleteStaticRules(ids));
     }
 
     /**
      * 修改静态规则
      */
     @PutMapping("/update")
-    public ResponseResult updateStaticRule(@RequestBody @Valid StaticRuleObject object){
-        log.info("修改静态规则: {}" , object);
+    public ResponseResult updateStaticRule(@RequestBody @Valid StaticRuleObject object) {
+        log.info("修改静态规则: {}", object);
         //调用service修改
         staticRuleService.updateStaticRule(object);
         return ResponseResult.ok();
@@ -86,11 +88,11 @@ public class StaticRuleController {
      * 路径参数：通过请求URL直接传递参数，使用{…}来标识该路径参数，需要使用 @PathVariable 获取路径参数
      */
     @RequestMapping("/{id}/query")
-        public ResponseResult queryStaticRuleById(@PathVariable Integer id){
-            log.info("根据id查询静态规则:{}",id);
-            StaticRuleObject object = staticRuleService.queryStaticRuleById(id);
-            return ResponseResult.ok().setData("static_rule",object);
-        }
+    public ResponseResult queryStaticRuleById(@PathVariable Integer id) {
+        log.info("根据id查询静态规则:{}", id);
+        StaticRuleObject object = staticRuleService.queryStaticRuleById(id);
+        return ResponseResult.ok().setData("static_rule", object);
+    }
 
     /**
      * 分页查询静态规则
@@ -99,10 +101,10 @@ public class StaticRuleController {
     public ResponseResult queryStaticRule(String static_rule_name, Integer static_rule_id,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize
-    ){
-        log.info("多查询静态规则: {},{},{},{}", static_rule_name,static_rule_id,page,pageSize);
+    ) {
+        log.info("多查询静态规则: {},{},{},{}", static_rule_name, static_rule_id, page, pageSize);
         //调用service新增
-        List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(static_rule_name,static_rule_id,page,pageSize);
-        return ResponseResult.ok().setData("static_rule_list",pageResult);
+        List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(static_rule_name, static_rule_id, page, pageSize);
+        return ResponseResult.ok().setData("static_rule_list", pageResult);
     }
 }

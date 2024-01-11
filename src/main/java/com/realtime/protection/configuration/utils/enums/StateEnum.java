@@ -1,0 +1,51 @@
+package com.realtime.protection.configuration.utils.enums;
+
+import com.realtime.protection.configuration.utils.status.State;
+import com.realtime.protection.server.task.status.states.*;
+import lombok.Getter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Getter
+public enum StateEnum {
+    // 仅需修改此处即可将任务状态以及对应的State和Num进行对应
+    PENDING(0, new PendingState()),
+    RUNNING(1, new RunningState()),
+    PAUSED(2, new PauseState()),
+    STOP(3, new StopState()),
+    FINISHED(4, new FinishedState()),
+    FAILED(5, new FailedState());
+    // ----------------------------------------------
+
+    private final State state;
+    private final Integer stateNum;
+    private static final Map<Integer, State> numToStateMap = new HashMap<>();
+    private static final Map<State, Integer> stateToNumMap = new HashMap<>();
+    private static final Map<State, StateEnum> stateToStateEnumMap = new HashMap<>();
+
+    static {
+        for (StateEnum stateEnum : StateEnum.values()) {
+            numToStateMap.put(stateEnum.getStateNum(), stateEnum.getState());
+            stateToNumMap.put(stateEnum.getState(), stateEnum.getStateNum());
+            stateToStateEnumMap.put(stateEnum.getState(), stateEnum);
+        }
+    }
+
+    StateEnum(int stateNum, State state) {
+        this.stateNum = stateNum;
+        this.state = state;
+    }
+
+    public static State getStateByNum(Integer stateNum) {
+        return numToStateMap.get(stateNum);
+    }
+
+    public static Integer getNumByState(State state) {
+        return stateToNumMap.get(state);
+    }
+
+    public static StateEnum getStateEnumByState(State state) {
+        return stateToStateEnumMap.get(state);
+    }
+}

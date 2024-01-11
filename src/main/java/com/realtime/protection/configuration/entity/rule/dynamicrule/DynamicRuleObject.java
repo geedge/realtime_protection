@@ -26,7 +26,7 @@ public class DynamicRuleObject {
     @JsonProperty("dynamic_rule_create_username")
     private String dynamicRuleCreateUsername;
 
-//    @JsonProperty("dynamic_rule_audit_status")
+    //    @JsonProperty("dynamic_rule_audit_status")
 //    private Integer dynamicRuleAuditStatus;
     @JsonProperty("dynamic_rule_create_depart")
     private String dynamicRuleCreateDepart;

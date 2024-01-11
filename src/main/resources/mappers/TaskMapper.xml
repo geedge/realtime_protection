@@ -17,9 +17,7 @@
 
     <update id="newTaskStaticRuleConcat">
         UPDATE t_static_rule
-        <set>
-            <if test="task_id != null">static_rule_used_task_id = #{task_id},</if>
-        </set>
+        SET static_rule_used_task_id = #{task_id}
         <where>
             <if test="rule_ids != null and rule_ids.size() > 0">
                 AND static_rule_id IN
@@ -32,9 +30,7 @@
 
     <update id="newTaskDynamicRuleConcat">
         UPDATE t_dynamic_rule
-        <set>
-            <if test="task_id != null">dynamic_rule_used_task_id = #{task_id},</if>
-        </set>
+        SET dynamic_rule_used_task_id = #{task_id}
         <where>
             <if test="rule_ids != null and rule_ids.size() > 0">
                 AND dynamic_rule_id IN
@@ -97,22 +93,34 @@
         WHERE t_task.task_id = #{task_id}
     </select>
 
+    <select id="queryTaskAuditStatus" resultType="java.lang.Integer">
+        SELECT task_audit_status
+        FROM t_task
+        WHERE task_id = #{task_id}
+    </select>
+
+    <select id="queryTaskStatus" resultType="java.lang.Integer">
+        SELECT task_status
+        FROM t_task
+        WHERE task_id = #{task_id}
+    </select>
+
     <update id="updateTask">
         UPDATE t_task
         <set>
             <if test="task.taskName != null">task_name = #{task.taskName},</if>
             <if test="task.taskType != null">task_type = #{task.taskType},</if>
             <if test="task.taskAct != null">task_act = #{task.taskAct},</if>
-            <if test="task.taskCreateTime != null">task_create_time = #{task.taskCreateTime},</if>
+            <if test="task.taskStartTime != null">task_start_time = #{task.taskStartTime},</if>
             <if test="task.taskEndTime != null">task_end_time = #{task.taskEndTime},</if>
-            task_modify_time = NOW()
+            task_modify_time = NOW(),
         </set>
         WHERE task_id = #{task.taskId}
     </update>
 
     <update id="clearTaskConnectedStaticRule">
         UPDATE t_static_rule
-        SET static_rule_used_task_id = null
+        SET static_rule_used_task_id = null, static_rule_modify_time = NOW()
         WHERE static_rule_used_task_id = #{task_id}
     </update>
 
@@ -124,7 +132,13 @@
 
     <update id="changeTaskAuditStatus">
         UPDATE t_task
-        SET task_audit_status = #{audit_status}
+        SET task_audit_status = #{audit_status}, task_modify_time = NOW()
+        WHERE task_id = #{task_id}
+    </update>
+
+    <update id="changeTaskStatus">
+        UPDATE t_task
+        SET task_status = #{state}, task_modify_time = NOW()
         WHERE task_id = #{task_id}
     </update>
 
@@ -132,4 +146,47 @@
         DELETE FROM t_task
         WHERE task_id = #{task_id}
     </delete>
+
+    <resultMap id="staticCommandMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        <result column="task_act" property="operation"/>
+        <result column="task_id" property="taskId"/>
+        <result column="static_rule_id" property="ruleId"/>
+        <result column="static_rule_frequency" property="frequency"/>
+        <result column="task_start_time" property="startTime"/>
+        <result column="task_end_time" property="endTime"/>
+
+        <association property="fiveTupleWithMask">
+            <result column="addr_type" property="addrType"/>
+            <result column="static_rule_sip" property="sourceIP"/>
+            <result column="static_rule_sport" property="sourcePort"/>
+            <result column="static_rule_dip" property="destinationIP"/>
+            <result column="static_rule_dport" property="destinationPort"/>
+            <result column="static_rule_protocol" property="protocol"/>
+            <result column="static_rule_msip" property="maskSourceIP"/>
+            <result column="static_rule_msport" property="maskSourcePort"/>
+            <result column="static_rule_mdip" property="maskDestinationIP"/>
+            <result column="static_rule_mdport" property="maskDestinationPort"/>
+        </association>
+    </resultMap>
+
+    <select id="getStaticCommands" resultMap="staticCommandMap">
+        SELECT t_task.task_id,
+               tsr.static_rule_id,
+               t_task.task_act,
+               t_task.task_start_time,
+               t_task.task_end_time,
+               INET_NTOA(tsr.static_rule_sip) as static_rule_sip,
+               tsr.static_rule_sport,
+               INET_NTOA(tsr.static_rule_dip) as static_rule_dip,
+               tsr.static_rule_dport,
+               tsr.static_rule_protocol,
+               INET_NTOA(tsr.static_rule_msip) as static_rule_msip,
+               tsr.static_rule_msport,
+               INET_NTOA(tsr.static_rule_mdip) as static_rule_mdip,
+               tsr.static_rule_mdport,
+               tsr.static_rule_frequency
+        FROM t_task
+                 LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
+        WHERE task_id = #{task_id} AND tsr.static_rule_audit_status = 2
+    </select>
 </mapper>

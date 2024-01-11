@@ -27,46 +27,48 @@
     <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.Template">
         <id column="strategy_template_id" property="templateId"/>
         <result column="strategy_template_name" property="templateName"/>
-        <result column="strategy_template_used_times" property="templateUsedTimes"/>
-        <result column="strategy_template_running_tasks" property="templateRunningTasks"/>
         <result column="strategy_template_low_level_id" property="protectLevelLow.protectLevelId"/>
         <result column="strategy_template_medium_level_id" property="protectLevelMedium.protectLevelId"/>
         <result column="strategy_template_high_level_id" property="protectLevelHigh.protectLevelId"/>
 
+        <result column="strategy_template_used_times" property="usedTimes"/>
+        <result column="strategy_template_running_tasks" property="runningTasks"/>
+
         <association property="protectLevelLow"
                      javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
-            <id column="protect_level_id" property="protectLevelId"/>
-            <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
-            <result column="has_protect_object_port" property="hasProtectObjectPort"/>
-            <result column="has_peer_ip" property="hasPeerIP"/>
-            <result column="has_peer_port" property="hasPeerPort"/>
-            <result column="has_protocol" property="hasProtocol"/>
-            <result column="has_url" property="hasURL"/>
-            <result column="has_dns" property="hasDNS"/>
+            <id column="low_protect_level_id" property="protectLevelId"/>
+            <result column="low_has_protect_object_ip" property="hasProtectObjectIP"/>
+            <result column="low_has_protect_object_port" property="hasProtectObjectPort"/>
+            <result column="low_has_peer_ip" property="hasPeerIP"/>
+            <result column="low_has_peer_port" property="hasPeerPort"/>
+            <result column="low_has_protocol" property="hasProtocol"/>
+            <result column="low_has_url" property="hasURL"/>
+            <result column="low_has_dns" property="hasDNS"/>
         </association>
 
         <association property="protectLevelMedium"
                      javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
-            <id column="protect_level_id" property="protectLevelId"/>
-            <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
-            <result column="has_protect_object_port" property="hasProtectObjectPort"/>
-            <result column="has_peer_ip" property="hasPeerIP"/>
-            <result column="has_peer_port" property="hasPeerPort"/>
-            <result column="has_protocol" property="hasProtocol"/>
-            <result column="has_url" property="hasURL"/>
-            <result column="has_dns" property="hasDNS"/>
+            <id column="medium_protect_level_id" property="protectLevelId"/>
+            <result column="medium_has_protect_object_ip" property="hasProtectObjectIP"/>
+            <result column="medium_has_protect_object_port" property="hasProtectObjectPort"/>
+            <result column="medium_has_peer_ip" property="hasPeerIP"/>
+            <result column="medium_has_peer_port" property="hasPeerPort"/>
+            <result column="medium_has_protocol" property="hasProtocol"/>
+            <result column="medium_has_url" property="hasURL"/>
+            <result column="medium_has_dns" property="hasDNS"/>
         </association>
 
         <association property="protectLevelHigh"
                      javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
             <id column="protect_level_id" property="protectLevelId"/>
-            <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
-            <result column="has_protect_object_port" property="hasProtectObjectPort"/>
-            <result column="has_peer_ip" property="hasPeerIP"/>
-            <result column="has_peer_port" property="hasPeerPort"/>
-            <result column="has_protocol" property="hasProtocol"/>
-            <result column="has_url" property="hasURL"/>
-            <result column="has_dns" property="hasDNS"/>
+            <id column="high_protect_level_id" property="protectLevelId"/>
+            <result column="high_has_protect_object_ip" property="hasProtectObjectIP"/>
+            <result column="high_has_protect_object_port" property="hasProtectObjectPort"/>
+            <result column="high_has_peer_ip" property="hasPeerIP"/>
+            <result column="high_has_peer_port" property="hasPeerPort"/>
+            <result column="high_has_protocol" property="hasProtocol"/>
+            <result column="high_has_url" property="hasURL"/>
+            <result column="high_has_dns" property="hasDNS"/>
         </association>
     </resultMap>
 
@@ -82,17 +84,10 @@
     </resultMap>
 
     <select id="queryTemplates" resultMap="templateMap">
-        <!-- 关联查询 -->
-        SELECT * FROM t_strategy_template AS tst
-        LEFT JOIN realtime_protection.t_protect_level low_tpl on low_tpl.protect_level_id =
-        tst.strategy_template_low_level_id
-        LEFT JOIN realtime_protection.t_protect_level medium_tpl on medium_tpl.protect_level_id =
-        tst.strategy_template_medium_level_id
-        LEFT JOIN realtime_protection.t_protect_level high_tpl on high_tpl.protect_level_id =
-        tst.strategy_template_high_level_id
+        SELECT * FROM template_view
         <where>
             <if test="template_name != null">
-                AND tst.strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
+                AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
@@ -114,11 +109,5 @@
         <where>
             AND strategy_template_id = #{template.templateId}
         </where>
-    </update>
-
-    <update id="addTemplateUsedTimes">
-        UPDATE t_strategy_template
-        SET strategy_template_used_times = strategy_template_used_times + #{add_times}
-        WHERE strategy_template_id = #{template_id}
     </update>
 </mapper>

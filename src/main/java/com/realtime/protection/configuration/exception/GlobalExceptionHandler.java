@@ -3,6 +3,8 @@ package com.realtime.protection.configuration.exception;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.SaTokenException;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.server.task.status.StateChangeService;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
@@ -16,20 +18,18 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final StateChangeService stateChangeService;
+
+    public GlobalExceptionHandler(StateChangeService stateChangeService) {
+        this.stateChangeService = stateChangeService;
+    }
+
     @Order(3)
     @ExceptionHandler(value = Exception.class)
     public ResponseResult handleGlobalException(Exception e) {
         return ResponseResult.error().setMessage(e.getMessage());
     }
 
-    @Order(2)
-    @ExceptionHandler(value = NotLoginException.class)
-    public ResponseResult handleNotLoginException(NotLoginException e) {
-        return new ResponseResult(
-                401,
-                e.getMessage()
-        );
-    }
 
     @Order(2)
     @ExceptionHandler(value = PersistenceException.class)
@@ -48,14 +48,42 @@ public class GlobalExceptionHandler {
     }
 
     @Order(2)
-    @ExceptionHandler(value = {HandlerMethodValidationException.class, IllegalArgumentException.class})
-    public ResponseResult handleHandlerMethodValidationException(HandlerMethodValidationException e) {
+    @ExceptionHandler(value = {
+            HandlerMethodValidationException.class,
+            IllegalArgumentException.class,
+            IllegalStateException.class
+    })
+    public ResponseResult handleHandlerMethodValidationException(Exception e) {
         return ResponseResult.invalid().setMessage(e.getMessage());
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = NotLoginException.class)
+    public ResponseResult handleNotLoginException(NotLoginException e) {
+        return new ResponseResult(
+                401,
+                e.getMessage()
+        );
     }
 
     @Order(2)
     @ExceptionHandler(value = SaTokenException.class)
     public ResponseResult handleSaTokenException(SaTokenException e) {
         return ResponseResult.unAuthorized().setMessage(e.getMessage());
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = DorisStartException.class)
+    public ResponseResult handleDorisStartException(DorisStartException e) {
+        ResponseResult responseResult = ResponseResult.error()
+                .setMessage("Doris command creation meets error: " + e.getMessage());
+
+        try {
+            stateChangeService.changeState(StateEnum.FAILED.getStateNum(), e.taskId);
+        } catch (Exception another) {
+            responseResult.setAnother(ResponseResult.error().setMessage(e.getMessage()));
+        }
+
+        return responseResult;
     }
 }

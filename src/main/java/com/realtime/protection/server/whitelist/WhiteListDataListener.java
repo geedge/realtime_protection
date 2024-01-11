@@ -5,12 +5,11 @@ import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import lombok.extern.slf4j.Slf4j;
-//import com.alibaba.fastjson2.JSON;
 
 import java.util.List;
 
 @Slf4j
-public class WhiteListDataListener implements ReadListener<WhiteListObject>  {
+public class WhiteListDataListener implements ReadListener<WhiteListObject> {
 
     private static final int batchCount = 100;
     private final List<WhiteListObject> cachedDataList = ListUtils.newArrayListWithExpectedSize(batchCount);

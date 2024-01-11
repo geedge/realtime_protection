@@ -3,8 +3,8 @@ package com.realtime.protection.server.whitelist;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
-import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +38,7 @@ public class WhiteListService {
 
         return object.getWhiteListId();
     }
+
     //批量新建多个whitelist
     public Boolean newWhiteListObjects(List<WhiteListObject> whiteListObjectList) {
         Function<WhiteListMapper, Function<List<WhiteListObject>, Boolean>> newWhiteListObjectFunction =

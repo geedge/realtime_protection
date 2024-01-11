@@ -2,9 +2,8 @@ package com.realtime.protection.server.rule.staticrule;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
-
-import org.springframework.stereotype.Service;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -88,7 +87,7 @@ public class StaticRuleService {
      */
     public List<StaticRuleObject> queryStaticRule(String static_rule_name, Integer static_rule_id, Integer page, Integer pageSize) {
 
-        return staticRuleMapper.queryStaticRule(static_rule_name,static_rule_id,page,pageSize);
+        return staticRuleMapper.queryStaticRule(static_rule_name, static_rule_id, page, pageSize);
     }
 
     public Boolean newStaticRuleObjects(List<StaticRuleObject> staticRuleList) {
