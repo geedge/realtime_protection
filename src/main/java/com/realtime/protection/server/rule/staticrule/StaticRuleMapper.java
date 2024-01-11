@@ -15,7 +15,10 @@ public interface StaticRuleMapper {
 
     //根据主键删除静态规则
     @Delete("delete from t_static_rule where static_rule_id = #{id}")
-    Boolean deleteStaticRule(Integer id);
+    Boolean deleteStaticRuleById(Integer id);
+    
+    
+
 
     //修改静态规则
     void updateStaticRule(StaticRuleObject object);
@@ -29,4 +32,7 @@ public interface StaticRuleMapper {
                                            Integer page, Integer pageSize);
 
 
+    void deleteStaticRules(@Param("whiteListIds") List<Integer> staticRuleBatch);
+
+    void newStaticRules(List<StaticRuleObject> staticRuleBatch);
 }

@@ -1,6 +1,7 @@
 package com.realtime.protection.server.rule.staticrule;
 
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,8 +14,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class StaticRuleServiceTest {
+    private final StaticRuleService staticRuleService;
+    private StaticRuleObject staticRuleTest;
     @Autowired
-    private StaticRuleService staticRuleService;
+    public StaticRuleServiceTest(StaticRuleService staticRuleService) {
+        this.staticRuleService = staticRuleService;
+    }
+
+    @BeforeEach
+    void setUp() {
+        staticRuleTest = new StaticRuleObject();
+        staticRuleTest.setStaticRuleName("test_staticrule");
+        staticRuleTest.setStaticRuleCreateTime(LocalDateTime.now());
+        staticRuleTest.setStaticRuleCreateUsername("mh");
+        staticRuleTest.setStaticRuleCreateDepart("mmeess");
+        staticRuleTest.setStaticRuleCreateUserId(2);
+        staticRuleTest.setStaticRuleAuditStatus(0);
+
+        staticRuleTest.setStaticRuleSip("1.1.2.3");
+        staticRuleTest.setStaticRuleSport(80);
+
+        staticRuleTest.setStaticRulePriority(1);
+        staticRuleTest.setStaticRuleFrequency(1);
+        staticRuleTest.setStaticRuleRange("北京");
+
+    }
 
     @Test
     void testNewStaticRule(){
@@ -34,11 +58,20 @@ public class StaticRuleServiceTest {
             object.setStaticRulePriority(2);
             object.setStaticRuleFrequency(1);
             object.setStaticRuleRange("北京");
-            object.setStaticRuleProtectLevel(2);
+//            object.setStaticRuleProtectLevel(2);
 
             Integer id = staticRuleService.newStaticRuleObject(object);
         }
         //assertTrue(id>0);
+    }
+    @Test
+    void testNewStaticRules(){
+        List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            staticRuleObjects.add(staticRuleTest);
+        }
+        Boolean success = staticRuleService.newStaticRuleObjects(staticRuleObjects);
+        assertTrue(success);
     }
 
     @Test
@@ -48,7 +81,7 @@ public class StaticRuleServiceTest {
         list.add(1);
         while(i<2) {
             i++;
-            staticRuleService.deleteStaticRule(list);
+            staticRuleService.deleteStaticRules(list);
         }
     }
     @Test
@@ -68,7 +101,7 @@ public class StaticRuleServiceTest {
         object.setStaticRulePriority(2);
         object.setStaticRuleFrequency(1);
         object.setStaticRuleRange("北京");
-        object.setStaticRuleProtectLevel(2);
+//        object.setStaticRuleProtectLevel(2);
 
         staticRuleService.updateStaticRule(object);
     }

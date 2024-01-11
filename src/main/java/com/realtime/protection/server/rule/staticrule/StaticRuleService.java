@@ -1,19 +1,25 @@
 package com.realtime.protection.server.rule.staticrule;
 
+import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class StaticRuleService {
 
     private final StaticRuleMapper staticRuleMapper;
+    private final SqlSessionWrapper sqlSessionWrapper;
 
-    public StaticRuleService(StaticRuleMapper staticRuleMapper) {
+    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper) {
+
         this.staticRuleMapper = staticRuleMapper;
+        this.sqlSessionWrapper = sqlSessionWrapper;
     }
 
 
@@ -32,17 +38,36 @@ public class StaticRuleService {
         return object.getStaticRuleId();
     }
 
-    @Transactional
-    public Boolean deleteStaticRule(List<Integer> staticRuleIds) {
+    public Object deleteStaticRules(List<Integer> staticRuleIds) {
         //判断当前静态规则是否能够删除---是否存在任务选择的静态规则？？
 
         //删除静态规则
 //        for (Integer id : staticRuleIds) {
 //            staticRuleMapper.deleteStaticRule(id);
 //        }
-        return staticRuleIds.stream().allMatch(staticRuleMapper::deleteStaticRule);
+        Function<StaticRuleMapper, Function<List<Integer>, Boolean>> deleteStaticRulesFunction =
+                mapper -> list -> {
+                    if (list == null || list.isEmpty()) {
+                        return false;
+                    }
 
-
+                    List<Integer> staticRuleBatch = ListUtils.newArrayListWithExpectedSize(100);
+                    for (Integer staticRuleId : list) {
+                        staticRuleBatch.add(staticRuleId);
+                        if (staticRuleBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.deleteStaticRules(staticRuleBatch);
+                        staticRuleBatch.clear();
+                    }
+                    if (!staticRuleBatch.isEmpty()) {
+                        mapper.deleteStaticRules(staticRuleBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, deleteStaticRulesFunction, staticRuleIds);
     }
 
     public void updateStaticRule(StaticRuleObject object) {
@@ -66,4 +91,32 @@ public class StaticRuleService {
         return staticRuleMapper.queryStaticRule(static_rule_name,static_rule_id,page,pageSize);
     }
 
+    public Boolean newStaticRuleObjects(List<StaticRuleObject> staticRuleList) {
+        Function<StaticRuleMapper, Function<List<StaticRuleObject>, Boolean>> newStaticRuleFunction =
+                mapper -> list -> {
+                    if (list == null || list.isEmpty()) {
+                        return false;
+                    }
+
+                    List<StaticRuleObject> StaticRuleBatch = ListUtils.newArrayListWithExpectedSize(100);
+                    for (StaticRuleObject staticRule : staticRuleList) {
+                        staticRule.setStaticRuleCreateTime(LocalDateTime.now());
+                        StaticRuleBatch.add(staticRule);
+                        if (StaticRuleBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.newStaticRules(StaticRuleBatch);
+                        StaticRuleBatch.clear();
+                    }
+                    if (!StaticRuleBatch.isEmpty()) {
+                        mapper.newStaticRules(StaticRuleBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, newStaticRuleFunction, staticRuleList);
+
+
+    }
 }

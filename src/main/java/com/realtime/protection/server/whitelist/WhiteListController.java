@@ -3,11 +3,14 @@ package com.realtime.protection.server.whitelist;
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -36,6 +39,18 @@ public class WhiteListController {
         EasyExcel.read(uploadFile.getInputStream(), WhiteListObject.class,
                 new WhiteListDataListener(whiteListService)).sheet().doRead();
         return ResponseResult.ok();
+    }
+    //下载模板文件
+    @GetMapping("/download")
+    public void downloadTemplate(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("白名单", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+        EasyExcel.write(response.getOutputStream(), WhiteListObject.class)
+                .sheet("白名单")
+                .doWrite(List.of());
     }
 
     @RequestMapping("/query")
@@ -87,7 +102,6 @@ public class WhiteListController {
         //还要return 白名单名称吗,还要在查表看他的名称
     }
 
-
     @PostMapping("/delete")
     public ResponseResult deleteWhiteListObjects( @RequestBody List<Integer> whiteListObjIds) {
         //Post不支持body为json。。。 body只能是[9,10]
@@ -126,17 +140,17 @@ public class WhiteListController {
     }
 
     //修改审核状态
-    @RequestMapping("/{id}/audit/{status}")
+    @RequestMapping("/{id}/audit/{auditStatus}")
     public ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
-                                                           @PathVariable Integer status) {
-        if (id <= 0 || status < 0 || status > 2) {
+                                                           @PathVariable Integer auditStatus) {
+        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("whiteobj_id", id)
                     .setData("success", false);
         }
 
         return ResponseResult.ok()
-                .setDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, status))
+                .setDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
                 .setData("whiteobj_id", id);
     }
 

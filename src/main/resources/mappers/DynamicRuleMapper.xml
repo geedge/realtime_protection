@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper">
+
+<!--    useGeneratedKeys="true": 这个属性指定了是否要获取数据库生成的主键。如果设置为true，MyBatis会使用JDBC的getGeneratedKeys方法来获取由数据库自动生成的主键。-->
+<!--    keyProperty="id": 这个属性指定了要将生成的主键赋值给哪个属性。在这个例子中，生成的主键将被赋值给名为id的属性。-->
+    <insert id="newDynamicRule" useGeneratedKeys="true" keyProperty="dynamicRuleId">
+
+        insert into t_dynamic_rule
+            (dynamic_rule_name,
+               create_time, modify_time, dynamic_rule_create_username,
+               dynamic_rule_create_depart, dynamic_rule_source_system,
+               dynamic_rule_event_type, dynamic_rule_protec_level,
+               dynamic_rule_priority, dynamic_rule_range,
+               dynamic_rule_frequency, dynamic_rule_create_user_id)
+        values
+            (#{object.dynamicRuleName},
+            #{object.dynamicRuleCreateTime},#{object.dynamicRuleModifyTime},
+            #{object.dynamicRuleCreateUsername},#{object.dynamicRuleCreateDepart},
+            #{object.dynamicRuleSourceSystem},
+            #{object.dynamicRuleEventType}, #{object.dynamicRuleProtectLevel},
+            #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
+            #{object.dynamicRuleFrequency},
+            #{object.dynamicRuleCreateUserId})
+
+    </insert>
+
+    <insert id="newDynamicRulProtectObjectConcat">
+        insert into
+            t_protect_object_dynamic_rule_conn(dynamic_rule_id, protect_object_id)
+        values (#{dynamicRuleId}, #{protectObjectId})
+    </insert>
+    <insert id="newDynamicRules">
+        insert into t_dynamic_rule
+            (dynamic_rule_name,
+               create_time, modify_time, dynamic_rule_create_username,
+               dynamic_rule_create_depart, dynamic_rule_source_system,
+               dynamic_rule_event_type, dynamic_rule_protec_level,
+               dynamic_rule_priority, dynamic_rule_range,
+               dynamic_rule_frequency, dynamic_rule_create_user_id
+        )
+        values
+        <foreach collection="dynamicRuleObjects" item="object" separator=",">
+            (#{object.dynamicRuleName},
+            #{object.dynamicRuleCreateTime},#{object.dynamicRuleModifyTime},
+            #{object.dynamicRuleCreateUsername},#{object.dynamicRuleCreateDepart},
+            #{object.dynamicRuleSourceSystem},
+            #{object.dynamicRuleEventType}, #{object.dynamicRuleProtectLevel},
+            #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
+            #{object.dynamicRuleFrequency},
+            #{object.dynamicRuleCreateUserId})
+        </foreach>
+    </insert>
+
+
+    <!--    join删除-->
+<!--    #         delete t_dynamic_rule, t_protect_object_dynamic_rule_conn-->
+<!--    #         from t_dynamic_rule-->
+<!--    #         inner join  t_protect_object_dynamic_rule_conn-->
+<!--    #             on t_dynamic_rule.dynamic_rule_id = t_protect_object_dynamic_rule_conn.dynamic_rule_id-->
+<!--    #         where t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}-->
+    <delete id="deleteDynamicRuleObject">
+        delete from t_dynamic_rule
+        where dynamic_rule_id = #{dynamicRuleId}
+    </delete>
+<!--    用于update时删去之前的关联-->
+    <delete id="deleteDynamicRuleProtectObjectConcat">
+        delete from t_protect_object_dynamic_rule_conn
+        where dynamic_rule_id = #{dynamicRuleId}
+    </delete>
+
+    <delete id="deleteDynamicRules">
+        delete from t_dynamic_rule
+        where dynamic_rule_id in
+        <foreach collection="dynamicRuleIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <update id="updateDynamicRuleObject">
+        update t_dynamic_rule
+        set
+            <if test="object.dynamicRuleName != null"> dynamic_rule_name = #{object.dynamicRuleName},</if>
+            <if test="object.dynamicRuleModifyTime != null"> modify_time = #{object.dynamicRuleModifyTime},</if>
+            <if test="object.dynamicRuleSourceSystem != null"> dynamic_rule_source_system = #{object.dynamicRuleSourceSystem},</if>
+            <if test="object.dynamicRuleEventType != null"> dynamic_rule_event_type = #{object.dynamicRuleEventType},</if>
+            <if test="object.dynamicRuleProtectLevel != null"> dynamic_rule_protec_level = #{object.dynamicRuleProtectLevel},</if>
+            <if test="object.dynamicRulePriority != null"> dynamic_rule_priority = #{object.dynamicRulePriority},</if>
+            <if test="object.dynamicRuleRange != null"> dynamic_rule_range = #{object.dynamicRuleRange},</if>
+            <if test="object.dynamicRuleFrequency != null"> dynamic_rule_frequency = #{object.dynamicRuleFrequency}</if>
+        where
+            dynamic_rule_id = #{dynamicRuleId}
+    </update>
+
+
+    <resultMap id="dynamicRuleMap" type="com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject">
+        <id column="dynamic_rule_id" property="dynamicRuleId"/>
+        <result column="dynamic_rule_name" property="dynamicRuleName"/>
+        <result column="create_time" property="dynamicRuleCreateTime"/>
+        <result column="modify_time" property="dynamicRuleModifyTime"/>
+        <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
+        <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
+        <result column="dynamic_rule_source_system" property="dynamicRuleSourceSystem"/>
+        <result column="dynamic_rule_event_type" property="dynamicRuleEventType"/>
+        <result column="dynamic_rule_protec_level" property="dynamicRuleProtectLevel"/>
+        <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
+        <result column="dynamic_rule_range" property="dynamicRuleRange"/>
+        <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
+        <result column="dynamic_rule_create_user_id" property="dynamicRuleCreateUserId"/>
+    </resultMap>
+
+    <select id="queryDynamicRuleById" resultMap="dynamicRuleMap">
+        select *
+            from t_dynamic_rule dynamicRule
+        where dynamicRule.dynamic_rule_id = #{dynamicRuleId}
+
+    </select>
+
+    <resultMap id="protectObjectMap" type="com.realtime.protection.configuration.entity.defense.object.ProtectObject">
+        <id column="protect_object_id" property="protectObjectId"/>
+        <result column="protect_object_name" property="protectObjectName"/>
+        <result column="protect_object_system_name" property="protectObjectSystemName"/>
+        <result column="protect_object_ip" property="protectObjectIPAddress"/>
+        <result column="protect_object_port" property="protectObjectPort"/>
+        <result column="protect_object_url" property="protectObjectURL"/>
+        <result column="protect_object_protocol" property="protectObjectProtocol"/>
+        <result column="protect_object_audit_status" property="protectObjectAuditStatus"/>
+    </resultMap>
+
+    <select id="queryProtectObjectByRuleId"
+            resultMap="protectObjectMap">
+        select t_protect_object.*
+            from t_protect_object
+            inner join t_protect_object_dynamic_rule_conn
+                on t_protect_object.protect_object_id = t_protect_object_dynamic_rule_conn.protect_object_id
+            where t_protect_object_dynamic_rule_conn.dynamic_rule_id = #{dynamicRuleId}
+    </select>
+
+    <select id="queryDynamicRuleObject"
+            resultMap="dynamicRuleMap">
+        select *
+        from t_dynamic_rule
+        <where>
+            <if test="dynamicRuleName != null">
+                dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
+            </if>
+            <if test="dynamicRuleId != null">
+                and dynamic_rule_id = #{dynamicRuleId}
+            </if>
+        </where>
+        LIMIT ${(page - 1) * pageSize}, #{pageSize}
+    </select>
+
+
+</mapper>
