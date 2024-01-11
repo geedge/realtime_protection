@@ -2,6 +2,7 @@ package com.realtime.protection.server.whitelist;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.entity.task.Command;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
@@ -9,7 +10,6 @@ import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,20 +113,25 @@ public class WhiteListService {
         return whiteListMapper.queryWhiteListObjectById(id);
     }
 
-    public List<String> existWhiteListObject(List<Integer> ruleIds) {
+    @Transactional
+    public List<String> existWhiteListObject(Integer ruleId, Integer ruleType) {
+        //应该参数是指令，不管动态静态
 
-        List<String> ip_list = new ArrayList<>();
+        //查询ruleId应对的静态or动态规则
+        StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(ruleId);
 
-        for (Integer id : ruleIds) {
-            StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(id);
-            if (staticRuleObject != null) {
-                String whiteListIp = whiteListMapper.existWhiteListObject(staticRuleObject);
-                if (whiteListIp != null) {
-                    ip_list.add(whiteListIp);
-                }
-            }
+        if (staticRuleObject == null) {
+            throw new IllegalArgumentException("invalid rule id");
         }
-        return ip_list;
+        // 命中的whitelist列表：每一列包含ip port url
+        return whiteListMapper.existWhiteListObject(staticRuleObject);
+
+    }
+    public List<WhiteListObject> whiteListCommandJudge(Command command) {
+        //参数应该是指令，不管动态静态
+        // 命中的whitelist列表：每一列包含ip port url
+        return whiteListMapper.whiteListCommandJudge(command);
+
     }
 
     @Transactional

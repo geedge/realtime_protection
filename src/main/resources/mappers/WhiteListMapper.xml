@@ -101,19 +101,98 @@
     </update>
 
     <select id="existWhiteListObject" resultType="java.lang.String">
-        select INET_NTOA(white_list_ip) from t_white_list
+        select CONCAT(INET_NTOA(white_list_ip)," ", CAST(white_list_port)," ", white_list_url)
+        from t_white_list
         <where>
-            <if test="staticRuleObject.staticRuleSip != null">
-                white_list_ip = #{staticRuleObject.staticRuleSip}
+
+            <if test="staticRuleObject.staticRuleSip != null and staticRuleObject.staticRuleMsip == null">
+                (white_list_ip = #{staticRuleObject.staticRuleSip}
+                <if test="staticRuleObject.staticRuleSport != null">
+                    and white_list_port = #{staticRuleObject.staticRuleSport}
+                </if>)
             </if>
-            <if test="staticRuleObject.staticRuleDip != null">
-                or white_list_ip = #{staticRuleObject.staticRuleDip}
+            <if test="staticRuleObject.staticRuleSip != null and staticRuleObject.staticRuleMsip != null">
+                ((white_list_ip &amp; #{staticRuleObject.staticRuleMsip}) =
+                (#{staticRuleObject.staticRuleSip} &amp; #{staticRuleObject.staticRuleMsip})
+                <if test="staticRuleObject.staticRuleSport != null">
+                    and white_list_port = #{staticRuleObject.staticRuleSport}
+                </if>)
             </if>
+            <if test="staticRuleObject.staticRuleDip != null and staticRuleObject.staticRuleMdip == null">
+                or (white_list_ip = #{staticRuleObject.staticRuleDip}
+                <if test="staticRuleObject.staticRuleDport != null">
+                    and white_list_port = #{staticRuleObject.staticRuleDport}
+                </if>)
+            </if>
+            <if test="staticRuleObject.staticRuleDip != null and staticRuleObject.staticRuleMdip != null">
+                or ((white_list_ip &amp; #{staticRuleObject.staticRuleMdip}) =
+                (#{staticRuleObject.staticRuleDip} &amp; #{staticRuleObject.staticRuleMdip})
+                <if test="staticRuleObject.staticRuleDport != null">
+                    and white_list_port = #{staticRuleObject.staticRuleDport}
+                </if>)
+            </if>
+            <if test="staticRuleObject.staticRuleUrl != null">
+                or white_list_url = #{staticRuleObject.staticRuleUrl}
+            </if>
+
         </where>
     </select>
+
     <select id="queryWhiteListObjectAuditStuatusById" resultType="java.lang.Integer">
         select white_list_audit_status from t_white_list
         where white_list_id = #{id}
+    </select>
+
+<!--
+判断逻辑
+如果指令没有ip掩码：
+    whitelist_ip == ip
+    如果指令有端口：
+        判断端口是否相同
+如果指令有ip掩码：
+    whitelist_ip & IP掩码 == 源IP & IP掩码 : 代表指令包含了whitelist_ip
+    如果指令有端口：
+        判断端口是否相同
+（又分了一下指令的源ip和目的ip）
+
+可能还要做的：
+（1）端口掩码
+（2）协议
+（3）url
+-->
+
+    <select id="whiteListCommandJudge" resultMap="whiteListMap">
+        select *
+        from t_white_list
+        <where>
+            <if test="command.sourceIP != null and command.maskSourceIP == null">
+                (white_list_ip = INET_ATON(#{command.sourceIP})
+                <if test="command.sourcePort != null">
+                    and white_list_port = CAST(#{command.sourcePort} AS UNSIGNED)
+                </if>)
+            </if>
+            <if test="command.sourceIP != null and command.maskSourceIP != null">
+                (( white_list_ip &amp; INET_ATON(#{command.maskSourceIP})) =
+                (INET_ATON(#{command.sourceIP}) &amp; INET_ATON(#{command.maskSourceIP}))
+                <if test="command.sourcePort != null">
+                    and white_list_port = CAST(#{command.sourcePort} AS UNSIGNED)
+                </if>)
+            </if>
+            <if test="command.destinationIP != null and command.maskDestinationIP == null">
+                or (white_list_ip = INET_ATON(#{command.destinationIP})
+                <if test="command.destinationPort != null">
+                    and white_list_port = CAST(#{command.destinationPort} AS UNSIGNED)
+                </if>)
+            </if>
+            <if test="command.destinationIP != null and command.maskDestinationIP != null">
+                or ((white_list_ip &amp; INET_ATON(#{command.maskDestinationIP})) =
+                (INET_ATON(#{command.destinationIP}) &amp; INET_ATON(#{command.maskDestinationIP}))
+                <if test="command.destinationPort != null">
+                    and white_list_port = CAST(#{command.destinationPort} AS UNSIGNED)
+                </if>)
+            </if>
+
+        </where>
     </select>
 
 </mapper>
