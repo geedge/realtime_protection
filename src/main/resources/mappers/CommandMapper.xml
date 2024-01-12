@@ -4,7 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.realtime.protection.server.command.CommandMapper">
     <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.Command">
-        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP, MASK_SRC_PORT,
+        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP,
+                              MASK_SRC_PORT,
                               MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
                               CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
         values (UUID(), DEFAULT,
@@ -18,9 +19,10 @@
     </insert>
 
     <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.Command">
-        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP, MASK_SRC_PORT,
-                              MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
-                              CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
+        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP,
+        MASK_SRC_PORT,
+        MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
+        CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
         values
         <foreach collection="commands" item="command" separator=",">
             (UUID(), DEFAULT,
@@ -36,19 +38,24 @@
 
     <update id="stopCommandsByTaskId">
         UPDATE t_command
-        SET IS_VALID = FALSE, LAST_UPDATE = NOW()
-        WHERE TASK_ID = #{task_id} AND IS_DELETED = FALSE
+        SET IS_VALID    = FALSE,
+            LAST_UPDATE = NOW()
+        WHERE TASK_ID = #{task_id}
+          AND IS_DELETED = FALSE
     </update>
 
     <update id="startCommandsByTaskId">
         UPDATE t_command
-        SET IS_VALID = TRUE, LAST_UPDATE = NOW()
-        WHERE TASK_ID = #{task_id} AND IS_DELETED = FALSE
+        SET IS_VALID    = TRUE,
+            LAST_UPDATE = NOW()
+        WHERE TASK_ID = #{task_id}
+          AND IS_DELETED = FALSE
     </update>
 
     <update id="removeCommandsByTaskId">
         UPDATE t_command
-        SET IS_DELETED = TRUE, LAST_UPDATE = NOW()
+        SET IS_DELETED  = TRUE,
+            LAST_UPDATE = NOW()
         WHERE TASK_ID = #{task_id}
     </update>
 </mapper>

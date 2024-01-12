@@ -17,9 +17,9 @@
 
     <insert id="newWhiteListObjects">
         insert into t_white_list(white_list_name, white_list_system_name,
-                                 white_list_ip, white_list_port,
-                                 white_list_url, white_list_protocol,
-                                 white_list_audit_status)
+        white_list_ip, white_list_port,
+        white_list_url, white_list_protocol,
+        white_list_audit_status)
         values
         <foreach collection="whiteListObjects" item="object" separator=",">
             (#{object.whiteListName}, #{object.whiteListSystemName},
@@ -46,7 +46,7 @@
         <result column="white_list_port" property="whiteListPort"/>
         <result column="white_list_url" property="whiteListUrl"/>
         <result column="white_list_protocol" property="whiteListProtocol"/>
-<!--        <result column="white_list_audit_status" property="whiteListAuditStatus"/>-->
+        <!--        <result column="white_list_audit_status" property="whiteListAuditStatus"/>-->
     </resultMap>
 
     <select id="queryWhiteListObject" resultMap="whiteListMap">
@@ -63,7 +63,8 @@
     </select>
 
     <select id="queryWhiteListObjectById" resultMap="whiteListMap">
-        select * from t_white_list
+        select *
+        from t_white_list
         where white_list_id = #{whiteListId}
     </select>
 
@@ -139,27 +140,28 @@
     </select>
 
     <select id="queryWhiteListObjectAuditStuatusById" resultType="java.lang.Integer">
-        select white_list_audit_status from t_white_list
+        select white_list_audit_status
+        from t_white_list
         where white_list_id = #{id}
     </select>
 
-<!--
-判断逻辑
-如果指令没有ip掩码：
-    whitelist_ip == ip
-    如果指令有端口：
-        判断端口是否相同
-如果指令有ip掩码：
-    whitelist_ip & IP掩码 == 源IP & IP掩码 : 代表指令包含了whitelist_ip
-    如果指令有端口：
-        判断端口是否相同
-（又分了一下指令的源ip和目的ip）
+    <!--
+    判断逻辑
+    如果指令没有ip掩码：
+        whitelist_ip == ip
+        如果指令有端口：
+            判断端口是否相同
+    如果指令有ip掩码：
+        whitelist_ip & IP掩码 == 源IP & IP掩码 : 代表指令包含了whitelist_ip
+        如果指令有端口：
+            判断端口是否相同
+    （又分了一下指令的源ip和目的ip）
 
-可能还要做的：
-（1）端口掩码
-（2）协议
-（3）url
--->
+    可能还要做的：
+    （1）端口掩码
+    （2）协议
+    （3）url
+    -->
 
     <select id="whiteListCommandJudge" resultMap="whiteListMap">
         select *

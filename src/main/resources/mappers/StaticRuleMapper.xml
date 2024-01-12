@@ -26,13 +26,13 @@
     </insert>
     <insert id="newStaticRules">
         insert into t_static_rule(static_rule_name, static_rule_create_time,
-                                  static_rule_create_username, static_rule_create_depart,
-                                  static_rule_create_user_id, static_rule_sip, static_rule_msip,
-                                  static_rule_sport, static_rule_msport,
-                                  static_rule_dip, static_rule_mdip, static_rule_dport, static_rule_mdport,
-                                  static_rule_protocol, static_rule_mprotocol, static_rule_dns,
-                                  static_rule_url, static_rule_priority, static_rule_range,
-                                  static_rule_frequency,  static_rule_audit_status)
+        static_rule_create_username, static_rule_create_depart,
+        static_rule_create_user_id, static_rule_sip, static_rule_msip,
+        static_rule_sport, static_rule_msport,
+        static_rule_dip, static_rule_mdip, static_rule_dport, static_rule_mdport,
+        static_rule_protocol, static_rule_mprotocol, static_rule_dns,
+        static_rule_url, static_rule_priority, static_rule_range,
+        static_rule_frequency, static_rule_audit_status)
         values
         <foreach collection="staticRuleBatch" item="object" separator=",">
             (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
@@ -53,18 +53,18 @@
             <if test="staticRuleName != null and staticRuleName != ''">
                 static_rule_name = #{staticRuleName},
             </if>
-                static_rule_sip = INET_ATON(#{staticRuleSip}),
-                static_rule_msip = INET_ATON(#{staticRuleMsip}),
-                static_rule_sport = #{staticRuleSport},
-                static_rule_msport = #{staticRuleMsport},
-                static_rule_dip = INET_ATON(#{staticRuleDip}),
-                static_rule_mdip = INET_ATON(#{staticRuleMdip}),
-                static_rule_dport = #{staticRuleDport},
-                static_rule_mdport = #{staticRuleMdport},
-                static_rule_protocol = #{staticRuleProtocol},
-                static_rule_mprotocol = #{staticRuleMprotocol},
-                static_rule_dns = #{staticRuleDns},
-                static_rule_url = #{staticRuleURL},
+            static_rule_sip = INET_ATON(#{staticRuleSip}),
+            static_rule_msip = INET_ATON(#{staticRuleMsip}),
+            static_rule_sport = #{staticRuleSport},
+            static_rule_msport = #{staticRuleMsport},
+            static_rule_dip = INET_ATON(#{staticRuleDip}),
+            static_rule_mdip = INET_ATON(#{staticRuleMdip}),
+            static_rule_dport = #{staticRuleDport},
+            static_rule_mdport = #{staticRuleMdport},
+            static_rule_protocol = #{staticRuleProtocol},
+            static_rule_mprotocol = #{staticRuleMprotocol},
+            static_rule_dns = #{staticRuleDns},
+            static_rule_url = #{staticRuleURL},
             <if test="staticRulePriority != null and staticRulePriority != ''">
                 static_rule_priority = #{staticRulePriority},
             </if>
@@ -98,7 +98,7 @@
         <result column="static_rule_protocol" property="staticRuleProtocol"/>
     </resultMap>
 
-    <select id="queryStaticRule"  resultMap="staticRuleMap">
+    <select id="queryStaticRule" resultMap="staticRuleMap">
         SELECT * FROM t_static_rule
         <where>
             <if test="static_rule_name != null and static_rule_name != ''">
@@ -112,7 +112,8 @@
     </select>
 
     <select id="queryStaticRuleById" resultMap="staticRuleMap">
-        SELECT * FROM t_static_rule
+        SELECT *
+        FROM t_static_rule
         WHERE static_rule_id = #{static_rule_id}
     </select>
 

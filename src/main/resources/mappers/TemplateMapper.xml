@@ -93,6 +93,13 @@
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
 
+    <select id="queryTemplate" resultMap="templateMap">
+        SELECT * FROM template_view
+        <where>
+            strategy_template_id = #{template_id}
+        </where>
+    </select>
+
     <select id="queryProtectLevel" resultMap="protectLevelMap">
         SELECT *
         FROM t_protect_level

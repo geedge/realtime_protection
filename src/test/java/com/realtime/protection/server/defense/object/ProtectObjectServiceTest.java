@@ -60,7 +60,8 @@ class ProtectObjectServiceTest {
 
     @Test
     void updateProtectObject() {
-        Integer testId = 300;
+        List<ProtectObject> protectObjects = protectObjectService.queryProtectObjects(null, null, 1, 1);
+        Integer testId = protectObjects.get(0).getProtectObjectId();
 
         protectObject.setProtectObjectName("x-1-1");
         protectObject.setProtectObjectId(testId);
@@ -71,7 +72,7 @@ class ProtectObjectServiceTest {
     @Test
     void deleteProtectObject() {
         int testNum = 0;
-        for (int i = 0; i < 100000; i++ ) {
+        for (int i = 0; i < 100000; i++) {
             if (protectObjectService.queryProtectObject(i) != null) {
                 testNum = i;
                 break;
@@ -84,7 +85,7 @@ class ProtectObjectServiceTest {
     @Test
     void deleteProtectObjects() {
         ArrayList<Integer> testNums = new ArrayList<>();
-        for (int i = 0; i < 100000; i++ ) {
+        for (int i = 0; i < 100000; i++) {
             if (protectObjectService.queryProtectObject(i) != null) {
                 testNums.add(i);
                 if (testNums.size() > 5) {
@@ -102,7 +103,7 @@ class ProtectObjectServiceTest {
     @Test
     void changeProtectObjectAuditStatus() {
         int testNum = 0;
-        for (int i = 300; i < 100000; i++ ) {
+        for (int i = 300; i < 100000; i++) {
             if (protectObjectService.queryProtectObject(i) != null) {
                 testNum = i;
                 break;

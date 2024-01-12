@@ -4,7 +4,8 @@ server:
 logging:
   level:
     com.realtime.protection: info
-
+  file:
+    name: classpath:log/realtime_protection.log
 
 spring:
   datasource:
@@ -26,7 +27,7 @@ spring:
       aop:
         enabled: true
       primary: mysql
-      strict: true
+      strict: false
       grace-destroy: true
   mvc:
     servlet:
@@ -42,7 +43,7 @@ task:
     core-pool-size: 20
     max-pool-size: 100
     queue-capacity: 100
-    keep-alive-seconds: 60
+    keep-alive-seconds: 120
 
 springdoc:
   api-docs:

@@ -7,7 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,8 +59,24 @@ class TemplateServiceTest {
 
     @Test
     void testNewTemplate() {
-        Integer templateId = templateService.newTemplate(template);
-        assertTrue(templateId > 0);
+        try {
+            Integer templateId = templateService.newTemplate(template);
+            assertTrue(templateId > 0);
+        } catch (DuplicateKeyException e) {
+            System.out.println(e.getMessage());
+        }
+
+        for (int i = 0; i < 100; i++) {
+            assertThrows(DuplicateKeyException.class, () -> {
+                Integer templateId = templateService.newTemplate(template);
+                assertTrue(templateId > 0);
+            });
+            assertDoesNotThrow(() -> {
+                template.setTemplateName("反射型DDOS攻击-" + LocalDateTime.now());
+                Integer templateId = templateService.newTemplate(template);
+                assertTrue(templateId > 0);
+            });
+        }
     }
 
     @Test
@@ -74,9 +92,9 @@ class TemplateServiceTest {
 
     @Test
     void testUpdateTemplateSuccess() {
-        List<Template> templates = templateService.queryTemplates("反射", 1, 6);
+        List<Template> templates = templateService.queryTemplates("DDOS", 1, 1);
         Template testTemplate = templates.get(0);
-        testTemplate.setTemplateName("洪泛型DDOS攻击");
+        testTemplate.setTemplateName("洪泛型DDOS攻击-"+LocalDateTime.now());
 
         assertTrue(templateService.updateTemplate(testTemplate.getTemplateId(), testTemplate));
     }

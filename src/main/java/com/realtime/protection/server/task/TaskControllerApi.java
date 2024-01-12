@@ -93,6 +93,9 @@ public interface TaskControllerApi {
                             )
                     )
             },
+            parameters = {
+                    @Parameter(name = "taskId", description = "任务ID")
+            },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "任务信息，必须包含任务原有的或者添加/删除部分后的static_rule_ids和dynamic_rule_ids"
             )

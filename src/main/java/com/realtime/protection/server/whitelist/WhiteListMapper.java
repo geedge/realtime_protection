@@ -14,23 +14,26 @@ public interface WhiteListMapper {
 
     //新建
     void newWhiteListObject(@Param("object") WhiteListObject object);
+
     //分页查询
     List<WhiteListObject> queryWhiteListObject(String whiteListName, Integer whiteListId, Integer page, Integer pageSize);
+
     //根据主键查询
     WhiteListObject queryWhiteListObjectById(Integer id);
+
     //根据主键删除
     @Delete("delete from t_white_list where white_list_id = #{id}")
     Integer deleteWhiteListObject(Integer id);
 
     Integer updateWhiteListObject(@Param("object") WhiteListObject object);
 
-    List<String> existWhiteListObject(@Param("staticRuleObject")StaticRuleObject staticRuleObject);
+    List<String> existWhiteListObject(@Param("staticRuleObject") StaticRuleObject staticRuleObject);
 
     Integer queryWhiteListObjectAuditStuatusById(Integer id);
 
     Boolean updateWhiteListObjectAuditStatus(Integer id, Integer status);
 
-    void newWhiteListObjects(@Param("whiteListObjects")List<WhiteListObject> whiteListBatch);
+    void newWhiteListObjects(@Param("whiteListObjects") List<WhiteListObject> whiteListBatch);
 
     void deleteWhiteListObjects(@Param("whiteListIds") List<Integer> whiteListBatch);
 

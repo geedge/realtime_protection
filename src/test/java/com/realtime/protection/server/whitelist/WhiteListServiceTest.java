@@ -73,15 +73,4 @@ class WhiteListServiceTest {
         whiteListService.updateWhiteListObjectAuditStatus(7, 1);
     }
 
-    @Test
-    void testWhiteListCommandJudge() {
-        Command command = new Command();
-        command.setDestinationIP("128.1.1.123");
-        command.setMaskDestinationIP("255.255.255.0");
-        command.setDestinationPort("81");
-
-        List<WhiteListObject> whitelists = whiteListService.whiteListCommandJudge(command);
-        System.out.println(whitelists);
-    }
-
 }

@@ -128,6 +128,7 @@ public class WhiteListService {
         return whiteListMapper.existWhiteListObject(staticRuleObject);
 
     }
+
     public List<WhiteListObject> whiteListCommandJudge(Command command) {
         //参数应该是指令，不管动态静态
         // 命中的whitelist列表：每一列包含ip port url

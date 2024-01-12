@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     @Order(3)
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(value = {Exception.class})
     public ResponseResult handleGlobalException(Exception e) {
         log.error("meets global exception: " + e.getMessage());
         return ResponseResult.error().setMessage(e.getMessage());
@@ -35,11 +36,18 @@ public class GlobalExceptionHandler {
 
 
     @Order(2)
-    @ExceptionHandler(value = PersistenceException.class)
+    @ExceptionHandler(value = {PersistenceException.class})
     public ResponseResult handleSQLException(PersistenceException e) {
         log.error("meets database exception: " + e.getMessage());
         return ResponseResult.invalid().setMessage(
                 "please check the integrity of the data. check if the json data exists in the database");
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = DuplicateKeyException.class)
+    public ResponseResult handleDuplicateKeyException(DuplicateKeyException e) {
+        log.debug("meets duplicate key exception: " + e.getMessage());
+        return ResponseResult.invalid().setMessage("duplicate key in json data");
     }
 
     @Order(2)

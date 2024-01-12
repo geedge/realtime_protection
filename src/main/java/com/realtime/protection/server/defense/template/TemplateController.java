@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/template")
-public class TemplateController {
+public class TemplateController implements TemplateControllerApi {
 
     private final TemplateService templateService;
 
@@ -19,6 +19,7 @@ public class TemplateController {
         this.templateService = templateService;
     }
 
+    @Override
     @PostMapping("/new")
     public ResponseResult newTemplate(@RequestBody @Valid Template template) {
 
@@ -35,6 +36,7 @@ public class TemplateController {
                 .setData("success", false);
     }
 
+    @Override
     @GetMapping("/query")
     public ResponseResult queryTemplates(@RequestParam(value = "template_name", required = false) String templateName,
                                          @RequestParam("page") @Min(1) Integer page,
@@ -45,12 +47,19 @@ public class TemplateController {
                 .setData("templates", templates);
     }
 
+    @Override
     @GetMapping("/{templateId}/query")
     public ResponseResult queryTemplate(@PathVariable Integer templateId) throws IllegalAccessException {
+        Template template = templateService.queryTemplate(templateId);
+        if (template == null) {
+            return ResponseResult.invalid()
+                    .setMessage("invalid templateId, maybe this template doesn't exist?");
+        }
         return ResponseResult.ok()
-                .setDataMap(EntityUtils.entityToMap(templateService.queryTemplate(templateId)));
+                .setDataMap(EntityUtils.entityToMap(template));
     }
 
+    @Override
     @PostMapping("/{templateId}/update")
     public ResponseResult updateTemplate(@PathVariable @Min(1) Integer templateId,
                                          @RequestBody @Valid Template template) {
@@ -60,6 +69,7 @@ public class TemplateController {
                 .setData("success", success);
     }
 
+    @Override
     @DeleteMapping("/{templateId}/delete")
     public ResponseResult deleteTemplate(@PathVariable @Min(1) Integer templateId) {
         return ResponseResult.ok()

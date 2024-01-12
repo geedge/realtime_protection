@@ -21,7 +21,6 @@ class CommandServiceTest {
 
     private final CommandService commandService;
     private TaskCommandInfo taskCommandInfo;
-    private Command command;
 
     private Long startTime;
 

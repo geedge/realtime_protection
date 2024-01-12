@@ -125,9 +125,9 @@ public class WhiteListController {
 
 
     //查询ip是否存在于白名单
-    @RequestMapping ("/exist")
-    public ResponseResult existWhiteListObject(@RequestParam(value = "ruleId", required = true)Integer ruleId,
-                                               @RequestParam(value = "ruleType", required = true)Integer ruleType) {
+    @RequestMapping("/exist")
+    public ResponseResult existWhiteListObject(@RequestParam(value = "ruleId", required = true) Integer ruleId,
+                                               @RequestParam(value = "ruleType", required = true) Integer ruleType) {
         //是请求规则的id，然后判断这个id所属的ip是否在白名单中吗
         //静态应该可以，但动态的，动态是实时过来告警信息，不存储规则？ 存的话也行，那这里要区分id是静态的还是动态的
         //这里先走通静态的，要获取规则的源IP和目的IP，去白名单select看有没有(有的还有IP掩码,暂未实现)

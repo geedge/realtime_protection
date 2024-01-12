@@ -9,7 +9,7 @@ import com.realtime.protection.server.task.status.StateHandler;
 public class RunningState extends StateHandler implements State {
     @Override
     public Boolean handle(State newState, CommandService commandService, TaskService taskService, Long taskId) {
-        return switch(StateEnum.getStateEnumByState(newState)) {
+        return switch (StateEnum.getStateEnumByState(newState)) {
             case RUNNING, GENERATING -> true;
             case PAUSED -> handlePause(commandService, taskId);
             case STOP -> handleStop(commandService, taskId);

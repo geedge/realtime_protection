@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
-@Schema(name = "通用返回对象", description = "用于所有接口返回的通用返回对象")
+@Schema(description = "用于所有接口返回的通用返回对象")
 public class ResponseResult implements Serializable {
 
     @Schema(description = "状态码")

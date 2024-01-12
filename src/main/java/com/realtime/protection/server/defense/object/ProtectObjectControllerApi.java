@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.apache.coyote.Response;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,7 +85,10 @@ public interface ProtectObjectControllerApi {
                     )
             },
             parameters = {
-                    @Parameter()
+                    @Parameter(name = "proobj_name", description = "防护对象名称"),
+                    @Parameter(name = "proobj_id", description = "防护对象ID"),
+                    @Parameter(name = "page", description = "页码", example = "1"),
+                    @Parameter(name = "page_size", description = "每页的对象个数", example = "5")
             }
     )
     ResponseResult queryProtectObjects(@RequestParam(value = "proobj_name", required = false)
@@ -97,19 +99,102 @@ public interface ProtectObjectControllerApi {
                                        @RequestParam("page_size") @Min(1) Integer pageSize);
 
     @GetMapping("/{protectObjectId}/query")
+    @Operation(
+            summary = "查询单个防护对象",
+            description = "根据ID查询单个防护对象的信息",
+            responses = {
+                    @ApiResponse(
+                            description = "返回单个防护对象信息",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "protectObjectId", description = "防护对象ID", example = "2")
+            }
+    )
     ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) throws IllegalAccessException;
 
     @PostMapping("/{protectObjectId}/update")
+    @Operation(
+            summary = "更新防护对象",
+            description = "根据防护对象ID和信息更新防护对象",
+            responses = {
+                    @ApiResponse(
+                            description = "防护对象更新情况",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "protectObjectId", description = "防护对象ID", example = "2")
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "防护对象更新信息")
+    )
     ResponseResult updateProtectObject(@PathVariable Integer protectObjectId,
                                        @RequestBody @Valid ProtectObject protectObject);
 
+
     @DeleteMapping("/{protectObjectId}/delete")
+    @Operation(
+            summary = "删除防护对象",
+            description = "根据防护对象ID删除对应防护对象",
+            responses = {
+                    @ApiResponse(
+                            description = "防护对象删除情况",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "protectObjectId", description = "欲删除的防护对象ID", example = "2")
+            }
+    )
     ResponseResult deleteProtectObject(@PathVariable Integer protectObjectId);
 
     @DeleteMapping("/delete/{protectObjectIds}")
+    @Operation(
+            summary = "批量删除防护对象",
+            description = "根据多个对象ID删除多个防护对象",
+            responses = {
+                    @ApiResponse(
+                            description = "防护对象删除情况",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "protectObjectIds", description = "欲删除的多个防护对象ID", example = "1,2,3,4")
+            }
+    )
     ResponseResult deleteProtectObject(@PathVariable List<Integer> protectObjectIds);
 
     @GetMapping("/{protectObjectId}/audit/{auditStatus}")
+    @Operation(
+            summary = "修改防护对象审核状态",
+            description = "修改指定防护对象ID对应的防护对象的审核状态",
+            responses = {
+                    @ApiResponse(
+                            description = "防护对象审核状态修改情况",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "protectObjectId", description = "欲修改的防护对象ID", example = "2"),
+                    @Parameter(name = "auditStatus", description = "欲修改的审核状态", example = "2")
+            }
+    )
     ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
                                                   @PathVariable Integer auditStatus);
 }

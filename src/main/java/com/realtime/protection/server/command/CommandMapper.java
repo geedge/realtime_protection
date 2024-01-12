@@ -1,6 +1,5 @@
 package com.realtime.protection.server.command;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.realtime.protection.configuration.entity.task.Command;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

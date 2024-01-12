@@ -120,7 +120,8 @@
 
     <update id="clearTaskConnectedStaticRule">
         UPDATE t_static_rule
-        SET static_rule_used_task_id = null, static_rule_modify_time = NOW()
+        SET static_rule_used_task_id = null,
+            static_rule_modify_time  = NOW()
         WHERE static_rule_used_task_id = #{task_id}
     </update>
 
@@ -132,18 +133,21 @@
 
     <update id="changeTaskAuditStatus">
         UPDATE t_task
-        SET task_audit_status = #{audit_status}, task_modify_time = NOW()
+        SET task_audit_status = #{audit_status},
+            task_modify_time  = NOW()
         WHERE task_id = #{task_id}
     </update>
 
     <update id="changeTaskStatus">
         UPDATE t_task
-        SET task_status = #{state}, task_modify_time = NOW()
+        SET task_status      = #{state},
+            task_modify_time = NOW()
         WHERE task_id = #{task_id}
     </update>
 
     <delete id="deleteTask">
-        DELETE FROM t_task
+        DELETE
+        FROM t_task
         WHERE task_id = #{task_id}
     </delete>
 
@@ -175,9 +179,9 @@
                t_task.task_act,
                t_task.task_start_time,
                t_task.task_end_time,
-               INET_NTOA(tsr.static_rule_sip) as static_rule_sip,
+               INET_NTOA(tsr.static_rule_sip)  as static_rule_sip,
                tsr.static_rule_sport,
-               INET_NTOA(tsr.static_rule_dip) as static_rule_dip,
+               INET_NTOA(tsr.static_rule_dip)  as static_rule_dip,
                tsr.static_rule_dport,
                tsr.static_rule_protocol,
                INET_NTOA(tsr.static_rule_msip) as static_rule_msip,
@@ -187,6 +191,7 @@
                tsr.static_rule_frequency
         FROM t_task
                  LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
-        WHERE task_id = #{task_id} AND tsr.static_rule_audit_status = 2
+        WHERE task_id = #{task_id}
+          AND tsr.static_rule_audit_status = 2
     </select>
 </mapper>

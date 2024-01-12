@@ -4,6 +4,8 @@ server:
 logging:
   level:
     com.realtime.protection: debug
+  file:
+    name: classpath:log/realtime_protection.log
 
 spring:
   datasource:
@@ -39,7 +41,13 @@ mybatis:
 
 task:
   pool:
-    core-pool-size: 1
-    max-pool-size: 1
-    queue-capacity: 1
+    core-pool-size: 50
+    max-pool-size: 100
+    queue-capacity: 50
     keep-alive-seconds: 120
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
