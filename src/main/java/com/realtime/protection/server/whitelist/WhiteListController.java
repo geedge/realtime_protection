@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/whiteobj")
-public class WhiteListController {
+public class WhiteListController implements WhiteListControllerApi {
 
     private final WhiteListService whiteListService;
 
@@ -22,8 +23,9 @@ public class WhiteListController {
         this.whiteListService = whiteListService;
     }
 
-    @RequestMapping("/new")
-    public ResponseResult newWhitelistObject(@RequestBody WhiteListObject object) {
+    @Override
+    @PostMapping("/new")
+    public ResponseResult newWhitelistObject(@RequestBody @Valid WhiteListObject object) {
         Integer whiteListObjectId = whiteListService.newWhiteListObject(object);
 
         return ResponseResult.ok()
@@ -32,15 +34,18 @@ public class WhiteListController {
                 .setData("success", true);
     }
 
-    //以excel文件方式批量导入
+    //以excel文件方式批量导入、
+    //post
+    @Override
     @PostMapping("/upload")
-    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
+    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException  {
         EasyExcel.read(uploadFile.getInputStream(), WhiteListObject.class,
                 new WhiteListDataListener(whiteListService)).sheet().doRead();
         return ResponseResult.ok();
     }
 
     //下载模板文件
+    @Override
     @GetMapping("/download")
     public void downloadTemplate(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -53,9 +58,10 @@ public class WhiteListController {
                 .doWrite(List.of());
     }
 
-    @RequestMapping("/query")
+    @Override
+    @GetMapping("/query")
     public ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false) String whiteListName,
-                                               @RequestParam(value = "page_size", required = false) Integer whiteListId,
+                                               @RequestParam(value = "whiteobj_id", required = false) Integer whiteListId,
                                                @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
         if (page <= 0 || pageSize <= 0) {
@@ -66,7 +72,8 @@ public class WhiteListController {
                 .setData("whiteobj_list", whiteListService.queryWhiteListObject(whiteListName, whiteListId, page, pageSize));
     }
 
-    @RequestMapping("/{id}/query")
+    @Override
+    @GetMapping("/{id}/query")
     public ResponseResult queryWhiteListObjectById(@PathVariable Integer id) {
         if (id <= 0) {
             return new ResponseResult(400, "id is invalid")
@@ -82,6 +89,7 @@ public class WhiteListController {
                 .setData("whiteobj_list", whiteListObject);
     }
 
+    @Override
     //根据id删除
     @DeleteMapping("/{id}/delete")
     public ResponseResult deleteWhiteListObjectById(@PathVariable Integer id) {
@@ -102,20 +110,22 @@ public class WhiteListController {
         //还要return 白名单名称吗,还要在查表看他的名称
     }
 
-    @PostMapping("/delete")
-    public ResponseResult deleteWhiteListObjects(@RequestBody List<Integer> whiteListObjIds) {
+    @Override
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteWhiteListObjects(@PathVariable List<Integer> ids) {
         //Post不支持body为json。。。 body只能是[9,10]
 
         return ResponseResult.ok()
-                .setData("whiteobj_list", whiteListObjIds)
-                .setData("success", whiteListService.deleteWhiteListObjects(whiteListObjIds));
+                .setData("whiteobj_list", ids)
+                .setData("success", whiteListService.deleteWhiteListObjects(ids));
     }
 
+    @Override
     @PostMapping("/{id}/update")
     public ResponseResult updateWhiteListObject(@PathVariable Integer id,
                                                 @RequestBody WhiteListObject object) {
         object.setWhiteListId(id);
-        Integer num = whiteListService.updateWhiteListObject(object);
+        Integer num = whiteListService.updateWhiteListObject(id, object);
         if (num == 0) {
             return new ResponseResult(400, "id is invalid")
                     .setData("whiteobj_list", null);
@@ -123,7 +133,7 @@ public class WhiteListController {
         return ResponseResult.ok();
     }
 
-
+/*
     //查询ip是否存在于白名单
     @RequestMapping("/exist")
     public ResponseResult existWhiteListObject(@RequestParam(value = "ruleId", required = true) Integer ruleId,
@@ -138,9 +148,11 @@ public class WhiteListController {
         return ResponseResult.ok()
                 .setData("ip_list", ruleInWhiteListIds);
     }
+*/
 
+    @Override
     //修改审核状态
-    @RequestMapping("/{id}/audit/{auditStatus}")
+    @GetMapping("/{id}/audit/{auditStatus}")
     public ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
                                                            @PathVariable Integer auditStatus) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {

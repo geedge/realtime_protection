@@ -1,20 +1,17 @@
 package com.realtime.protection.server.rule.dynamicrule;
 
-import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("dynamicrule")
 @Slf4j
-public class DynamicRuleController {
+public class DynamicRuleController implements DynamicRuleControllerApi {
 
     private final DynamicRuleService dynamicRuleService;
 
@@ -23,7 +20,8 @@ public class DynamicRuleController {
     }
 
     // 新增   要关联防护对象！！！！
-    @RequestMapping("/new")
+    @Override
+    @PostMapping("/new")
     public ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject) {
         log.info("新增动态规则: {}", dynamicRuleObject);
         //调用service新增
@@ -34,6 +32,7 @@ public class DynamicRuleController {
                 .setData("success", true);
     }
 
+    /*
     //以excel文件方式批量导入,但动态规则没有这个需求
     @PostMapping("/upload")
     public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
@@ -41,55 +40,65 @@ public class DynamicRuleController {
                 new DynamicRuleDataListener(dynamicRuleService)).sheet().doRead();
         return ResponseResult.ok();
     }
-
+    */
 
     //id删除
-    @RequestMapping("/{dynamicRuleId}/delete")
-    public ResponseResult deleteDynamicRuleObject(@PathVariable Integer dynamicRuleId) {
-        log.info("删除动态规则: {}", dynamicRuleId);
+    @Override
+    @DeleteMapping("/{id}/delete")
+    public ResponseResult deleteDynamicRuleObject(@PathVariable Integer id) {
+        log.info("删除动态规则: {}", id);
         //调用service删除
-        dynamicRuleService.deleteDynamicRuleObject(dynamicRuleId);
+        dynamicRuleService.deleteDynamicRuleObject(id);
 
         return ResponseResult.ok();
     }
 
     //批量删除
-    @RequestMapping("/delete")
-    public ResponseResult deleteDynamicRuleObjects(@RequestBody List<Integer> dynamicRuleIds) {
-        log.info("批量删除动态规则: {}", dynamicRuleIds);
+    @Override
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids) {
+        log.info("批量删除动态规则: {}", ids);
         //调用service删除
 
         return ResponseResult.ok()
-                .setData("success", dynamicRuleService.deleteDynamicRuleObjects(dynamicRuleIds));
+                .setData("success", dynamicRuleService.deleteDynamicRuleObjects(ids));
     }
 
     //修改
-    @RequestMapping("/{dynamicRuleId}/update")
-    public ResponseResult updateDynamicRuleObject(@PathVariable Integer dynamicRuleId,
+    @Override
+    @PostMapping("/{id}/update")
+    public ResponseResult updateDynamicRuleObject(@PathVariable Integer id,
                                                   @RequestBody @Valid DynamicRuleObject dynamicRuleObject) {
         log.info("修改动态规则: {}:{}",
-                dynamicRuleId, dynamicRuleObject.getDynamicRuleName());
+                id, dynamicRuleObject.getDynamicRuleName());
 
-        dynamicRuleService.updateDynamicRuleObject(dynamicRuleId, dynamicRuleObject);
+        dynamicRuleService.updateDynamicRuleObject(id, dynamicRuleObject);
 
         return ResponseResult.ok()
-                .setData("dynamic_rule_id", dynamicRuleId)
+                .setData("dynamic_rule_id", id)
                 .setData("success", true);
     }
 
     //id查询
-    @RequestMapping("/{dynamicRuleId}/query")
-    public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer dynamicRuleId) {
-        log.info("查询动态规则: {}", dynamicRuleId);
+    @Override
+    @GetMapping("/{id}/query")
+    public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id) {
+        log.info("查询动态规则: {}", id);
+        DynamicRuleObject dynamicRuleObject = dynamicRuleService.queryDynamicRuleById(id);
+        if (dynamicRuleObject == null) {
+            return ResponseResult.invalid()
+                    .setData("dynamic_rule", null);
+        }
         //调用service查询
         return ResponseResult.ok()
-                .setData("dynamic_rule", dynamicRuleService.queryDynamicRuleById(dynamicRuleId));
+                .setData("dynamic_rule", dynamicRuleObject);
     }
 
     //分页查询
-    @RequestMapping("/query")
-    public ResponseResult queryDynamicRuleObject(@RequestParam(value = "dynamic_rule_name", required = false) String dynamicRuleName,
-                                                 @RequestParam(value = "dynamic_rule_id", required = false) Integer dynamicRuleId,
+    @Override
+    @GetMapping("/query")
+    public ResponseResult queryDynamicRuleObject(@RequestParam(value = "name", required = false) String dynamicRuleName,
+                                                 @RequestParam(value = "id", required = false) Integer dynamicRuleId,
                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                  @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
         log.info("分页查询动态规则: {}:{}:{}:{}", dynamicRuleName, dynamicRuleId, page, pageSize);
@@ -98,5 +107,9 @@ public class DynamicRuleController {
                 .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId, page, pageSize));
     }
 
-    //详情查看？？  查看什么
+    //详情查看？？  就是按id查询吧
+
+
+    //审核？不需要
+
 }

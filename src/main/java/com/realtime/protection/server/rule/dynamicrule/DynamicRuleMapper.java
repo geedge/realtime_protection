@@ -1,6 +1,7 @@
 package com.realtime.protection.server.rule.dynamicrule;
 
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -31,4 +32,6 @@ public interface DynamicRuleMapper {
     List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId, Integer page, Integer pageSize);
 
     void deleteDynamicRuleProtectObjectConcat(Integer dynamicRuleId);
+
+    Template queryTemplateByRuleId(Integer dynamicRuleId);
 }

@@ -1,5 +1,7 @@
 package com.realtime.protection.server.whitelist;
 
+import com.realtime.protection.configuration.entity.task.Command;
+import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class WhiteListServiceTest {
@@ -54,10 +56,10 @@ class WhiteListServiceTest {
     @Test
     void testUpdateWhiteList() {
         WhiteListObject object = new WhiteListObject();
-        object.setWhiteListId(7);
+        //object.setWhiteListId(7);
         object.setWhiteListName("test_update");
 
-        whiteListService.updateWhiteListObject(object);
+        whiteListService.updateWhiteListObject(7,object);
     }
 
     @Test
@@ -70,6 +72,19 @@ class WhiteListServiceTest {
     @Test
     void testUpdateWhiteListAuditStatus() {
         whiteListService.updateWhiteListObjectAuditStatus(7, 1);
+    }
+
+    @Test
+    void testWhiteListCommandJudge() {
+        FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
+        Command command = new Command();
+        fiveTupleWithMask.setDestinationIP("128.1.1.123");
+        fiveTupleWithMask.setMaskDestinationIP("255.255.255.0");
+        fiveTupleWithMask.setDestinationPort("80");
+        command.setFiveTupleWithMask(fiveTupleWithMask);
+
+        List<WhiteListObject> whitelists = whiteListService.whiteListCommandJudge(command);
+        System.out.println(whitelists);
     }
 
 }

@@ -2,6 +2,7 @@ package com.realtime.protection.configuration.entity.rule.dynamicrule;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -12,50 +13,76 @@ import java.util.List;
 public class DynamicRuleObject {
 
     @JsonProperty("dynamic_rule_id")
+    @Schema(description = "动态规则ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer dynamicRuleId;
 
     @NotNull
     @JsonProperty("dynamic_rule_name")
+    @Schema(description = "动态规则名称", example = "动态规则测试", requiredMode = Schema.RequiredMode.REQUIRED)
     private String dynamicRuleName;
 
     @JsonProperty("dynamic_rule_create_time")
+    @Schema(hidden = true)
     private LocalDateTime dynamicRuleCreateTime;
     @JsonProperty("dynamic_rule_modify_time")
+    @Schema(hidden = true)
     private LocalDateTime dynamicRuleModifyTime;
 
     @JsonProperty("dynamic_rule_create_username")
+    @Schema(description = "动态规则创建用户名称", accessMode = Schema.AccessMode.READ_ONLY)
     private String dynamicRuleCreateUsername;
 
     //    @JsonProperty("dynamic_rule_audit_status")
 //    private Integer dynamicRuleAuditStatus;
     @JsonProperty("dynamic_rule_create_depart")
+    @Schema(description = "动态规则创建用户所属部门", accessMode = Schema.AccessMode.READ_ONLY)
     private String dynamicRuleCreateDepart;
 
     //动态规则选择的防护对象ids？
+    @NotNull
     @JsonProperty("protect_object_ids")
+    @Schema(description = "请求时发送防护对象ID", accessMode = Schema.AccessMode.WRITE_ONLY, requiredMode = Schema.RequiredMode.REQUIRED)
     private List<Integer> protectObjectIds;
     @JsonProperty("protect_objects")
+    @Schema(description = "响应时回复防护对象完整信息", accessMode = Schema.AccessMode.READ_ONLY)
     private List<ProtectObject> protectObjects;
 
 
     //还没有建立外键
     @JsonProperty("dynamic_rule_create_user_id")
+    @Schema(hidden = true)
     private Integer dynamicRuleCreateUserId;
     @JsonProperty("dynamic_rule_used_task_id")
+    @Schema(description = "使用该动态规则的任务ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer dynamicRuleUsedTaskId;
 
+    //前端不发送事件类型和来源系统了，而是根据事件类型和来源系统确定策略模板id，发过来template_id
     @JsonProperty("dynamic_rule_source_system")
-    private Integer dynamicRuleSourceSystem;
+    @Schema(description = "动态规则数据来源系统", example = "bw系统", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String dynamicRuleSourceSystem;
     @JsonProperty("dynamic_rule_event_type")
-    private Integer dynamicRuleEventType;
+    @Schema(description = "动态规则事件类型", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String dynamicRuleEventType;
+    @NotNull
+    @JsonProperty("template_id")
+    @Schema(description = "策略模板id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Integer templateId;
+    @NotNull
     @JsonProperty("dynamic_rule_protect_level")
+    @Schema(description = "防护等级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRuleProtectLevel;
 
+    @NotNull
     @JsonProperty("dynamic_rule_priority")
+    @Schema(description = "优先级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRulePriority;
+    @NotNull
     @JsonProperty("dynamic_rule_range")
+    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
     private String dynamicRuleRange;
+    @NotNull
     @JsonProperty("dynamic_rule_frequency")
+    @Schema(description = "频率", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRuleFrequency;
 
 }

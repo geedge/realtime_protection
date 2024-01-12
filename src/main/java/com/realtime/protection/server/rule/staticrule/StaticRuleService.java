@@ -3,10 +3,14 @@ package com.realtime.protection.server.rule.staticrule;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -69,12 +73,12 @@ public class StaticRuleService {
         return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, deleteStaticRulesFunction, staticRuleIds);
     }
 
-    public void updateStaticRule(StaticRuleObject object) {
+    public void updateStaticRule(Integer id, StaticRuleObject object) {
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？
         //按id查询该静态规则的used_task_id字段，如果不为空，则不能修改
         object.setStaticRuleModifyTime(LocalDateTime.now());
         //修改静态规则
-        staticRuleMapper.updateStaticRule(object);
+        staticRuleMapper.updateStaticRule(id, object);
     }
 
     public StaticRuleObject queryStaticRuleById(Integer id) {
@@ -117,5 +121,23 @@ public class StaticRuleService {
         return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, newStaticRuleFunction, staticRuleList);
 
 
+    }
+
+    @Transactional
+    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
+        Integer originalAuditStatus = staticRuleMapper.queryAuditStatusById(id);
+        if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+            throw new IllegalArgumentException("invalid audit status");
+        }
+        Boolean success = staticRuleMapper.updateAuditStatusById(id, auditStatus);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", success);
+        resultMap.put("audit_status", auditStatus);
+        return resultMap;
+    }
+
+    public void deleteStaticRuleById(Integer id) {
+        staticRuleMapper.deleteStaticRuleById(id);
     }
 }

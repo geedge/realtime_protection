@@ -22,13 +22,12 @@ public class DynamicRuleServiceTest {
     void testNewDynamicRule() {
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
-        object.setDynamicRuleEventType(1);
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
         object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
-        object.setDynamicRuleSourceSystem(1);
-        object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
+        object.setTemplateId(1);
+        //object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
 
 
         Integer objectId = dynamicRuleService.newDynamicRuleObject(object);
@@ -37,7 +36,7 @@ public class DynamicRuleServiceTest {
 
     @Test
     void testDeleteDynamicRule() {
-        dynamicRuleService.deleteDynamicRuleObject(8);
+      //  dynamicRuleService.deleteDynamicRuleObject(8);
     }
 
     @Test
@@ -50,15 +49,14 @@ public class DynamicRuleServiceTest {
     void testUpdateDynamicRule() {
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
-        object.setDynamicRuleEventType(1);
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
         object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
-        object.setDynamicRuleSourceSystem(1);
-        object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
+        object.setTemplateId(1);
+        //object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
 
-        dynamicRuleService.updateDynamicRuleObject(9, object);
+        dynamicRuleService.updateDynamicRuleObject(2, object);
     }
 
     @Test

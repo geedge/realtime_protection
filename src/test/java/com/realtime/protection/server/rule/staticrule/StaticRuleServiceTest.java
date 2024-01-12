@@ -58,7 +58,6 @@ public class StaticRuleServiceTest {
             object.setStaticRulePriority(2);
             object.setStaticRuleFrequency(1);
             object.setStaticRuleRange("北京");
-//            object.setStaticRuleProtectLevel(2);
 
             Integer id = staticRuleService.newStaticRuleObject(object);
         }
@@ -103,7 +102,7 @@ public class StaticRuleServiceTest {
         object.setStaticRuleRange("北京");
 //        object.setStaticRuleProtectLevel(2);
 
-        staticRuleService.updateStaticRule(object);
+        staticRuleService.updateStaticRule(5, object);
     }
     @Test
     void testQueryStaticRule(){

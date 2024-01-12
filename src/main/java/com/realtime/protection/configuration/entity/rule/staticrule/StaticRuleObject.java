@@ -3,7 +3,11 @@ package com.realtime.protection.configuration.entity.rule.staticrule;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,81 +22,117 @@ import java.time.LocalDateTime;
 public class StaticRuleObject {
     @JsonProperty("static_rule_id")
     @ExcelIgnore
+    @Schema(description = "静态规则ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer staticRuleId;
 
     @NotNull
     @JsonProperty("static_rule_name")
     @ExcelProperty("名称")
+    @Schema(description = "静态规则名称", example = "静态规则测试", requiredMode = Schema.RequiredMode.REQUIRED)
     private String staticRuleName;
 
     @JsonProperty("static_rule_create_time")
     @ExcelIgnore
+    @Schema(hidden = true)
     private LocalDateTime staticRuleCreateTime;
     @JsonProperty("static_rule_modify_time")
     @ExcelIgnore
+    @Schema(hidden = true)
     private LocalDateTime staticRuleModifyTime;
 
     @JsonProperty("static_rule_create_username")
     @ExcelIgnore
+    @Schema(description = "静态规则创建用户名称", accessMode = Schema.AccessMode.READ_ONLY)
     private String staticRuleCreateUsername;
     @JsonProperty("static_rule_audit_status")
     @ExcelIgnore
+    @Schema(description = "静态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer staticRuleAuditStatus;
     @JsonProperty("static_rule_create_depart")
     @ExcelIgnore
+    @Schema(description = "静态规则创建用户所属部门", accessMode = Schema.AccessMode.READ_ONLY)
     private String staticRuleCreateDepart;
     @JsonProperty("static_rule_create_user_id")
     @ExcelIgnore
+    @Schema(hidden = true)
     private Integer staticRuleCreateUserId;
     @JsonProperty("static_rule_used_task_id")
     @ExcelIgnore
+    @Schema(hidden = true)
     private Integer staticRuleUsedTaskId;
 
     @JsonProperty("static_rule_sip")
     @ExcelProperty("源IP地址")
+    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
+    @Schema(description = "源IP地址", example = "1.1.1.1")
     private String staticRuleSip;
     @JsonProperty("static_rule_msip")
+    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
     @ExcelProperty("源IP地址掩码")
+    @Schema(description = "源IP地址掩码", example = "255.255.255.0")
     private String staticRuleMsip;
     @JsonProperty("static_rule_sport")
     @ExcelProperty("源端口")
+    @Max(value = 65535, message = "port should not be more than 65535")
+    @Min(value = 1, message = "port should not be less than 1")
+    @Schema(description = "源端口", example = "8080")
     private Integer staticRuleSport;
     @JsonProperty("static_rule_msport")
     @ExcelProperty("源端口掩码")
+    @Max(value = 65535, message = "port should not be more than 65535")
+    @Min(value = 1, message = "port should not be less than 1")
+    @Schema(description = "源端口掩码", example = "65535")
     private Integer staticRuleMsport;
     @JsonProperty("static_rule_dip")
+    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
     @ExcelProperty("目的IP地址")
+    @Schema(description = "目的IP地址", example = "2.2.2.2")
     private String staticRuleDip;
     @JsonProperty("static_rule_mdip")
     @ExcelProperty("目的IP地址掩码")
+    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
+    @Schema(description = "目的IP地址掩码", example = "255.255.255.0")
     private String staticRuleMdip;
     @JsonProperty("static_rule_dport")
     @ExcelProperty("目的端口")
+    @Max(value = 65535, message = "port should not be more than 65535")
+    @Min(value = 1, message = "port should not be less than 1")
+    @Schema(description = "目的端口", example = "8080")
     private Integer staticRuleDport;
     @JsonProperty("static_rule_mdport")
     @ExcelProperty("目的端口掩码")
+    @Max(value = 65535, message = "port should not be more than 65535")
+    @Min(value = 1, message = "port should not be less than 1")
+    @Schema(description = "目的端口掩码", example = "65535")
     private Integer staticRuleMdport;
     @JsonProperty("static_rule_protocol")
     @ExcelProperty("协议")
+    @Schema(description = "协议", example = "TCP")
     private String staticRuleProtocol;
     @JsonProperty("static_rule_mprotocol")
     @ExcelProperty("协议掩码")
+    @Schema(description = "协议掩码", example = "TCP")
     private String staticRuleMprotocol;
     @JsonProperty("static_rule_dns")
     @ExcelProperty("DNS")
+    @Schema(description = "DNS", example = "www.baidu.com")
     private String staticRuleDns;
     @JsonProperty("static_rule_url")
     @ExcelProperty("URL")
+    @Schema(description = "URL", example = "www.baidu.com")
     private String staticRuleURL;
 
     @JsonProperty("static_rule_priority")
     @ExcelProperty("优先级")
+    @Schema(description = "优先级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer staticRulePriority;
     @JsonProperty("static_rule_range")
     @ExcelProperty("范围")
+    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
     private String staticRuleRange;
     @JsonProperty("static_rule_frequency")
     @ExcelProperty("频率")
+    @Schema(description = "频率", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer staticRuleFrequency;
 
 }

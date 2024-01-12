@@ -93,7 +93,7 @@
                 white_list_audit_status = #{object.whiteListAuditStatus},
             </if>
         </set>
-        where white_list_id = #{object.whiteListId}
+        where white_list_id = #{id}
     </update>
     <update id="updateWhiteListObjectAuditStatus">
         update t_white_list

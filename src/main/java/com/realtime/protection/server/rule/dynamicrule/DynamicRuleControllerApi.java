@@ -1,0 +1,145 @@
+package com.realtime.protection.server.rule.dynamicrule;
+
+import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.response.ResponseResult;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+
+@Tag(name = "动态规则API", description = "动态规则模块所有接口")
+public interface DynamicRuleControllerApi {
+
+    @Operation(
+            summary = "新建动态规则",
+            description = "新建一个动态规则",
+
+            responses = {
+                    @ApiResponse(
+                            description = "返回新建对象结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+//                                            title = "ResponseResult和DynamicRule的组合模型",
+//                                            description = "ResponseResult的data内DynamicRule",
+//                                            anyOf = {ResponseResult.class, DynamicRuleObject.class})
+                                            implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "动态规则信息")
+    )
+    ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject) ;
+
+    @Operation(
+            summary = "删除动态规则",
+            description = "删除一个动态规则",
+            responses = {
+                    @ApiResponse(
+                            description = "返回删除对象结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "id", description = "动态规则id")
+            }
+    )
+    ResponseResult deleteDynamicRuleObject(@PathVariable Integer id) ;
+
+    @Operation(
+            summary = "批量删除动态规则",
+            description = "批量删除动态规则",
+            responses = {
+                    @ApiResponse(
+                            description = "返回批量删除对象结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "ids", description = "动态规则id列表")
+            }
+    )
+    public ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids) ;
+
+    @Operation(
+            summary = "修改动态规则",
+            description = "修改动态规则",
+            responses = {
+                    @ApiResponse(
+                            description = "返回修改对象结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "id", description = "动态规则id")
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "动态规则信息")
+    )
+    public ResponseResult updateDynamicRuleObject(
+            @PathVariable Integer id,
+            @RequestBody @Valid DynamicRuleObject dynamicRuleObject) ;
+
+    @Operation(
+            summary = "查询单个动态规则",
+            description = "根据动态规则ID查询单个动态规则的所有详细信息",
+            responses = {
+                    @ApiResponse(
+                            description = "返回查询到的单个动态规则",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "id", description = "动态规则ID", example = "2")
+            }
+    )
+    public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id) ;
+
+    @Operation(
+            summary = "根据条件查询多个动态规则",
+            description = "根据查询条件和页码等，查询多个对象并以列表返回",
+            responses = {
+                    @ApiResponse(
+                            description = "返回多个动态规则",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "name", description = "动态规则名称", example = "test"),
+                    @Parameter(name = "id", description = "动态规则ID", example = "2"),
+                    @Parameter(name = "page", description = "页码", example = "1"),
+                    @Parameter(name = "page_size", description = "每页大小", example = "10")
+            }
+    )
+    public ResponseResult queryDynamicRuleObject(
+            @RequestParam(value = "name", required = false) String dynamicRuleName,
+            @RequestParam(value = "id", required = false) Integer dynamicRuleId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) ;
+
+
+}

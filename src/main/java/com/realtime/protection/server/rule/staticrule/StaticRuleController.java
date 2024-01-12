@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/staticrule")
 @Slf4j
-public class StaticRuleController {
+public class StaticRuleController implements StaticRuleControllerApi {
 
     private final StaticRuleService staticRuleService;
 
@@ -31,6 +31,7 @@ public class StaticRuleController {
      * 新增静态规则
      */
     @PostMapping("/new")
+    @Override
     public ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object) {
         log.info("新增静态规则: {}", object);
         //调用service新增
@@ -40,6 +41,7 @@ public class StaticRuleController {
 
     //以Excel方式批量导入静态规则
     @PostMapping("/upload")
+    @Override
     public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), StaticRuleObject.class,
                 new StaticRuleDataListener(staticRuleService)).sheet().doRead();
@@ -47,6 +49,7 @@ public class StaticRuleController {
     }
 
     //下载模板文件
+    @Override
     @GetMapping("/download")
     public void downloadTemplate(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -59,10 +62,22 @@ public class StaticRuleController {
                 .doWrite(List.of());
     }
 
+    /**
+     * 按id删除静态规则
+     */
+    @Override
+    @DeleteMapping("/{id}/delete")
+    public ResponseResult deleteStaticRule(@PathVariable Integer id) {
+        log.info("根据id删除静态规则:{}", id);
+        //调用service删除
+        staticRuleService.deleteStaticRuleById(id);
+        return ResponseResult.ok();
+    }
 
     /**
      * 删除静态规则（有的删了，有的没删，也返回false）
      */
+    @Override
     @DeleteMapping("/{ids}")
     public ResponseResult delete(@PathVariable List<Integer> ids) {
         log.info("根据id删除静态规则:{}", ids);
@@ -75,11 +90,13 @@ public class StaticRuleController {
     /**
      * 修改静态规则
      */
-    @PutMapping("/update")
-    public ResponseResult updateStaticRule(@RequestBody @Valid StaticRuleObject object) {
+    @Override
+    @PostMapping("/{id}/update")
+    public ResponseResult updateStaticRule(@PathVariable Integer id,
+                                        @RequestBody @Valid StaticRuleObject object) {
         log.info("修改静态规则: {}", object);
         //调用service修改
-        staticRuleService.updateStaticRule(object);
+        staticRuleService.updateStaticRule(id, object);
         return ResponseResult.ok();
     }
 
@@ -87,7 +104,8 @@ public class StaticRuleController {
      * 根据id查询静态规则
      * 路径参数：通过请求URL直接传递参数，使用{…}来标识该路径参数，需要使用 @PathVariable 获取路径参数
      */
-    @RequestMapping("/{id}/query")
+    @Override
+    @GetMapping("/{id}/query")
     public ResponseResult queryStaticRuleById(@PathVariable Integer id) {
         log.info("根据id查询静态规则:{}", id);
         StaticRuleObject object = staticRuleService.queryStaticRuleById(id);
@@ -97,7 +115,8 @@ public class StaticRuleController {
     /**
      * 分页查询静态规则
      */
-    @RequestMapping("/query")
+    @Override
+    @GetMapping("/query")
     public ResponseResult queryStaticRule(String static_rule_name, Integer static_rule_id,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize
@@ -107,4 +126,23 @@ public class StaticRuleController {
         List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(static_rule_name, static_rule_id, page, pageSize);
         return ResponseResult.ok().setData("static_rule_list", pageResult);
     }
+
+    /**
+     * 修改审核状态
+     */
+    @Override
+    @GetMapping("/{id}/audit/{auditStatus}")
+    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
+        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("whiteobj_id", id)
+                    .setData("success", false);
+        }
+        return ResponseResult.ok()
+                .setDataMap(staticRuleService.updateAuditStatus(id, auditStatus))
+                .setData("staticRule_id", id);
+
+    }
+
+
 }

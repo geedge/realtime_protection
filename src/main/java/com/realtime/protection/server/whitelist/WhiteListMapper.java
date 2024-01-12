@@ -1,7 +1,7 @@
 package com.realtime.protection.server.whitelist;
 
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
-import com.realtime.protection.configuration.entity.task.Command;
+import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,7 +25,7 @@ public interface WhiteListMapper {
     @Delete("delete from t_white_list where white_list_id = #{id}")
     Integer deleteWhiteListObject(Integer id);
 
-    Integer updateWhiteListObject(@Param("object") WhiteListObject object);
+    Integer updateWhiteListObject(@Param("id")Integer id, @Param("object") WhiteListObject object);
 
     List<String> existWhiteListObject(@Param("staticRuleObject") StaticRuleObject staticRuleObject);
 
@@ -37,5 +37,5 @@ public interface WhiteListMapper {
 
     void deleteWhiteListObjects(@Param("whiteListIds") List<Integer> whiteListBatch);
 
-    List<WhiteListObject> whiteListCommandJudge(@Param("command") Command command);
+    List<WhiteListObject> whiteListCommandJudge(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
 }

@@ -1,6 +1,7 @@
 package com.realtime.protection.server.rule.dynamicrule;
 
 import com.alibaba.excel.util.ListUtils;
+import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,11 @@ public class DynamicRuleService {
         dynamicRuleMapper.newDynamicRule(dynamicRule);
 
         Integer dynamicRuleId = dynamicRule.getDynamicRuleId();
+        if (dynamicRule.getProtectObjectIds() != null) {
+            dynamicRule.getProtectObjectIds().forEach(
+                    protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
 
-        dynamicRule.getProtectObjectIds().forEach(
-                protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
-
-
+        }
         return dynamicRuleId;
     }
 
@@ -75,8 +76,15 @@ public class DynamicRuleService {
 
         //查询DynamicRule
         DynamicRuleObject dynamicRuleObject = dynamicRuleMapper.queryDynamicRuleById(dynamicRuleId);
+        if (dynamicRuleObject == null){
+            return null;
+        }
         //查询DynamicRule关联的ProtectObject
         dynamicRuleObject.setProtectObjects(dynamicRuleMapper.queryProtectObjectByRuleId(dynamicRuleId));
+        //查询DynamicRule关联的template详细信息
+        Template template = dynamicRuleMapper.queryTemplateByRuleId(dynamicRuleId);
+        dynamicRuleObject.setDynamicRuleSourceSystem(template.getSourceSystem());
+        dynamicRuleObject.setDynamicRuleEventType(template.getTemplateName());
 
         return dynamicRuleObject;
     }

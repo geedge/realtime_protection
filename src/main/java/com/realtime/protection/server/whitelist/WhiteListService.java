@@ -101,8 +101,8 @@ public class WhiteListService {
 
     }
 
-    public Integer updateWhiteListObject(WhiteListObject object) {
-        return whiteListMapper.updateWhiteListObject(object);
+    public Integer updateWhiteListObject(Integer id, WhiteListObject object) {
+        return whiteListMapper.updateWhiteListObject(id, object);
     }
 
     public List<WhiteListObject> queryWhiteListObject(String whiteListName, Integer whiteListId,
@@ -132,7 +132,7 @@ public class WhiteListService {
     public List<WhiteListObject> whiteListCommandJudge(Command command) {
         //参数应该是指令，不管动态静态
         // 命中的whitelist列表：每一列包含ip port url
-        return whiteListMapper.whiteListCommandJudge(command);
+        return whiteListMapper.whiteListCommandJudge(command.getFiveTupleWithMask());
 
     }
 
