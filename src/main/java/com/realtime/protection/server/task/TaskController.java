@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/task")
-public class TaskController {
+public class TaskController implements TaskControllerApi {
 
     private final TaskService taskService;
     private final StateChangeService stateChangeService;
@@ -25,6 +25,7 @@ public class TaskController {
         this.stateChangeService = stateChangeService;
     }
 
+    @Override
     @PostMapping("/new")
     public ResponseResult newTask(@RequestBody @Valid Task task) {
         Long taskId = taskService.newTask(task);
@@ -42,6 +43,7 @@ public class TaskController {
                 .setData("success", false);
     }
 
+    @Override
     @GetMapping("/query")
     public ResponseResult queryTasks(@RequestParam(value = "task_status", required = false) Integer taskStatus,
                                      @RequestParam(value = "task_type", required = false) String taskType,
@@ -54,6 +56,7 @@ public class TaskController {
                 .setData("task_list", tasks);
     }
 
+    @Override
     @GetMapping("/{id}/query")
     public ResponseResult queryTask(@PathVariable @Min(1) Long id) throws IllegalAccessException {
         Task task = taskService.queryTask(id);
@@ -66,13 +69,16 @@ public class TaskController {
                 .setDataMap(EntityUtils.entityToMap(task));
     }
 
-    @PostMapping("/update")
-    public ResponseResult updateTask(@RequestBody @Valid Task task) {
+    @Override
+    @PostMapping("/{taskId}/update")
+    public ResponseResult updateTask(@PathVariable Long taskId, @RequestBody @Valid Task task) {
+        task.setTaskId(taskId);
         return ResponseResult.ok()
                 .setData("task_id", task.getTaskId())
                 .setData("success", taskService.updateTask(task));
     }
 
+    @Override
     @GetMapping("/{taskId}/audit/{auditStatus}")
     public ResponseResult changeTaskAuditStatus(@PathVariable @NotNull @Max(10) Integer auditStatus,
                                                 @PathVariable @NotNull @Min(1) Long taskId) {
@@ -83,13 +89,15 @@ public class TaskController {
                 .setData("audit_status", taskService.queryTaskAuditStatus(taskId));
     }
 
-    @GetMapping("/{taskId}/delete")
+    @Override
+    @DeleteMapping("/{taskId}/delete")
     public ResponseResult deleteTask(@PathVariable @NotNull @Min(1) Long taskId) {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
                 .setData("success", taskService.deleteTask(taskId));
     }
 
+    @Override
     @GetMapping("/{taskId}/running/{stateNum}")
     public ResponseResult changeTaskStatus(@PathVariable @NotNull Integer stateNum,
                                            @PathVariable @NotNull Long taskId) throws DorisStartException {

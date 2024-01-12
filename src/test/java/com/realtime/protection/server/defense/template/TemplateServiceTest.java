@@ -67,8 +67,8 @@ class TemplateServiceTest {
         assertEquals(5, templates.size());
         for (Template template : templates) {
             assertTrue(template.getTemplateId() > 0);
-            assertNotNull(template.getTemplateRunningTasks());
-            assertNotNull(template.getTemplateUsedTimes());
+            assertNotNull(template.getUsedTimes());
+            assertNotNull(template.getRunningTasks());
         }
     }
 

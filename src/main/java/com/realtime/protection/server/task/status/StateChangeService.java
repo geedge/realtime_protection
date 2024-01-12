@@ -31,6 +31,10 @@ public class StateChangeService {
 
         State newState = StateEnum.getStateByNum(stateNum);
 
+        if (newState == null) {
+            return false;
+        }
+
         if (!originalState.handle(newState, commandService, taskService, taskId)) {
             return false;
         }

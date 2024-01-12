@@ -11,11 +11,12 @@ import java.util.Map;
 public enum StateEnum {
     // 仅需修改此处即可将任务状态以及对应的State和Num进行对应
     PENDING(0, new PendingState()),
-    RUNNING(1, new RunningState()),
-    PAUSED(2, new PauseState()),
-    STOP(3, new StopState()),
-    FINISHED(4, new FinishedState()),
-    FAILED(5, new FailedState());
+    GENERATING(1, new GeneratingState()),
+    RUNNING(2, new RunningState()),
+    PAUSED(3, new PauseState()),
+    STOP(4, new StopState()),
+    FINISHED(5, new FinishedState()),
+    FAILED(6, new FailedState());
     // ----------------------------------------------
 
     private final State state;

@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/proobj")
-public class ProtectObjectController {
+public class ProtectObjectController implements ProtectObjectControllerApi {
 
     private final ProtectObjectService protectObjectService;
 
@@ -26,6 +26,7 @@ public class ProtectObjectController {
         this.protectObjectService = protectObjectService;
     }
 
+    @Override
     @PostMapping("/new")
     public ResponseResult newProtectObject(@RequestBody @Valid ProtectObject protectObject) {
         Integer protectObjectId = protectObjectService.newProtectObject(protectObject);
@@ -42,15 +43,17 @@ public class ProtectObjectController {
                 .setData("success", true);
     }
 
+    @Override
     @PostMapping("/upload")
     public ResponseResult uploadFile(
-            @NotNull(message = "uploadFile cannot be null") MultipartFile uploadFile
+            @NotNull(message = "uploadFile cannot be null. ") MultipartFile uploadFile
     ) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), ProtectObject.class,
                 new ProjectObjectDataListener(protectObjectService)).sheet().doRead();
         return ResponseResult.ok();
     }
 
+    @Override
     @GetMapping("/download")
     public void downloadTemplate(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -64,6 +67,7 @@ public class ProtectObjectController {
                 .doWrite(List.of());
     }
 
+    @Override
     @GetMapping("/query")
     public ResponseResult queryProtectObjects(@RequestParam(value = "proobj_name", required = false)
                                               String protectObjectName,
@@ -77,6 +81,7 @@ public class ProtectObjectController {
 
     }
 
+    @Override
     @GetMapping("/{protectObjectId}/query")
     public ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) throws IllegalAccessException {
         ProtectObject protectObject = protectObjectService.queryProtectObject(protectObjectId);
@@ -84,6 +89,7 @@ public class ProtectObjectController {
                 .setDataMap(EntityUtils.entityToMap(protectObject));
     }
 
+    @Override
     @PostMapping("/{protectObjectId}/update")
     public ResponseResult updateProtectObject(@PathVariable Integer protectObjectId,
                                               @RequestBody @Valid ProtectObject protectObject) {
@@ -93,6 +99,7 @@ public class ProtectObjectController {
                 .setData("success", protectObjectService.updateProtectObject(protectObject));
     }
 
+    @Override
     @DeleteMapping("/{protectObjectId}/delete")
     public ResponseResult deleteProtectObject(@PathVariable Integer protectObjectId) {
         return ResponseResult.ok()
@@ -100,14 +107,16 @@ public class ProtectObjectController {
                 .setData("success", protectObjectService.deleteProtectObject(protectObjectId));
     }
 
-    @PostMapping("/delete")
-    public ResponseResult deleteProtectObject(@RequestBody List<Integer> protectObjectIds) {
+    @Override
+    @DeleteMapping("/delete/{protectObjectIds}")
+    public ResponseResult deleteProtectObject(@PathVariable List<Integer> protectObjectIds) {
         return ResponseResult.ok()
                 .setData("proobj_ids", protectObjectIds)
                 .setData("success", protectObjectService.deleteProtectObjects(protectObjectIds));
     }
 
-    @PostMapping("/{protectObjectId}/audit/{auditStatus}")
+    @Override
+    @GetMapping("/{protectObjectId}/audit/{auditStatus}")
     public ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
                                                          @PathVariable Integer auditStatus) {
         return ResponseResult.ok()

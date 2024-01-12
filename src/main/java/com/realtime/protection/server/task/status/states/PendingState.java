@@ -11,7 +11,7 @@ public class PendingState extends StateHandler implements State {
     @Override
     public Boolean handle(State newState, CommandService commandService, TaskService taskService, Long taskId) throws DorisStartException {
         return switch (StateEnum.getStateEnumByState(newState)) {
-            case RUNNING -> handleStart(taskService, commandService, taskId);
+            case GENERATING -> handleStart(taskService, commandService, taskId);
             case FAILED -> handleFailed(commandService, taskId);
             default -> throw new IllegalStateException("Unexpected value: " + StateEnum.getStateEnumByState(newState));
         };

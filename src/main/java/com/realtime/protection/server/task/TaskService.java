@@ -1,5 +1,6 @@
 package com.realtime.protection.server.task;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
@@ -20,8 +21,11 @@ public class TaskService {
     public Long newTask(Task task) {
         taskMapper.newTask(task);
 
-        taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
-        taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+        if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty())
+            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+
+        if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty())
+            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
 
         return task.getTaskId();
     }
@@ -70,6 +74,7 @@ public class TaskService {
         return taskMapper.deleteTask(taskId);
     }
 
+    @DS("mysql")
     public Boolean changeTaskStatus(Long taskId, Integer stateNum) {
         return taskMapper.changeTaskStatus(taskId, stateNum);
     }

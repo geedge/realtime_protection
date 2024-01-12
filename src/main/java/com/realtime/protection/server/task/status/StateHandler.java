@@ -77,13 +77,7 @@ public class StateHandler {
             throw new IllegalArgumentException("static rules are empty, need to choose at least one static rule");
         }
 
-        try {
-            commandService.createCommands(staticTaskCommandInfos);
-        } catch (DorisStartException e) {
-            e.taskId = taskId;
-            throw e;
-        }
-
+        commandService.createCommands(staticTaskCommandInfos);
         return true;
     }
 }

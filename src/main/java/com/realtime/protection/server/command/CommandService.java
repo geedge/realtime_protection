@@ -1,10 +1,14 @@
 package com.realtime.protection.server.command;
 
 import com.alibaba.excel.util.ListUtils;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.realtime.protection.configuration.entity.task.Command;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.server.task.TaskMapper;
+import com.realtime.protection.server.task.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,17 +22,19 @@ import java.util.function.Function;
 public class CommandService {
 
     private final CommandMapper commandMapper;
+    private final TaskService taskService;
     private final SqlSessionWrapper sqlSessionWrapper;
-    private static final int BatchSize = 1000;
+    private static final int BatchSize = 100;
     private final Function<CommandMapper, Function<TaskCommandInfo, Void>> createCommandBatchFunction;
 
-    public CommandService(CommandMapper commandMapper, SqlSessionWrapper sqlSessionWrapper) {
+    public CommandService(CommandMapper commandMapper, TaskService taskService, SqlSessionWrapper sqlSessionWrapper) {
         this.commandMapper = commandMapper;
+        this.taskService = taskService;
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.createCommandBatchFunction = mapper -> info -> {
             if (info.getFrequency() == null) {
                 Command command = Command.generateCommand(info, info.getStartTime());
-                commandMapper.createCommand(command);
+                mapper.createCommand(command);
             }
 
             List<Command> commandBatch = ListUtils.newArrayListWithExpectedSize(BatchSize);
@@ -43,12 +49,12 @@ public class CommandService {
                 if (commandBatch.size() < BatchSize) {
                     continue;
                 }
-                commandMapper.createCommands(commandBatch);
+                mapper.createCommands(commandBatch);
                 commandBatch.clear();
             }
 
             if (!commandBatch.isEmpty()) {
-                commandMapper.createCommands(commandBatch);
+                mapper.createCommands(commandBatch);
                 commandBatch.clear();
             }
 
@@ -59,15 +65,17 @@ public class CommandService {
     }
 
     @Async
+    @DS("doris")
     public void createCommand(TaskCommandInfo commandInfo) throws DorisStartException {
         try {
             sqlSessionWrapper.startBatchSession(CommandMapper.class, createCommandBatchFunction, commandInfo);
         } catch (Exception e) {
-            throw new DorisStartException(e);
+            throw new DorisStartException(e, commandInfo.getTaskId());
         }
     }
 
     @Async
+    @DS("doris")
     public void createCommands(List<TaskCommandInfo> taskCommandInfos) throws DorisStartException {
         Function<CommandMapper, Function<List<TaskCommandInfo>, Void>> function = mapper -> list -> {
             if (list == null || list.isEmpty()) {
@@ -77,24 +85,34 @@ public class CommandService {
             for (TaskCommandInfo info : list) {
                 createCommandBatchFunction.apply(mapper).apply(info);
             }
+
+            taskService.changeTaskStatus(list.get(0).getTaskId(), StateEnum.RUNNING.getStateNum());
             return null;
         };
 
         try {
             sqlSessionWrapper.startBatchSession(CommandMapper.class, function, taskCommandInfos);
         } catch (Exception e) {
-            throw new DorisStartException(e);
+            TaskCommandInfo info = taskCommandInfos.get(0);
+            Long taskId = null;
+            if (info != null) {
+                taskId = info.getTaskId();
+            }
+            throw new DorisStartException(e, taskId);
         }
     }
 
+    @DS("doris")
     public Boolean startCommandsByTaskId(Long taskId) {
         return commandMapper.startCommandsByTaskId(taskId);
     }
 
+    @DS("doris")
     public Boolean stopCommandsByTaskId(Long taskId) {
         return commandMapper.stopCommandsByTaskId(taskId);
     }
 
+    @DS("doris")
     public Boolean removeCommandsByTaskId(Long taskId) {
         return commandMapper.removeCommandsByTaskId(taskId);
     }

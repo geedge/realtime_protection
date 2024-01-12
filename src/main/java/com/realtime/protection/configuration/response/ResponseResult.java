@@ -1,5 +1,6 @@
 package com.realtime.protection.configuration.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -7,11 +8,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
+@Schema(name = "通用返回对象", description = "用于所有接口返回的通用返回对象")
 public class ResponseResult implements Serializable {
 
+    @Schema(description = "状态码")
     private int code;
+
+    @Schema(description = "返回信息")
     private String message;
+
+    @Schema(description = "封装数据")
     private Map<String, Object> data;
+
+    @Schema(description = "返回对象链接的另外一个返回对象")
     private ResponseResult another;
 
     public ResponseResult(int code, String message, LinkedHashMap<String, Object> data) {

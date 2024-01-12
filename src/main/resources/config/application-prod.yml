@@ -1,5 +1,5 @@
 server:
-  port: 80
+  port: 8081
 
 logging:
   level:
@@ -35,3 +35,10 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mappers/*
+
+task:
+  pool:
+    core-pool-size: 20
+    max-pool-size: 100
+    queue-capacity: 100
+    keep-alive-seconds: 60

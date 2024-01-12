@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/deftac")
+@RequestMapping("/template")
 public class TemplateController {
 
     private final TemplateService templateService;
@@ -21,15 +21,8 @@ public class TemplateController {
 
     @PostMapping("/new")
     public ResponseResult newTemplate(@RequestBody @Valid Template template) {
-        Integer templateId;
-        try {
-            templateId = templateService.newTemplate(template);
-        } catch (IllegalArgumentException e) {
-            return new ResponseResult(400, "Illegal Argument in template_elements or default_op")
-                    .setData("template_id", null)
-                    .setData("success", false);
-        }
 
+        Integer templateId = templateService.newTemplate(template);
 
         if (templateId > 0) {
             return ResponseResult.ok()

@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@DS("doris")
 @Mapper
 public interface CommandMapper {
     Boolean createCommand(@Param("command") Command command);
