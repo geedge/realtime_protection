@@ -1,8 +1,7 @@
 package com.realtime.protection.server.task;
 
-import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.task.Task;
-import org.apache.ibatis.exceptions.PersistenceException;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

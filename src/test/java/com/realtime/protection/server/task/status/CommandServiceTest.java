@@ -1,8 +1,7 @@
 package com.realtime.protection.server.task.status;
 
-import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
-import com.realtime.protection.configuration.entity.task.Command;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.server.command.CommandService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest
 class CommandServiceTest {

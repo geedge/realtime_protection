@@ -1,7 +1,6 @@
 package com.realtime.protection.server.defense.object;
 
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
-import org.apache.ibatis.exceptions.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +41,7 @@ class ProtectObjectServiceTest {
         protectObject.setProtectObjectId(null);
         protectObject.setProtectObjectProtocol(null);
 
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            assertTrue(protectObjectService.newProtectObject(protectObject) > 0);
-        });
+        assertThrows(DataIntegrityViolationException.class, () -> assertTrue(protectObjectService.newProtectObject(protectObject) > 0));
     }
 
     @Test
@@ -111,8 +108,6 @@ class ProtectObjectServiceTest {
         }
         assertTrue((Boolean) protectObjectService.changeProtectObjectAuditStatus(testNum, 1).get("success"));
         int finalTestNum = testNum;
-        assertThrows(IllegalArgumentException.class, () -> {
-            protectObjectService.changeProtectObjectAuditStatus(finalTestNum, 2);
-        });
+        assertThrows(IllegalArgumentException.class, () -> protectObjectService.changeProtectObjectAuditStatus(finalTestNum, 2));
     }
 }
