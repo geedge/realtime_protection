@@ -16,13 +16,13 @@ public class StateHandler {
         Task task = taskService.queryTask(taskId);
 
         if (task == null) {
-            throw new IllegalArgumentException("invalid task id");
+            throw new IllegalArgumentException("无效task_id，因为无法找到对应任务");
         }
 
         Integer taskAuditStatus = task.getTaskAuditStatus();
 
         if (taskAuditStatus == null) {
-            throw new IllegalArgumentException("invalid task id, because task_audit_status is null");
+            throw new IllegalArgumentException("无效的task_id，因为task_audit_status为空");
         }
 
         // 如果审核状态不为已通过审核，则无效
@@ -74,7 +74,7 @@ public class StateHandler {
         // 如果未能获取staticTaskCommandInfos，需要报错
         List<TaskCommandInfo> staticTaskCommandInfos = taskService.getStaticCommandInfos(taskId);
         if (staticTaskCommandInfos == null || staticTaskCommandInfos.isEmpty()) {
-            throw new IllegalArgumentException("static rules are empty, need to choose at least one static rule");
+            throw new IllegalArgumentException("静态规则列表为空，请至少选择一个静态规则以启动任务");
         }
 
         commandService.createCommands(staticTaskCommandInfos);

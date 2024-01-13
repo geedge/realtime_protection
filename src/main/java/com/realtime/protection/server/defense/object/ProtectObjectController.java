@@ -46,7 +46,7 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     @Override
     @PostMapping("/upload")
     public ResponseResult uploadFile(
-            @NotNull(message = "uploadFile cannot be null. ") MultipartFile uploadFile
+            @NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile
     ) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), ProtectObject.class,
                 new ProjectObjectDataListener(protectObjectService)).sheet().doRead();
@@ -85,6 +85,10 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     @GetMapping("/{protectObjectId}/query")
     public ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) throws IllegalAccessException {
         ProtectObject protectObject = protectObjectService.queryProtectObject(protectObjectId);
+        if (protectObject == null) {
+            return ResponseResult.invalid()
+                    .setMessage("无效的防护对象ID，也许该ID指定的防护对象不存在？");
+        }
         return ResponseResult.ok()
                 .setDataMap(EntityUtils.entityToMap(protectObject));
     }

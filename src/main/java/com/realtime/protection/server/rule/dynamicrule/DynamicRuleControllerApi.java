@@ -38,7 +38,7 @@ public interface DynamicRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "动态规则信息")
     )
-    ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject) ;
+    ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject);
 
     @Operation(
             summary = "删除动态规则",
@@ -56,7 +56,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "id", description = "动态规则id")
             }
     )
-    ResponseResult deleteDynamicRuleObject(@PathVariable Integer id) ;
+    ResponseResult deleteDynamicRuleObject(@PathVariable Integer id);
 
     @Operation(
             summary = "批量删除动态规则",
@@ -74,7 +74,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "ids", description = "动态规则id列表")
             }
     )
-    public ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids) ;
+    public ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids);
 
     @Operation(
             summary = "修改动态规则",
@@ -96,7 +96,7 @@ public interface DynamicRuleControllerApi {
     )
     public ResponseResult updateDynamicRuleObject(
             @PathVariable Integer id,
-            @RequestBody @Valid DynamicRuleObject dynamicRuleObject) ;
+            @RequestBody @Valid DynamicRuleObject dynamicRuleObject);
 
     @Operation(
             summary = "查询单个动态规则",
@@ -114,7 +114,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "id", description = "动态规则ID", example = "2")
             }
     )
-    public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id) ;
+    public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id);
 
     @Operation(
             summary = "根据条件查询多个动态规则",
@@ -139,7 +139,7 @@ public interface DynamicRuleControllerApi {
             @RequestParam(value = "name", required = false) String dynamicRuleName,
             @RequestParam(value = "id", required = false) Integer dynamicRuleId,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) ;
+            @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize);
 
 
 }

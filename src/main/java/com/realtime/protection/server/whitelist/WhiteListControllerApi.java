@@ -34,7 +34,7 @@ public interface WhiteListControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "白名单信息")
     )
-    ResponseResult newWhitelistObject(@RequestBody WhiteListObject object) ;
+    ResponseResult newWhitelistObject(@RequestBody WhiteListObject object);
 
     @Operation(
             summary = "批量导入白名单",
@@ -51,7 +51,7 @@ public interface WhiteListControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Excel文件")
     )
-    ResponseResult uploadFile(MultipartFile uploadFile) throws IOException ;
+    ResponseResult uploadFile(MultipartFile uploadFile) throws IOException;
 
     @Operation(
             summary = "下载白名单模板",
@@ -66,7 +66,7 @@ public interface WhiteListControllerApi {
                     )
             }
     )
-    void downloadTemplate(HttpServletResponse response) throws IOException ;
+    void downloadTemplate(HttpServletResponse response) throws IOException;
 
     @Operation(
             summary = "查询白名单",
@@ -88,9 +88,9 @@ public interface WhiteListControllerApi {
             }
     )
     ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false) String whiteListName,
-            @RequestParam(value = "whiteobj_id", required = false) Integer whiteListId,
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) ;
+                                        @RequestParam(value = "whiteobj_id", required = false) Integer whiteListId,
+                                        @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                        @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize);
 
     @Operation(
             summary = "查询单个白名单",
@@ -108,7 +108,7 @@ public interface WhiteListControllerApi {
                     @Parameter(name = "id", description = "白名单ID", example = "2")
             }
     )
-    ResponseResult queryWhiteListObjectById(@PathVariable Integer id) ;
+    ResponseResult queryWhiteListObjectById(@PathVariable Integer id);
 
     @Operation(
             summary = "删除白名单",
@@ -144,7 +144,7 @@ public interface WhiteListControllerApi {
                     @Parameter(name = "ids", description = "白名单id数组")
             }
     )
-    ResponseResult deleteWhiteListObjects(@PathVariable List<Integer> whiteListObjIds) ;
+    ResponseResult deleteWhiteListObjects(@PathVariable List<Integer> whiteListObjIds);
 
     @Operation(
             summary = "修改白名单",
@@ -166,7 +166,7 @@ public interface WhiteListControllerApi {
 
     )
     ResponseResult updateWhiteListObject(@PathVariable Integer id,
-                                                @RequestBody WhiteListObject object) ;
+                                         @RequestBody WhiteListObject object);
 
     @Operation(
             summary = "修改白名单审核状态",
@@ -186,9 +186,7 @@ public interface WhiteListControllerApi {
             }
     )
     ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
-                                                           @PathVariable Integer auditStatus) ;
+                                                    @PathVariable Integer auditStatus);
 
 
-
-
-    }
+}

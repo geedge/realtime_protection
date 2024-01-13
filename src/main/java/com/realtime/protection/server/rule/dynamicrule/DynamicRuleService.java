@@ -76,7 +76,7 @@ public class DynamicRuleService {
 
         //查询DynamicRule
         DynamicRuleObject dynamicRuleObject = dynamicRuleMapper.queryDynamicRuleById(dynamicRuleId);
-        if (dynamicRuleObject == null){
+        if (dynamicRuleObject == null) {
             return null;
         }
         //查询DynamicRule关联的ProtectObject

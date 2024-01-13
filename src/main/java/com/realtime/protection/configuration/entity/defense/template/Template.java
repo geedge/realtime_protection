@@ -12,27 +12,27 @@ public class Template {
     private Integer templateId;
 
     @JsonProperty("template_name")
-    @NotNull(message = "template name should not be empty.")
+    @NotNull(message = "template_name字段不能为空。")
     @Schema(description = "防御策略模板名称", example = "自定义模板")
     private String templateName;
 
     @JsonProperty("source_system")
-    @NotNull(message = "source_system should not be empty. ")
+    @NotNull(message = "source_system字段不能为空。")
     @Schema(description = "防御策略模板数据来源系统", example = "BW系统")
     private String sourceSystem;
 
     @JsonProperty("protect_level_low")
-    @NotNull(message = "protect_level_low should not be empty. ")
+    @NotNull(message = "protect_level_low字段不能为空。")
     @Schema(description = "防御策略模板日常态字段提取选项")
     private ProtectLevel protectLevelLow;
 
     @JsonProperty("protect_level_medium")
-    @NotNull(message = "protect_level_medium should not be empty. ")
+    @NotNull(message = "protect_level_medium字段不能为空。")
     @Schema(description = "防御策略模板应急态字段提取选项")
     private ProtectLevel protectLevelMedium;
 
     @JsonProperty("protect_level_high")
-    @NotNull(message = "protect_level_high should not be empty. ")
+    @NotNull(message = "protect_level_high字段不能为空。")
     @Schema(description = "防御策略模板紧急态字段提取选项")
     private ProtectLevel protectLevelHigh;
 

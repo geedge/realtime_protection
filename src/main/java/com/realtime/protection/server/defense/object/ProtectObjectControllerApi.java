@@ -53,7 +53,7 @@ public interface ProtectObjectControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "上传文件")
     )
     ResponseResult uploadFile(
-            @NotNull(message = "uploadFile cannot be null. ") MultipartFile uploadFile
+            @NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile
     ) throws IOException;
 
     @GetMapping("/download")

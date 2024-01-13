@@ -30,30 +30,23 @@ public class GlobalExceptionHandler {
     @Order(3)
     @ExceptionHandler(value = {Exception.class})
     public ResponseResult handleGlobalException(Exception e) {
-        log.error("meets global exception: " + e.getMessage());
+        log.error("遭遇全局异常：" + e.getMessage());
         return ResponseResult.error().setMessage(e.getMessage());
     }
 
 
     @Order(2)
-    @ExceptionHandler(value = {PersistenceException.class})
-    public ResponseResult handleSQLException(PersistenceException e) {
-        log.error("meets database exception: " + e.getMessage());
+    @ExceptionHandler(value = {PersistenceException.class, DuplicateKeyException.class})
+    public ResponseResult handleSQLException(Exception e) {
+        log.info("遭遇数据库异常：" + e.getMessage());
         return ResponseResult.invalid().setMessage(
-                "please check the integrity of the data. check if the json data exists in the database");
-    }
-
-    @Order(2)
-    @ExceptionHandler(value = DuplicateKeyException.class)
-    public ResponseResult handleDuplicateKeyException(DuplicateKeyException e) {
-        log.debug("meets duplicate key exception: " + e.getMessage());
-        return ResponseResult.invalid().setMessage("duplicate key in json data");
+                "请检查json字段的完整性，确保json字段按照文档中要求填写。");
     }
 
     @Order(2)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseResult handleBindException(MethodArgumentNotValidException e) {
-        log.debug("meets data bind exception: " + e.getMessage());
+        log.debug("遭遇数据绑定异常：" + e.getMessage());
         return ResponseResult.invalid().setMessage(
                 e.getBindingResult().getAllErrors().stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining())
@@ -67,14 +60,14 @@ public class GlobalExceptionHandler {
             IllegalStateException.class
     })
     public ResponseResult handleHandlerMethodValidationException(Exception e) {
-        log.debug("meets illegal argument exception: " + e.getMessage());
+        log.debug("遭遇非法参数异常：" + e.getMessage());
         return ResponseResult.invalid().setMessage(e.getMessage());
     }
 
     @Order(2)
     @ExceptionHandler(value = NotLoginException.class)
     public ResponseResult handleNotLoginException(NotLoginException e) {
-        log.debug("meets not login exception, login type: " + e.getLoginType());
+        log.debug("遭遇Sa-Token登录异常，登录类型为：" + e.getLoginType());
         return new ResponseResult(
                 401,
                 e.getMessage()
@@ -84,16 +77,16 @@ public class GlobalExceptionHandler {
     @Order(2)
     @ExceptionHandler(value = SaTokenException.class)
     public ResponseResult handleSaTokenException(SaTokenException e) {
-        log.debug("sa-token meets exception: " + e.getMessage());
+        log.debug("Sa-token模块遭遇异常：" + e.getMessage());
         return ResponseResult.unAuthorized().setMessage(e.getMessage());
     }
 
     @Order(2)
     @ExceptionHandler(value = DorisStartException.class)
     public ResponseResult handleDorisStartException(DorisStartException e) {
-        log.warn("doris database meets exception: " + e.getMessage());
+        log.warn("Doris数据库遭遇异常：" + e.getMessage());
         ResponseResult responseResult = ResponseResult.error()
-                .setMessage("Doris command creation meets error: " + e.getMessage());
+                .setMessage("Doris数据库指令生成遭遇异常：" + e.getMessage());
 
         try {
             stateChangeService.changeState(StateEnum.FAILED.getStateNum(), e.taskId);

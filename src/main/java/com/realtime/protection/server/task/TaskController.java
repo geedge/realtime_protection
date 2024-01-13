@@ -99,7 +99,7 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @GetMapping("/{taskId}/running/{stateNum}")
-    public ResponseResult changeTaskStatus(@PathVariable @NotNull Integer stateNum,
+    public ResponseResult changeTaskStatus(@PathVariable @NotNull @Min(0) @Max(6) Integer stateNum,
                                            @PathVariable @NotNull Long taskId) throws DorisStartException {
         return ResponseResult.ok()
                 .setData("task_id", taskId)

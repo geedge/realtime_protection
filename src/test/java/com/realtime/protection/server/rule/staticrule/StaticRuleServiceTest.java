@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class StaticRuleServiceTest {
     private final StaticRuleService staticRuleService;
     private StaticRuleObject staticRuleTest;
+
     @Autowired
     public StaticRuleServiceTest(StaticRuleService staticRuleService) {
         this.staticRuleService = staticRuleService;
@@ -41,9 +42,9 @@ public class StaticRuleServiceTest {
     }
 
     @Test
-    void testNewStaticRule(){
+    void testNewStaticRule() {
         Integer i = 0;
-        while(i<20) {
+        while (i < 20) {
             i++;
             StaticRuleObject object = new StaticRuleObject();
 
@@ -63,8 +64,9 @@ public class StaticRuleServiceTest {
         }
         //assertTrue(id>0);
     }
+
     @Test
-    void testNewStaticRules(){
+    void testNewStaticRules() {
         List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             staticRuleObjects.add(staticRuleTest);
@@ -74,17 +76,18 @@ public class StaticRuleServiceTest {
     }
 
     @Test
-    void testDeleteStaticRule(){
+    void testDeleteStaticRule() {
         int i = 0;
         List<Integer> list = new ArrayList<>();
         list.add(1);
-        while(i<2) {
+        while (i < 2) {
             i++;
             staticRuleService.deleteStaticRules(list);
         }
     }
+
     @Test
-    void testUpdateStaticRule(){
+    void testUpdateStaticRule() {
 
         StaticRuleObject object = new StaticRuleObject();
 
@@ -104,17 +107,18 @@ public class StaticRuleServiceTest {
 
         staticRuleService.updateStaticRule(5, object);
     }
+
     @Test
-    void testQueryStaticRule(){
+    void testQueryStaticRule() {
 
         StaticRuleObject object = staticRuleService.queryStaticRuleById(7);
         System.out.println(object);
     }
 
     @Test
-    void testQueryStaticRuleList(){
+    void testQueryStaticRuleList() {
 
-        List<StaticRuleObject> objectList = staticRuleService.queryStaticRule(null,null,1,10);
+        List<StaticRuleObject> objectList = staticRuleService.queryStaticRule(null, null, 1, 10);
         System.out.println(objectList);
     }
 

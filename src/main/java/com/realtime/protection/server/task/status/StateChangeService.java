@@ -9,6 +9,8 @@ import com.realtime.protection.server.task.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 public class StateChangeService {
@@ -22,9 +24,14 @@ public class StateChangeService {
 
     @DSTransactional
     public Boolean changeState(Integer stateNum, Long taskId) throws DorisStartException {
+        if (Objects.equals(stateNum, StateEnum.GENERATING.getStateNum()) ||
+                Objects.equals(stateNum, StateEnum.FAILED.getStateNum())) {
+            throw new IllegalArgumentException("非法任务状态：" + StateEnum.getStateByNum(stateNum));
+        }
+
         Integer originalStateNum = taskService.queryTaskStatus(taskId);
         if (originalStateNum == null) {
-            throw new IllegalArgumentException("cannot find status of task " + taskId + ", maybe task doesn't exist?");
+            throw new IllegalArgumentException("无法找到" + taskId + "的任务状态，也许任务ID不存在?");
         }
 
         State originalState = StateEnum.getStateByNum(originalStateNum);
@@ -39,7 +46,7 @@ public class StateChangeService {
             return false;
         }
 
-        log.debug(String.format("successfully let task(%d) change state from %s to %s",
+        log.debug(String.format("成功使得task(%d)从%s切换为%s",
                 taskId,
                 originalState.getClass().getSimpleName(),
                 newState.getClass().getSimpleName()));

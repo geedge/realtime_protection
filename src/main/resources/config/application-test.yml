@@ -52,3 +52,8 @@ springdoc:
   swagger-ui:
     path: /swagger
   packages-to-scan: com.realtime.protection.server
+
+management:
+  endpoint:
+    shutdown:
+      enabled: true

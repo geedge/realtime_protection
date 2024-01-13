@@ -57,7 +57,7 @@ public class CommandService {
                 commandBatch.clear();
             }
 
-            log.debug(String.format("create all the commands from task(%d), rule(%d)",
+            log.debug(String.format("在task(%d)和rule(%d)中构建了全部指令",
                     info.getTaskId(), info.getRuleId()));
             return null;
         };
@@ -68,6 +68,7 @@ public class CommandService {
     public void createCommand(TaskCommandInfo commandInfo) throws DorisStartException {
         try {
             sqlSessionWrapper.startBatchSession(CommandMapper.class, createCommandBatchFunction, commandInfo);
+            taskService.changeTaskStatus(commandInfo.getTaskId(), StateEnum.RUNNING.getStateNum());
         } catch (Exception e) {
             throw new DorisStartException(e, commandInfo.getTaskId());
         }
@@ -92,7 +93,10 @@ public class CommandService {
         try {
             sqlSessionWrapper.startBatchSession(CommandMapper.class, function, taskCommandInfos);
         } catch (Exception e) {
-            TaskCommandInfo info = taskCommandInfos.get(0);
+            TaskCommandInfo info = null;
+            if (taskCommandInfos != null) {
+                info = taskCommandInfos.get(0);
+            }
             Long taskId = null;
             if (info != null) {
                 taskId = info.getTaskId();

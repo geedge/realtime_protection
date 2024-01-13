@@ -102,7 +102,7 @@ public class ProtectObjectService {
     public Map<String, Object> changeProtectObjectAuditStatus(Integer protectObjectId, Integer auditStatus) {
         Integer originalAuditStatus = protectObjectMapper.queryProtectObject(protectObjectId).getProtectObjectAuditStatus();
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
-            throw new IllegalArgumentException("invalid audit status");
+            throw new IllegalArgumentException("无效的审核状态");
         }
         Boolean success = protectObjectMapper.changeProtectObjectAuditStatus(protectObjectId, auditStatus);
 

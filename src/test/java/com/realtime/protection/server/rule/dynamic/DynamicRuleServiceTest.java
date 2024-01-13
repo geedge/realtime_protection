@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class DynamicRuleServiceTest {
     private final DynamicRuleService dynamicRuleService;
+
     @Autowired
     public DynamicRuleServiceTest(DynamicRuleService dynamicRuleService) {
         this.dynamicRuleService = dynamicRuleService;
@@ -36,7 +37,7 @@ public class DynamicRuleServiceTest {
 
     @Test
     void testDeleteDynamicRule() {
-      //  dynamicRuleService.deleteDynamicRuleObject(8);
+        //  dynamicRuleService.deleteDynamicRuleObject(8);
     }
 
     @Test
@@ -61,7 +62,7 @@ public class DynamicRuleServiceTest {
 
     @Test
     void testQueryDynamicRuleObject() {
-        List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject( null,null,1, 10);
+        List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject(null, null, 1, 10);
         System.out.println(objects);
     }
 }

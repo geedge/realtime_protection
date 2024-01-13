@@ -94,7 +94,7 @@ class TemplateServiceTest {
     void testUpdateTemplateSuccess() {
         List<Template> templates = templateService.queryTemplates("DDOS", 1, 1);
         Template testTemplate = templates.get(0);
-        testTemplate.setTemplateName("洪泛型DDOS攻击-"+LocalDateTime.now());
+        testTemplate.setTemplateName("洪泛型DDOS攻击-" + LocalDateTime.now());
 
         assertTrue(templateService.updateTemplate(testTemplate.getTemplateId(), testTemplate));
     }

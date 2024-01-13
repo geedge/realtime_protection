@@ -35,7 +35,7 @@ public interface StaticRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "静态规则信息")
     )
-    ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object) ;
+    ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object);
 
     @Operation(
             summary = "批量导入静态规则",
@@ -67,7 +67,7 @@ public interface StaticRuleControllerApi {
                     )
             }
     )
-    void downloadTemplate(HttpServletResponse response) throws IOException ;
+    void downloadTemplate(HttpServletResponse response) throws IOException;
 
     @Operation(
             summary = "删除静态规则",
@@ -85,7 +85,7 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "ids", description = "静态规则id数组")
             }
     )
-    ResponseResult delete(@PathVariable List<Integer> ids) ;
+    ResponseResult delete(@PathVariable List<Integer> ids);
 
     @Operation(
             summary = "修改静态规则",
@@ -106,7 +106,7 @@ public interface StaticRuleControllerApi {
                     description = "静态规则信息")
     )
     ResponseResult updateStaticRule(@PathVariable Integer id,
-                                           @RequestBody @Valid StaticRuleObject object) ;
+                                    @RequestBody @Valid StaticRuleObject object);
 
     @Operation(
             summary = "查询单个静态规则",
@@ -122,7 +122,7 @@ public interface StaticRuleControllerApi {
             },
             parameters = {@Parameter(name = "id", description = "静态规则ID", example = "38")}
     )
-    ResponseResult queryStaticRuleById(@PathVariable Integer id) ;
+    ResponseResult queryStaticRuleById(@PathVariable Integer id);
 
     @Operation(
             summary = "分页查询静态规则",
@@ -144,8 +144,8 @@ public interface StaticRuleControllerApi {
             }
     )
     ResponseResult queryStaticRule(String static_rule_name, Integer static_rule_id,
-                @RequestParam(defaultValue = "1") Integer page,
-                @RequestParam(defaultValue = "10") Integer pageSize);
+                                   @RequestParam(defaultValue = "1") Integer page,
+                                   @RequestParam(defaultValue = "10") Integer pageSize);
 
 
     @Operation(
@@ -164,7 +164,7 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "id", description = "静态规则id")
             }
     )
-    ResponseResult deleteStaticRule(@PathVariable Integer id) ;
+    ResponseResult deleteStaticRule(@PathVariable Integer id);
 
     @Operation(
             summary = "更新静态规则审批状态",
@@ -183,6 +183,6 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "auditStatus", description = "要修改为的静态规则审核状态")
             }
     )
-    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) ;
+    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
 
-    }
+}

@@ -17,19 +17,19 @@ public class Task {
     private Long taskId;
 
     @JsonProperty("task_name")
-    @NotNull(message = "task_name should not be empty. ")
+    @NotNull(message = "task_name字段不能为空。")
     @Schema(description = "任务名称", example = "静态任务")
     private String taskName;
 
     @JsonProperty("task_start_time")
-    @NotNull(message = "task_start_time should not be empty. ")
-    @Future(message = "task_start_time should be a future time")
+    @NotNull(message = "task_start_time字段不能为空。")
+    @Future(message = "task_start_time必须晚于当前时间。")
     @Schema(description = "任务开始时间，必须晚于当前时间", example = "2024-10-23T00:00:00")
     private LocalDateTime taskStartTime;
 
     @JsonProperty("task_end_time")
-    @NotNull(message = "task_end_time should not be empty. ")
-    @Future(message = "task_end_time should be a future time. ")
+    @NotNull(message = "task_end_time字段不能为空。")
+    @Future(message = "task_end_time必须晚于当前时间。")
     @Schema(description = "任务结束时间，必须晚于开始时间", example = "2024-10-24T00:00:00")
     private LocalDateTime taskEndTime;
 
@@ -42,12 +42,12 @@ public class Task {
     private LocalDateTime taskModifyTime;
 
     @JsonProperty("task_type")
-    @NotNull(message = "task_type should not be empty. ")
+    @NotNull(message = "task_type字段不能为空。")
     @Schema(description = "任务类型，1为静态任务，2为实时任务，3为研判后任务", example = "1")
     private Integer taskType;
 
     @JsonProperty("task_act")
-    @NotNull(message = "task_act should not be empty. ")
+    @NotNull(message = "task_act字段不能为空。")
     @Schema(description = "任务行为，目前只能为【阻断】", example = "阻断")
     private String taskAct;
 
