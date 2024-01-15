@@ -3,6 +3,7 @@ package com.realtime.protection.configuration.entity.rule.dynamicrule;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -39,7 +40,8 @@ public class DynamicRuleObject {
     private String dynamicRuleCreateDepart;
 
     //动态规则选择的防护对象ids？
-    @NotNull
+    @NotNull(message = "防护对象不能为NULL")
+    @NotEmpty(message = "防护对象不能为空")
     @JsonProperty("protect_object_ids")
     @Schema(description = "请求时发送防护对象ID", accessMode = Schema.AccessMode.WRITE_ONLY, requiredMode = Schema.RequiredMode.REQUIRED)
     private List<Integer> protectObjectIds;

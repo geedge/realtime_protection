@@ -72,11 +72,9 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
         log.info("修改动态规则: {}:{}",
                 id, dynamicRuleObject.getDynamicRuleName());
 
-        dynamicRuleService.updateDynamicRuleObject(id, dynamicRuleObject);
-
         return ResponseResult.ok()
                 .setData("dynamic_rule_id", id)
-                .setData("success", true);
+                .setData("success", dynamicRuleService.updateDynamicRuleObject(id, dynamicRuleObject));
     }
 
     //id查询
@@ -85,12 +83,9 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id) {
         log.info("查询动态规则: {}", id);
         DynamicRuleObject dynamicRuleObject = dynamicRuleService.queryDynamicRuleById(id);
-        if (dynamicRuleObject == null) {
-            return ResponseResult.invalid()
-                    .setData("dynamic_rule", null);
-        }
         //调用service查询
         return ResponseResult.ok()
+                .setData("success", true)
                 .setData("dynamic_rule", dynamicRuleObject);
     }
 
@@ -99,12 +94,16 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     @GetMapping("/query")
     public ResponseResult queryDynamicRuleObject(@RequestParam(value = "name", required = false) String dynamicRuleName,
                                                  @RequestParam(value = "id", required = false) Integer dynamicRuleId,
+                                                 @RequestParam(value = "source_system", required = false) String protectObjectSourceSystem,
+                                                 @RequestParam(value = "creator", required = false) String creator,
                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                  @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
         log.info("分页查询动态规则: {}:{}:{}:{}", dynamicRuleName, dynamicRuleId, page, pageSize);
         //调用service查询
         return ResponseResult.ok()
-                .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId, page, pageSize));
+                .setData("success", true)
+                .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
+                        protectObjectSourceSystem, creator, page, pageSize));
     }
 
     //详情查看？？  就是按id查询吧

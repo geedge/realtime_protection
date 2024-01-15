@@ -140,6 +140,9 @@ public class WhiteListService {
     public Map<String, Object> updateWhiteListObjectAuditStatus(Integer id, Integer auditStatus) {
         //查询目前curStatus
         Integer originalAuditStatus = whiteListMapper.queryWhiteListObjectAuditStuatusById(id);
+        if (originalAuditStatus == null){
+            throw new IllegalArgumentException("cannot find audit status of whitelist " + id + ", maybe whitelist doesn't exist?");
+        }
         //判断是否可以修改
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
             throw new IllegalArgumentException("invalid audit status");

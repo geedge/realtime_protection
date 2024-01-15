@@ -60,6 +60,10 @@ public class StaticRuleObject {
     @ExcelIgnore
     @Schema(hidden = true)
     private Integer staticRuleUsedTaskId;
+    @JsonProperty("static_rule_used_task_status")
+    @ExcelIgnore
+    @Schema(hidden = true)
+    private Integer usedTaskStatus;
 
     @JsonProperty("static_rule_sip")
     @ExcelProperty("源IP地址")

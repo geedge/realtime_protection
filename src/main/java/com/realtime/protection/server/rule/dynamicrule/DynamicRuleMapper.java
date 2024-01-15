@@ -15,7 +15,7 @@ public interface DynamicRuleMapper {
     void newDynamicRule(@Param("object") DynamicRuleObject dynamicRuleObject);
 
     //新建动态规则与保护对象关联
-    void newDynamicRulProtectObjectConcat(long dynamicRuleId, Integer protectObjectId);
+    Boolean newDynamicRulProtectObjectConcat(long dynamicRuleId, Integer protectObjectId);
 
     void deleteDynamicRuleObject(Integer dynamicRuleId);
 
@@ -23,15 +23,21 @@ public interface DynamicRuleMapper {
 
     List<ProtectObject> queryProtectObjectByRuleId(Integer dynamicRuleId);
 
-    void updateDynamicRuleObject(@Param("dynamicRuleId") Integer dynamicRuleId, @Param("object") DynamicRuleObject dynamicRuleObject);
+    Boolean updateDynamicRuleObject(@Param("dynamicRuleId") Integer dynamicRuleId, @Param("object") DynamicRuleObject dynamicRuleObject);
 
     void newDynamicRules(List<DynamicRuleObject> dynamicRuleObjects);
 
     void deleteDynamicRules(List<Integer> dynamicRuleIds);
 
-    List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId, Integer page, Integer pageSize);
+    List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
+                                                   String sourceSystem, String creator,
+                                                   Integer page, Integer pageSize);
 
     void deleteDynamicRuleProtectObjectConcat(Integer dynamicRuleId);
 
     Template queryTemplateByRuleId(Integer dynamicRuleId);
+
+    boolean newDynamicRulProtectObjectsConcat(Integer dynamicRuleId, List<Integer> protectObjectIds);
+
+    boolean queryProtectObjectById(Integer protectObjectId);
 }

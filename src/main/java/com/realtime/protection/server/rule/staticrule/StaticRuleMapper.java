@@ -19,7 +19,7 @@ public interface StaticRuleMapper {
 
 
     //修改静态规则
-    void updateStaticRule(@Param("id") Integer id, @Param("object") StaticRuleObject object);
+    Integer updateStaticRule(@Param("id") Integer id, @Param("object") StaticRuleObject object);
 
     //按id查询静态规则
     //@Select("select * from t_static_rule where static_rule_id = #{id}")
@@ -27,6 +27,7 @@ public interface StaticRuleMapper {
 
     //多页查询静态规则
     List<StaticRuleObject> queryStaticRule(String static_rule_name, Integer static_rule_id,
+                                           String static_rule_create_username, String ip,
                                            Integer page, Integer pageSize);
 
 

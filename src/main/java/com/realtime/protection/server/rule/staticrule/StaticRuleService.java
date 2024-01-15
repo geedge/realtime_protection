@@ -73,12 +73,12 @@ public class StaticRuleService {
         return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, deleteStaticRulesFunction, staticRuleIds);
     }
 
-    public void updateStaticRule(Integer id, StaticRuleObject object) {
+    public Integer updateStaticRule(Integer id, StaticRuleObject object) {
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？
         //按id查询该静态规则的used_task_id字段，如果不为空，则不能修改
         object.setStaticRuleModifyTime(LocalDateTime.now());
         //修改静态规则
-        staticRuleMapper.updateStaticRule(id, object);
+        return staticRuleMapper.updateStaticRule(id, object);
     }
 
     public StaticRuleObject queryStaticRuleById(Integer id) {
@@ -89,9 +89,13 @@ public class StaticRuleService {
     /*
     分页查询
      */
-    public List<StaticRuleObject> queryStaticRule(String static_rule_name, Integer static_rule_id, Integer page, Integer pageSize) {
+    public List<StaticRuleObject> queryStaticRule(
+            String static_rule_name, Integer static_rule_id,
+            String creator, String ip,
+            Integer page, Integer pageSize) {
 
-        return staticRuleMapper.queryStaticRule(static_rule_name, static_rule_id, page, pageSize);
+        return staticRuleMapper.queryStaticRule(static_rule_name, static_rule_id,
+                creator, ip, page, pageSize);
     }
 
     public Boolean newStaticRuleObjects(List<StaticRuleObject> staticRuleList) {
@@ -126,6 +130,9 @@ public class StaticRuleService {
     @Transactional
     public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
         Integer originalAuditStatus = staticRuleMapper.queryAuditStatusById(id);
+        if (originalAuditStatus == null) {
+            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+        }
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
             throw new IllegalArgumentException("invalid audit status");
         }

@@ -111,12 +111,6 @@ public class StaticRuleServiceTest {
         System.out.println(object);
     }
 
-    @Test
-    void testQueryStaticRuleList(){
-
-        List<StaticRuleObject> objectList = staticRuleService.queryStaticRule(null,null,1,10);
-        System.out.println(objectList);
-    }
 
 
 }

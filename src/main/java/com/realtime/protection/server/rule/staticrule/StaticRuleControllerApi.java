@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -137,15 +138,21 @@ public interface StaticRuleControllerApi {
                     )
             },
             parameters = {
-                    @Parameter(name = "static_rule_name", description = "静态规则名称"),
-                    @Parameter(name = "static_rule_id", description = "静态规则id"),
+                    @Parameter(name = "name", description = "静态规则名称"),
+                    @Parameter(name = "id", description = "静态规则id"),
+                    @Parameter(name = "creator", description = "静态规则创建人"),
+                    @Parameter(name = "ip", description = "静态规则ip，匹配所有源和目的ip"),
                     @Parameter(name = "page", description = "页码"),
                     @Parameter(name = "pageSize", description = "每页条数")
             }
     )
-    ResponseResult queryStaticRule(String static_rule_name, Integer static_rule_id,
-                @RequestParam(defaultValue = "1") Integer page,
-                @RequestParam(defaultValue = "10") Integer pageSize);
+    ResponseResult queryStaticRule(@RequestParam(required = false) String static_rule_name,
+                                   @RequestParam(required = false) Integer static_rule_id,
+                                   @RequestParam(required = false) String static_rule_creator,
+                                   @RequestParam(required = false) String static_rule_ip,
+                                   @RequestParam(defaultValue = "1") Integer page,
+                                   @RequestParam(defaultValue = "10") Integer pageSize
+    );
 
 
     @Operation(
@@ -165,6 +172,8 @@ public interface StaticRuleControllerApi {
             }
     )
     ResponseResult deleteStaticRule(@PathVariable Integer id) ;
+
+
 
     @Operation(
             summary = "更新静态规则审批状态",

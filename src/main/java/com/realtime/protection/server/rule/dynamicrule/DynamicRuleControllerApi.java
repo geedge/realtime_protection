@@ -131,15 +131,18 @@ public interface DynamicRuleControllerApi {
             parameters = {
                     @Parameter(name = "name", description = "动态规则名称", example = "test"),
                     @Parameter(name = "id", description = "动态规则ID", example = "2"),
+                    @Parameter(name = "source_system", description = "来源你系统", example = "BW系统"),
+                    @Parameter(name = "creator", description = "创建人名称"),
                     @Parameter(name = "page", description = "页码", example = "1"),
                     @Parameter(name = "page_size", description = "每页大小", example = "10")
             }
     )
-    public ResponseResult queryDynamicRuleObject(
-            @RequestParam(value = "name", required = false) String dynamicRuleName,
-            @RequestParam(value = "id", required = false) Integer dynamicRuleId,
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) ;
+    ResponseResult queryDynamicRuleObject(@RequestParam(value = "name", required = false) String dynamicRuleName,
+                                          @RequestParam(value = "id", required = false) Integer dynamicRuleId,
+                                          @RequestParam(value = "source_system", required = false) String protectObjectSourceSystem,
+                                          @RequestParam(value = "creator", required = false) String creator,
+                                          @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                          @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize);
 
 
 }

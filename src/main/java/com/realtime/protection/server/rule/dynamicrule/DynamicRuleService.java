@@ -24,14 +24,21 @@ public class DynamicRuleService {
 
     @Transactional
     public Integer newDynamicRuleObject(DynamicRuleObject dynamicRule) {
+
         dynamicRuleMapper.newDynamicRule(dynamicRule);
 
-        Integer dynamicRuleId = dynamicRule.getDynamicRuleId();
-        if (dynamicRule.getProtectObjectIds() != null) {
-            dynamicRule.getProtectObjectIds().forEach(
-                    protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
-
+        //判断protectObject id是否有效
+        boolean ProtectObjIdValid = dynamicRule.getProtectObjectIds().stream()
+                .allMatch(
+                        protectObjectId ->  dynamicRuleMapper.queryProtectObjectById(protectObjectId)
+                );
+        if (!ProtectObjIdValid) {
+            throw new IllegalArgumentException("protect object id is invalid");
         }
+        Integer dynamicRuleId = dynamicRule.getDynamicRuleId();
+        dynamicRule.getProtectObjectIds().forEach(
+                protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
+
         return dynamicRuleId;
     }
 
@@ -77,12 +84,17 @@ public class DynamicRuleService {
         //查询DynamicRule
         DynamicRuleObject dynamicRuleObject = dynamicRuleMapper.queryDynamicRuleById(dynamicRuleId);
         if (dynamicRuleObject == null){
-            return null;
+            throw new IllegalArgumentException("dynamic rule id is invalid");
         }
         //查询DynamicRule关联的ProtectObject
         dynamicRuleObject.setProtectObjects(dynamicRuleMapper.queryProtectObjectByRuleId(dynamicRuleId));
         //查询DynamicRule关联的template详细信息
         Template template = dynamicRuleMapper.queryTemplateByRuleId(dynamicRuleId);
+        if (template == null){
+            //template在表中删除了，需要重新设置template（感觉这种情况不多见）
+            dynamicRuleObject.setDynamicRuleSourceSystem("need reset");
+            dynamicRuleObject.setDynamicRuleEventType("need reset");
+        }
         dynamicRuleObject.setDynamicRuleSourceSystem(template.getSourceSystem());
         dynamicRuleObject.setDynamicRuleEventType(template.getTemplateName());
 
@@ -90,20 +102,28 @@ public class DynamicRuleService {
     }
 
     @Transactional
-    public void updateDynamicRuleObject(Integer dynamicRuleId, DynamicRuleObject dynamicRuleObject) {
+    public boolean updateDynamicRuleObject(Integer dynamicRuleId, DynamicRuleObject dynamicRuleObject) {
         //更新DynamicRule
         dynamicRuleObject.setDynamicRuleModifyTime(LocalDateTime.now());
-        dynamicRuleMapper.updateDynamicRuleObject(dynamicRuleId, dynamicRuleObject);
-        if (dynamicRuleObject.getProtectObjectIds() == null || dynamicRuleObject.getProtectObjectIds().isEmpty()) {
-            return;
+
+        Boolean idValid = dynamicRuleMapper.updateDynamicRuleObject(dynamicRuleId, dynamicRuleObject);
+        if (!idValid) {
+            throw new IllegalArgumentException("dynamic rule id is invalid");
         }
         //删除DynamicRule关联的ProtectObject
         dynamicRuleMapper.deleteDynamicRuleProtectObjectConcat(dynamicRuleId);
         //新增DynamicRule关联的ProtectObject
-        dynamicRuleObject.getProtectObjectIds().forEach(
-                protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
-    }
+        boolean ProtectObjIdValid = dynamicRuleObject.getProtectObjectIds().stream()
+                .allMatch(
+                protectObjectId ->  dynamicRuleMapper.queryProtectObjectById(protectObjectId)
+                );
+        if (!ProtectObjIdValid) {
+            throw new IllegalArgumentException("protect object id is invalid");
+        }
 
+        return dynamicRuleMapper.newDynamicRulProtectObjectsConcat(dynamicRuleId, dynamicRuleObject.getProtectObjectIds());
+
+    }
     //    批量删除
     public Boolean deleteDynamicRuleObjects(List<Integer> dynamicRuleIds) {
         Function<DynamicRuleMapper, Function<List<Integer>, Boolean>> deleteDynamicRuleFunction =
@@ -134,7 +154,10 @@ public class DynamicRuleService {
 
 
     //分页查询基础的动态规则，暂时不返回关联的保护对象 
-    public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId, Integer page, Integer pageSize) {
-        return dynamicRuleMapper.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId, page, pageSize);
+    public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
+                                                          String templateSourceSystem,String creator,
+                                                          Integer page, Integer pageSize) {
+        return dynamicRuleMapper.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
+                templateSourceSystem, creator, page, pageSize);
     }
 }

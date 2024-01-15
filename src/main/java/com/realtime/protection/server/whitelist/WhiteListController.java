@@ -127,10 +127,13 @@ public class WhiteListController implements WhiteListControllerApi {
         object.setWhiteListId(id);
         Integer num = whiteListService.updateWhiteListObject(id, object);
         if (num == 0) {
-            return new ResponseResult(400, "id is invalid")
-                    .setData("whiteobj_list", null);
+            return ResponseResult.invalid("id is invalid")
+                    .setData("whiteobj_id", id)
+                    .setData("success", false);
         }
-        return ResponseResult.ok();
+        return ResponseResult.ok()
+                .setData("whiteobj_id", id)
+                .setData("success", true);
     }
 
 /*
@@ -155,15 +158,16 @@ public class WhiteListController implements WhiteListControllerApi {
     @GetMapping("/{id}/audit/{auditStatus}")
     public ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
                                                            @PathVariable Integer auditStatus) {
-        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
-            return new ResponseResult(400, "id or status is invalid")
-                    .setData("whiteobj_id", id)
-                    .setData("success", false);
-        }
+//        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+//            return new ResponseResult(400, "id or status is invalid")
+//                    .setData("whiteobj_id", id)
+//                    .setData("success", false);
+//        }
 
         return ResponseResult.ok()
                 .setDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
                 .setData("whiteobj_id", id);
+
     }
 
 

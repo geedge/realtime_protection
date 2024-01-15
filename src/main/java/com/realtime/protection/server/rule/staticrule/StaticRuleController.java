@@ -36,7 +36,9 @@ public class StaticRuleController implements StaticRuleControllerApi {
         log.info("新增静态规则: {}", object);
         //调用service新增
         staticRuleService.newStaticRuleObject(object);
-        return ResponseResult.ok().setData("static_rule_name", object.getStaticRuleName());
+        return ResponseResult.ok()
+                .setData("static_rule_id", object.getStaticRuleId())
+                .setData("static_rule_name", object.getStaticRuleName());
     }
 
     //以Excel方式批量导入静态规则
@@ -96,7 +98,10 @@ public class StaticRuleController implements StaticRuleControllerApi {
                                         @RequestBody @Valid StaticRuleObject object) {
         log.info("修改静态规则: {}", object);
         //调用service修改
-        staticRuleService.updateStaticRule(id, object);
+        Integer updateValid = staticRuleService.updateStaticRule(id, object);
+        if (updateValid == 0) {
+            return ResponseResult.invalid().setMessage("id is invalid");
+        }
         return ResponseResult.ok();
     }
 
@@ -109,6 +114,9 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult queryStaticRuleById(@PathVariable Integer id) {
         log.info("根据id查询静态规则:{}", id);
         StaticRuleObject object = staticRuleService.queryStaticRuleById(id);
+        if (object == null) {
+            return ResponseResult.invalid().setMessage("id is invalid");
+        }
         return ResponseResult.ok().setData("static_rule", object);
     }
 
@@ -117,13 +125,18 @@ public class StaticRuleController implements StaticRuleControllerApi {
      */
     @Override
     @GetMapping("/query")
-    public ResponseResult queryStaticRule(String static_rule_name, Integer static_rule_id,
+    public ResponseResult queryStaticRule(@RequestParam(name = "name", required = false) String static_rule_name,
+                                          @RequestParam(name = "id", required = false) Integer static_rule_id,
+                                          @RequestParam(name = "creator", required = false) String static_rule_creator,
+                                          @RequestParam(name = "ip", required = false) String static_rule_ip,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize
     ) {
         log.info("多查询静态规则: {},{},{},{}", static_rule_name, static_rule_id, page, pageSize);
         //调用service新增
-        List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(static_rule_name, static_rule_id, page, pageSize);
+        List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(
+                static_rule_name, static_rule_id,
+                static_rule_creator, static_rule_ip, page, pageSize);
         return ResponseResult.ok().setData("static_rule_list", pageResult);
     }
 

@@ -54,14 +54,15 @@ public class DynamicRuleServiceTest {
         object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
         object.setTemplateId(1);
-        //object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
+        object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
 
         dynamicRuleService.updateDynamicRuleObject(2, object);
     }
 
     @Test
     void testQueryDynamicRuleObject() {
-        List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject( null,null,1, 10);
+        List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject(
+                null,null,"1", null,1, 10);
         System.out.println(objects);
     }
 }

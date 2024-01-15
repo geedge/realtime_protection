@@ -98,17 +98,31 @@
         <result column="static_rule_create_username" property="staticRuleCreateUsername"/>
         <result column="static_rule_create_depart" property="staticRuleCreateDepart"/>
         <result column="static_rule_used_task_id" property="staticRuleUsedTaskId"/>
+        <result column="task_status" property="usedTaskStatus"/>
+        <result column="static_rule_audit_status" property="staticRuleAuditStatus"/>
+        <result column="static_rule_create_user_id" property="staticRuleCreateUserId"/>
+        <result column="static_rule_modify_time" property="staticRuleModifyTime"/>
 
         <result column="static_rule_sip" property="staticRuleSip"/>
+        <result column="static_rule_msip" property="staticRuleMsip"/>
         <result column="static_rule_sport" property="staticRuleSport"/>
+        <result column="static_rule_msport" property="staticRuleMsport"/>
         <result column="static_rule_dip" property="staticRuleDip"/>
         <result column="static_rule_mdip" property="staticRuleMdip"/>
         <result column="static_rule_dport" property="staticRuleDport"/>
+        <result column="static_rule_mdport" property="staticRuleMdport"/>
         <result column="static_rule_protocol" property="staticRuleProtocol"/>
+        <result column="static_rule_mprotocol" property="staticRuleMprotocol"/>
+        <result column="static_rule_dns" property="staticRuleDns"/>
+        <result column="static_rule_url" property="staticRuleURL"/>
+        <result column="static_rule_priority" property="staticRulePriority"/>
+        <result column="static_rule_range" property="staticRuleRange"/>
+        <result column="static_rule_frequency" property="staticRuleFrequency"/>
     </resultMap>
 
     <select id="queryStaticRule"  resultMap="staticRuleMap">
         SELECT * FROM t_static_rule
+        left join t_task on t_static_rule.static_rule_used_task_id = t_task.task_id
         <where>
             <if test="static_rule_name != null and static_rule_name != ''">
                 static_rule_name like concat('%', #{static_rule_name}, '%')
@@ -116,14 +130,24 @@
             <if test="static_rule_id != null">
                 AND static_rule_id = #{static_rule_id}
             </if>
+            <if test="static_rule_create_username != null and static_rule_create_username != ''">
+                AND static_rule_create_username like concat('%', #{static_rule_create_username}, '%')
+            </if>
+            <if test="ip != null and ip != ''">
+                AND (static_rule_sip = INET_ATON(#{ip}) or static_rule_msip = INET_ATON(#{ip})
+                or static_rule_dip = INET_ATON(#{ip}) or static_rule_mdip = INET_ATON(#{ip}))
+            </if>
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
     <select id="queryStaticRuleById" resultMap="staticRuleMap">
-        SELECT * FROM t_static_rule
-        WHERE static_rule_id = #{static_rule_id}
+        SELECT *
+        FROM t_static_rule
+        left join t_task on t_static_rule.static_rule_used_task_id = t_task.task_id
+        WHERE static_rule_id = #{id}
     </select>
+
     <select id="queryAuditStatusById" resultType="java.lang.Integer">
         SELECT static_rule_audit_status FROM t_static_rule
         WHERE static_rule_id = #{id}
