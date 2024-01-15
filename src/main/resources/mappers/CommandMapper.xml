@@ -3,38 +3,78 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.realtime.protection.server.command.CommandMapper">
-    <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.Command">
-        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP,
-                              MASK_SRC_PORT,
-                              MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
-                              CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
-        values (UUID(), DEFAULT,
-                #{command.fiveTupleWithMask.sourceIP},
-                #{command.fiveTupleWithMask.sourcePort}, #{command.fiveTupleWithMask.destinationIP},
-                #{command.fiveTupleWithMask.destinationPort},
-                #{command.fiveTupleWithMask.protocolNum}, #{command.fiveTupleWithMask.maskSourceIP},
-                #{command.fiveTupleWithMask.maskSourcePort},
-                #{command.fiveTupleWithMask.maskDestinationIP}, #{command.fiveTupleWithMask.maskDestinationPort}, TRUE,
-                #{command.validTime}, #{command.invalidTime}, FALSE, NOW(), NOW(), FALSE, #{command.taskId})
+    <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
+                              PROTOCOL,
+                              MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
+                              INVALID_TIME, IS_VALID,
+                              SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
+        values (UUID(), #{info.taskId}, #{info.taskAct}, #{info.frequency},
+                #{info.fiveTupleWithMask.addrType},
+                #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
+                #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},
+                #{info.fiveTupleWithMask.protocolNum},
+                #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
+                #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
+                #{info.fiveTupleWithMask.maskProtocol},
+                #{info.startTime}, #{info.endTime}, TRUE, 0, 0,
+                NOW(), NOW(), FALSE)
     </insert>
 
-    <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.Command">
-        insert into t_command(COMMAND_ID, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL, MASK_SRC_IP,
-        MASK_SRC_PORT,
-        MASK_DST_IP, MASK_DST_PORT, IS_VALID, VALID_TIME, INVALID_TIME, IS_SENT,
-        CREATE_TIME, LAST_UPDATE, IS_DELETED, TASK_ID)
+    <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
+        PROTOCOL,
+        MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
+        SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
         values
-        <foreach collection="commands" item="command" separator=",">
-            (UUID(), DEFAULT,
-            #{command.fiveTupleWithMask.sourceIP},
-            #{command.fiveTupleWithMask.sourcePort}, #{command.fiveTupleWithMask.destinationIP},
-            #{command.fiveTupleWithMask.destinationPort},
-            #{command.fiveTupleWithMask.protocolNum}, #{command.fiveTupleWithMask.maskSourceIP},
-            #{command.fiveTupleWithMask.maskSourcePort},
-            #{command.fiveTupleWithMask.maskDestinationIP}, #{command.fiveTupleWithMask.maskDestinationPort}, TRUE,
-            #{command.validTime}, #{command.invalidTime}, FALSE, NOW(), NOW(), FALSE, #{command.taskId})
+        <foreach collection="command_infos" item="info" separator=",">
+            (UUID(), #{info.taskId}, #{info.taskAct}, #{info.frequency},
+            #{info.fiveTupleWithMask.addrType},
+            #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
+            #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},
+            #{info.fiveTupleWithMask.protocolNum},
+            #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
+            #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
+            #{info.fiveTupleWithMask.maskProtocol},
+            #{info.startTime}, #{info.endTime}, TRUE, 0, 0,
+            NOW(), NOW(), FALSE
+            )
         </foreach>
     </insert>
+
+    <resultMap id="commandStatMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        <id column="COMMAND_ID" property="UUID"/>
+        <result column="TASK_ACT" property="taskAct"/>
+        <result column="SEND_TIMES" property="commandSentTimes"/>
+        <result column="SUCCESS_TIMES" property="commandSuccessTimes"/>
+        <result column="FIRST_SEND_TIME" property="earliestSendTime"/>
+        <result column="LAST_SEND_TIME" property="latestSendTime"/>
+
+        <association property="fiveTupleWithMask">
+            <result column="SRC_IP" property="sourceIP"/>
+            <result column="SRC_PORT" property="sourcePort"/>
+            <result column="DST_IP" property="destinationIP"/>
+            <result column="DST_PORT" property="destinationPort"/>
+            <result column="PROTOCOL" property="protocolNum"/>
+        </association>
+    </resultMap>
+
+    <select id="queryCommandInfoByTaskId" resultMap="commandStatMap">
+        SELECT COMMAND_ID,
+               TASK_ACT,
+               SEND_TIMES,
+               SUCCESS_TIMES,
+               FIRST_SEND_TIME,
+               LASt_SEND_TIME,
+               SRC_IP,
+               SRC_PORT,
+               DST_IP,
+               DST_PORT,
+               PROTOCOL
+        FROM t_command
+        WHERE TASK_ID = #{task_id}
+          AND IS_DELETED = FALSE
+    </select>
 
     <update id="stopCommandsByTaskId">
         UPDATE t_command
@@ -57,5 +97,6 @@
         SET IS_DELETED  = TRUE,
             LAST_UPDATE = NOW()
         WHERE TASK_ID = #{task_id}
+          AND IS_DELETED = FALSE
     </update>
 </mapper>

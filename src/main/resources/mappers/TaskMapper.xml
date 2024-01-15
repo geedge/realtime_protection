@@ -18,27 +18,25 @@
     <update id="newTaskStaticRuleConcat">
         UPDATE t_static_rule
         SET static_rule_used_task_id = #{task_id}
-        <where>
-            <if test="rule_ids != null and rule_ids.size() > 0">
-                AND static_rule_id IN
-                <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
-                    #{rule_id}
-                </foreach>
-            </if>
-        </where>
+        WHERE
+        <if test="rule_ids != null and rule_ids.size() > 0">
+            static_rule_id IN
+            <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
+                #{rule_id}
+            </foreach>
+        </if>
     </update>
 
     <update id="newTaskDynamicRuleConcat">
         UPDATE t_dynamic_rule
         SET dynamic_rule_used_task_id = #{task_id}
-        <where>
-            <if test="rule_ids != null and rule_ids.size() > 0">
-                AND dynamic_rule_id IN
-                <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
-                    #{rule_id}
-                </foreach>
-            </if>
-        </where>
+        WHERE
+        <if test="rule_ids != null and rule_ids.size() > 0">
+            dynamic_rule_id IN
+            <foreach collection="rule_ids" item="rule_id" open="(" close=")" separator=",">
+                #{rule_id}
+            </foreach>
+        </if>
     </update>
 
     <resultMap id="taskMap" type="com.realtime.protection.configuration.entity.task.Task">
@@ -55,19 +53,10 @@
         <result column="task_create_username" property="taskCreateUsername"/>
         <result column="task_create_depart" property="taskCreateDepart"/>
 
-        <collection property="staticRuleIds" ofType="java.lang.Integer">
-            <id column="static_rule_id"/>
-        </collection>
-
-        <collection property="dynamicRuleIds" ofType="java.lang.Integer">
-            <id column="dynamic_rule_id"/>
-        </collection>
     </resultMap>
 
     <select id="queryTasks" resultMap="taskMap">
         SELECT * FROM t_task
-        LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
-        LEFT JOIN realtime_protection.t_dynamic_rule tdr on t_task.task_id = tdr.dynamic_rule_used_task_id
         <where>
             <if test="task_status != null">
                 AND task_status = #{task_status}
@@ -79,17 +68,27 @@
                 AND task_name LIKE CONCAT('%', #{task_name}, '%')
             </if>
             <if test="task_creator != null">
-                AND task_create_username = #{task_creator}
+                AND task_create_username LIKE CONCAT('%', #{task_creator}, '%')
             </if>
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
 
+    <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
+        SELECT static_rule_id
+        FROM t_static_rule
+        WHERE static_rule_used_task_id = #{task_id}
+    </select>
+
+    <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">
+        SELECT dynamic_rule_id
+        FROM t_dynamic_rule
+        WHERE dynamic_rule_used_task_id = #{task_id}
+    </select>
+
     <select id="queryTask" resultMap="taskMap">
         SELECT *
         FROM t_task
-                 LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
-                 LEFT JOIN realtime_protection.t_dynamic_rule tdr on t_task.task_id = tdr.dynamic_rule_used_task_id
         WHERE t_task.task_id = #{task_id}
     </select>
 
@@ -152,9 +151,16 @@
     </delete>
 
     <resultMap id="staticCommandMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
-        <result column="task_act" property="operation"/>
+        <result column="task_name" property="taskName"/>
+        <result column="task_create_username" property="taskCreateUsername"/>
+        <result column="task_create_depart" property="taskCreateDepart"/>
+        <result column="task_create_userid" property="taskCreateUserId"/>
+
         <result column="task_id" property="taskId"/>
         <result column="static_rule_id" property="ruleId"/>
+
+        <result column="task_act" property="taskAct"/>
+        <result column="task_type" property="taskType"/>
         <result column="static_rule_frequency" property="frequency"/>
         <result column="task_start_time" property="startTime"/>
         <result column="task_end_time" property="endTime"/>
@@ -170,15 +176,38 @@
             <result column="static_rule_msport" property="maskSourcePort"/>
             <result column="static_rule_mdip" property="maskDestinationIP"/>
             <result column="static_rule_mdport" property="maskDestinationPort"/>
+            <result column="static_rule_mprotocol" property="maskProtocol"/>
         </association>
     </resultMap>
 
-    <select id="getStaticCommands" resultMap="staticCommandMap">
-        SELECT t_task.task_id,
+    <insert id="newTaskUsingCommandInfo" useGeneratedKeys="true" keyProperty="taskId"
+            parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        INSERT INTO t_task(task_name, task_start_time, task_end_time, task_create_time, task_modify_time, task_type,
+                           task_act, task_create_username, task_create_depart, task_create_userid)
+            VALUE
+            (
+             #{info.taskName}, #{info.startTime}, #{info.endTime}, NOW(), NOW(), #{info.taskType},
+             #{info.taskAct}, #{info.taskCreateUsername}, #{info.taskCreateDepart}, #{info.taskCreateUserId}
+                );
+    </insert>
+
+    <select id="getStaticCommandInfos" resultMap="staticCommandMap">
+        SELECT t_task.task_name,
+
+               t_task.task_id,
                tsr.static_rule_id,
+
+               t_task.task_create_username,
+               t_task.task_create_depart,
+               t_task.task_create_userid,
+
+               t_task.task_type,
                t_task.task_act,
+               tsr.static_rule_frequency,
+
                t_task.task_start_time,
                t_task.task_end_time,
+
                INET_NTOA(tsr.static_rule_sip)  as static_rule_sip,
                tsr.static_rule_sport,
                INET_NTOA(tsr.static_rule_dip)  as static_rule_dip,
@@ -188,7 +217,7 @@
                tsr.static_rule_msport,
                INET_NTOA(tsr.static_rule_mdip) as static_rule_mdip,
                tsr.static_rule_mdport,
-               tsr.static_rule_frequency
+               tsr.static_rule_mprotocol
         FROM t_task
                  LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
         WHERE task_id = #{task_id}

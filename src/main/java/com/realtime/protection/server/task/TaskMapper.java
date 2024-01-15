@@ -12,10 +12,12 @@ public interface TaskMapper {
     void newTask(@Param("task") Task task);
 
     void newTaskStaticRuleConcat(@Param("task_id") Long taskId,
-                                 @Param("rule_ids") List<Long> staticRuleIds);
+                                 @Param("rule_ids") List<Integer> staticRuleIds);
 
     void newTaskDynamicRuleConcat(@Param("task_id") Long taskId,
-                                  @Param("rule_ids") List<Long> dynamicRuleIds);
+                                  @Param("rule_ids") List<Integer> dynamicRuleIds);
+
+    void newTaskUsingCommandInfo(@Param("info") TaskCommandInfo taskCommandInfo);
 
     List<Task> queryTasks(@Param("task_status") Integer taskStatus, @Param("task_type") String task_type,
                           @Param("task_name") String taskName, @Param("task_creator") String taskCreator,
@@ -35,9 +37,13 @@ public interface TaskMapper {
 
     Boolean changeTaskStatus(@Param("task_id") Long taskId, @Param("state") Integer stateNum);
 
-    List<TaskCommandInfo> getStaticCommands(@Param("task_id") Long taskId);
+    List<TaskCommandInfo> getStaticCommandInfos(@Param("task_id") Long taskId);
 
     Integer queryTaskAuditStatus(@Param("task_id") Long taskId);
 
     Integer queryTaskStatus(@Param("task_id") Long taskId);
+
+    List<Integer> queryDynamicRuleIdsFromTaskId(@Param("task_id") Long taskId);
+
+    List<Integer> queryStaticRuleIdsFromTaskId(@Param("task_id") Long taskId);
 }

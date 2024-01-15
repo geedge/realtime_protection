@@ -52,24 +52,24 @@ public class Task {
     private String taskAct;
 
     @JsonProperty("task_create_username")
-    @Schema(hidden = true)
+    @Schema(description = "任务创建人名称", accessMode = Schema.AccessMode.READ_ONLY)
     private String taskCreateUsername;
 
     @JsonProperty("task_create_depart")
-    @Schema(hidden = true)
+    @Schema(description = "任务创建人处室", accessMode = Schema.AccessMode.READ_ONLY)
     private String taskCreateDepart;
 
     @JsonProperty("task_create_userid")
-    @Schema(hidden = true)
-    private Long taskCreateUserId;
+    @Schema(description = "任务创建人ID", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer taskCreateUserId;
 
     @JsonProperty("static_rule_ids")
     @Schema(description = "静态规则ID列表，动态和静态至少存在1个规则", example = "[10, 12]")
-    private List<Long> staticRuleIds;
+    private List<Integer> staticRuleIds;
 
     @JsonProperty("dynamic_rule_ids")
     @Schema(description = "动态规则ID列表，动态和静态至少存在1个规则", example = "[20, 30]")
-    private List<Long> dynamicRuleIds;
+    private List<Integer> dynamicRuleIds;
 
     @JsonProperty("task_status")
     @Schema(description = "任务状态（0为未启动，1为生成中，2为运行中，3为暂停中，4为已停止，5为已结束，6为失败）", accessMode = Schema.AccessMode.READ_ONLY)

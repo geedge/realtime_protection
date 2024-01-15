@@ -1,6 +1,7 @@
 package com.realtime.protection.server.task;
 
 import com.realtime.protection.configuration.entity.task.Task;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,24 @@ public interface TaskControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务信息")
     )
     ResponseResult newTask(@RequestBody @Valid Task task);
+
+    // API推送Endpoint
+    @PostMapping("/api/new")
+    @Operation(
+            summary = "任务推送外部API",
+            description = "提供给外部的任务推送API",
+            responses = {
+                    @ApiResponse(
+                            description = "返回外部任务推送结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务推送信息")
+    )
+    ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo) throws DorisStartException;
 
     @GetMapping("/query")
     @Operation(
@@ -162,4 +181,23 @@ public interface TaskControllerApi {
     )
     ResponseResult changeTaskStatus(@PathVariable @NotNull @Min(0) @Max(6) Integer stateNum,
                                     @PathVariable @NotNull Long taskId) throws DorisStartException;
+
+    @GetMapping("/{taskId}/commands")
+    @Operation(
+            summary = "获得任务已推送指令的相关数据",
+            description = "获得任务已推送指令的相关数据，包括最新下发时间、首次下发时间、下发次数、下发成功次数等",
+            responses = {
+                    @ApiResponse(
+                            description = "返回任务已推送指令的相关数据",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "taskId", description = "任务ID")
+            }
+    )
+    ResponseResult queryCommandInfoByTaskId(@PathVariable Long taskId);
 }

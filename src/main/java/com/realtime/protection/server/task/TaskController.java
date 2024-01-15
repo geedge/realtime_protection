@@ -1,9 +1,11 @@
 package com.realtime.protection.server.task;
 
 import com.realtime.protection.configuration.entity.task.Task;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.EntityUtils;
+import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.status.StateChangeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -18,10 +20,12 @@ import java.util.List;
 public class TaskController implements TaskControllerApi {
 
     private final TaskService taskService;
+    private final CommandService commandService;
     private final StateChangeService stateChangeService;
 
-    public TaskController(TaskService taskService, StateChangeService stateChangeService) {
+    public TaskController(TaskService taskService, CommandService commandService, StateChangeService stateChangeService) {
         this.taskService = taskService;
+        this.commandService = commandService;
         this.stateChangeService = stateChangeService;
     }
 
@@ -43,6 +47,24 @@ public class TaskController implements TaskControllerApi {
                 .setData("success", false);
     }
 
+    // API推送Endpoint
+    @Override
+    @PostMapping("/api/new")
+    public ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo) {
+        Long taskId = taskService.newTaskUsingCommandInfo(taskCommandInfo);
+        if (taskId <= 0) {
+            return ResponseResult.invalid()
+                    .setData("taskId", -1)
+                    .setData("success", false);
+        }
+
+        commandService.createCommand(taskCommandInfo);
+
+        return ResponseResult.ok()
+                .setData("taskId", taskId)
+                .setData("success", true);
+    }
+
     @Override
     @GetMapping("/query")
     public ResponseResult queryTasks(@RequestParam(value = "task_status", required = false) Integer taskStatus,
@@ -62,7 +84,7 @@ public class TaskController implements TaskControllerApi {
         Task task = taskService.queryTask(id);
 
         if (task == null) {
-            return ResponseResult.invalid().setMessage("Task ID is invalid");
+            return ResponseResult.invalid().setMessage("无效Task ID，也许该ID对应的任务不存在？");
         }
 
         return ResponseResult.ok()
@@ -103,7 +125,16 @@ public class TaskController implements TaskControllerApi {
                                            @PathVariable @NotNull Long taskId) throws DorisStartException {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
-                .setData("success", stateChangeService.changeState(stateNum, taskId))
+                // 外部修改状态，需要进行状态检查
+                .setData("success", stateChangeService.changeState(stateNum, taskId, false))
                 .setData("status_now", taskService.queryTaskStatus(taskId));
+    }
+
+    @Override
+    @GetMapping("/{taskId}/commands")
+    public ResponseResult queryCommandInfoByTaskId(@PathVariable Long taskId) {
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("commands", commandService.queryCommandInfoByTaskId(taskId));
     }
 }

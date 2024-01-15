@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -36,7 +38,12 @@ public class GlobalExceptionHandler {
 
 
     @Order(2)
-    @ExceptionHandler(value = {PersistenceException.class, DuplicateKeyException.class})
+    @ExceptionHandler(value = {
+            PersistenceException.class,
+            DuplicateKeyException.class,
+            SQLException.class,
+            SQLIntegrityConstraintViolationException.class
+    })
     public ResponseResult handleSQLException(Exception e) {
         log.info("遭遇数据库异常：" + e.getMessage());
         return ResponseResult.invalid().setMessage(
@@ -89,7 +96,8 @@ public class GlobalExceptionHandler {
                 .setMessage("Doris数据库指令生成遭遇异常：" + e.getMessage());
 
         try {
-            stateChangeService.changeState(StateEnum.FAILED.getStateNum(), e.taskId);
+            // 内部修改状态，可以跳过一切状态检查
+            stateChangeService.changeState(StateEnum.FAILED.getStateNum(), e.taskId, true);
         } catch (Exception another) {
             responseResult.setAnother(ResponseResult.error().setMessage(e.getMessage()));
         }

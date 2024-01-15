@@ -29,7 +29,7 @@ public class ProtectObject {
     private String protectObjectSystemName;
 
     @JsonProperty("proobj_ip_address")
-    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
+    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "无效IPv4地址")
     @ExcelProperty("IP地址")
     @Schema(description = "防护对象IPv4地址", example = "192.168.0.1")
     private String protectObjectIPAddress;

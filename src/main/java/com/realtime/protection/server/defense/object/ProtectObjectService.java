@@ -78,7 +78,6 @@ public class ProtectObjectService {
                 return false;
             }
             boolean success = true;
-            Integer result;
 
             List<Integer> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(batchSize);
             for (Integer protectObjectId : list) {

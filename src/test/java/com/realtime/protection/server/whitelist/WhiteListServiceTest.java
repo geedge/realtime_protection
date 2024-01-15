@@ -1,7 +1,8 @@
 package com.realtime.protection.server.whitelist;
 
-import com.realtime.protection.configuration.entity.task.Command;
+import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-class WhiteListServiceTest {
+class WhiteListServiceTest extends ProtectionApplicationTests {
 
     private final WhiteListService whiteListService;
     private WhiteListObject whiteListObject;
@@ -78,13 +79,13 @@ class WhiteListServiceTest {
     @Test
     void testWhiteListCommandJudge() {
         FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
-        Command command = new Command();
+        TaskCommandInfo taskCommandInfo = new TaskCommandInfo();
         fiveTupleWithMask.setDestinationIP("128.1.1.123");
         fiveTupleWithMask.setMaskDestinationIP("255.255.255.0");
         fiveTupleWithMask.setDestinationPort("80");
-        command.setFiveTupleWithMask(fiveTupleWithMask);
+        taskCommandInfo.setFiveTupleWithMask(fiveTupleWithMask);
 
-        List<WhiteListObject> whitelists = whiteListService.whiteListCommandJudge(command);
+        List<WhiteListObject> whitelists = whiteListService.whiteListCommandJudge(taskCommandInfo);
         System.out.println(whitelists);
     }
 
