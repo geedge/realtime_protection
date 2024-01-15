@@ -38,7 +38,7 @@ public class WhiteListController implements WhiteListControllerApi {
     //post
     @Override
     @PostMapping("/upload")
-    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException  {
+    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), WhiteListObject.class,
                 new WhiteListDataListener(whiteListService)).sheet().doRead();
         return ResponseResult.ok();

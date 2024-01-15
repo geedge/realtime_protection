@@ -60,7 +60,7 @@ public class TaskService {
     public Boolean changeTaskAuditStatus(Long taskId, Integer taskAuditStatus) {
         Integer originalAuditStatus = taskMapper.queryTaskAuditStatus(taskId);
         if (originalAuditStatus == null) {
-            throw new IllegalArgumentException("cannot find audit status of task " + taskId + ", maybe task doesn't exist?");
+            throw new IllegalArgumentException("无法找到任务ID为" + taskId + "的任务，也许任务不存在？");
         }
 
         if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))

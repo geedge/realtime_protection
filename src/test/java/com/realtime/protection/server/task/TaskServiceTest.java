@@ -44,12 +44,15 @@ class TaskServiceTest {
 
     @Test
     void testNewTaskSuccess() {
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 100; i++) {
             LocalDateTime taskStartTime = LocalDateTime.now().plusDays(i);
-            LocalDateTime taskEndTime = LocalDateTime.now().plusDays(i+10);
+            LocalDateTime taskEndTime = LocalDateTime.now().plusDays(i + 10);
             task.setTaskStartTime(taskStartTime);
             task.setTaskEndTime(taskEndTime);
-            assertDoesNotThrow(() -> {Long taskId = taskService.newTask(task); assertTrue(taskId > 0);});
+            assertDoesNotThrow(() -> {
+                Long taskId = taskService.newTask(task);
+                assertTrue(taskId > 0);
+            });
             assertTrue(task.getTaskId() > 0);
         }
     }
@@ -82,7 +85,7 @@ class TaskServiceTest {
 
     @Test
     void testDeleteTask() {
-        long  testNum = taskService.queryTasks(null, null, null, null, 1, 10)
+        long testNum = taskService.queryTasks(null, null, null, null, 1, 10)
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));

@@ -11,13 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class WhiteListServiceTest {
 
     private final WhiteListService whiteListService;
     private WhiteListObject whiteListObject;
+
     @Autowired
     WhiteListServiceTest(WhiteListService whiteListService) {
         this.whiteListService = whiteListService;
@@ -59,12 +60,12 @@ class WhiteListServiceTest {
         //object.setWhiteListId(7);
         object.setWhiteListName("test_update");
 
-        whiteListService.updateWhiteListObject(7,object);
+        whiteListService.updateWhiteListObject(7, object);
     }
 
     @Test
     void testExistWhiteList() {
-        List<Integer> ruleIds = List.of(6,7,8);
+        List<Integer> ruleIds = List.of(6, 7, 8);
 //        List<String> ip_list = whiteListService.existWhiteListObject(ruleIds);
 //        System.out.println(ip_list);
     }

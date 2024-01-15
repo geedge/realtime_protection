@@ -160,6 +160,6 @@ public interface TaskControllerApi {
                     @Parameter(name = "stateNum", description = "任务状态编号任务状态（0为未启动，1为生成中，2为运行中，3为暂停中，4为已停止，5为已结束，6为失败）")
             }
     )
-    ResponseResult changeTaskStatus(@PathVariable @NotNull Integer stateNum,
+    ResponseResult changeTaskStatus(@PathVariable @NotNull @Min(0) @Max(6) Integer stateNum,
                                     @PathVariable @NotNull Long taskId) throws DorisStartException;
 }

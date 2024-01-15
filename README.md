@@ -1,13 +1,16 @@
 # SSFY系统 README
 
 ## 项目文件夹结构说明：
+
 目前整体分为两大板块：**configuration**和**server**
 
 ### Configuration
+
 所有业务的配置，包括切面、拦截器、中间件、消息处理等配置全部放置于此处。
 任何带@Configuration注解的配置均放置于此
 
 ### server
+
 server主要存放所有的业务逻辑以及Mapper接口。业务逻辑和Mapper需要按照业务进行划分进行分开放置
 
 ---

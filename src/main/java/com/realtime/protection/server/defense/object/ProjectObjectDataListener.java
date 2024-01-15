@@ -35,7 +35,7 @@ public class ProjectObjectDataListener implements ReadListener<ProtectObject> {
     private void saveData() {
         Boolean success = protectObjectService.newProtectObjects(cachedDataList);
         if (!success) {
-            throw new RuntimeException("Error reading data in /proobj/new");
+            throw new RuntimeException("在/proobj/upload中读取数据时出现了错误");
         }
     }
 }

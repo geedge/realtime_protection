@@ -53,7 +53,7 @@ public class TemplateController implements TemplateControllerApi {
         Template template = templateService.queryTemplate(templateId);
         if (template == null) {
             return ResponseResult.invalid()
-                    .setMessage("invalid templateId, maybe this template doesn't exist?");
+                    .setMessage("无效的策略模板ID，也许该模板不存在？");
         }
         return ResponseResult.ok()
                 .setDataMap(EntityUtils.entityToMap(template));

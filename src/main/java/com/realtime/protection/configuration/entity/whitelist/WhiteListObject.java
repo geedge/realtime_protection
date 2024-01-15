@@ -33,7 +33,7 @@ public class WhiteListObject {
     @JsonProperty("whiteobj_ip_address")
     @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
     @ExcelProperty("IP地址")
-    @Schema(description = "白名单对象IPv4地址", example = "1.1.1.1" , requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "白名单对象IPv4地址", example = "1.1.1.1", requiredMode = Schema.RequiredMode.REQUIRED)
     private String whiteListIP;
 
     @NotNull

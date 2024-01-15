@@ -25,7 +25,7 @@ public interface WhiteListMapper {
     @Delete("delete from t_white_list where white_list_id = #{id}")
     Integer deleteWhiteListObject(Integer id);
 
-    Integer updateWhiteListObject(@Param("id")Integer id, @Param("object") WhiteListObject object);
+    Integer updateWhiteListObject(@Param("id") Integer id, @Param("object") WhiteListObject object);
 
     List<String> existWhiteListObject(@Param("staticRuleObject") StaticRuleObject staticRuleObject);
 

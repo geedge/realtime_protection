@@ -18,7 +18,7 @@ public class ProtectObject {
     private Integer protectObjectId;
 
     @JsonProperty("proobj_name")
-    @NotNull(message = "proobj_name should not be empty.")
+    @NotNull(message = "proobj_name字段不能为空。")
     @ExcelProperty("名称")
     @Schema(description = "防护对象名称", example = "静态对象测试")
     private String protectObjectName;
@@ -35,21 +35,21 @@ public class ProtectObject {
     private String protectObjectIPAddress;
 
     @JsonProperty("proobj_port")
-    @NotNull(message = "proobj_port should not be empty.")
-    @Max(value = 65535, message = "port should not be more than 65535")
-    @Min(value = 1, message = "port should not be less than 1")
+    @NotNull(message = "proobj_port字段不能为空。")
+    @Max(value = 65535, message = "端口号不能大于65535。")
+    @Min(value = 1, message = "端口号不能小于1。")
     @ExcelProperty("端口")
     @Schema(description = "防护对象端口", maximum = "65535", minimum = "1", example = "8080")
     private Integer protectObjectPort;
 
     @JsonProperty("proobj_url")
-    @NotNull(message = "proobj_url should not be empty.")
+    @NotNull(message = "proobj_url字段不能为空。")
     @ExcelProperty("URL")
     @Schema(description = "防护对象URL", example = "alice.bob.com")
     private String protectObjectURL;
 
     @JsonProperty("proobj_protocol")
-    @NotNull(message = "proobj_protocol should not be empty.")
+    @NotNull(message = "proobj_protocol字段不能为空")
     @ExcelProperty("协议")
     @Schema(description = "防护对象网络协议（目前仅可以填写TCP或UDP）", example = "TCP")
     private String protectObjectProtocol;

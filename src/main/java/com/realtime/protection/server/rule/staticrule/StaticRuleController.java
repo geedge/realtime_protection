@@ -95,7 +95,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     @Override
     @PostMapping("/{id}/update")
     public ResponseResult updateStaticRule(@PathVariable Integer id,
-                                        @RequestBody @Valid StaticRuleObject object) {
+                                           @RequestBody @Valid StaticRuleObject object) {
         log.info("修改静态规则: {}", object);
         //调用service修改
         Integer updateValid = staticRuleService.updateStaticRule(id, object);
