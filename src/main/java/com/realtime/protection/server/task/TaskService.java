@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@DS("mysql")
 public class TaskService {
     private final TaskMapper taskMapper;
 
@@ -19,6 +20,10 @@ public class TaskService {
 
     @Transactional
     public Long newTask(Task task) {
+        task.setTaskCreateUserId(1);
+        task.setTaskCreateUsername("xxx");
+        task.setTaskCreateDepart("xxx");
+
         taskMapper.newTask(task);
 
         if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty())
@@ -30,14 +35,33 @@ public class TaskService {
         return task.getTaskId();
     }
 
+    @Transactional
     public List<Task> queryTasks(Integer taskStatus,
                                  String taskType, String taskName, String taskCreator,
                                  Integer page, Integer pageSize) {
-        return taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
+        List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
+        for (Task task : tasks) {
+            if (task == null) {
+                continue;
+            }
+            task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId()));
+            task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId()));
+        }
+
+        return tasks;
     }
 
+    @Transactional
     public Task queryTask(Long id) {
-        return taskMapper.queryTask(id);
+        Task task = taskMapper.queryTask(id);
+        if (task == null) {
+            return null;
+        }
+
+        task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId()));
+        task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId()));
+
+        return task;
     }
 
     @Transactional
@@ -74,13 +98,13 @@ public class TaskService {
         return taskMapper.deleteTask(taskId);
     }
 
-    @DS("mysql")
+
     public Boolean changeTaskStatus(Long taskId, Integer stateNum) {
         return taskMapper.changeTaskStatus(taskId, stateNum);
     }
 
     public List<TaskCommandInfo> getStaticCommandInfos(Long taskId) {
-        return taskMapper.getStaticCommands(taskId);
+        return taskMapper.getStaticCommandInfos(taskId);
     }
 
     public Integer queryTaskAuditStatus(Long taskId) {
@@ -89,5 +113,10 @@ public class TaskService {
 
     public Integer queryTaskStatus(Long taskId) {
         return taskMapper.queryTaskStatus(taskId);
+    }
+
+    public Long newTaskUsingCommandInfo(TaskCommandInfo taskCommandInfo) {
+        taskMapper.newTaskUsingCommandInfo(taskCommandInfo);
+        return taskCommandInfo.getTaskId();
     }
 }

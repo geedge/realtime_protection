@@ -1,5 +1,6 @@
 package com.realtime.protection.server.task;
 
+import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class TaskServiceTest {
+class TaskServiceTest extends ProtectionApplicationTests {
     private final TaskService taskService;
     private Task task;
 
@@ -35,9 +36,9 @@ class TaskServiceTest {
         task.setTaskEndTime(taskEndTime);
         task.setTaskAct("阻断");
         task.setTaskType(1);
-        task.setStaticRuleIds(List.of(1L, 2L));
+        task.setStaticRuleIds(List.of(1, 2));
         task.setDynamicRuleIds(List.of());
-        task.setTaskCreateUserId(1L);
+        task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
     }
@@ -76,7 +77,7 @@ class TaskServiceTest {
     void testUpdateTasks() {
         Task originalTask = taskService.queryTask(38L);
 
-        originalTask.setStaticRuleIds(List.of(16L, 17L, 18L, 19L));
+        originalTask.setStaticRuleIds(List.of(16, 17, 18, 19));
         originalTask.setTaskName("修改测试");
 
         assertTrue(taskService.updateTask(originalTask));

@@ -46,7 +46,10 @@
     </resultMap>
 
     <select id="queryProtectObjects" resultMap="protectObjectMap">
-        SELECT * FROM t_protect_object
+        SELECT
+        protect_object_id, protect_object_name, protect_object_system_name, INET_NTOA(protect_object_ip),
+        protect_object_port, protect_object_url, protect_object_protocol, protect_object_audit_status
+        FROM t_protect_object
         <where>
             <if test="proobj_name != null">protect_object_name LIKE CONCAT('%', #{proobj_name}, '%')</if>
             <if test="proobj_id != null">protect_object_id = #{proobj_id}</if>
@@ -55,7 +58,14 @@
     </select>
 
     <select id="queryProtectObject" resultMap="protectObjectMap">
-        SELECT *
+        SELECT protect_object_id,
+               protect_object_name,
+               protect_object_system_name,
+               INET_NTOA(protect_object_ip),
+               protect_object_port,
+               protect_object_url,
+               protect_object_protocol,
+               protect_object_audit_status
         FROM t_protect_object
         WHERE protect_object_id = #{proobj_id}
     </select>

@@ -183,6 +183,6 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "auditStatus", description = "要修改为的静态规则审核状态")
             }
     )
-    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
+    ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
 
 }

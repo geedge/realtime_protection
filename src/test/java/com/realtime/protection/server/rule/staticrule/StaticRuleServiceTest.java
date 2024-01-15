@@ -1,5 +1,6 @@
 package com.realtime.protection.server.rule.staticrule;
 
+import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class StaticRuleServiceTest {
+public class StaticRuleServiceTest extends ProtectionApplicationTests {
     private final StaticRuleService staticRuleService;
     private StaticRuleObject staticRuleTest;
 

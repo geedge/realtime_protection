@@ -1,5 +1,6 @@
 package com.realtime.protection.server.defense.template;
 
+import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.junit.jupiter.api.AfterEach;
@@ -15,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class TemplateServiceTest {
+class TemplateServiceTest extends ProtectionApplicationTests {
 
     private final TemplateService templateService;
     private Template template;

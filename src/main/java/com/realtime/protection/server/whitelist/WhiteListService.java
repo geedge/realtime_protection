@@ -2,7 +2,7 @@ package com.realtime.protection.server.whitelist;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
-import com.realtime.protection.configuration.entity.task.Command;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
@@ -129,10 +129,10 @@ public class WhiteListService {
 
     }
 
-    public List<WhiteListObject> whiteListCommandJudge(Command command) {
+    public List<WhiteListObject> whiteListCommandJudge(TaskCommandInfo taskCommandInfo) {
         //参数应该是指令，不管动态静态
         // 命中的whitelist列表：每一列包含ip port url
-        return whiteListMapper.whiteListCommandJudge(command.getFiveTupleWithMask());
+        return whiteListMapper.whiteListCommandJudge(taskCommandInfo.getFiveTupleWithMask());
 
     }
 

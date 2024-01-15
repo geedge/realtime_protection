@@ -74,7 +74,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "ids", description = "动态规则id列表")
             }
     )
-    public ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids);
+    ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids);
 
     @Operation(
             summary = "修改动态规则",
@@ -94,7 +94,7 @@ public interface DynamicRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "动态规则信息")
     )
-    public ResponseResult updateDynamicRuleObject(
+    ResponseResult updateDynamicRuleObject(
             @PathVariable Integer id,
             @RequestBody @Valid DynamicRuleObject dynamicRuleObject);
 
@@ -114,7 +114,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "id", description = "动态规则ID", example = "2")
             }
     )
-    public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id);
+    ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id);
 
     @Operation(
             summary = "根据条件查询多个动态规则",
@@ -135,7 +135,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "page_size", description = "每页大小", example = "10")
             }
     )
-    public ResponseResult queryDynamicRuleObject(
+    ResponseResult queryDynamicRuleObject(
             @RequestParam(value = "name", required = false) String dynamicRuleName,
             @RequestParam(value = "id", required = false) Integer dynamicRuleId,
             @RequestParam(value = "page", defaultValue = "1") Integer page,

@@ -23,12 +23,7 @@ public class StateChangeService {
     }
 
     @DSTransactional
-    public Boolean changeState(Integer stateNum, Long taskId) throws DorisStartException {
-        if (Objects.equals(stateNum, StateEnum.GENERATING.getStateNum()) ||
-                Objects.equals(stateNum, StateEnum.FAILED.getStateNum())) {
-            throw new IllegalArgumentException("非法任务状态：" + StateEnum.getStateByNum(stateNum));
-        }
-
+    public Boolean changeState(Integer stateNum, Long taskId, Boolean inner) throws DorisStartException {
         Integer originalStateNum = taskService.queryTaskStatus(taskId);
         if (originalStateNum == null) {
             throw new IllegalArgumentException("无法找到" + taskId + "的任务状态，也许任务ID不存在?");
@@ -38,8 +33,15 @@ public class StateChangeService {
 
         State newState = StateEnum.getStateByNum(stateNum);
 
-        if (newState == null) {
-            return false;
+        if (!inner && !checkState(originalState, newState)) {
+            throw new IllegalArgumentException(
+                    String.format("任务状态转换失败，原状态：%s，欲切换状态：%s",
+                            originalState.getClass().getSimpleName(),
+                            newState.getClass().getSimpleName()));
+        }
+
+        if (Objects.equals(originalState, newState)) {
+            return true;
         }
 
         if (!originalState.handle(newState, commandService, taskService, taskId)) {
@@ -53,5 +55,22 @@ public class StateChangeService {
 
         // 这里一定是handle成功的状态，我们再进行task status的修改，如果handle失败，要么返回false，要么抛出异常，不会进入此处
         return taskService.changeTaskStatus(taskId, stateNum);
+    }
+
+    private Boolean checkState(State originalState, State newState) {
+        if (originalState == null || newState == null) {
+            return false;
+        }
+
+        // FAILED、FINISHED状态以及GENERATING都只能在程序内部修改，外部接口不能修改
+        if (Objects.equals(newState, StateEnum.FAILED.getState())
+                || Objects.equals(newState, StateEnum.FINISHED.getState())
+                || Objects.equals(newState, StateEnum.GENERATING.getState())) {
+            return false;
+        }
+
+        // 在任务状态转换为GENERATING之后，我们需要在外部接口屏蔽掉所有状态
+        // 我们需要保证只有任务创建函数才能将GENERATING状态转换为RUNNING状态
+        return !Objects.equals(originalState, StateEnum.GENERATING.getState());
     }
 }

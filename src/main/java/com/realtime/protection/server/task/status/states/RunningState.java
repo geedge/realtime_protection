@@ -10,7 +10,6 @@ public class RunningState extends StateHandler implements State {
     @Override
     public Boolean handle(State newState, CommandService commandService, TaskService taskService, Long taskId) {
         return switch (StateEnum.getStateEnumByState(newState)) {
-            case RUNNING, GENERATING -> true;
             case PAUSED -> handlePause(commandService, taskId);
             case STOP -> handleStop(commandService, taskId);
             case FINISHED -> handleFinish(commandService, taskId);

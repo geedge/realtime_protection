@@ -1,5 +1,6 @@
 package com.realtime.protection.server.defense.object;
 
+import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class ProtectObjectServiceTest {
+class ProtectObjectServiceTest extends ProtectionApplicationTests {
 
     private final ProtectObjectService protectObjectService;
     private ProtectObject protectObject;

@@ -1,13 +1,12 @@
 package com.realtime.protection;
 
-import org.junit.jupiter.api.Test;
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
-class ProtectionApplicationTests {
-
-    @Test
-    void contextLoads() {
-    }
+@Rollback
+@DSTransactional
+public class ProtectionApplicationTests {
 
 }
