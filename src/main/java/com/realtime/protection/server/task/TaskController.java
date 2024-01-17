@@ -122,7 +122,7 @@ public class TaskController implements TaskControllerApi {
     @Override
     @GetMapping("/{taskId}/running/{stateNum}")
     public ResponseResult changeTaskStatus(@PathVariable @NotNull @Min(0) @Max(6) Integer stateNum,
-                                           @PathVariable @NotNull Long taskId) throws DorisStartException {
+                                           @PathVariable @NotNull @Min(1) Long taskId) throws DorisStartException {
         return ResponseResult.ok()
                 .setData("task_id", taskId)
                 // 外部修改状态，需要进行状态检查

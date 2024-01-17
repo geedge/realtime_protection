@@ -1,18 +1,28 @@
 package com.realtime.protection.server.task.status;
 
+import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
-import com.realtime.protection.configuration.exception.DorisStartException;
+import com.realtime.protection.configuration.response.SimpleResponse;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.status.AuditStatus;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StateHandler {
 
-    protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) throws DorisStartException {
+    private final WebClient client = WebClient.builder()
+            .baseUrl("")  // todo: unfinished
+            .build();
+
+    protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {
         Task task = taskService.queryTask(taskId);
 
         if (task == null) {
@@ -32,8 +42,8 @@ public class StateHandler {
 
         return switch (TaskTypeEnum.getTaskTypeByNum(task.getTaskType())) {
             case STATIC -> handleStaticTaskStart(commandService, taskService, taskId);
-            case DYNAMIC -> handleDynamicTaskStart(commandService, taskService, taskId);
-            case JUDGED -> handleJudgedTaskStart(commandService, taskService, taskId);
+            case DYNAMIC -> handleDynamicTaskStart(taskService, taskId);
+            case JUDGED -> handleJudgedTaskStart(taskService, taskId);
         };
     }
 
@@ -64,14 +74,12 @@ public class StateHandler {
 
     // todo: 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
     //       筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
-    private Boolean handleJudgedTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
-        // todo: 研判后处置任务的指令的is_valid字段一开始需要设置为false
-        return true;
+    private Boolean handleJudgedTaskStart(TaskService taskService, Long taskId) {
+        return sendFilters(taskService, taskId);
     }
 
-    private Boolean handleDynamicTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
-        // todo: 实时任务的指令的is_valid字段一开始需要设置为true
-        return true;
+    private Boolean handleDynamicTaskStart(TaskService taskService, Long taskId) {
+        return sendFilters(taskService, taskId);
     }
 
     private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
@@ -83,5 +91,37 @@ public class StateHandler {
 
         commandService.createCommands(staticTaskCommandInfos);
         return true;
+    }
+
+    private Boolean sendFilters(TaskService taskService, Long taskId) {
+        List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(taskId);
+
+        if (dynamicTaskInfos == null || dynamicTaskInfos.isEmpty()) {
+            throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
+        }
+
+        AtomicReference<Boolean> success = new AtomicReference<>(false);
+
+        Mono<SimpleResponse> mono = client.post()
+                .uri("")  // todo: unfinished
+                .bodyValue(dynamicTaskInfos)
+                .exchangeToMono(res -> {
+                    if (res.statusCode().equals(HttpStatus.OK)) {
+                        return res.bodyToMono(SimpleResponse.class);
+                    }
+
+                    return res.createError();
+                })
+                .doOnError(WebClientResponseException.class, res -> success.set(false));
+
+        SimpleResponse response = mono.block();
+
+        if (response == null) {
+            return false;
+        }
+
+        success.set(response.getSuccess());
+
+        return success.get();
     }
 }

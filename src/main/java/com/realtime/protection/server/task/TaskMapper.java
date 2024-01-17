@@ -1,5 +1,6 @@
 package com.realtime.protection.server.task;
 
+import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import org.apache.ibatis.annotations.Mapper;
@@ -39,6 +40,8 @@ public interface TaskMapper {
     Boolean changeTaskStatus(@Param("task_id") Long taskId, @Param("state") Integer stateNum);
 
     List<TaskCommandInfo> getStaticCommandInfos(@Param("task_id") Long taskId);
+
+    List<DynamicTaskInfo> getDynamicTaskInfos(@Param("task_id") Long taskId);
 
     Integer queryTaskAuditStatus(@Param("task_id") Long taskId);
 

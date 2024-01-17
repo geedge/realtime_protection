@@ -1,6 +1,7 @@
 package com.realtime.protection.server.task;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
@@ -108,6 +109,10 @@ public class TaskService {
 
     public List<TaskCommandInfo> getStaticCommandInfos(Long taskId) {
         return taskMapper.getStaticCommandInfos(taskId);
+    }
+
+    public List<DynamicTaskInfo> getDynamicTaskInfos(Long taskId) {
+        return taskMapper.getDynamicTaskInfos(taskId);
     }
 
     public Integer queryTaskAuditStatus(Long taskId) {
