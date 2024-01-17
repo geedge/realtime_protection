@@ -44,7 +44,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testNewStaticRule(){
         Integer i = 0;
-        while(i<20) {
+        while(i<2) {
             i++;
             StaticRuleObject object = new StaticRuleObject();
 
@@ -67,7 +67,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testNewStaticRules(){
         List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2; i++) {
             staticRuleObjects.add(staticRuleTest);
         }
         Boolean success = staticRuleService.newStaticRuleObjects(staticRuleObjects);

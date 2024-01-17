@@ -15,7 +15,7 @@
          dynamic_rule_priority, dynamic_rule_range,
          dynamic_rule_frequency, dynamic_rule_create_user_id)
         values (#{object.dynamicRuleName},
-                #{object.dynamicRuleCreateTime}, #{object.dynamicRuleModifyTime},
+                NOW(), #{object.dynamicRuleModifyTime},
                 #{object.dynamicRuleCreateUsername}, #{object.dynamicRuleCreateDepart},
                 #{object.templateId}, #{object.dynamicRuleProtectLevel},
                 #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
@@ -40,7 +40,7 @@
         values
         <foreach collection="dynamicRuleObjects" item="object" separator=",">
             (#{object.dynamicRuleName},
-            #{object.dynamicRuleCreateTime},#{object.dynamicRuleModifyTime},
+            NOW(),#{object.dynamicRuleModifyTime},
             #{object.dynamicRuleCreateUsername},#{object.dynamicRuleCreateDepart},
             #{object.templateId}, #{object.dynamicRuleProtectLevel},
             #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
@@ -96,7 +96,8 @@
         </if>
         <if test="object.dynamicRulePriority != null">dynamic_rule_priority = #{object.dynamicRulePriority},</if>
         <if test="object.dynamicRuleRange != null">dynamic_rule_range = #{object.dynamicRuleRange},</if>
-        <if test="object.dynamicRuleFrequency != null">dynamic_rule_frequency = #{object.dynamicRuleFrequency}</if>
+        <if test="object.dynamicRuleFrequency != null">dynamic_rule_frequency = #{object.dynamicRuleFrequency},</if>
+        modify_time = NOW()
         where
         dynamic_rule_id = #{dynamicRuleId}
     </update>

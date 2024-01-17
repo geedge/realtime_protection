@@ -35,7 +35,7 @@
                                   static_rule_frequency,  static_rule_audit_status)
         values
         <foreach collection="staticRuleBatch" item="object" separator=",">
-            (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
+            (#{object.staticRuleName}, NOW(), #{object.staticRuleCreateUsername},
             #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
             INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
             INET_ATON(#{object.staticRuleDip}), INET_ATON(#{object.staticRuleMdip}), #{object.staticRuleDport},
@@ -74,6 +74,7 @@
             <if test="object.staticRuleFrequency != null and object.staticRuleFrequency != ''">
                 static_rule_frequency = #{object.staticRuleFrequency},
             </if>
+            static_rule_modify_time = NOW()
 
         </set>
         where static_rule_id = #{id}

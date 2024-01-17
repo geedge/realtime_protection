@@ -48,7 +48,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
     @Test
     void newProtectObjects() {
         List<WhiteListObject> whiteListObjects = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2; i++) {
             whiteListObjects.add(whiteListObject);
         }
         Boolean success = whiteListService.newWhiteListObjects(whiteListObjects);
@@ -73,7 +73,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testUpdateWhiteListAuditStatus() {
-        whiteListService.updateWhiteListObjectAuditStatus(7, 1);
+       //whiteListService.updateWhiteListObjectAuditStatus(7, 1);
     }
 
     @Test

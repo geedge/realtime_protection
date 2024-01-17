@@ -8,24 +8,24 @@
         insert into t_white_list(white_list_name, white_list_system_name,
                                  white_list_ip, white_list_port,
                                  white_list_url, white_list_protocol,
-                                 white_list_audit_status)
+                                 white_list_audit_status, create_time)
         values (#{object.whiteListName}, #{object.whiteListSystemName},
                 INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
                 #{object.whiteListUrl}, #{object.whiteListProtocol},
-                0)
+                0, NOW())
     </insert>
 
     <insert id="newWhiteListObjects">
         insert into t_white_list(white_list_name, white_list_system_name,
         white_list_ip, white_list_port,
         white_list_url, white_list_protocol,
-        white_list_audit_status)
+        white_list_audit_status, create_time)
         values
         <foreach collection="whiteListObjects" item="object" separator=",">
             (#{object.whiteListName}, #{object.whiteListSystemName},
             INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
             #{object.whiteListUrl}, #{object.whiteListProtocol},
-            0)
+            0, NOW())
         </foreach>
     </insert>
 
@@ -92,6 +92,7 @@
             <if test="object.whiteListAuditStatus != null">
                 white_list_audit_status = #{object.whiteListAuditStatus},
             </if>
+            modify_time = NOW()
         </set>
         where white_list_id = #{id}
     </update>
