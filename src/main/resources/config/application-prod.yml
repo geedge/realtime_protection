@@ -3,9 +3,9 @@ server:
 
 logging:
   level:
-    com.realtime.protection: warning
+    com.realtime.protection: warn
   file:
-    name: classpath:log/realtime_protection.log
+    name: log/realtime_protection.log
 
 spring:
   datasource:

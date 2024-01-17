@@ -5,7 +5,7 @@ logging:
   level:
     com.realtime.protection: info
   file:
-    name: classpath:log/realtime_protection.log
+    name: log/realtime_protection.log
 
 spring:
   datasource:

@@ -62,15 +62,19 @@ public class StateHandler {
         return true;
     }
 
+    // todo: 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
+    //       筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
     private Boolean handleJudgedTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
+        // todo: 研判后处置任务的指令的is_valid字段一开始需要设置为false
         return true;
     }
 
     private Boolean handleDynamicTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
+        // todo: 实时任务的指令的is_valid字段一开始需要设置为true
         return true;
     }
 
-    private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Long taskId) throws DorisStartException {
+    private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
         // 如果未能获取staticTaskCommandInfos，需要报错
         List<TaskCommandInfo> staticTaskCommandInfos = taskService.getStaticCommandInfos(taskId);
         if (staticTaskCommandInfos == null || staticTaskCommandInfos.isEmpty()) {

@@ -56,7 +56,7 @@ public class ProtectObject {
 
     @JsonProperty("proobj_audit_status")
     @ExcelIgnore
-    @Schema(description = "防护对象审核状态（0为未审核，1为已退回，2为审核通过）", example = "2")
+    @Schema(description = "防护对象审核状态（0为未审核，1为已退回，2为审核通过）", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectObjectAuditStatus;
 
     @JsonProperty("proobj_create_username")

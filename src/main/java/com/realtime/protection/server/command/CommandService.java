@@ -50,7 +50,6 @@ public class CommandService {
         };
 
         sqlSessionWrapper.startBatchSession(CommandMapper.class, function, taskCommandInfos);
-
     }
 
     public List<TaskCommandInfo> queryCommandInfoByTaskId(Long taskId) {

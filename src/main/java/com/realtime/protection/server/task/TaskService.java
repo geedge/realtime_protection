@@ -3,13 +3,16 @@ package com.realtime.protection.server.task;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @DS("mysql")
 public class TaskService {
     private final TaskMapper taskMapper;
@@ -118,5 +121,9 @@ public class TaskService {
     public Long newTaskUsingCommandInfo(TaskCommandInfo taskCommandInfo) {
         taskMapper.newTaskUsingCommandInfo(taskCommandInfo);
         return taskCommandInfo.getTaskId();
+    }
+
+    public List<Long> getFinishedTasks() {
+        return taskMapper.queryTasksByStatus(StateEnum.FINISHED.getStateNum());
     }
 }

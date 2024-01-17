@@ -99,4 +99,20 @@
         WHERE TASK_ID = #{task_id}
           AND IS_DELETED = FALSE
     </update>
+
+    <update id="setCommandValid">
+        UPDATE t_command
+        SET IS_VALID    = TRUE,
+            LAST_UPDATE = NOW()
+        WHERE COMMAND_ID = #{command_id}
+          AND IS_DELETED = FALSE
+    </update>
+
+    <update id="setCommandInvalid">
+        UPDATE t_command
+        SET IS_VALID    = FALSE,
+            LAST_UPDATE = NOW()
+        WHERE COMMAND_ID = #{command_id}
+          AND IS_DELETED = FALSE
+    </update>
 </mapper>

@@ -7,11 +7,17 @@ import com.realtime.protection.configuration.utils.status.State;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
+@EnableScheduling
 @Slf4j
 public class StateChangeService {
     private final CommandService commandService;
@@ -72,5 +78,23 @@ public class StateChangeService {
         // 在任务状态转换为GENERATING之后，我们需要在外部接口屏蔽掉所有状态
         // 我们需要保证只有任务创建函数才能将GENERATING状态转换为RUNNING状态
         return !Objects.equals(originalState, StateEnum.GENERATING.getState());
+    }
+
+    @Scheduled(cron = "0 0/2 * * * ?")
+    @Transactional
+    @Async
+    protected void finishTasks() {
+        List<Long> finishedTaskIds = taskService.getFinishedTasks();
+        log.debug("成功扫描出所有需要变为结束状态的任务：" + finishedTaskIds);
+
+        for (Long taskId : finishedTaskIds) {
+            try {
+                changeState(StateEnum.FINISHED.getStateNum(), taskId, true);
+            } catch (Exception e) {
+                log.warn(String.format("任务%d从%s状态变为FINISHED状态遭遇异常：%s",
+                        taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
+            }
+
+        }
     }
 }

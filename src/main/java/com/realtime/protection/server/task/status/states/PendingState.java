@@ -13,6 +13,7 @@ public class PendingState extends StateHandler implements State {
         return switch (StateEnum.getStateEnumByState(newState)) {
             case FAILED -> handleFailed(commandService, taskId);
             case RUNNING -> handleStart(taskService, commandService, taskId);
+            case FINISHED -> handleFinish(commandService, taskId);
             default -> throw new IllegalStateException("Unexpected value: " + StateEnum.getStateEnumByState(newState));
         };
     }

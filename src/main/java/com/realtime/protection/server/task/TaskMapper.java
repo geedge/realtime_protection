@@ -4,6 +4,7 @@ import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -46,4 +47,7 @@ public interface TaskMapper {
     List<Integer> queryDynamicRuleIdsFromTaskId(@Param("task_id") Long taskId);
 
     List<Integer> queryStaticRuleIdsFromTaskId(@Param("task_id") Long taskId);
+
+    @Select("SELECT task_id FROM t_task WHERE task_end_time < NOW() AND task_status != #{task_status}")
+    List<Long> queryTasksByStatus(@Param("task_status") Integer taskStatus);
 }
