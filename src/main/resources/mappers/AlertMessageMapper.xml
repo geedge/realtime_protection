@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.alertmessage.AlertMessageMapper">
+
+    <resultMap id="dynamicCommmandMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        <result column="task_name" property="taskName"/>
+        <result column="task_create_username" property="taskCreateUsername"/>
+        <result column="task_create_depart" property="taskCreateDepart"/>
+        <result column="task_create_userid" property="taskCreateUserId"/>
+    
+        <result column="task_id" property="taskId"/>
+        <result column="dynamic_rule_id" property="ruleId"/>
+    
+        <result column="task_act" property="taskAct"/>
+        <result column="task_type" property="taskType"/>
+        <result column="dynamic_rule_frequency" property="frequency"/>
+        <result column="task_start_time" property="startTime"/>
+        <result column="task_end_time" property="endTime"/>
+    
+        <result column="template_id" property="templateId"/>
+        <result column="dynamic_rule_protect_level" property="protectLevel"/>
+    
+    </resultMap>
+    <resultMap id="protectLevelMap" type="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
+        <id column="protect_level_id" property="protectLevelId"/>
+        <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+        <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+        <result column="has_peer_ip" property="hasPeerIP"/>
+        <result column="has_peer_port" property="hasPeerPort"/>
+        <result column="has_protocol" property="hasProtocol"/>
+        <result column="has_url" property="hasURL"/>
+        <result column="has_dns" property="hasDNS"/>
+    </resultMap>
+
+    <select id="queryTemplateProtectLevel" resultMap="protectLevelMap">
+        SELECT
+            t_protect_level.protect_level_id,
+            t_protect_level.has_protect_object_ip,
+            t_protect_level.has_protect_object_port,
+            t_protect_level.has_peer_ip,
+            t_protect_level.has_peer_port,
+            t_protect_level.has_protocol,
+            t_protect_level.has_url,
+            t_protect_level.has_dns
+        FROM t_strategy_template
+        <if test="protectLevel == 1">
+            left join t_protect_level on t_strategy_template.strategy_template_low_level_id = t_protect_level.protect_level_id
+        </if>
+        <if test="protectLevel == 2">
+            left join t_protect_level on t_strategy_template.strategy_template_medium_level_id = t_protect_level.protect_level_id
+        </if>
+        <if test="protectLevel == 3">
+            left join t_protect_level on t_strategy_template.strategy_template_high_level_id = t_protect_level.protect_level_id
+        </if>
+        WHERE t_strategy_template.strategy_template_id = #{templateId}
+    </select>
+
+    <select id="getDynamicTaskInfos"
+            resultMap="dynamicCommmandMap" >
+        select
+            t_task.task_name,
+
+            t_task.task_id,
+            t_dr.dynamic_rule_id,
+
+            t_task.task_create_username,
+            t_task.task_create_depart,
+            t_task.task_create_userid,
+
+            t_task.task_type,
+            t_task.task_act,
+            t_dr.dynamic_rule_frequency,
+
+            t_task.task_start_time,
+            t_task.task_end_time,
+
+            t_dr.template_id,
+            t_dr.dynamic_rule_protect_level
+
+            from t_task
+            left join realtime_protection.t_dynamic_rule t_dr on t_task.task_id = t_dr.dynamic_rule_used_task_id
+            where
+                t_task.task_id = #{task_id}
+    </select>
+</mapper>
