@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.realtime'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
@@ -43,6 +43,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
     implementation 'com.alibaba:easyexcel:3.3.3'
     implementation 'com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.0'
+    implementation 'com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0'
 }
 
 tasks.named('test') {

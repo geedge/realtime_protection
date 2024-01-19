@@ -18,12 +18,12 @@ public class ResponseResult implements Serializable {
     private String message;
 
     @Schema(description = "封装数据")
-    private Map<String, Object> data;
+    private ResponseData data;
 
     @Schema(description = "返回对象链接的另外一个返回对象")
     private ResponseResult another;
 
-    public ResponseResult(int code, String message, LinkedHashMap<String, Object> data) {
+    public ResponseResult(int code, String message, ResponseData data) {
         this.code = code;
         this.message = message;
         this.data = data;
@@ -31,13 +31,13 @@ public class ResponseResult implements Serializable {
 
     public ResponseResult(int code) {
         this.code = code;
-        this.data = new LinkedHashMap<>();
+        this.data = new ResponseData();
     }
 
     public ResponseResult(int code, String message) {
         this.code = code;
         this.message = message;
-        this.data = new LinkedHashMap<>();
+        this.data = new ResponseData();
     }
 
     public static ResponseResult ok() {
@@ -83,8 +83,8 @@ public class ResponseResult implements Serializable {
         return this;
     }
 
-    public ResponseResult setDataMap(Map<String, Object> data) {
-        this.data = data;
+    public ResponseResult addDataMap(Map<String, Object> data) {
+        this.data = (ResponseData) data;
         return this;
     }
 }

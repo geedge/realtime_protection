@@ -35,9 +35,9 @@ public class StateHandler {
             throw new IllegalArgumentException("无效的task_id，因为task_audit_status为空");
         }
 
-        // 如果审核状态不为已通过审核，则无效
+        // 如果审核状态不为已通过审核，则报错
         if (taskAuditStatus != AuditStatus.AUDITED.getAuditStatus()) {
-            return false;
+            throw new IllegalArgumentException("无效的task_id，因为未通过审核");
         }
 
         return switch (TaskTypeEnum.getTaskTypeByNum(task.getTaskType())) {

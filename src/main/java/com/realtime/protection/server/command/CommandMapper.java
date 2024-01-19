@@ -23,4 +23,6 @@ public interface CommandMapper {
     Boolean setCommandInvalid(@Param("command_id") String commandId);
 
     List<TaskCommandInfo> queryCommandInfoByTaskId(@Param("task_id") Long taskId);
+
+    TaskCommandInfo queryCommandInfoByUUID(@Param("uuid") String uuid);
 }

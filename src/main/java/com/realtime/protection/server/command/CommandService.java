@@ -6,8 +6,10 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -24,14 +26,19 @@ public class CommandService {
         this.sqlSessionWrapper = sqlSessionWrapper;
     }
 
-    public Boolean createCommand(TaskCommandInfo commandInfo) {
-        return commandMapper.createCommand(commandInfo);
+    @Transactional
+    public String createCommand(TaskCommandInfo commandInfo) {
+        commandInfo.setUUID(UUID.randomUUID().toString());
+        commandMapper.createCommand(commandInfo);
+        return commandInfo.getUUID();
+
     }
 
     public void createCommands(List<TaskCommandInfo> taskCommandInfos) {
         Function<CommandMapper, Function<List<TaskCommandInfo>, Boolean>> function = mapper -> list -> {
             List<TaskCommandInfo> taskCommandInfoBatch = ListUtils.newArrayListWithExpectedSize(BatchSize);
             for (TaskCommandInfo info : list) {
+                info.setUUID(UUID.randomUUID().toString());
                 taskCommandInfoBatch.add(info);
                 if (taskCommandInfoBatch.size() < BatchSize) {
                     continue;
@@ -54,6 +61,10 @@ public class CommandService {
 
     public List<TaskCommandInfo> queryCommandInfoByTaskId(Long taskId) {
         return commandMapper.queryCommandInfoByTaskId(taskId);
+    }
+
+    public TaskCommandInfo queryCommandInfoByUUID(String uuid) {
+        return commandMapper.queryCommandInfoByUUID(uuid);
     }
 
     public Boolean startCommandsByTaskId(Long taskId) {

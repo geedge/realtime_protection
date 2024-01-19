@@ -152,7 +152,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
                     .setData("success", false);
         }
         return ResponseResult.ok()
-                .setDataMap(staticRuleService.updateAuditStatus(id, auditStatus))
+                .addDataMap(staticRuleService.updateAuditStatus(id, auditStatus))
                 .setData("staticRule_id", id);
 
     }

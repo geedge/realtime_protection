@@ -1,8 +1,15 @@
 package com.realtime.protection.server.task;
 
 import com.realtime.protection.ProtectionApplicationTests;
+import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.exception.DorisStartException;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
+import com.realtime.protection.server.rule.staticrule.StaticRuleService;
+import com.realtime.protection.server.task.status.StateChangeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +25,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class TaskServiceTest extends ProtectionApplicationTests {
     private final TaskService taskService;
+    private final StaticRuleService staticRuleService;
+    private final DynamicRuleService dynamicRuleService;
+    private final StateChangeService stateChangeService;
     private Task task;
 
     @Autowired
-    TaskServiceTest(TaskService taskService) {
+    TaskServiceTest(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, StateChangeService stateChangeService) {
         this.taskService = taskService;
+        this.staticRuleService = staticRuleService;
+        this.dynamicRuleService = dynamicRuleService;
+        this.stateChangeService = stateChangeService;
     }
 
     @BeforeEach
@@ -29,15 +43,14 @@ class TaskServiceTest extends ProtectionApplicationTests {
         this.task = new Task();
         task.setTaskName("静态测试");
 
-        LocalDateTime taskStartTime = LocalDateTime.now().plusDays(1);
-        LocalDateTime taskEndTime = LocalDateTime.now().plusDays(5);
+        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
 
         task.setTaskStartTime(taskStartTime);
         task.setTaskEndTime(taskEndTime);
         task.setTaskAct("阻断");
         task.setTaskType(1);
-        task.setStaticRuleIds(List.of(1, 2));
-        task.setDynamicRuleIds(List.of());
+
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
@@ -45,11 +58,22 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testNewTaskSuccess() {
-        for (int i = 0; i < 100; i++) {
-            LocalDateTime taskStartTime = LocalDateTime.now().plusDays(i);
-            LocalDateTime taskEndTime = LocalDateTime.now().plusDays(i + 10);
-            task.setTaskStartTime(taskStartTime);
-            task.setTaskEndTime(taskEndTime);
+        for (int i = 1; i < 1000; i++) {
+            List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
+                    null, null, null, null, i, 2);
+            List<Integer> staticRuleIds = new ArrayList<>();
+            staticRuleObjects.forEach(staticRuleObject ->
+                    staticRuleIds.add(staticRuleObject.getStaticRuleId()));
+            task.setStaticRuleIds(staticRuleIds);
+
+            List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleObject(
+                    null, null, null, null, i, 2
+            );
+            List<Integer> dynamicRuleIds = new ArrayList<>();
+            dynamicRuleObjects.forEach(dynamicRuleObject ->
+                    dynamicRuleIds.add(dynamicRuleObject.getDynamicRuleId()));
+            task.setDynamicRuleIds(dynamicRuleIds);
+
             assertDoesNotThrow(() -> {
                 Long taskId = taskService.newTask(task);
                 assertTrue(taskId > 0);

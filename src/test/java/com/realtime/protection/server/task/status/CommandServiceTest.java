@@ -13,8 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CommandServiceTest extends ProtectionApplicationTests {
@@ -55,6 +56,7 @@ class CommandServiceTest extends ProtectionApplicationTests {
     @Test
     void createCommand() {
         assertDoesNotThrow(() -> commandService.createCommand(taskCommandInfo));
+        assertNotNull(taskCommandInfo.getUUID());
     }
 
     @Test
@@ -81,6 +83,15 @@ class CommandServiceTest extends ProtectionApplicationTests {
         }
 
         assertDoesNotThrow(() -> commandService.createCommands(taskCommandInfos));
+    }
 
+    @Test
+    void queryCommandByUUID() {
+        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfoByTaskId(30L);
+        assertTrue(taskCommandInfos != null && !taskCommandInfos.isEmpty());
+
+        for (TaskCommandInfo taskCommandInfo : taskCommandInfos) {
+            assertNotNull(commandService.queryCommandInfoByUUID(taskCommandInfo.getUUID()));
+        }
     }
 }

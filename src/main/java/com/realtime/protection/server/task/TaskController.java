@@ -87,8 +87,7 @@ public class TaskController implements TaskControllerApi {
             return ResponseResult.invalid().setMessage("无效Task ID，也许该ID对应的任务不存在？");
         }
 
-        return ResponseResult.ok()
-                .setDataMap(EntityUtils.entityToMap(task));
+        return ResponseResult.ok().setData("task", task);
     }
 
     @Override

@@ -83,14 +83,13 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
 
     @Override
     @GetMapping("/{protectObjectId}/query")
-    public ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) throws IllegalAccessException {
+    public ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) {
         ProtectObject protectObject = protectObjectService.queryProtectObject(protectObjectId);
         if (protectObject == null) {
             return ResponseResult.invalid()
                     .setMessage("无效的防护对象ID，也许该ID指定的防护对象不存在？");
         }
-        return ResponseResult.ok()
-                .setDataMap(EntityUtils.entityToMap(protectObject));
+        return ResponseResult.ok().setData("protect_object", protectObject);
     }
 
     @Override
@@ -124,7 +123,7 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     public ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
                                                          @PathVariable Integer auditStatus) {
         return ResponseResult.ok()
-                .setDataMap(protectObjectService.changeProtectObjectAuditStatus(protectObjectId, auditStatus))
+                .addDataMap(protectObjectService.changeProtectObjectAuditStatus(protectObjectId, auditStatus))
                 .setData("proobj_id", protectObjectId);
     }
 }

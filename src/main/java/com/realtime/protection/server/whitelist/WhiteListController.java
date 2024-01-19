@@ -165,7 +165,7 @@ public class WhiteListController implements WhiteListControllerApi {
 //        }
 
         return ResponseResult.ok()
-                .setDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
+                .addDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
                 .setData("whiteobj_id", id);
 
     }

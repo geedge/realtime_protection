@@ -14,7 +14,8 @@ public class PendingState extends StateHandler implements State {
             case FAILED -> handleFailed(commandService, taskId);
             case RUNNING -> handleStart(taskService, commandService, taskId);
             case FINISHED -> handleFinish(commandService, taskId);
-            default -> throw new IllegalStateException("Unexpected value: " + StateEnum.getStateEnumByState(newState));
+            default -> throw new IllegalStateException(taskId + " meets unexpected value: "
+                    + StateEnum.getStateEnumByState(newState));
         };
     }
 }

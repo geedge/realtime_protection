@@ -55,8 +55,7 @@ public class TemplateController implements TemplateControllerApi {
             return ResponseResult.invalid()
                     .setMessage("无效的策略模板ID，也许该模板不存在？");
         }
-        return ResponseResult.ok()
-                .setDataMap(EntityUtils.entityToMap(template));
+        return ResponseResult.ok().setData("template", template);
     }
 
     @Override

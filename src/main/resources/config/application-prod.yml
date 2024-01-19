@@ -1,5 +1,7 @@
 server:
-  port: 80
+  port: 8081
+  servlet:
+    context-path: /api/v1
 
 logging:
   level:
@@ -29,9 +31,6 @@ spring:
       primary: mysql
       strict: true
       grace-destroy: true
-  mvc:
-    servlet:
-      path: /api/v1
   jackson:
     default-property-inclusion: non_null
 
@@ -41,8 +40,8 @@ mybatis:
 task:
   pool:
     core-pool-size: 20
-    max-pool-size: 100
-    queue-capacity: 100
+    max-pool-size: 400
+    queue-capacity: 400
     keep-alive-seconds: 120
 
 springdoc:

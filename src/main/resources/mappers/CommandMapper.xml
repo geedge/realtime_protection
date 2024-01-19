@@ -9,8 +9,8 @@
                               MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
                               INVALID_TIME, IS_VALID,
                               SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
-        values (UUID(), #{info.taskId}, #{info.taskAct}, #{info.frequency},
-                #{info.fiveTupleWithMask.addrType},
+        values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.frequency},
+                DEFAULT,
                 #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
                 #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},
                 #{info.fiveTupleWithMask.protocolNum},
@@ -28,8 +28,8 @@
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
         values
         <foreach collection="command_infos" item="info" separator=",">
-            (UUID(), #{info.taskId}, #{info.taskAct}, #{info.frequency},
-            #{info.fiveTupleWithMask.addrType},
+            (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.frequency},
+            DEFAULT,
             #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
             #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},
             #{info.fiveTupleWithMask.protocolNum},
@@ -58,6 +58,23 @@
             <result column="PROTOCOL" property="protocolNum"/>
         </association>
     </resultMap>
+
+    <select id="queryCommandInfoByUUID" resultMap="commandStatMap">
+        SELECT COMMAND_ID,
+               TASK_ACT,
+               SEND_TIMES,
+               SUCCESS_TIMES,
+               FIRST_SEND_TIME,
+               LASt_SEND_TIME,
+               SRC_IP,
+               SRC_PORT,
+               DST_IP,
+               DST_PORT,
+               PROTOCOL
+        FROM t_command
+        WHERE COMMAND_ID = #{uuid}
+          AND IS_DELETED = FALSE
+    </select>
 
     <select id="queryCommandInfoByTaskId" resultMap="commandStatMap">
         SELECT COMMAND_ID,
