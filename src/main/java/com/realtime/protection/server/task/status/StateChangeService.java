@@ -81,7 +81,6 @@ public class StateChangeService {
     }
 
     @Scheduled(cron = "0 0/2 * * * ?")
-    @Transactional
     @Async
     protected void finishTasks() {
         List<Long> finishedTaskIds = taskService.getFinishedTasks();

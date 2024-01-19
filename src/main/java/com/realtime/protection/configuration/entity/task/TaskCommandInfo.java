@@ -50,6 +50,9 @@ public class TaskCommandInfo {
     @NotNull(message = "指令结束时间不能为空。")
     private LocalDateTime endTime;
 
+    @Schema(description = "指令是否生效", example = "false")
+    private Boolean isValid = true;
+
     @Schema(description = "五元组信息")
     @NotNull(message = "五元组信息不能为空。")
     private FiveTupleWithMask fiveTupleWithMask;
@@ -68,6 +71,7 @@ public class TaskCommandInfo {
 
     @Schema(description = "防御策略模板ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer templateId;
+
     @Schema(description = "防护等级", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectLevel;
 }

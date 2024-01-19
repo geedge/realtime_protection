@@ -4,10 +4,10 @@ import com.realtime.protection.configuration.entity.defense.template.ProtectLeve
 import com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import org.springframework.stereotype.Service;
-import com.realtime.protection.server.command.CommandService;
-import com.realtime.protection.configuration.utils.enums.StateEnum;
 
 @Service
 public class AlertMessageService {

@@ -17,7 +17,7 @@
                 #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
                 #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
                 #{info.fiveTupleWithMask.maskProtocol},
-                #{info.startTime}, #{info.endTime}, TRUE, 0, 0,
+                #{info.startTime}, #{info.endTime}, #{info.isValid}, 0, 0,
                 NOW(), NOW(), FALSE)
     </insert>
 
@@ -36,7 +36,7 @@
             #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
             #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
             #{info.fiveTupleWithMask.maskProtocol},
-            #{info.startTime}, #{info.endTime}, TRUE, 0, 0,
+            #{info.startTime}, #{info.endTime}, #{info.isValid}, 0, 0,
             NOW(), NOW(), FALSE
             )
         </foreach>

@@ -3,7 +3,6 @@ package com.realtime.protection.server.defense.object;
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.response.ResponseResult;
-import com.realtime.protection.configuration.utils.EntityUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

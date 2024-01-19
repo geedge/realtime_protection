@@ -75,6 +75,7 @@ public class CommandService {
         return commandMapper.stopCommandsByTaskId(taskId);
     }
 
+    @DS("doris")
     public Boolean removeCommandsByTaskId(Long taskId) {
         return commandMapper.removeCommandsByTaskId(taskId);
     }

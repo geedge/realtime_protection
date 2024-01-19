@@ -4,7 +4,6 @@ import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
-import com.realtime.protection.configuration.utils.EntityUtils;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.status.StateChangeService;
 import jakarta.validation.Valid;

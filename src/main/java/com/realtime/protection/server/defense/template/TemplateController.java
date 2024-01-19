@@ -2,7 +2,6 @@ package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.response.ResponseResult;
-import com.realtime.protection.configuration.utils.EntityUtils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
