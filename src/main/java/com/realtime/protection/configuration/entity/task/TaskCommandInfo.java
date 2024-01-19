@@ -65,4 +65,9 @@ public class TaskCommandInfo {
 
     @Schema(description = "最新下发时间", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime latestSendTime;
+
+    @Schema(description = "防御策略模板ID", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer templateId;
+    @Schema(description = "防护等级", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer protectLevel;
 }

@@ -112,6 +112,12 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         System.out.println(object);
     }
 
+    @Test
+    void testQueryStaticRules(){
+        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(null, null, null, null, 1, 10);
+        System.out.println(staticRuleObjects);
+    }
+
 
 
 }

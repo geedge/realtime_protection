@@ -21,7 +21,7 @@ public class AlertMessageController
 
     @PostMapping("/new")
     public ResponseResult receiveAlertMessage(@RequestBody @Valid AlertMessage alertMessage){
-        alertMessageService.receiveAlertMessage(alertMessage);
+        alertMessageService.processAlertMessage(alertMessage);
         return ResponseResult.ok();
     }
 

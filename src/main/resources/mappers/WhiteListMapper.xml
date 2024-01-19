@@ -42,7 +42,7 @@
         <id column="white_list_id" property="whiteListId"/>
         <result column="white_list_name" property="whiteListName"/>
         <result column="white_list_system_name" property="whiteListSystemName"/>
-        <result column="white_list_ip" property="whiteListIP"/>
+        <result column="white_list_ip_d" property="whiteListIP"/>
         <result column="white_list_port" property="whiteListPort"/>
         <result column="white_list_url" property="whiteListUrl"/>
         <result column="white_list_protocol" property="whiteListProtocol"/>
@@ -50,7 +50,8 @@
     </resultMap>
 
     <select id="queryWhiteListObject" resultMap="whiteListMap">
-        select * from t_white_list
+        select *, INET_NTOA(white_list_ip) as white_list_ip_d
+               from t_white_list
         <where>
             <if test="whiteListName != null">
                 white_list_name like concat('%', #{whiteListName}, '%')

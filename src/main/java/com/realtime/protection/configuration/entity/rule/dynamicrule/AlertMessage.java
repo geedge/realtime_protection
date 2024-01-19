@@ -12,4 +12,7 @@ public class AlertMessage {
     @JsonProperty("five_tuple_with_mask")
     private FiveTupleWithMask fiveTupleWithMask;
 
+    @JsonProperty("dynamic_rule_id")
+    private Integer dynamicRuleId;
+
 }

@@ -3,6 +3,8 @@ package com.realtime.protection.configuration.entity.rule.dynamicrule;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -71,7 +73,9 @@ public class DynamicRuleObject {
     private Integer templateId;
     @NotNull
     @JsonProperty("dynamic_rule_protect_level")
-    @Schema(description = "防护等级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Max(value = 3)
+    @Min(value = 1)
+    @Schema(description = "防护等级：1代表日常态、2代表应急态、3代表紧急态", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRuleProtectLevel;
 
     @NotNull
