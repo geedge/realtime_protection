@@ -147,4 +147,8 @@ public class StaticRuleService {
     public void deleteStaticRuleById(Integer id) {
         staticRuleMapper.deleteStaticRuleById(id);
     }
+
+    public Integer queryStaticRuleTotalNum() {
+        return staticRuleMapper.queryStaticRuleTotalNum();
+    }
 }

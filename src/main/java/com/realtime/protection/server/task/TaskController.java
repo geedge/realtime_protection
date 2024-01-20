@@ -135,4 +135,14 @@ public class TaskController implements TaskControllerApi {
                 .setData("success", true)
                 .setData("commands", commandService.queryCommandInfoByTaskId(taskId));
     }
+
+    //研判后任务 下发指令\停止指令
+    @PostMapping("/{commandId}/valid/{isValid}")
+    public ResponseResult validCommandInfoByTaskId(@PathVariable Integer isValid,
+                                                   @PathVariable String commandId) {
+        return ResponseResult.ok()
+                .setData("success", commandService.updateCommandVaid(commandId, isValid));
+    }
+
+
 }

@@ -160,4 +160,8 @@ public class DynamicRuleService {
         return dynamicRuleMapper.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
                 templateSourceSystem, creator, page, pageSize);
     }
+
+    public Integer queryDynamicRuleTotalNum() {
+        return dynamicRuleMapper.queryDynamicRuleTotalNum();
+    }
 }

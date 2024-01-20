@@ -38,4 +38,6 @@ public interface WhiteListMapper {
     void deleteWhiteListObjects(@Param("whiteListIds") List<Integer> whiteListBatch);
 
     List<WhiteListObject> whiteListCommandJudge(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
+
+    Integer queryWhiteListTotalNum();
 }

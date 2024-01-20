@@ -55,4 +55,21 @@ public class FiveTupleWithMask {
 
     @Schema(description = "协议掩码", example = "0")
     private String maskProtocol;
+
+    // 复制构造函数
+    public void copyFiveTupleWithMask(FiveTupleWithMask original) {
+        this.addrType = original.addrType;
+        this.sourceIP = original.sourceIP;
+        this.sourcePort = original.sourcePort;
+        this.destinationIP = original.destinationIP;
+        this.destinationPort = original.destinationPort;
+        this.protocol = original.protocol;
+        this.protocolNum = original.protocolNum;
+        this.maskSourceIP = original.maskSourceIP;
+        this.maskSourcePort = original.maskSourcePort;
+        this.maskDestinationIP = original.maskDestinationIP;
+        this.maskDestinationPort = original.maskDestinationPort;
+        this.maskProtocol = original.maskProtocol;
+
+    }
 }

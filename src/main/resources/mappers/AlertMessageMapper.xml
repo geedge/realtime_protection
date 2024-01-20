@@ -21,7 +21,7 @@
     
         <result column="template_id" property="templateId"/>
         <result column="dynamic_rule_protect_level" property="protectLevel"/>
-    
+        <result column="task_status" property="taskStatus"/>
     </resultMap>
     <resultMap id="protectLevelMap" type="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
         <id column="protect_level_id" property="protectLevelId"/>
@@ -33,6 +33,75 @@
         <result column="has_url" property="hasURL"/>
         <result column="has_dns" property="hasDNS"/>
     </resultMap>
+
+    <resultMap id="alertMessageMap" type="com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage">
+        <id column="ALERT_MESSAGE_ID" property="alertMessageUUID"/>
+        <result column="TASK_ID" property="taskId"/>
+        <result column="DYNAMIC_RULE_ID" property="dynamicRuleId"/>
+
+        <result column="IS_DISTRIBUTE" property="isDistribute"/>
+        <result column="COMMAND_UUID" property="commandUUID"/>
+
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="LAST_UPDATE" property="modifyTime"/>
+
+        <association property="fiveTupleWithMask">
+            <result column="ADDR_TYPE" property="addrType"/>
+            <result column="SRC_IP" property="sourceIP"/>
+            <result column="SRC_PORT" property="sourcePort"/>
+            <result column="DST_IP" property="destinationIP"/>
+            <result column="DST_PORT" property="destinationPort"/>
+            <result column="PROTOCOL" property="protocol"/>
+            <result column="MASK_SRC_IP" property="maskSourceIP"/>
+            <result column="MASK_SRC_PORT" property="maskSourcePort"/>
+            <result column="MASK_DST_IP" property="maskDestinationIP"/>
+            <result column="MASK_DST_PORT" property="maskDestinationPort"/>
+            <result column="MASK_PROTOCOL" property="maskProtocol"/>
+        </association>
+
+    </resultMap>
+
+    <insert id="insertAlertMessage">
+        insert
+        into t_alertmessage(TASK_ID,
+                            DYNAMIC_RULE_ID,
+                            ADDR_TYPE,
+                            SRC_IP,
+                            SRC_PORT,
+                            DST_IP,
+                            DST_PORT,
+                            PROTOCOL,
+                            MASK_SRC_IP,
+                            MASK_SRC_PORT,
+                            MASK_DST_IP,
+                            MASK_DST_PORT,
+                            MASK_PROTOCOL,
+                            IS_DISTRIBUTE,
+                            COMMAND_UUID,
+                            CREATE_TIME,
+                            LAST_UPDATE,
+                            ALERT_MESSAGE_ID)
+        values (
+                #{taskId},
+                #{dynamicRuleId},
+                #{fiveTupleWithMask.addrType},
+                #{fiveTupleWithMask.sourceIP},
+                #{fiveTupleWithMask.sourcePort},
+                #{fiveTupleWithMask.destinationIP},
+                #{fiveTupleWithMask.destinationPort},
+                #{fiveTupleWithMask.protocol},
+                #{fiveTupleWithMask.maskSourceIP},
+                #{fiveTupleWithMask.maskSourcePort},
+                #{fiveTupleWithMask.maskDestinationIP},
+                #{fiveTupleWithMask.maskDestinationPort},
+                #{fiveTupleWithMask.maskProtocol},
+                #{isDistribute},
+                #{commandUUID},
+                NOW(),
+                NOW(),
+                UUID())
+
+    </insert>
 
     <select id="queryTemplateProtectLevel" resultMap="protectLevelMap">
         SELECT
@@ -77,11 +146,43 @@
             t_task.task_end_time,
 
             t_dr.template_id,
-            t_dr.dynamic_rule_protect_level
+            t_dr.dynamic_rule_protect_level,
+            t_task.task_status
 
             from t_task
             left join realtime_protection.t_dynamic_rule t_dr on t_task.task_id = t_dr.dynamic_rule_used_task_id
             where
                 t_task.task_id = #{task_id}
+    </select>
+
+    <select id="queryAlermsByCommandId"
+            resultMap="alertMessageMap">
+        select
+            t_alertmessage.ALERT_MESSAGE_ID,
+            t_alertmessage.TASK_ID,
+            t_alertmessage.DYNAMIC_RULE_ID,
+
+            t_alertmessage.ADDR_TYPE,
+            t_alertmessage.SRC_IP,
+            t_alertmessage.SRC_PORT,
+            t_alertmessage.DST_IP,
+            t_alertmessage.DST_PORT,
+            t_alertmessage.PROTOCOL,
+            t_alertmessage.MASK_SRC_IP,
+            t_alertmessage.MASK_SRC_PORT,
+            t_alertmessage.MASK_DST_IP,
+            t_alertmessage.MASK_DST_PORT,
+            t_alertmessage.MASK_PROTOCOL,
+
+            t_alertmessage.IS_DISTRIBUTE,
+            t_alertmessage.COMMAND_UUID,
+
+            t_alertmessage.CREATE_TIME,
+            t_alertmessage.LAST_UPDATE
+
+            from t_alertmessage
+            where
+                t_alertmessage.COMMAND_UUID = #{commandId}
+            AND IS_DELETE = FALSE
     </select>
 </mapper>

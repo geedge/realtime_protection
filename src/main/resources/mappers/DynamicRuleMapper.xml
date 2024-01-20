@@ -206,6 +206,10 @@
         from t_protect_object
         where protect_object_id = #{protectObjectId}
     </select>
+    <select id="queryDynamicRuleTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM t_dynamic_rule
+    </select>
 
 
 </mapper>

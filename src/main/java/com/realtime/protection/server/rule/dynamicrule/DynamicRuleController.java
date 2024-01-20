@@ -103,7 +103,8 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
         return ResponseResult.ok()
                 .setData("success", true)
                 .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
-                        protectObjectSourceSystem, creator, page, pageSize));
+                        protectObjectSourceSystem, creator, page, pageSize))
+                .setData("dynamic_rule_total_num",dynamicRuleService.queryDynamicRuleTotalNum());
     }
 
     //详情查看？？  就是按id查询吧

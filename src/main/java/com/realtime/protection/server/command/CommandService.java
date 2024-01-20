@@ -79,4 +79,17 @@ public class CommandService {
     public Boolean removeCommandsByTaskId(Long taskId) {
         return commandMapper.removeCommandsByTaskId(taskId);
     }
+
+    @DS("doris")
+    public Object updateCommandVaid(String commandId, Integer isValid) {
+        if (isValid == 0) {
+            return commandMapper.setCommandInvalid(commandId);
+        }
+        if (isValid == 1) {
+            return commandMapper.setCommandValid(commandId);
+        }
+        return new IllegalArgumentException("isValid must be 0 or 1");
+    }
+
+
 }

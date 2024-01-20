@@ -158,5 +158,9 @@
         SELECT static_rule_audit_status FROM t_static_rule
         WHERE static_rule_id = #{id}
     </select>
+    <select id="queryStaticRuleTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM t_static_rule
+    </select>
 
 </mapper>

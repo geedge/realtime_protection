@@ -198,5 +198,9 @@
 
         </where>
     </select>
+    <select id="queryWhiteListTotalNum" resultType="java.lang.Integer">
+        select COUNT(*)
+        from t_white_list
+    </select>
 
 </mapper>

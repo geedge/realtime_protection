@@ -28,9 +28,9 @@ public interface DynamicRuleControllerApi {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(
-//                                            title = "ResponseResult和DynamicRule的组合模型",
-//                                            description = "ResponseResult的data内DynamicRule",
-//                                            anyOf = {ResponseResult.class, DynamicRuleObject.class})
+                                            title = "ResponseResult和DynamicRule的组合模型",
+                                            description = "ResponseResult的data内DynamicRule",
+                                            anyOf = {ResponseResult.class, DynamicRuleObject.class},
                                             implementation = ResponseResult.class)
                             )
                     )
@@ -84,7 +84,11 @@ public interface DynamicRuleControllerApi {
                             description = "返回修改对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(
+                                            title = "ResponseResult和DynamicRule的组合模型",
+                                            description = "ResponseResult的data内DynamicRule",
+                                            anyOf = {ResponseResult.class, DynamicRuleObject.class},
+                                            implementation = ResponseResult.class)
                             )
                     )
             },

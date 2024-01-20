@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,7 +29,8 @@ public interface StaticRuleControllerApi {
                             description = "返回新增对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(
+                                            implementation = ResponseResult.class)
                             )
                     )
             },
@@ -52,7 +54,7 @@ public interface StaticRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Excel文件")
     )
-    ResponseResult uploadFile(MultipartFile uploadFile) throws IOException;
+    ResponseResult uploadFile(@RequestPart("file")MultipartFile uploadFile) throws IOException;
 
     @Operation(
             summary = "下载静态规则模板",

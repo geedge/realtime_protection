@@ -69,7 +69,8 @@ public class WhiteListController implements WhiteListControllerApi {
                     .setData("whiteobj_list", null);
         }
         return ResponseResult.ok()
-                .setData("whiteobj_list", whiteListService.queryWhiteListObject(whiteListName, whiteListId, page, pageSize));
+                .setData("whiteobj_list", whiteListService.queryWhiteListObject(whiteListName, whiteListId, page, pageSize))
+                .setData("whiteobj_total_num", whiteListService.queryWhiteListTotalNum());
     }
 
     @Override

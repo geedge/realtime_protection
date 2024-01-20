@@ -69,9 +69,14 @@ public class TaskCommandInfo {
     @Schema(description = "最新下发时间", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime latestSendTime;
 
+    /*
+      以下属性用于动态规则生成，不写入doris：t_command表
+     */
     @Schema(description = "防御策略模板ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer templateId;
-
     @Schema(description = "防护等级", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectLevel;
+    @Schema(description = "指令所属任务的运行状态", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer taskStatus;
+
 }

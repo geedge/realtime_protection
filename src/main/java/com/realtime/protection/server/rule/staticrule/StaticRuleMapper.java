@@ -38,4 +38,6 @@ public interface StaticRuleMapper {
     Integer queryAuditStatusById(Integer id);
 
     Boolean updateAuditStatusById(Integer id, Integer auditStatus);
+
+    Integer queryStaticRuleTotalNum();
 }

@@ -44,7 +44,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     //以Excel方式批量导入静态规则
     @PostMapping("/upload")
     @Override
-    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
+    public ResponseResult uploadFile(@RequestPart("file")MultipartFile uploadFile) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), StaticRuleObject.class,
                 new StaticRuleDataListener(staticRuleService)).sheet().doRead();
         return ResponseResult.ok();
@@ -137,7 +137,9 @@ public class StaticRuleController implements StaticRuleControllerApi {
         List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(
                 static_rule_name, static_rule_id,
                 static_rule_creator, static_rule_ip, page, pageSize);
-        return ResponseResult.ok().setData("static_rule_list", pageResult);
+        return ResponseResult.ok()
+                .setData("static_rule_list", pageResult)
+                .setData("static_rule_total_num",staticRuleService.queryStaticRuleTotalNum());
     }
 
     /**

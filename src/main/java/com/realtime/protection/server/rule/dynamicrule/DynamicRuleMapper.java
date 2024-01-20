@@ -40,4 +40,6 @@ public interface DynamicRuleMapper {
     boolean newDynamicRulProtectObjectsConcat(Integer dynamicRuleId, List<Integer> protectObjectIds);
 
     boolean queryProtectObjectById(Integer protectObjectId);
+
+    Integer queryDynamicRuleTotalNum();
 }
