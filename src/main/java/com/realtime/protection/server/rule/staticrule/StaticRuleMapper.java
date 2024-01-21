@@ -19,7 +19,7 @@ public interface StaticRuleMapper {
 
 
     //修改静态规则
-    Integer updateStaticRule(@Param("id") Integer id, @Param("object") StaticRuleObject object);
+    Boolean updateStaticRule(@Param("id") Integer id, @Param("object") StaticRuleObject object);
 
     //按id查询静态规则
     //@Select("select * from t_static_rule where static_rule_id = #{id}")

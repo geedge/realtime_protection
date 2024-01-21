@@ -1,10 +1,12 @@
 package com.realtime.protection.server.whitelist;
 
+import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +29,18 @@ public interface WhiteListControllerApi {
                             description = "返回新增对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = {@ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {\n" +
+                                                    "    \"whiteobj_name\": \"白名单测试\",\n" +
+                                                    "    \"success\": true,\n" +
+                                                    "    \"whiteobj_id\": 7026\n" +
+                                                    "  }\n" +
+                                                    "}"
+                            )}
                             )
                     )
             },
@@ -61,7 +74,9 @@ public interface WhiteListControllerApi {
                             description = "返回下载结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(
+                                            implementation = ResponseResult.class)
+
                             )
                     )
             }
@@ -76,7 +91,8 @@ public interface WhiteListControllerApi {
                             description = "返回查询到的所有白名单",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(title = "ResponseResult和WhiteListObject的属性",
+                                            anyOf = {ResponseResult.class, WhiteListObject.class})
                             )
                     )
             },
@@ -100,7 +116,8 @@ public interface WhiteListControllerApi {
                             description = "返回查询到的单个白名单",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(title = "ResponseResult和WhiteListObject的属性",
+                                            anyOf = {ResponseResult.class, WhiteListObject.class})
                             )
                     )
             },

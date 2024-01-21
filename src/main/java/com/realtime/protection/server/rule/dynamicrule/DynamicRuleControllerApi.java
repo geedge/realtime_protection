@@ -5,10 +5,12 @@ import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.hibernate.validator.constraints.EAN;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,9 +30,9 @@ public interface DynamicRuleControllerApi {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(
-                                            title = "ResponseResult和DynamicRule的组合模型",
-                                            description = "ResponseResult的data内DynamicRule",
-                                            anyOf = {ResponseResult.class, DynamicRuleObject.class},
+//                                            title = "ResponseResult和DynamicRule的组合模型",
+//                                            description = "ResponseResult的data内DynamicRule",
+//                                            anyOf = {ResponseResult.class, DynamicRuleObject.class},
                                             implementation = ResponseResult.class)
                             )
                     )
@@ -66,7 +68,20 @@ public interface DynamicRuleControllerApi {
                             description = "返回批量删除对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "返回批量删除结果",
+                                                    description = "success：是否修改成功",
+                                                    value ="{\n" +
+                                                            "  \"code\": 200,\n" +
+                                                            "  \"message\": \"request succeed\",\n" +
+                                                            "  \"data\": {\n" +
+                                                            "    \"success\": true\n" +
+                                                            "  }\n" +
+                                                            "}"
+                                            )
+                                    }
                             )
                     )
             },
@@ -85,10 +100,23 @@ public interface DynamicRuleControllerApi {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(
-                                            title = "ResponseResult和DynamicRule的组合模型",
-                                            description = "ResponseResult的data内DynamicRule",
-                                            anyOf = {ResponseResult.class, DynamicRuleObject.class},
-                                            implementation = ResponseResult.class)
+                                            implementation = ResponseResult.class
+                                            ),
+                                    examples = {
+                                    @ExampleObject(
+                                            name = "返回修改对象结果",
+                                            description = "dynamic_rule_id:动态规则id" +
+                                                    "success：是否修改成功",
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {\n" +
+                                                    "    \"dynamic_rule_id\": 11,\n" +
+                                                    "    \"success\": true\n" +
+                                                    "  }\n" +
+                                                    "}"
+                                    ),
+                            }
                             )
                     )
             },
@@ -110,7 +138,46 @@ public interface DynamicRuleControllerApi {
                             description = "返回查询到的单个动态规则",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+
+                                    schema = @Schema(
+                                            title = "ResponseResult和DynamicRule的组合模型",
+                                            description = "ResponseResult的data内DynamicRule",
+                                            anyOf = {ResponseResult.class, DynamicRuleObject.class}
+                                            ),
+                                    examples = @ExampleObject(
+                                    name = "返回查询到的单个动态规则",
+                                    description = "dynamic_rule_id:动态规则id\n" +
+                                            "dynamic_rule_name:动态规则名称\n" +
+                                            "dynamic_rule_modify_time:动态规则修改时间\n" +
+                                            "protect_objects:动态规则关联的防护对象\n" +
+                                            "dynamic_rule_source_system:动态规则来源系统\n" +
+                                            "dynamic_rule_event_type:动态规则事件类型\n" +
+                                            "template_id:动态规则关联的策略模板id\n" +
+                                            "dynamic_rule_priority:动态规则优先级\n" +
+                                            "dynamic_rule_range:动态规则范围\n" +
+                                            "dynamic_rule_frequency:动态规则频率\n" +
+                                            "success：是否查询成功",
+                                    value = "{\n" +
+                                            "  \"code\": 200,\n" +
+                                            "  \"message\": \"request succeed\",\n" +
+                                            "  \"data\": {\n" +
+                                            "    \"dynamic_rule\": {\n" +
+                                            "      \"dynamic_rule_id\": 5,\n" +
+                                            "      \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                            "      \"dynamic_rule_modify_time\": \"2024-01-16T16:16:05\",\n" +
+                                            "      \"protect_objects\": [],\n" +
+                                            "      \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                            "      \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                            "      \"template_id\": 27,\n" +
+                                            "      \"dynamic_rule_priority\": 1,\n" +
+                                            "      \"dynamic_rule_range\": \"北京\",\n" +
+                                            "      \"dynamic_rule_frequency\": 1\n" +
+                                            "    },\n" +
+                                            "    \"success\": true\n" +
+                                            "  }\n" +
+                                            "}"
+                            )
+
                             )
                     )
             },
@@ -128,7 +195,132 @@ public interface DynamicRuleControllerApi {
                             description = "返回多个动态规则",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(
+                                            title = "ResponseResult和DynamicRule的组合模型",
+                                            description = "ResponseResult的data内DynamicRule",
+                                            anyOf = {ResponseResult.class, DynamicRuleObject.class}),
+                                    examples ={
+                                            @ExampleObject(
+                                                    name = "返回多个动态规则",
+                                                    value = "{\n" +
+                                                            "  \"code\": 200,\n" +
+                                                            "  \"message\": \"request succeed\",\n" +
+                                                            "  \"data\": {\n" +
+                                                            "    \"dynamic_rule_list\": [\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 5,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 11,\n" +
+                                                            "        \"dynamic_rule_name\": \"动态规则测试\",\n" +
+                                                            "        \"template_id\": 1,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 15,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 16,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 17,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 18,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 19,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 20,\n" +
+                                                            "        \"dynamic_rule_name\": \"UpdateDynamicRule2\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"反射型DDOS攻击\",\n" +
+                                                            "        \"template_id\": 27,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 23,\n" +
+                                                            "        \"dynamic_rule_name\": \"动态规则测试\",\n" +
+                                                            "        \"dynamic_rule_create_time\": \"2024-01-18T16:11:39\",\n" +
+                                                            "        \"dynamic_rule_create_username\": \"mh\",\n" +
+                                                            "        \"dynamic_rule_create_depart\": \"mh\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"test\",\n" +
+                                                            "        \"template_id\": 1237,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      },\n" +
+                                                            "      {\n" +
+                                                            "        \"dynamic_rule_id\": 31,\n" +
+                                                            "        \"dynamic_rule_name\": \"动态规则测试\",\n" +
+                                                            "        \"dynamic_rule_create_time\": \"2024-01-19T22:39:08\",\n" +
+                                                            "        \"dynamic_rule_create_username\": \"mh\",\n" +
+                                                            "        \"dynamic_rule_source_system\": \"xxxx系统\",\n" +
+                                                            "        \"dynamic_rule_event_type\": \"test\",\n" +
+                                                            "        \"template_id\": 1237,\n" +
+                                                            "        \"dynamic_rule_priority\": 1,\n" +
+                                                            "        \"dynamic_rule_range\": \"北京\",\n" +
+                                                            "        \"dynamic_rule_frequency\": 1\n" +
+                                                            "      }\n" +
+                                                            "    ],\n" +
+                                                            "    \"success\": true,\n" +
+                                                            "    \"dynamic_rule_total_num\": 11\n" +
+                                                            "  }\n" +
+                                                            "}",
+                                                    description = "dynamic_rule_list:动态规则列表\n" +
+                                                            "dynamic_rule_total_num:动态规则总数\n" +
+                                                            "success：是否查询成功"
+
+                                            )
+                            }
                             )
                     )
             },

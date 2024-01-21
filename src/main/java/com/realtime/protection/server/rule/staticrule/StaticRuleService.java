@@ -73,7 +73,7 @@ public class StaticRuleService {
         return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, deleteStaticRulesFunction, staticRuleIds);
     }
 
-    public Integer updateStaticRule(Integer id, StaticRuleObject object) {
+    public Boolean updateStaticRule(Integer id, StaticRuleObject object) {
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？
         //按id查询该静态规则的used_task_id字段，如果不为空，则不能修改
         object.setStaticRuleModifyTime(LocalDateTime.now());

@@ -98,11 +98,11 @@ public class StaticRuleController implements StaticRuleControllerApi {
                                            @RequestBody @Valid StaticRuleObject object) {
         log.info("修改静态规则: {}", object);
         //调用service修改
-        Integer updateValid = staticRuleService.updateStaticRule(id, object);
-        if (updateValid == 0) {
+        Boolean updateValid = staticRuleService.updateStaticRule(id, object);
+        if (!updateValid) {
             return ResponseResult.invalid().setMessage("id is invalid");
         }
-        return ResponseResult.ok();
+        return ResponseResult.ok().setData("success",updateValid);
     }
 
     /**

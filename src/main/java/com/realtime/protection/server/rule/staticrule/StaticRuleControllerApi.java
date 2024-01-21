@@ -1,10 +1,12 @@
 package com.realtime.protection.server.rule.staticrule;
 
+import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,8 +32,21 @@ public interface StaticRuleControllerApi {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(
-                                            implementation = ResponseResult.class)
-                            )
+                                            implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "新增静态规则",
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {\n" +
+                                                    "    \"static_rule_id\": 1095,\n" +
+                                                    "    \"static_rule_name\": \"静态规则测试\"\n" +
+                                                    "  }\n" +
+                                                    "}",
+                                            description = "static_rule_id:新增静态规则名称"+
+                                                    "static_rule_name:新增静态规则id"
+                                    )
+                           )
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -79,7 +94,23 @@ public interface StaticRuleControllerApi {
                             description = "返回删除对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "删除多个静态规则",
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {\n" +
+                                                    "    \"success\": true,\n" +
+                                                    "    \"static_rule_id\": [\n" +
+                                                    "      11\n" +
+                                                    "    ]\n" +
+                                                    "  }\n" +
+                                                    "}",
+                                            description = "static_rule_id:删除静态规则id列表"+
+                                                    "success:是否成功"
+                                    )
+
                             )
                     )
             },
@@ -97,7 +128,16 @@ public interface StaticRuleControllerApi {
                             description = "返回修改对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "修改静态规则",
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {\"success\": true,}\n" +
+                                                    "}"
+
+                                    )
                             )
                     )
             },
@@ -118,7 +158,8 @@ public interface StaticRuleControllerApi {
                             description = "返回查询到的单个静态规则",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(title = "ResponseResult和StaticRule的对象属性",
+                                            anyOf = {ResponseResult.class, StaticRuleObject.class})
                             )
                     )
             },
@@ -134,7 +175,24 @@ public interface StaticRuleControllerApi {
                             description = "返回多个静态规则",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(
+                                            title = "ResponseResult和StaticRule的对象属性",
+                                            anyOf = {ResponseResult.class, StaticRuleObject.class}),
+                                    examples = @ExampleObject(
+                                            name = "分页查询静态规则",
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {\n" +
+                                                    "    \"static_rule_list\": [\n" +
+                                                    "    ],\n" +
+                                                    "    \"static_rule_total_num\": 1080\n" +
+                                                    "  }\n" +
+                                                    "}",
+
+                                            description = "static_rule_list:静态规则列表"+
+                                                    "static_rule_total_num:静态规则总数"
+                                    )
                             )
                     )
             },
@@ -164,7 +222,14 @@ public interface StaticRuleControllerApi {
                             description = "返回删除对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"code\": 200,\n" +
+                                                    "  \"message\": \"request succeed\",\n" +
+                                                    "  \"data\": {}\n" +
+                                                    "}"
+                                    )
                             )
                     )
             },
