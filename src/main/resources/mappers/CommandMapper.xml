@@ -7,7 +7,7 @@
         insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
                               PROTOCOL,
                               MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
-                              INVALID_TIME, IS_VALID,
+                              INVALID_TIME, IS_VALID, IS_JUDGED,
                               SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.frequency},
                 DEFAULT,
@@ -17,14 +17,15 @@
                 #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
                 #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
                 #{info.fiveTupleWithMask.maskProtocol},
-                #{info.startTime}, #{info.endTime}, #{info.isValid}, 0, 0,
+                #{info.startTime}, #{info.endTime}, #{info.isValid}, #{info.isJudged},
+                0, 0,
                 NOW(), NOW(), FALSE)
     </insert>
 
     <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
         insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
         PROTOCOL,
-        MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
+        MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID, IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
         values
         <foreach collection="command_infos" item="info" separator=",">
@@ -36,7 +37,8 @@
             #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
             #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
             #{info.fiveTupleWithMask.maskProtocol},
-            #{info.startTime}, #{info.endTime}, #{info.isValid}, 0, 0,
+            #{info.startTime}, #{info.endTime}, #{info.isValid}, DEFAULT,
+            0, 0,
             NOW(), NOW(), FALSE
             )
         </foreach>
@@ -76,21 +78,28 @@
           AND IS_DELETED = FALSE
     </select>
 
-    <select id="queryCommandInfoByTaskId" resultMap="commandStatMap">
+    <select id="queryCommandInfos" resultMap="commandStatMap">
         SELECT COMMAND_ID,
-               TASK_ACT,
-               SEND_TIMES,
-               SUCCESS_TIMES,
-               FIRST_SEND_TIME,
-               LASt_SEND_TIME,
-               SRC_IP,
-               SRC_PORT,
-               DST_IP,
-               DST_PORT,
-               PROTOCOL
+        TASK_ACT,
+        SEND_TIMES,
+        SUCCESS_TIMES,
+        FIRST_SEND_TIME,
+        LASt_SEND_TIME,
+        SRC_IP,
+        SRC_PORT,
+        DST_IP,
+        DST_PORT,
+        PROTOCOL
         FROM t_command
-        WHERE TASK_ID = #{task_id}
-          AND IS_DELETED = FALSE
+        <where>
+            AND TASK_ID = #{task_id}
+            AND IS_DELETED = FALSE
+            <if test="src_ip != null">AND SRC_IP = #{src_ip}</if>
+            <if test="dst_ip != null">AND DST_IP = #{dst_ip}</if>
+            <if test="src_port != null">AND SRC_PORT = #{src_port}</if>
+            <if test="dst_port != null">AND DST_PORT = #{dst_port}</if>
+        </where>
+        LIMIT ${(page-1) * page_num}, #{page_num}
     </select>
 
     <update id="stopCommandsByTaskId">
@@ -117,11 +126,48 @@
           AND IS_DELETED = FALSE
     </update>
 
-    <update id="setCommandValid">
+    <update id="setCommandJudged">
         UPDATE t_command
-        SET IS_VALID    = #{is_valid},
+        SET IS_JUDGED    = #{is_judged},
             LAST_UPDATE = NOW()
         WHERE COMMAND_ID = #{command_id}
           AND IS_DELETED = FALSE
     </update>
+
+    <select id="queryCommandInfo" resultType="java.lang.String">
+        SELECT COMMAND_ID FROM t_command
+        <where>
+            <if test="command_info.taskId != null">AND TASK_ID = #{command_info.taskId}</if>
+            <if test="command_info.fiveTupleWithMask.sourceIP != null">
+                AND SRC_IP = #{command_info.fiveTupleWithMask.sourceIP}
+            </if>
+            <if test="command_info.fiveTupleWithMask.destinationIP != null">
+                AND DST_IP = #{command_info.fiveTupleWithMask.destinationIP}
+            </if>
+            <if test="command_info.fiveTupleWithMask.sourcePort != null">
+                AND SRC_PORT = #{command_info.fiveTupleWithMask.sourcePort}
+            </if>
+            <if test="command_info.fiveTupleWithMask.destinationPort != null">
+                AND DST_PORT = #{command_info.fiveTupleWithMask.destinationPort}
+            </if>
+            <if test="command_info.fiveTupleWithMask.protocol != null">
+                AND PROTOCOL = #{command_info.fiveTupleWithMask.protocol}
+            </if>
+            <if test="command_info.fiveTupleWithMask.maskSourceIP != null">
+                AND MASK_SRC_IP = #{command_info.fiveTupleWithMask.maskSourceIP}
+            </if>
+            <if test="command_info.fiveTupleWithMask.maskSourcePort != null">
+                AND MASK_SOURCE_PORT = #{command_info.fiveTupleWithMask.maskSourcePort}
+            </if>
+            <if test="command_info.fiveTupleWithMask.maskDestinationIP != null">
+                AND MASK_DST_IP = #{command_info.fiveTupleWithMask.maskDestinationIP}
+            </if>
+            <if test="command_info.fiveTupleWithMask.maskDestinationPort != null">
+                AND MASK_DST_PORT = #{command_info.fiveTupleWithMask.maskDestinationPort}
+            </if>
+            <if test="command_info.fiveTupleWithMask.maskProtocol != null">
+                AND MASK_PROTOCOL = #{command_info.fiveTupleWithMask.maskProtocol}
+            </if>
+        </where>
+    </select>
 </mapper>

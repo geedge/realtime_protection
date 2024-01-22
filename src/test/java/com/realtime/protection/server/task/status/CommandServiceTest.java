@@ -86,7 +86,8 @@ class CommandServiceTest extends ProtectionApplicationTests {
 
     @Test
     void queryCommandByUUID() {
-        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfoByTaskId(30L);
+        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(30L,
+                null, null, null, null,1, 5);
         assertTrue(taskCommandInfos != null && !taskCommandInfos.isEmpty());
 
         for (TaskCommandInfo taskCommandInfo : taskCommandInfos) {

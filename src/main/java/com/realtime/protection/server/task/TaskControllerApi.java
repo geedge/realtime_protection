@@ -44,9 +44,9 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "task_name": 任务名称
-                                                    
+                                                                                                        
                                                     "success": 任务添加是否成功
-                                                    
+                                                                                                        
                                                     "task_id": 新建任务ID
                                                     """
                                     )
@@ -83,9 +83,9 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "task_name": 任务名称
-                                                    
+                                                                                                        
                                                     "success": 任务添加是否成功
-                                                    
+                                                                                                        
                                                     "task_id": 新建任务ID
                                                     """
                                     )
@@ -149,27 +149,27 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "task_id": 任务ID
-                                                    
+                                                                                                        
                                                     "task_name": 任务名称
-                                                    
+                                                                                                        
                                                     "task_start_time": 任务开始时间
-                                                    
+                                                                                                        
                                                     "task_end_time": 任务结束时间
-                                                    
+                                                                                                        
                                                     "task_type": 任务类型（静态、动态、研判后对应1，2，3）
-                                                    
+                                                                                                        
                                                     "task_create_username": 任务创建人名称
-                                                    
+                                                                                                        
                                                     "task_create_depart": 任务创建人处室
-                                                    
+                                                                                                        
                                                     "static_rule_ids": 静态规则ID列表
-                                                    
+                                                                                                        
                                                     "dynamic_rule_ids": 动态规则ID列表
-                                                    
+                                                                                                        
                                                     "task_status": 任务当前运行状态
-                                                    
+                                                                                                        
                                                     "task_audit_status": 任务当前审核状态
-                                                    
+                                                                                                        
                                                     "total_num": 任务总数
                                                     """
                                     )
@@ -227,25 +227,25 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "task_id": 任务ID
-                                                    
+                                                                                                        
                                                     "task_name": 任务名称
-                                                    
+                                                                                                        
                                                     "task_start_time": 任务开始时间
-                                                    
+                                                                                                        
                                                     "task_end_time": 任务结束时间
-                                                    
+                                                                                                        
                                                     "task_type": 任务类型（静态、动态、研判后对应1，2，3）
-                                                    
+                                                                                                        
                                                     "task_create_username": 任务创建人名称
-                                                    
+                                                                                                        
                                                     "task_create_depart": 任务创建人处室
-                                                    
+                                                                                                        
                                                     "static_rule_ids": 静态规则ID列表
-                                                    
+                                                                                                        
                                                     "dynamic_rule_ids": 动态规则ID列表
-                                                    
+                                                                                                        
                                                     "task_status": 任务当前运行状态
-                                                    
+                                                                                                        
                                                     "task_audit_status": 任务当前审核状态
                                                     """
                                     )
@@ -280,7 +280,7 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "success": 更新是否成功
-                                                    
+                                                                                                        
                                                     "task_id": 更新任务ID
                                                     """
                                     )
@@ -321,9 +321,9 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "success": 任务审核状态修改是否成功
-                                                    
+                                                                                                        
                                                     "task_id": 任务ID
-                                                    
+                                                                                                        
                                                     "audit_status": 任务当前审核状态
                                                     """
                                     )
@@ -362,7 +362,7 @@ public interface TaskControllerApi {
                                                     """,
                                             description = """
                                                     "success": 任务删除是否成功
-                                                    
+                                                                                                        
                                                     "task_id": 删除的任务ID
                                                     """
                                     )
@@ -437,31 +437,31 @@ public interface TaskControllerApi {
                                                         "success": true,
                                                         "commands": [
                                                           {
-                                                            "taskAct": "篡改",
-                                                            "isValid": true,
-                                                            "fiveTupleWithMask": {
+                                                            "uuid": "3b42ca64-282f-4040-bd8f-8f895fa82d23",
+                                                            "task_act": "篡改",
+                                                            "is_valid": true,
+                                                            "five_tuple_with_mask": {
                                                               "sourceIP": "1.1.2.3",
                                                               "sourcePort": "80"
                                                             },
-                                                            "commandSentTimes": 0,
-                                                            "commandSuccessTimes": 0,
-                                                            "uuid": "3b42ca64-282f-4040-bd8f-8f895fa82d23"
+                                                            "command_send_times": 0,
+                                                            "command_success_times": 0
                                                           }
                                                         ]
                                                       }
                                                     }
                                                     """,
                                             description = """
-                                                    "taskAct": 任务行为
-                                                    
-                                                    "isValid": 指令是否生效
-                                                    
-                                                    "fiveTupleWithMask": 指令五元组信息
-                                                    
-                                                    "commandSentTimes": 指令下发次数
-                                                    
-                                                    "commandSuccessTimes": 指令下发成功次数
-                                                    
+                                                    "task_act": 任务行为
+                                                                                                        
+                                                    "is_valid": 指令是否生效
+                                                                                                        
+                                                    "five_tuple_with_mask": 指令五元组信息
+                                                                                                        
+                                                    "command_send_times": 指令下发次数
+                                                                                                        
+                                                    "command_success_times": 指令下发成功次数
+                                                                                                        
                                                     "uuid": 指令UUID
                                                     """
                                     )
@@ -469,10 +469,22 @@ public interface TaskControllerApi {
                     )
             },
             parameters = {
-                    @Parameter(name = "taskId", description = "任务ID")
+                    @Parameter(name = "taskId", description = "任务ID", example = "733"),
+                    @Parameter(name = "src_ip", description = "源IP", example = "192.168.0.1"),
+                    @Parameter(name = "dst_ip", description = "目的IP"),
+                    @Parameter(name = "src_port", description = "源端口"),
+                    @Parameter(name = "dst_port", description = "目的端口"),
+                    @Parameter(name = "page", description = "页码"),
+                    @Parameter(name = "page_num", description = "每页个数")
             }
     )
-    ResponseResult queryCommandInfoByTaskId(@PathVariable Long taskId);
+    ResponseResult queryCommandInfos(@PathVariable Long taskId,
+                                     @RequestParam(name = "src_ip", required = false) String sourceIP,
+                                     @RequestParam(name = "src_port", required = false) String sourcePort,
+                                     @RequestParam(name = "dst_ip", required = false) String destinationIP,
+                                     @RequestParam(name = "dst_port", required = false) String destinationPort,
+                                     @RequestParam(name = "page") @Min(1) Integer page,
+                                     @RequestParam(name = "page_num") @Min(1) Integer pageNum);
 
 
     @Operation(
@@ -497,14 +509,14 @@ public interface TaskControllerApi {
                                             """,
                                     description = """
                                             "success": 指令下发是否成功
-                                            
+                                                                                        
                                             "command_uuid": 指令UUID
                                             """
                             )
                     )
             )
     )
-    @GetMapping("/{commandId}/valid/{isValid}")
-    ResponseResult setCommandValid(@PathVariable Boolean isValid,
-                                   @PathVariable String commandId);
+    @GetMapping("/{commandId}/valid/{isJudged}")
+    ResponseResult setCommandJudged(@PathVariable Boolean isJudged,
+                                    @PathVariable String commandId);
 }

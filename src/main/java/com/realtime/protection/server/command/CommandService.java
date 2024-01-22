@@ -28,6 +28,11 @@ public class CommandService {
 
     @DSTransactional
     public String createCommand(TaskCommandInfo commandInfo) {
+        String uuid = commandMapper.queryCommandInfo(commandInfo);
+        if (uuid != null) {
+            return uuid;
+        }
+
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
         return commandInfo.getUUID();
@@ -59,8 +64,14 @@ public class CommandService {
         sqlSessionWrapper.startBatchSession(CommandMapper.class, function, taskCommandInfos);
     }
 
-    public List<TaskCommandInfo> queryCommandInfoByTaskId(Long taskId) {
-        return commandMapper.queryCommandInfoByTaskId(taskId);
+    public List<TaskCommandInfo> queryCommandInfos(Long taskId,
+                                                   String sourceIP, String sourcePort,
+                                                   String destinationIP, String destinationPort,
+                                                   Integer page, Integer pageNum) {
+        return commandMapper.queryCommandInfos(taskId,
+                sourceIP, sourcePort,
+                destinationIP, destinationPort,
+                page, pageNum);
     }
 
     public TaskCommandInfo queryCommandInfoByUUID(String uuid) {
@@ -79,9 +90,7 @@ public class CommandService {
         return commandMapper.removeCommandsByTaskId(taskId);
     }
 
-    public Object setCommandValid(String commandId, Boolean isValid) {
-        return commandMapper.setCommandValid(commandId, isValid);
+    public Boolean setCommandJudged(String commandId, Boolean isValid) {
+        return commandMapper.setCommandJudged(commandId, isValid);
     }
-
-
 }

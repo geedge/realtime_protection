@@ -131,17 +131,26 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @GetMapping("/{taskId}/commands")
-    public ResponseResult queryCommandInfoByTaskId(@PathVariable Long taskId) {
+    public ResponseResult queryCommandInfos(@PathVariable Long taskId,
+                                            @RequestParam(name = "src_ip", required = false) String sourceIP,
+                                            @RequestParam(name = "src_port", required = false) String sourcePort,
+                                            @RequestParam(name = "dst_ip", required = false) String destinationIP,
+                                            @RequestParam(name = "dst_port", required = false) String destinationPort,
+                                            @RequestParam(name = "page") @Min(1) Integer page,
+                                            @RequestParam(name = "page_num") @Min(1) Integer pageNum) {
+        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(
+                taskId, sourceIP, sourcePort, destinationIP, destinationPort, page, pageNum);
+
         return ResponseResult.ok()
                 .setData("success", true)
-                .setData("commands", commandService.queryCommandInfoByTaskId(taskId));
+                .setData("commands", taskCommandInfos);
     }
 
-    @GetMapping("/{commandId}/valid/{isValid}")
-    public ResponseResult setCommandValid(@PathVariable Boolean isValid,
-                                          @PathVariable String commandId) {
+    @GetMapping("/{commandId}/valid/{isJudged}")
+    public ResponseResult setCommandJudged(@PathVariable Boolean isJudged,
+                                           @PathVariable String commandId) {
         return ResponseResult.ok()
-                .setData("success", commandService.setCommandValid(commandId, isValid))
+                .setData("success", commandService.setCommandJudged(commandId, isJudged))
                 .setData("command_id", commandId);
     }
 }

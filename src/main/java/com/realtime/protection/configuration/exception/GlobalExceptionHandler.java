@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @Order(3)
     @ExceptionHandler(value = {Exception.class})
     public ResponseResult handleGlobalException(Exception e) {
-        log.error("遭遇全局异常：" + e.getMessage());
+        log.error("遭遇全局异常：" + e.getCause());
         return ResponseResult.error().setMessage(e.getMessage());
     }
 
