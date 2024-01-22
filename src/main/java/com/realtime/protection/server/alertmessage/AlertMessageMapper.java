@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface AlertMessageMapper {
 
-    TaskCommandInfo getDynamicTaskInfos(Long taskId) ;
+    TaskCommandInfo getDynamicTaskInfos(Long taskId, Integer dynamicRuleId) ;
 
 
     ProtectLevel queryTemplateProtectLevel(Integer templateId, Integer protectLevel);

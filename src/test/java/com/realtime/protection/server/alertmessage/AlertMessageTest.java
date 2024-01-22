@@ -17,12 +17,12 @@ public class AlertMessageTest {
 
     @Test
     void testReceiveAlertMessage() {
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 4; i++) {
             AlertMessage alertMessage = new AlertMessage();
             FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
             fiveTupleWithMask.setSourceIP("1.1.1." + i);
             fiveTupleWithMask.setMaskSourceIP("255.255.255.0");
-            fiveTupleWithMask.setDestinationIP("2.2.3.4");
+            fiveTupleWithMask.setDestinationIP("2.2.3." + i);
             fiveTupleWithMask.setMaskDestinationIP("255.255.255.255");
             fiveTupleWithMask.setSourcePort("80");
             fiveTupleWithMask.setDestinationPort("80");

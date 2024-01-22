@@ -148,9 +148,10 @@
             t_task.task_status
 
             from t_task
-            left join realtime_protection.t_dynamic_rule t_dr on t_task.task_id = t_dr.dynamic_rule_used_task_id
+            left join realtime_protection.t_dynamic_rule t_dr on
+                (t_task.task_id = t_dr.dynamic_rule_used_task_id and t_dr.dynamic_rule_id = #{dynamicRuleId})
             where
-                t_task.task_id = #{task_id}
+                t_task.task_id = #{taskId}
     </select>
 
     <select id="queryAlermsByCommandId"

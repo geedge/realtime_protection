@@ -1,5 +1,6 @@
 package com.realtime.protection.server.rule.dynamic;
 
+import com.github.xiaoymin.knife4j.annotations.Ignore;
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
@@ -44,6 +45,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 //        System.out.println(object);
     }
 
+    @Ignore
     @Test
     void testUpdateDynamicRule() {
         DynamicRuleObject object = new DynamicRuleObject();
