@@ -88,6 +88,9 @@ public class TaskCommandInfo {
     @JsonProperty("latest_send_times")
     private LocalDateTime latestSendTime;
 
+    @Schema(description = "指令是否研判", example = "true")
+    @JsonProperty("is_judeged")
+    private Boolean isJudged = true;
     /*
       以下属性用于动态规则生成，不写入doris：t_command表
      */

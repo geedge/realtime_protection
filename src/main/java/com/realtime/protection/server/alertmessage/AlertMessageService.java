@@ -8,7 +8,6 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
-import com.realtime.protection.server.task.TaskService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,12 +18,11 @@ import java.util.List;
 public class AlertMessageService {
     private final CommandService commandService;
     private final AlertMessageMapper alertMessageMapper;
-    private final TaskService taskService;
 
-    public AlertMessageService(CommandService commandService,TaskService taskService,
+    public AlertMessageService(
+            CommandService commandService,
     AlertMessageMapper alertMessageMapper) {
         this.commandService = commandService;
-        this.taskService = taskService;
         this.alertMessageMapper = alertMessageMapper;
     }
 
@@ -35,43 +33,43 @@ public class AlertMessageService {
         Integer taskStatus = dynamicTaskCommandInfo.getTaskStatus();
         Integer taskType = dynamicTaskCommandInfo.getTaskType();
 
-        if (taskType == TaskTypeEnum.DYNAMIC.getTaskType())//动态
+        if (taskType == TaskTypeEnum.DYNAMIC.getTaskType())//实时
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, true, alertMessage);
                     break;
                 case PAUSED:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, true, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    insertAlertMessageOnly(alertMessage, true);
+                    insertAlertMessageOnly(alertMessage);
                     break;
             }
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, false, alertMessage);
                     break;
                 case PAUSED:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, false, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    insertAlertMessageOnly(alertMessage, false);
+                    insertAlertMessageOnly(alertMessage);
             }
     }
 
 
     private TaskCommandInfo generateDynamicCommand(AlertMessage alertMessage){
         Long taskId = alertMessage.getTaskId();
-
+        Integer DynamicRuleId = alertMessage.getDynamicRuleId();
 //        查task信息
 //        （1）查询生成指令所需信息：和alertMessage中的fiveTuple信息 合并成 TaskCommandInfo;
 //        （2）额外信息：并额外查询templateId、protectLevel和taskStatus
-        TaskCommandInfo dynamicCommandInfo = alertMessageMapper.getDynamicTaskInfos(taskId);
+        TaskCommandInfo dynamicCommandInfo = alertMessageMapper.getDynamicTaskInfos(taskId, DynamicRuleId);
 
 //        根据templateId、protectLevel获取策略模板
         ProtectLevel templateProtectLevel = alertMessageMapper.queryTemplateProtectLevel(
@@ -87,17 +85,20 @@ public class AlertMessageService {
     }
 
     @DSTransactional
-    private void insertCommandAndAlertMessage(TaskCommandInfo dynamicTaskCommandInfo, Boolean isValid,
-                                                AlertMessage alertMessage){
+    private void insertCommandAndAlertMessage(TaskCommandInfo dynamicTaskCommandInfo,
+                                              Boolean isValid,
+                                              Boolean isJudged,
+                                              AlertMessage alertMessage){
         //command入库
         dynamicTaskCommandInfo.setIsValid(isValid);
+        dynamicTaskCommandInfo.setIsJudged(isJudged);
         String commandUUID = commandService.createCommand(dynamicTaskCommandInfo);
 
         //alertmessage入库
         alertMessage.setCommandUUID(commandUUID);
         alertMessageMapper.insertAlertMessage(alertMessage);
     }
-    private void insertAlertMessageOnly(AlertMessage alertMessage, Boolean isDistribute){
+    private void insertAlertMessageOnly(AlertMessage alertMessage){
         //alertmessage入库
         alertMessage.setCommandUUID(null);
         alertMessageMapper.insertAlertMessage(alertMessage);
