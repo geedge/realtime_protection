@@ -48,7 +48,6 @@ public class StateHandler {
     }
 
     protected Boolean handleResume(CommandService commandService, Long taskId) {
-
         commandService.startCommandsByTaskId(taskId);
         return true;
     }

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,8 +55,7 @@ class CommandServiceTest extends ProtectionApplicationTests {
 
     @Test
     void createCommand() {
-        assertDoesNotThrow(() -> commandService.createCommand(taskCommandInfo));
-        assertNotNull(taskCommandInfo.getUUID());
+        assertDoesNotThrow(() -> assertNotNull(commandService.createCommand(taskCommandInfo)));
     }
 
     @Test
@@ -85,7 +85,7 @@ class CommandServiceTest extends ProtectionApplicationTests {
     }
 
     @Test
-    void queryCommandByUUID() {
+    void queryCommandInfos() {
         List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(30L,
                 null, null, null, null,1, 5);
         assertTrue(taskCommandInfos != null && !taskCommandInfos.isEmpty());
@@ -93,5 +93,15 @@ class CommandServiceTest extends ProtectionApplicationTests {
         for (TaskCommandInfo taskCommandInfo : taskCommandInfos) {
             assertNotNull(commandService.queryCommandInfoByUUID(taskCommandInfo.getUUID()));
         }
+    }
+
+    @Test
+    void queryCommandByUUID() {
+        taskCommandInfo.setTaskId(new Random().nextLong());
+        String uuid = commandService.createCommand(taskCommandInfo);
+        TaskCommandInfo taskCommandInfo = commandService.queryCommandInfoByUUID(uuid);
+        assertNotNull(taskCommandInfo);
+        assertNotNull(taskCommandInfo.getUUID());
+        assertEquals(uuid, taskCommandInfo.getUUID());
     }
 }

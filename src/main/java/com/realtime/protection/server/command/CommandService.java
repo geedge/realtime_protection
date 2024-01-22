@@ -36,7 +36,6 @@ public class CommandService {
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
         return commandInfo.getUUID();
-
     }
 
     public void createCommands(List<TaskCommandInfo> taskCommandInfos) {
