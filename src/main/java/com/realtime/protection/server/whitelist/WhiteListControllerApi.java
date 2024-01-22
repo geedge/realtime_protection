@@ -1,6 +1,5 @@
 package com.realtime.protection.server.whitelist;
 
-import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;

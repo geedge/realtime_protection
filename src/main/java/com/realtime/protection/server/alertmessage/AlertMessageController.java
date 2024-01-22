@@ -1,13 +1,10 @@
 package com.realtime.protection.server.alertmessage;
 
 import com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage;
-import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("alertmessage")

@@ -3,7 +3,6 @@ package com.realtime.protection.server.alertmessage;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage;
-import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import org.apache.ibatis.annotations.Mapper;
 

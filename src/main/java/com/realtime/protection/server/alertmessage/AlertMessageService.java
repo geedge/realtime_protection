@@ -1,5 +1,6 @@
 package com.realtime.protection.server.alertmessage;
 
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
@@ -9,8 +10,6 @@ import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 
 import java.util.List;
 

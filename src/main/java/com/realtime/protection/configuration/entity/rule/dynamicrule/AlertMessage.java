@@ -3,7 +3,6 @@ package com.realtime.protection.configuration.entity.rule.dynamicrule;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 public class AlertMessage {
