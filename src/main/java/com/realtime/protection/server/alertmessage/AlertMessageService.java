@@ -15,6 +15,7 @@ import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import java.util.List;
 
 
+
 @Service
 public class AlertMessageService {
     private final CommandService commandService;
@@ -36,12 +37,12 @@ public class AlertMessageService {
         Integer taskType = dynamicTaskCommandInfo.getTaskType();
 
         if (taskType == TaskTypeEnum.DYNAMIC.getTaskType())//动态
-            switch (taskStatus) {
-                case 2://running
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, alertMessage, true);
+            switch (StateEnum.getStateEnumByNum(taskStatus)) {
+                case RUNNING:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, alertMessage);
                     break;
-                case 3://Paused
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage, true);
+                case PAUSED:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
@@ -50,12 +51,12 @@ public class AlertMessageService {
                     break;
             }
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
-            switch (taskStatus) {
-                case 2://running
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage, false);
+            switch (StateEnum.getStateEnumByNum(taskStatus)) {
+                case RUNNING:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage);
                     break;
-                case 3://Paused
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage, false);
+                case PAUSED:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
@@ -88,21 +89,17 @@ public class AlertMessageService {
 
     @DSTransactional
     private void insertCommandAndAlertMessage(TaskCommandInfo dynamicTaskCommandInfo, Boolean isValid,
-                                                AlertMessage alertMessage, Boolean isDistribute){
+                                                AlertMessage alertMessage){
         //command入库
         dynamicTaskCommandInfo.setIsValid(isValid);
         String commandUUID = commandService.createCommand(dynamicTaskCommandInfo);
-        if (true){
-            throw new RuntimeException("test");
-        }
+
         //alertmessage入库
-        alertMessage.setIsDistribute(isDistribute);
         alertMessage.setCommandUUID(commandUUID);
         alertMessageMapper.insertAlertMessage(alertMessage);
     }
     private void insertAlertMessageOnly(AlertMessage alertMessage, Boolean isDistribute){
         //alertmessage入库
-        alertMessage.setIsDistribute(isDistribute);
         alertMessage.setCommandUUID(null);
         alertMessageMapper.insertAlertMessage(alertMessage);
     }
@@ -141,6 +138,7 @@ public class AlertMessageService {
 
 
     public List<AlertMessage> queryAlarmsByCommandId(String commandId) {
+
         return alertMessageMapper.queryAlermsByCommandId(commandId);
     }
 }
