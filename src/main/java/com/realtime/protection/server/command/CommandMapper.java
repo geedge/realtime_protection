@@ -18,9 +18,8 @@ public interface CommandMapper {
 
     Boolean startCommandsByTaskId(@Param("task_id") Long taskId);
 
-    Boolean setCommandValid(@Param("command_id") String commandId);
-
-    Boolean setCommandInvalid(@Param("command_id") String commandId);
+    Boolean setCommandValid(@Param("command_id") String commandId,
+                            @Param("is_valid") Boolean isValid);
 
     List<TaskCommandInfo> queryCommandInfoByTaskId(@Param("task_id") Long taskId);
 

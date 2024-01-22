@@ -5,6 +5,7 @@ import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +30,28 @@ public interface ProtectObjectControllerApi {
                             description = "返回新建对象结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "proobj_name": "静态对象测试",
+                                                        "success": true,
+                                                        "proobj_id": 14542
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "proobj_name": 防护对象名称
+                                                    
+                                                    "success": 新建防护对象是否成功
+                                                    
+                                                    "proobj_id": 新建防护对象ID
+                                                    """
+                                    )
                             )
                     )
             },
@@ -80,7 +102,56 @@ public interface ProtectObjectControllerApi {
                             description = "返回多个防护对象",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "proobj_list": [
+                                                          {
+                                                            "proobj_id": 6068,
+                                                            "proobj_name": "x-2-2",
+                                                            "proobj_system_name": "xxxx system",
+                                                            "proobj_port": 11,
+                                                            "proobj_url": "alice.bob.com",
+                                                            "proobj_protocol": "UDP",
+                                                            "proobj_audit_status": 1
+                                                          },
+                                                          {
+                                                            "proobj_id": 6069,
+                                                            "proobj_name": "x-2-2",
+                                                            "proobj_system_name": "xxxx system",
+                                                            "proobj_port": 11,
+                                                            "proobj_url": "alice.bob.com",
+                                                            "proobj_protocol": "UDP",
+                                                            "proobj_audit_status": 0
+                                                          }
+                                                        ],
+                                                        "total_num": 8470
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "proobj_id": 防护对象ID
+                                                    
+                                                    "proobj_name": 防护对象名称
+                                                    
+                                                    "proobj_system_name": 防护对象操作系统
+                                                    
+                                                    "proobj_ip_address": 防护对象IP地址
+                                                    
+                                                    "proobj_port": 防护对象端口
+                                                    
+                                                    "proobj_url": 防护对象URL
+                                                    
+                                                    "proobj_protocol": 防护对象协议
+                                                    
+                                                    "proobj_audit_status": 防护对象审核状态
+                                                    """
+                                    )
                             )
                     )
             },
@@ -107,7 +178,44 @@ public interface ProtectObjectControllerApi {
                             description = "返回单个防护对象信息",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "protect_object": {
+                                                          "proobj_id": 14544,
+                                                          "proobj_name": "静态对象测试",
+                                                          "proobj_system_name": "xxx操作系统",
+                                                          "proobj_port": 8080,
+                                                          "proobj_url": "alice.bob.com",
+                                                          "proobj_protocol": "TCP",
+                                                          "proobj_audit_status": 0
+                                                        }
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "proobj_id": 防护对象ID
+                                                    
+                                                    "proobj_name": 防护对象名称
+                                                    
+                                                    "proobj_system_name": 防护对象操作系统
+                                                    
+                                                    "proobj_ip_address": 防护对象IP地址
+                                                    
+                                                    "proobj_port": 防护对象端口
+                                                    
+                                                    "proobj_url": 防护对象URL
+                                                    
+                                                    "proobj_protocol": 防护对象协议
+                                                    
+                                                    "proobj_audit_status": 防护对象审核状态
+                                                    """
+                                    )
                             )
                     )
             },
@@ -126,7 +234,25 @@ public interface ProtectObjectControllerApi {
                             description = "防护对象更新情况",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "proobj_id": 14544
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 防护对象更新是否成功
+                                                    
+                                                    "proobj_id": 防护对象ID
+                                                    """
+                                    )
                             )
                     )
             },
@@ -148,7 +274,25 @@ public interface ProtectObjectControllerApi {
                             description = "防护对象删除情况",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "proobj_id": 14544
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 防护对象删除是否成功
+                                                    
+                                                    "proobj_id": 删除的防护对象ID
+                                                    """
+                                    )
                             )
                     )
             },
@@ -167,7 +311,28 @@ public interface ProtectObjectControllerApi {
                             description = "防护对象删除情况",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "proobj_ids": [
+                                                          14543,
+                                                          14542
+                                                        ]
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 防护对象删除是否成功
+                                                    
+                                                    "proobj_ids": 删除的防护对象ID列表
+                                                    """
+                                    )
                             )
                     )
             },
@@ -186,7 +351,28 @@ public interface ProtectObjectControllerApi {
                             description = "防护对象审核状态修改情况",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "proobj_id": 14541,
+                                                        "audit_status": 2
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 审核状态修改是否成功
+                                                    
+                                                    "proobj_id": 防护对象ID
+                                                    
+                                                    "audit_status": 防护对象当前审核状态
+                                                    """
+                                    )
                             )
                     )
             },

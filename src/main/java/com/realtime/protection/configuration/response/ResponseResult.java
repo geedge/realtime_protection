@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
@@ -17,12 +18,12 @@ public class ResponseResult implements Serializable {
     private String message;
 
     @Schema(description = "封装数据")
-    private ResponseData data;
+    private Map<String, Object> data;
 
     @Schema(description = "返回对象链接的另外一个返回对象")
     private ResponseResult another;
 
-    public ResponseResult(int code, String message, ResponseData data) {
+    public ResponseResult(int code, String message, LinkedHashMap<String, Object> data) {
         this.code = code;
         this.message = message;
         this.data = data;
@@ -30,13 +31,13 @@ public class ResponseResult implements Serializable {
 
     public ResponseResult(int code) {
         this.code = code;
-        this.data = new ResponseData();
+        this.data = new LinkedHashMap<>();
     }
 
     public ResponseResult(int code, String message) {
         this.code = code;
         this.message = message;
-        this.data = new ResponseData();
+        this.data = new LinkedHashMap<>();
     }
 
     public static ResponseResult ok() {
@@ -83,7 +84,7 @@ public class ResponseResult implements Serializable {
     }
 
     public ResponseResult addDataMap(Map<String, Object> data) {
-        this.data = (ResponseData) data;
+        this.data = data;
         return this;
     }
 }

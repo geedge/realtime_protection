@@ -5,6 +5,7 @@ import com.realtime.protection.configuration.response.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +24,25 @@ public interface TemplateControllerApi {
                             description = "返回新建防御策略模板结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "template_id": 1442
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 新建防御策略模板是否成功
+                                                    
+                                                    "template_id": 新建防御策略模板ID
+                                                    """
+                                    )
                             )
                     )
             },
@@ -40,7 +59,108 @@ public interface TemplateControllerApi {
                             description = "返回所有查询到的防御策略模板",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "templates": [
+                                                          {
+                                                            "template_id": 18,
+                                                            "template_name": "洪泛型DDOS攻击-2024-01-18T16:46:14.640176900",
+                                                            "protect_level_low": {
+                                                              "protectLevelId": 46,
+                                                              "hasProtectObjectIP": false,
+                                                              "hasProtectObjectPort": false,
+                                                              "hasPeerIP": false,
+                                                              "hasPeerPort": true,
+                                                              "hasProtocol": false,
+                                                              "hasURL": false,
+                                                              "hasDNS": false
+                                                            },
+                                                            "protect_level_medium": {
+                                                              "protectLevelId": 47,
+                                                              "hasProtectObjectIP": true,
+                                                              "hasProtectObjectPort": false,
+                                                              "hasPeerIP": false,
+                                                              "hasPeerPort": false,
+                                                              "hasProtocol": false,
+                                                              "hasURL": false,
+                                                              "hasDNS": false
+                                                            },
+                                                            "protect_level_high": {
+                                                              "protectLevelId": 48,
+                                                              "hasProtectObjectIP": false,
+                                                              "hasProtectObjectPort": false,
+                                                              "hasPeerIP": false,
+                                                              "hasPeerPort": false,
+                                                              "hasProtocol": false,
+                                                              "hasURL": false,
+                                                              "hasDNS": true
+                                                            },
+                                                            "template_used_times": 0,
+                                                            "running_tasks": 0
+                                                          },
+                                                          {
+                                                            "template_id": 24,
+                                                            "template_name": "反射型DDOS攻击-2024-01-12T17:52:32.077477700",
+                                                            "protect_level_low": {
+                                                              "protectLevelId": 64,
+                                                              "hasProtectObjectIP": false,
+                                                              "hasProtectObjectPort": false,
+                                                              "hasPeerIP": false,
+                                                              "hasPeerPort": true,
+                                                              "hasProtocol": false,
+                                                              "hasURL": false,
+                                                              "hasDNS": false
+                                                            },
+                                                            "protect_level_medium": {
+                                                              "protectLevelId": 65,
+                                                              "hasProtectObjectIP": true,
+                                                              "hasProtectObjectPort": false,
+                                                              "hasPeerIP": false,
+                                                              "hasPeerPort": false,
+                                                              "hasProtocol": false,
+                                                              "hasURL": false,
+                                                              "hasDNS": false
+                                                            },
+                                                            "protect_level_high": {
+                                                              "protectLevelId": 66,
+                                                              "hasProtectObjectIP": false,
+                                                              "hasProtectObjectPort": false,
+                                                              "hasPeerIP": false,
+                                                              "hasPeerPort": false,
+                                                              "hasProtocol": false,
+                                                              "hasURL": false,
+                                                              "hasDNS": true
+                                                            },
+                                                            "template_used_times": 0,
+                                                            "running_tasks": 0
+                                                          }
+                                                        ],
+                                                        "total_num": 708
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "template_id": 防御策略模板ID
+                                                    
+                                                    "template_name": 防御策略模板名称
+                                                    
+                                                    "protect_level_low": 防御策略模板日常态数据
+                                                    
+                                                    "protect_level_medium": 防御策略模板应急态数据
+                                                    
+                                                    "protect_level_high": 防御策略模板紧急态数据
+                                                    
+                                                    "template_used_times": 防御策略模板使用次数
+                                                    
+                                                    "running_tasks": 防御策略模板任务运行数量
+                                                    """
+                                    )
                             )
                     )
             },
@@ -63,7 +183,69 @@ public interface TemplateControllerApi {
                             description = "返回单个防御策略模板信息",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "template": {
+                                                          "template_id": 245,
+                                                          "template_name": "反射型DDOS攻击-2024-01-12T18:10:49.975561700",
+                                                          "protect_level_low": {
+                                                            "protectLevelId": 727,
+                                                            "hasProtectObjectIP": false,
+                                                            "hasProtectObjectPort": false,
+                                                            "hasPeerIP": false,
+                                                            "hasPeerPort": true,
+                                                            "hasProtocol": false,
+                                                            "hasURL": false,
+                                                            "hasDNS": false
+                                                          },
+                                                          "protect_level_medium": {
+                                                            "protectLevelId": 728,
+                                                            "hasProtectObjectIP": true,
+                                                            "hasProtectObjectPort": false,
+                                                            "hasPeerIP": false,
+                                                            "hasPeerPort": false,
+                                                            "hasProtocol": false,
+                                                            "hasURL": false,
+                                                            "hasDNS": false
+                                                          },
+                                                          "protect_level_high": {
+                                                            "protectLevelId": 729,
+                                                            "hasProtectObjectIP": false,
+                                                            "hasProtectObjectPort": false,
+                                                            "hasPeerIP": false,
+                                                            "hasPeerPort": false,
+                                                            "hasProtocol": false,
+                                                            "hasURL": false,
+                                                            "hasDNS": true
+                                                          },
+                                                          "template_used_times": 0,
+                                                          "running_tasks": 0
+                                                        }
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "template_id": 防御策略模板ID
+                                                    
+                                                    "template_name": 防御策略模板名称
+                                                    
+                                                    "protect_level_low": 防御策略模板日常态数据
+                                                    
+                                                    "protect_level_medium": 防御策略模板应急态数据
+                                                    
+                                                    "protect_level_high": 防御策略模板紧急态数据
+                                                    
+                                                    "template_used_times": 防御策略模板使用次数
+                                                    
+                                                    "running_tasks": 防御策略模板任务运行数量
+                                                    """
+                                    )
                             )
                     )
             },
@@ -82,7 +264,25 @@ public interface TemplateControllerApi {
                             description = "返回防御策略模板信息更新结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "template_id": 262
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 更新是否成功
+                                                    
+                                                    "template_id": 更新的策略模板ID
+                                                    """
+                                    )
                             )
                     )
             },
@@ -102,7 +302,25 @@ public interface TemplateControllerApi {
                             description = "返回防御策略模板删除结果",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ResponseResult.class)
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "template_id": 262
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "success": 删除是否成功
+                                                    
+                                                    "template_id": 删除的策略模板ID
+                                                    """
+                                    )
                             )
                     )
             },

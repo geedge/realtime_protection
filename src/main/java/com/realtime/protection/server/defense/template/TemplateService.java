@@ -46,4 +46,8 @@ public class TemplateService {
     public Boolean deleteTemplate(Integer templateId) {
         return templateMapper.deleteTemplate(templateId);
     }
+
+    public Integer queryTemplateTotalNum() {
+        return templateMapper.queryTemplateTotalNum();
+    }
 }

@@ -76,8 +76,8 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
                                               @RequestParam("page_size") @Min(1) Integer pageSize) {
         return ResponseResult.ok()
                 .setData("proobj_list", protectObjectService.queryProtectObjects(protectObjectName,
-                        protectObjectId, page, pageSize));
-
+                        protectObjectId, page, pageSize))
+                .setData("total_num", protectObjectService.queryProtectObjectsTotalNum());
     }
 
     @Override

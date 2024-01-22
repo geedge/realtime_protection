@@ -43,12 +43,13 @@ public class TemplateController implements TemplateControllerApi {
         List<Template> templates = templateService.queryTemplates(templateName, page, pageSize);
 
         return ResponseResult.ok()
-                .setData("templates", templates);
+                .setData("templates", templates)
+                .setData("total_num", templateService.queryTemplateTotalNum());
     }
 
     @Override
     @GetMapping("/{templateId}/query")
-    public ResponseResult queryTemplate(@PathVariable Integer templateId) throws IllegalAccessException {
+    public ResponseResult queryTemplate(@PathVariable Integer templateId) {
         Template template = templateService.queryTemplate(templateId);
         if (template == null) {
             return ResponseResult.invalid()

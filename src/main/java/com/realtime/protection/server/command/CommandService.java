@@ -2,11 +2,11 @@ package com.realtime.protection.server.command;
 
 import com.alibaba.excel.util.ListUtils;
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class CommandService {
         this.sqlSessionWrapper = sqlSessionWrapper;
     }
 
-    @Transactional
+    @DSTransactional
     public String createCommand(TaskCommandInfo commandInfo) {
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
@@ -75,20 +75,12 @@ public class CommandService {
         return commandMapper.stopCommandsByTaskId(taskId);
     }
 
-    @DS("doris")
     public Boolean removeCommandsByTaskId(Long taskId) {
         return commandMapper.removeCommandsByTaskId(taskId);
     }
 
-    @DS("doris")
-    public Object updateCommandVaid(String commandId, Integer isValid) {
-        if (isValid == 0) {
-            return commandMapper.setCommandInvalid(commandId);
-        }
-        if (isValid == 1) {
-            return commandMapper.setCommandValid(commandId);
-        }
-        return new IllegalArgumentException("isValid must be 0 or 1");
+    public Object setCommandValid(String commandId, Boolean isValid) {
+        return commandMapper.setCommandValid(commandId, isValid);
     }
 
 

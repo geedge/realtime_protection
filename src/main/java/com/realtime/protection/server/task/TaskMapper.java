@@ -53,4 +53,7 @@ public interface TaskMapper {
 
     @Select("SELECT task_id FROM t_task WHERE task_end_time < NOW() AND task_status != #{task_status}")
     List<Long> queryTasksByStatus(@Param("task_status") Integer taskStatus);
+
+    @Select("SELECT COUNT(task_id) FROM t_task")
+    Integer queryTaskTotalNum();
 }

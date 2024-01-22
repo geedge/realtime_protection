@@ -131,4 +131,8 @@ public class TaskService {
     public List<Long> getFinishedTasks() {
         return taskMapper.queryTasksByStatus(StateEnum.FINISHED.getStateNum());
     }
+
+    public Integer queryTaskTotalNum() {
+        return taskMapper.queryTaskTotalNum();
+    }
 }

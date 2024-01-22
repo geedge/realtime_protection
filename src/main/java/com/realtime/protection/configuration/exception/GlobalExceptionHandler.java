@@ -40,7 +40,6 @@ public class GlobalExceptionHandler {
     @Order(2)
     @ExceptionHandler(value = {
             PersistenceException.class,
-            DuplicateKeyException.class,
             SQLException.class,
             SQLIntegrityConstraintViolationException.class
     })
@@ -48,6 +47,14 @@ public class GlobalExceptionHandler {
         log.info("遭遇数据库异常：" + e.getMessage());
         return ResponseResult.invalid().setMessage(
                 "请检查json字段的完整性，确保json字段按照文档中要求填写。");
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = DuplicateKeyException.class)
+    public ResponseResult handleDuplicateKeyException(DuplicateKeyException e) {
+        return ResponseResult.invalid().setMessage(
+                "插入/更新失败，请检查当前插入字段和数据库中是否存在相同数据"
+        );
     }
 
     @Order(2)

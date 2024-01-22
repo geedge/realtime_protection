@@ -3,6 +3,7 @@ package com.realtime.protection.server.defense.object;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -27,4 +28,7 @@ public interface ProtectObjectMapper {
 
     Boolean changeProtectObjectAuditStatus(@Param("proobj_id") Integer protectObjectId,
                                            @Param("proobj_audit_status") Integer protectObjectAuditStatus);
+
+    @Select("SELECT COUNT(protect_object_id) FROM t_protect_object")
+    Integer queryProtectObjectsTotalNum();
 }

@@ -74,12 +74,13 @@ public class TaskController implements TaskControllerApi {
                                      @RequestParam("page_size") @Min(1) Integer pageSize) {
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
         return ResponseResult.ok()
-                .setData("task_list", tasks);
+                .setData("task_list", tasks)
+                .setData("total_num", taskService.queryTaskTotalNum());
     }
 
     @Override
     @GetMapping("/{id}/query")
-    public ResponseResult queryTask(@PathVariable @Min(1) Long id) throws IllegalAccessException {
+    public ResponseResult queryTask(@PathVariable @Min(1) Long id) {
         Task task = taskService.queryTask(id);
 
         if (task == null) {
@@ -136,13 +137,11 @@ public class TaskController implements TaskControllerApi {
                 .setData("commands", commandService.queryCommandInfoByTaskId(taskId));
     }
 
-    //研判后任务 下发指令\停止指令
-    @PostMapping("/{commandId}/valid/{isValid}")
-    public ResponseResult validCommandInfoByTaskId(@PathVariable Integer isValid,
-                                                   @PathVariable String commandId) {
+    @GetMapping("/{commandId}/valid/{isValid}")
+    public ResponseResult setCommandValid(@PathVariable Boolean isValid,
+                                          @PathVariable String commandId) {
         return ResponseResult.ok()
-                .setData("success", commandService.updateCommandVaid(commandId, isValid));
+                .setData("success", commandService.setCommandValid(commandId, isValid))
+                .setData("command_id", commandId);
     }
-
-
 }
