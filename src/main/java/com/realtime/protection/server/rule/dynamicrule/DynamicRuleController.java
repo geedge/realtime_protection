@@ -57,7 +57,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     @Override
     @DeleteMapping("/{ids}")
     public ResponseResult deleteDynamicRuleObjects(@PathVariable List<Integer> ids) {
-        log.info("批量删除动态规则: {}", ids);
+        //log.info("批量删除动态规则: {}", ids);
         //调用service删除
 
         return ResponseResult.ok()
@@ -104,7 +104,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                 .setData("success", true)
                 .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
                         protectObjectSourceSystem, creator, page, pageSize))
-                .setData("dynamic_rule_total_num",dynamicRuleService.queryDynamicRuleTotalNum());
+                .setData("total_num",dynamicRuleService.queryDynamicRuleTotalNum());
     }
 
     //详情查看？？  就是按id查询吧

@@ -18,8 +18,8 @@ public class AlertMessage {
     @JsonProperty("five_tuple_with_mask")
     private FiveTupleWithMask fiveTupleWithMask;
 
-    @JsonProperty("is_distribute")
-    private Boolean isDistribute;//待删除
+//    @JsonProperty("is_distribute")
+//    private Boolean isDistribute;//待删除
 
     @JsonProperty("command_uuid")
     private String commandUUID;

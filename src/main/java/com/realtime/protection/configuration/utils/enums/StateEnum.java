@@ -49,4 +49,8 @@ public enum StateEnum {
     public static StateEnum getStateEnumByState(State state) {
         return stateToStateEnumMap.get(state);
     }
+
+    public static StateEnum getStateEnumByNum(Integer stateNum) {
+        return getStateEnumByState(getStateByNum(stateNum));
+    }
 }
