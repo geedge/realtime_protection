@@ -143,6 +143,16 @@ public class StaticRuleController implements StaticRuleControllerApi {
                         static_rule_creator, static_rule_ip));
     }
 
+    @Override
+    @GetMapping("/query/{ids}")
+    public ResponseResult queryStaticRuleByIds(@PathVariable List<Integer> ids) {
+        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRuleByIds(ids);
+        //调用service查询
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("static_rule", staticRuleObjects);
+    }
+
     /**
      * 修改审核状态
      */

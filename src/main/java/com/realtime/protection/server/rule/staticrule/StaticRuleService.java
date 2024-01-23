@@ -153,4 +153,8 @@ public class StaticRuleService {
         return staticRuleMapper.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
                 static_rule_creator, static_rule_ip);
     }
+
+    public List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids) {
+        return staticRuleMapper.queryStaticRuleByIds(ids);
+    }
 }

@@ -177,5 +177,19 @@
             </if>
         </where>
     </select>
+    <select id="queryStaticRuleByIds"
+            resultMap="staticRuleMap">
+        SELECT *,
+               INET_NTOA(static_rule_sip) as static_rule_sip_d,
+               INET_NTOA(static_rule_msip) as static_rule_msip_d,
+               INET_NTOA(static_rule_dip) as static_rule_dip_d,
+               INET_NTOA(static_rule_mdip) as static_rule_mdip_d
+        FROM t_static_rule
+                 left join t_task on t_static_rule.static_rule_used_task_id = t_task.task_id
+        where static_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>

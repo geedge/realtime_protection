@@ -182,37 +182,12 @@
         SELECT COUNT(COMMAND_ID)
         FROM t_command
         <where>
-            <if test="command_info.taskId != null">AND TASK_ID = #{command_info.taskId}</if>
-            <if test="command_info.fiveTupleWithMask.sourceIP != null">
-                AND SRC_IP = #{command_info.fiveTupleWithMask.sourceIP}
-            </if>
-            <if test="command_info.fiveTupleWithMask.destinationIP != null">
-                AND DST_IP = #{command_info.fiveTupleWithMask.destinationIP}
-            </if>
-            <if test="command_info.fiveTupleWithMask.sourcePort != null">
-                AND SRC_PORT = #{command_info.fiveTupleWithMask.sourcePort}
-            </if>
-            <if test="command_info.fiveTupleWithMask.destinationPort != null">
-                AND DST_PORT = #{command_info.fiveTupleWithMask.destinationPort}
-            </if>
-            <if test="command_info.fiveTupleWithMask.protocol != null">
-                AND PROTOCOL = #{command_info.fiveTupleWithMask.protocol}
-            </if>
-            <if test="command_info.fiveTupleWithMask.maskSourceIP != null">
-                AND MASK_SRC_IP = #{command_info.fiveTupleWithMask.maskSourceIP}
-            </if>
-            <if test="command_info.fiveTupleWithMask.maskSourcePort != null">
-                AND MASK_SOURCE_PORT = #{command_info.fiveTupleWithMask.maskSourcePort}
-            </if>
-            <if test="command_info.fiveTupleWithMask.maskDestinationIP != null">
-                AND MASK_DST_IP = #{command_info.fiveTupleWithMask.maskDestinationIP}
-            </if>
-            <if test="command_info.fiveTupleWithMask.maskDestinationPort != null">
-                AND MASK_DST_PORT = #{command_info.fiveTupleWithMask.maskDestinationPort}
-            </if>
-            <if test="command_info.fiveTupleWithMask.maskProtocol != null">
-                AND MASK_PROTOCOL = #{command_info.fiveTupleWithMask.maskProtocol}
-            </if>
+            AND TASK_ID = #{task_id}
+            AND IS_DELETED = FALSE
+            <if test="src_ip != null">AND SRC_IP = #{src_ip}</if>
+            <if test="dst_ip != null">AND DST_IP = #{dst_ip}</if>
+            <if test="src_port != null">AND SRC_PORT = #{src_port}</if>
+            <if test="dst_port != null">AND DST_PORT = #{dst_port}</if>
         </where>
     </select>
 </mapper>

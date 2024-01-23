@@ -41,4 +41,6 @@ public interface StaticRuleMapper {
 
     Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
                                     String static_rule_create_username, String ip);
+
+    List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids);
 }

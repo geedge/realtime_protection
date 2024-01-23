@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -213,6 +210,24 @@ public interface StaticRuleControllerApi {
     );
 
 
+    @Operation( summary = "批量查询静态规则",
+            description = "根据静态规则ID列表查询多个静态规则的所有详细信息",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回查询到的多个静态规则",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(title = "ResponseResult和StaticRule的对象属性",
+                                            anyOf = {ResponseResult.class, StaticRuleObject.class})
+                            )
+                    )
+            },
+            parameters = {@Parameter(name = "ids", description = "静态规则ID列表", example = "staticrule/query/15,16,17")}
+    )
+
+    @GetMapping("/query/{ids}")
+    ResponseResult queryStaticRuleByIds(@PathVariable List<Integer> ids);
+
     @Operation(
             summary = "按id删除静态规则",
             description = "按id删除静态规则",
@@ -237,6 +252,8 @@ public interface StaticRuleControllerApi {
             }
     )
     ResponseResult deleteStaticRule(@PathVariable Integer id) ;
+
+
 
 
 

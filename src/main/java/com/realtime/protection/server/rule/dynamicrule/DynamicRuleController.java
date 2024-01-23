@@ -81,12 +81,21 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     @Override
     @GetMapping("/{id}/query")
     public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id) {
-        log.info("查询动态规则: {}", id);
         DynamicRuleObject dynamicRuleObject = dynamicRuleService.queryDynamicRuleById(id);
         //调用service查询
         return ResponseResult.ok()
                 .setData("success", true)
                 .setData("dynamic_rule", dynamicRuleObject);
+    }
+
+    @Override
+    @GetMapping("/query/{ids}")
+    public ResponseResult queryDynamicRuleObjectByIds(@PathVariable List<Integer> ids) {
+        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleByIds(ids);
+        //调用service查询
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("dynamic_rule", dynamicRuleObjects);
     }
 
     //分页查询

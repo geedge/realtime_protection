@@ -43,4 +43,6 @@ public interface DynamicRuleMapper {
 
     Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
                                      String sourceSystem, String creator);
+
+    List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids);
 }

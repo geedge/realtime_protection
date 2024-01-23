@@ -166,4 +166,8 @@ public class DynamicRuleService {
         return dynamicRuleMapper.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
                 protectObjectSourceSystem, creator);
     }
+
+    public List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids) {
+        return dynamicRuleMapper.queryDynamicRuleByIds(ids);
+    }
 }

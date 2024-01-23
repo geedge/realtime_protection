@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -185,6 +186,24 @@ public interface DynamicRuleControllerApi {
             }
     )
     public ResponseResult queryDynamicRuleObjectById(@PathVariable Integer id) ;
+
+    @Operation(
+            summary = "查询多个动态规则",
+            description = "根据条件查询多个动态规则",
+            responses = {
+                    @ApiResponse(
+                            description = "返回查询到的多个动态规则",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            title = "ResponseResult和DynamicRule的组合模型",
+                                            description = "ResponseResult的data内DynamicRule",
+                                            anyOf = {ResponseResult.class, DynamicRuleObject.class})
+                            ))},
+            parameters = {@Parameter(name = "ids", description = "动态规则ID列表", example = "dynamicrule/query/5,11")}
+    )
+            @GetMapping("/query/{ids}")
+    ResponseResult queryDynamicRuleObjectByIds(@PathVariable List<Integer> ids);
 
     @Operation(
             summary = "根据条件查询多个动态规则",

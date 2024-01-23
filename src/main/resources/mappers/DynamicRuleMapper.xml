@@ -224,6 +224,18 @@
             </if>
         </where>
     </select>
+    <select id="queryDynamicRuleByIds"
+            resultMap="dynamicRulePageQueryMap">
+        select *
+        from t_dynamic_rule
+        left join t_strategy_template
+        on t_dynamic_rule.template_id = t_strategy_template.strategy_template_id
+        where dynamic_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </select>
 
 
 </mapper>
