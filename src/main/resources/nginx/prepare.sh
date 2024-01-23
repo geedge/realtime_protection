@@ -18,7 +18,7 @@ deb-src http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted univers
 deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
 EOF"
-apt install sudo vim git wget -y
+apt install sudo vim git wget nginx -y
 
 # 下载git仓库内容
 echo https://EnderByEndera:8Bs8hxHtE-iq44g@git.mesalab.cn > $BASEDIR/.git-credentials

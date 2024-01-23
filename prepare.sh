@@ -30,4 +30,4 @@ chmod +x ./gradlew
 ./gradlew clean && ./gradlew build
 
 # 启动SpringBoot开启服务
-# java -jar $PROTECTION_DIR/build/libs/protection-0.0.3-SNAPSHOT.jar --spring.profiles.active=prod
+java -jar $PROTECTION_DIR/build/libs/protection-0.0.3-SNAPSHOT.jar --spring.profiles.active=prod
