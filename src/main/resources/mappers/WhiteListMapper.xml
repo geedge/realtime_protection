@@ -201,6 +201,14 @@
     <select id="queryWhiteListTotalNum" resultType="java.lang.Integer">
         select COUNT(*)
         from t_white_list
+        <where>
+            <if test="whiteListName != null">
+                white_list_name like concat('%', #{whiteListName}, '%')
+            </if>
+            <if test="whiteListId != null">
+                and white_list_id = #{whiteListId}
+            </if>
+        </where>
     </select>
 
 </mapper>

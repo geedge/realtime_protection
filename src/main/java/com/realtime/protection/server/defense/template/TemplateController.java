@@ -44,7 +44,7 @@ public class TemplateController implements TemplateControllerApi {
 
         return ResponseResult.ok()
                 .setData("templates", templates)
-                .setData("total_num", templateService.queryTemplateTotalNum());
+                .setData("total_num", templateService.queryTemplateTotalNum(templateName));
     }
 
     @Override

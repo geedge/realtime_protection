@@ -69,6 +69,13 @@
         FROM t_protect_object
         WHERE protect_object_id = #{proobj_id}
     </select>
+    <select id="queryProtectObjectsTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(protect_object_id) FROM t_protect_object
+        <where>
+            <if test="proobj_name != null">protect_object_name LIKE CONCAT('%', #{proobj_name}, '%')</if>
+            <if test="proobj_id != null">protect_object_id = #{proobj_id}</if>
+        </where>
+    </select>
 
     <update id="updateProtectObject">
         UPDATE t_protect_object

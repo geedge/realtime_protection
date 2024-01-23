@@ -67,7 +67,7 @@ public class TaskController implements TaskControllerApi {
     @Override
     @GetMapping("/query")
     public ResponseResult queryTasks(@RequestParam(value = "task_status", required = false) Integer taskStatus,
-                                     @RequestParam(value = "task_type", required = false) String taskType,
+                                     @RequestParam(value = "task_type", required = false) Integer taskType,
                                      @RequestParam(value = "task_name", required = false) String taskName,
                                      @RequestParam(value = "task_creator", required = false) String taskCreator,
                                      @RequestParam("page") @Min(1) Integer page,
@@ -75,7 +75,7 @@ public class TaskController implements TaskControllerApi {
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks)
-                .setData("total_num", taskService.queryTaskTotalNum());
+                .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator));
     }
 
     @Override
@@ -143,7 +143,8 @@ public class TaskController implements TaskControllerApi {
 
         return ResponseResult.ok()
                 .setData("success", true)
-                .setData("commands", taskCommandInfos);
+                .setData("commands", taskCommandInfos)
+                .setData("total_num", commandService.queryCommandTotalNum(taskId, sourceIP, sourcePort, destinationIP, destinationPort));
     }
 
     @GetMapping("/{commandId}/valid/{isJudged}")

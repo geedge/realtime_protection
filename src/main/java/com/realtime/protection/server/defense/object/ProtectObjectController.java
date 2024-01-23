@@ -77,7 +77,7 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
         return ResponseResult.ok()
                 .setData("proobj_list", protectObjectService.queryProtectObjects(protectObjectName,
                         protectObjectId, page, pageSize))
-                .setData("total_num", protectObjectService.queryProtectObjectsTotalNum());
+                .setData("total_num", protectObjectService.queryProtectObjectsTotalNum(protectObjectName, protectObjectId));
     }
 
     @Override

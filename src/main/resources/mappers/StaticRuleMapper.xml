@@ -161,6 +161,21 @@
     <select id="queryStaticRuleTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM t_static_rule
+        <where>
+            <if test="static_rule_name != null and static_rule_name != ''">
+                static_rule_name like concat('%', #{static_rule_name}, '%')
+            </if>
+            <if test="static_rule_id != null">
+                AND static_rule_id = #{static_rule_id}
+            </if>
+            <if test="static_rule_create_username != null and static_rule_create_username != ''">
+                AND static_rule_create_username like concat('%', #{static_rule_create_username}, '%')
+            </if>
+            <if test="ip != null and ip != ''">
+                AND (static_rule_sip = INET_ATON(#{ip}) or static_rule_msip = INET_ATON(#{ip})
+                or static_rule_dip = INET_ATON(#{ip}) or static_rule_mdip = INET_ATON(#{ip}))
+            </if>
+        </where>
     </select>
 
 </mapper>

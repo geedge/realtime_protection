@@ -161,7 +161,9 @@ public class DynamicRuleService {
                 templateSourceSystem, creator, page, pageSize);
     }
 
-    public Integer queryDynamicRuleTotalNum() {
-        return dynamicRuleMapper.queryDynamicRuleTotalNum();
+    public Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
+                                            String protectObjectSourceSystem, String creator) {
+        return dynamicRuleMapper.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
+                protectObjectSourceSystem, creator);
     }
 }

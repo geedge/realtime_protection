@@ -47,7 +47,7 @@ public class TemplateService {
         return templateMapper.deleteTemplate(templateId);
     }
 
-    public Integer queryTemplateTotalNum() {
-        return templateMapper.queryTemplateTotalNum();
+    public Integer queryTemplateTotalNum(String templateName) {
+        return templateMapper.queryTemplateTotalNum(templateName);
     }
 }

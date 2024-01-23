@@ -41,7 +41,7 @@ public class TaskService {
 
     @Transactional
     public List<Task> queryTasks(Integer taskStatus,
-                                 String taskType, String taskName, String taskCreator,
+                                 Integer taskType, String taskName, String taskCreator,
                                  Integer page, Integer pageSize) {
         List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
         for (Task task : tasks) {
@@ -132,7 +132,7 @@ public class TaskService {
         return taskMapper.queryTasksByStatus(StateEnum.FINISHED.getStateNum());
     }
 
-    public Integer queryTaskTotalNum() {
-        return taskMapper.queryTaskTotalNum();
+    public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName,String taskCreator) {
+        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator);
     }
 }

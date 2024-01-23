@@ -139,7 +139,8 @@ public class StaticRuleController implements StaticRuleControllerApi {
                 static_rule_creator, static_rule_ip, page, pageSize);
         return ResponseResult.ok()
                 .setData("static_rule_list", pageResult)
-                .setData("total_num",staticRuleService.queryStaticRuleTotalNum());
+                .setData("total_num",staticRuleService.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
+                        static_rule_creator, static_rule_ip));
     }
 
     /**
