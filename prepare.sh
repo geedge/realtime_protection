@@ -25,9 +25,9 @@ git config --global credential.helper store
 git clone https://git.mesalab.cn/EnderByEndera/realtime_protection.git $BASEDIR/realtime_protection
 
 # 启动gradle，编译java
-cd realtime_protection
-chmod +x $PROTECTION_DIR/gradlew
-$PROTECTION_DIR/gradlew clean && $PROTECTION_DIR/gradlew build
+cd $PROTECTION_DIR
+chmod +x ./gradlew
+./gradlew clean && ./gradlew build
 
 # 启动SpringBoot开启服务
 # java -jar $PROTECTION_DIR/build/libs/protection-0.0.3-SNAPSHOT.jar --spring.profiles.active=prod
