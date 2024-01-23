@@ -11,7 +11,7 @@ import lombok.Data;
 public class FiveTupleWithMask {
     @Schema(description = "地址类型(IPv4 or IPv6)", example = "4")
     @JsonProperty("addr_type")
-    private Integer addrType;
+    private Integer addrType = 4;
 
     @Schema(description = "源IP", example = "192.168.104.14")
     @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "源IP：无效IPv4地址")

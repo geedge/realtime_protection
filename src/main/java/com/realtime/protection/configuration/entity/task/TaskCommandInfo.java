@@ -67,6 +67,10 @@ public class TaskCommandInfo {
     @JsonProperty("is_valid")
     private Boolean isValid = true;
 
+    @Schema(description = "指令是否已研判", example = "true")
+    @JsonProperty("is_judged")
+    private Boolean isJudged = true;
+
     @Schema(description = "五元组信息")
     @NotNull(message = "五元组信息不能为空。")
     @JsonProperty("five_tuple_with_mask")
@@ -87,10 +91,6 @@ public class TaskCommandInfo {
     @Schema(description = "最新下发时间", accessMode = Schema.AccessMode.READ_ONLY)
     @JsonProperty("latest_send_times")
     private LocalDateTime latestSendTime;
-
-    @Schema(description = "指令是否研判", example = "true")
-    @JsonProperty("is_judeged")
-    private Boolean isJudged = true;
     /*
       以下属性用于动态规则生成，不写入doris：t_command表
      */

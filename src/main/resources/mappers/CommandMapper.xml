@@ -17,7 +17,8 @@
                 #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
                 #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
                 #{info.fiveTupleWithMask.maskProtocol},
-                #{info.startTime}, #{info.endTime}, #{info.isValid}, #{info.isJudged},
+                #{info.startTime}, #{info.endTime}, #{info.isValid},
+                #{info.isJudged},
                 0, 0,
                 NOW(), NOW(), FALSE)
     </insert>
@@ -25,7 +26,8 @@
     <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
         insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
         PROTOCOL,
-        MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID, IS_JUDGED,
+        MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
+        IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
         values
         <foreach collection="command_infos" item="info" separator=",">
@@ -37,7 +39,8 @@
             #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
             #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
             #{info.fiveTupleWithMask.maskProtocol},
-            #{info.startTime}, #{info.endTime}, #{info.isValid}, DEFAULT,
+            #{info.startTime}, #{info.endTime}, #{info.isValid},
+            #{info.isJudged},
             0, 0,
             NOW(), NOW(), FALSE
             )
@@ -128,7 +131,7 @@
 
     <update id="setCommandJudged">
         UPDATE t_command
-        SET IS_JUDGED    = #{is_judged},
+        SET IS_JUDGED   = #{is_judged},
             LAST_UPDATE = NOW()
         WHERE COMMAND_ID = #{command_id}
           AND IS_DELETED = FALSE
@@ -137,7 +140,12 @@
     <select id="queryCommandInfo" resultType="java.lang.String">
         SELECT COMMAND_ID FROM t_command
         <where>
-            <if test="command_info.taskId != null">AND TASK_ID = #{command_info.taskId}</if>
+            <if test="command_info.taskId != null">
+                AND TASK_ID = #{command_info.taskId}
+            </if>
+            <if test="#{command_info.fiveTupleWithMask.addrType} != null">
+                AND ADDR_TYPE = #{command_info.fiveTupleWithMask.addrType}
+            </if>
             <if test="command_info.fiveTupleWithMask.sourceIP != null">
                 AND SRC_IP = #{command_info.fiveTupleWithMask.sourceIP}
             </if>
