@@ -259,4 +259,22 @@
                  INNER JOIN realtime_protection.t_strategy_template tst on tdr.template_id = tst.strategy_template_id
         WHERE task_id = #{task_id}
     </select>
+    <select id="queryTaskTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_task
+        <where>
+            <if test="task_status != null">
+                AND task_status = #{task_status}
+            </if>
+            <if test="task_type != null">
+                AND task_type = #{task_type}
+            </if>
+            <if test="task_name != null">
+                AND task_name LIKE CONCAT('%', #{task_name}, '%')
+            </if>
+            <if test="task_creator != null">
+                AND task_create_username LIKE CONCAT('%', #{task_creator}, '%')
+            </if>
+        </where>
+
+    </select>
 </mapper>

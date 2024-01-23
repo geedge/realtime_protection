@@ -209,6 +209,20 @@
     <select id="queryDynamicRuleTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM t_dynamic_rule
+        <where>
+            <if test="dynamicRuleName != null">
+                t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
+            </if>
+            <if test="dynamicRuleId != null">
+                and t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
+            </if>
+            <if test="sourceSystem != null">
+                and t_strategy_template.strategy_template_source_system = #{sourceSystem}
+            </if>
+            <if test="creator != null">
+                and t_dynamic_rule.dynamic_rule_create_username = #{creator}
+            </if>
+        </where>
     </select>
 
 

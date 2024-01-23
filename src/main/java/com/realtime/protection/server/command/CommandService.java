@@ -92,4 +92,9 @@ public class CommandService {
     public Boolean setCommandJudged(String commandId, Boolean isValid) {
         return commandMapper.setCommandJudged(commandId, isValid);
     }
+
+    public Integer queryCommandTotalNum(Long taskId, String sourceIP, String sourcePort,
+                                        String destinationIP, String destinationPort){
+        return commandMapper.queryCommandTotalNum(taskId, sourceIP, sourcePort, destinationIP, destinationPort);
+    }
 }

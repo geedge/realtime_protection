@@ -113,7 +113,7 @@ public class ProtectObjectService {
         return resultMap;
     }
 
-    public Integer queryProtectObjectsTotalNum() {
-        return protectObjectMapper.queryProtectObjectsTotalNum();
+    public Integer queryProtectObjectsTotalNum(String protectObjectName, Integer protectObjectId) {
+        return protectObjectMapper.queryProtectObjectsTotalNum(protectObjectName, protectObjectId);
     }
 }

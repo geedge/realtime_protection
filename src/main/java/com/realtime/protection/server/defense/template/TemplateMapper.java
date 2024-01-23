@@ -5,7 +5,6 @@ import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -28,6 +27,5 @@ public interface TemplateMapper {
     @Delete("DELETE FROM t_strategy_template WHERE strategy_template_id = #{template_id}")
     Boolean deleteTemplate(@Param("template_id") Integer templateId);
 
-    @Select("SELECT COUNT(strategy_template_id) FROM t_strategy_template")
-    Integer queryTemplateTotalNum();
+    Integer queryTemplateTotalNum(String templateName);
 }

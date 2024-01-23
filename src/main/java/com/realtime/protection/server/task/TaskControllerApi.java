@@ -186,7 +186,7 @@ public interface TaskControllerApi {
             }
     )
     ResponseResult queryTasks(@RequestParam(value = "task_status", required = false) Integer taskStatus,
-                              @RequestParam(value = "task_type", required = false) String taskType,
+                              @RequestParam(value = "task_type", required = false) Integer taskType,
                               @RequestParam(value = "task_name", required = false) String taskName,
                               @RequestParam(value = "task_creator", required = false) String taskCreator,
                               @RequestParam("page") @Min(1) Integer page,

@@ -105,6 +105,14 @@
         FROM t_protect_level
         WHERE protect_level_id = #{level_id}
     </select>
+    <select id="queryTemplateTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(strategy_template_id) FROM t_strategy_template
+        <where>
+            <if test="template_name != null">
+                AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
+            </if>
+        </where>
+    </select>
 
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template

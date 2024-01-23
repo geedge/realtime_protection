@@ -41,5 +41,6 @@ public interface DynamicRuleMapper {
 
     boolean queryProtectObjectById(Integer protectObjectId);
 
-    Integer queryDynamicRuleTotalNum();
+    Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
+                                     String sourceSystem, String creator);
 }

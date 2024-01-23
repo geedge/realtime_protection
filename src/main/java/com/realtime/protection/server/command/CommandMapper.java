@@ -32,4 +32,10 @@ public interface CommandMapper {
     TaskCommandInfo queryCommandInfoByUUID(@Param("uuid") String uuid);
 
     String queryCommandInfo(@Param("command_info") TaskCommandInfo commandInfo);
+
+    Integer queryCommandTotalNum(@Param("task_id") Long taskId,
+                                 @Param("src_ip") String sourceIP,
+                                 @Param("src_port") String sourcePort,
+                                 @Param("dst_ip") String destinationIP,
+                                 @Param("dst_port") String destinationPort);
 }

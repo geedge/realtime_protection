@@ -39,5 +39,5 @@ public interface WhiteListMapper {
 
     List<WhiteListObject> whiteListCommandJudge(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
 
-    Integer queryWhiteListTotalNum();
+    Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId);
 }

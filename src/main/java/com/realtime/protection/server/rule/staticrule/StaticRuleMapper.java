@@ -39,5 +39,6 @@ public interface StaticRuleMapper {
 
     Boolean updateAuditStatusById(Integer id, Integer auditStatus);
 
-    Integer queryStaticRuleTotalNum();
+    Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
+                                    String static_rule_create_username, String ip);
 }

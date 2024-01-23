@@ -157,8 +157,8 @@ public class WhiteListService {
         return resultMap;
     }
 
-    public Integer queryWhiteListTotalNum(){
-        return whiteListMapper.queryWhiteListTotalNum();
+    public Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId){
+        return whiteListMapper.queryWhiteListTotalNum(whiteListName, whiteListId);
     }
 
 
