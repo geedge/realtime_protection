@@ -25,7 +25,6 @@ class TaskServiceTest extends ProtectionApplicationTests {
     private final TaskService taskService;
     private final StaticRuleService staticRuleService;
     private final DynamicRuleService dynamicRuleService;
-    private final StateChangeService stateChangeService;
     private Task task;
 
     @Autowired
@@ -33,7 +32,6 @@ class TaskServiceTest extends ProtectionApplicationTests {
         this.taskService = taskService;
         this.staticRuleService = staticRuleService;
         this.dynamicRuleService = dynamicRuleService;
-        this.stateChangeService = stateChangeService;
     }
 
     @BeforeEach
@@ -97,13 +95,20 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testUpdateTasks() {
-        Task originalTask = taskService.queryTask(38L);
+        Task originalTask = taskService.queryTasks(
+                null, null, null, null, 1, 1)
+                .get(0);
 
-        originalTask.setStaticRuleIds(List.of(16, 17, 18, 19));
+        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
+                null, null, null, null, 1, 4
+        );
+        List<Integer> staticRuleIds = new ArrayList<>();
+        staticRuleObjects.forEach(staticRuleObject -> staticRuleIds.add(staticRuleObject.getStaticRuleId()));
+        originalTask.setStaticRuleIds(staticRuleIds);
         originalTask.setTaskName("修改测试");
 
         assertTrue(taskService.updateTask(originalTask));
-        assertEquals("修改测试", taskService.queryTask(38L).getTaskName());
+        assertEquals("修改测试", taskService.queryTask(originalTask.getTaskId()).getTaskName());
     }
 
     @Test
