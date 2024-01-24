@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,29 @@ class ProtectObjectServiceTest extends ProtectionApplicationTests {
 
         Boolean success = protectObjectService.newProtectObjects(protectObjects);
         assertTrue(success);
+    }
+
+    @Test
+    void queryProtectObject() {
+        List<ProtectObject> protectObjects = new ArrayList<>();
+        String testName = "xxx" + LocalDateTime.now();
+        protectObject.setProtectObjectName(testName);
+        for (int i = 0; i < 100; i++) {
+            protectObject.setProtectObjectId(null);
+            protectObjectService.newProtectObject(protectObject);
+            protectObjects.add(protectObject);
+        }
+
+
+        protectObjects.forEach(protectObject -> {
+                assertNotNull(protectObjectService.queryProtectObject(protectObject.getProtectObjectId()));
+                assertNotNull(protectObjectService.queryProtectObjects(null,
+                        protectObject.getProtectObjectId(), 1, 1));
+        });
+
+        assertEquals(100,
+                protectObjectService.queryProtectObjects(testName, null, 1, 1000).size());
+
     }
 
     @Test

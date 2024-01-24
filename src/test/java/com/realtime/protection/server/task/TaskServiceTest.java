@@ -12,8 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +91,48 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testQueryTasks() {
+        String testName = "test query";
+        String testCreateName = "xxx query";
+
+        for (int i = 0; i < 10; i++) {
+            task.setTaskName(testName);
+            task.setTaskCreateUsername(testCreateName);
+            List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
+                    null, null, null, null, 1, 5);
+            List<Integer> staticRuleIds = new ArrayList<>();
+            staticRuleObjects.forEach(staticRuleObject ->
+                    staticRuleIds.add(staticRuleObject.getStaticRuleId()));
+            task.setStaticRuleIds(staticRuleIds);
+
+            List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleObject(
+                    null, null, null, null, 1, 5
+            );
+            List<Integer> dynamicRuleIds = new ArrayList<>();
+            dynamicRuleObjects.forEach(dynamicRuleObject ->
+                    dynamicRuleIds.add(dynamicRuleObject.getDynamicRuleId()));
+            task.setDynamicRuleIds(dynamicRuleIds);
+
+            assertDoesNotThrow(() -> {
+                Long taskId = taskService.newTask(task);
+                assertTrue(taskId > 0);
+            });
+            assertTrue(task.getTaskId() > 0);
+        }
+
+
         List<Task> tasks = taskService.queryTasks(null, null, null, null, 1, 10);
-        assertTrue(tasks.get(0).getTaskId() > 0);
+        assertEquals(10, tasks.size());
+
+        tasks = taskService.queryTasks(0, null, null, null, 1, 10);
+        assertEquals(10, tasks.size());
+        tasks.forEach(task -> assertEquals(0, task.getTaskStatus()));
+
+        tasks = taskService.queryTasks(null, 0, null, null, 1, 10);
+        assertEquals(0, tasks.size());
+
+        tasks = taskService.queryTasks(null, null, testName, null, 1, 10);
+        assertEquals(10, tasks.size());
+        tasks.forEach(task -> assertEquals(testName, task.getTaskName()));
     }
 
     @Test
@@ -117,7 +159,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));
-        assertFalse(taskService.deleteTask(235235L));
+        assertFalse(taskService.deleteTask(235156235L)); // 尝试一个不可能达到的数字
     }
 
     @Test

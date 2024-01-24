@@ -79,7 +79,7 @@ public class StateChangeService {
         return !Objects.equals(originalState, StateEnum.GENERATING.getState());
     }
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     @Async
     protected void finishTasks() {
         List<Long> finishedTaskIds = taskService.getFinishedTasks();
