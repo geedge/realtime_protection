@@ -46,7 +46,7 @@
         <result column="white_list_port" property="whiteListPort"/>
         <result column="white_list_url" property="whiteListUrl"/>
         <result column="white_list_protocol" property="whiteListProtocol"/>
-        <!--        <result column="white_list_audit_status" property="whiteListAuditStatus"/>-->
+        <result column="white_list_audit_status" property="whiteListAuditStatus"/>
     </resultMap>
 
     <select id="queryWhiteListObject" resultMap="whiteListMap">

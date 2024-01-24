@@ -43,6 +43,7 @@
         <id column="task_id" property="taskId"/>
         <result column="task_name" property="taskName"/>
         <result column="task_type" property="taskType"/>
+        <result column="task_act" property="taskAct"/>
 
         <result column="task_status" property="taskStatus"/>
         <result column="task_audit_status" property="taskAuditStatus"/>

@@ -70,7 +70,9 @@ public class AlertMessageService {
 //        （1）查询生成指令所需信息：和alertMessage中的fiveTuple信息 合并成 TaskCommandInfo;
 //        （2）额外信息：并额外查询templateId、protectLevel和taskStatus
         TaskCommandInfo dynamicCommandInfo = alertMessageMapper.getDynamicTaskInfos(taskId, DynamicRuleId);
-
+        if (dynamicCommandInfo.getTemplateId() == null){
+            throw new IllegalArgumentException("taskId: " + taskId + " DynamicRuleId: " + DynamicRuleId + " 不匹配");
+        }
 //        根据templateId、protectLevel获取策略模板
         ProtectLevel templateProtectLevel = alertMessageMapper.queryTemplateProtectLevel(
                 dynamicCommandInfo.getTemplateId(),

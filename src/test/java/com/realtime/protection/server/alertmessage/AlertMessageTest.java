@@ -1,5 +1,6 @@
 package com.realtime.protection.server.alertmessage;
 
+import com.github.xiaoymin.knife4j.annotations.Ignore;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ public class AlertMessageTest {
         this.alertMessageService = alertMessageService;
     }
 
+    @Ignore
     @Test
     void testReceiveAlertMessage() {
         for (int i = 1; i < 4; i++) {

@@ -39,7 +39,6 @@
         <result column="TASK_ID" property="taskId"/>
         <result column="DYNAMIC_RULE_ID" property="dynamicRuleId"/>
 
-        <result column="IS_DISTRIBUTE" property="isDistribute"/>
         <result column="COMMAND_UUID" property="commandUUID"/>
 
         <result column="CREATE_TIME" property="createTime"/>
@@ -173,7 +172,6 @@
             t_alertmessage.MASK_DST_PORT,
             t_alertmessage.MASK_PROTOCOL,
 
-            t_alertmessage.IS_DISTRIBUTE,
             t_alertmessage.COMMAND_UUID,
 
             t_alertmessage.CREATE_TIME,
