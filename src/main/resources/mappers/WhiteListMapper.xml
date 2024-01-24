@@ -165,10 +165,11 @@
     （3）url
     -->
 
-    <select id="whiteListCommandJudge" resultMap="whiteListMap">
-        select *
+    <select id="whiteListCommandCheck" resultMap="whiteListMap">
+        select *,INET_NTOA(white_list_ip) as white_list_ip_d
         from t_white_list
         <where>
+
             <if test="command.sourceIP != null and command.maskSourceIP == null">
                 (white_list_ip = INET_ATON(#{command.sourceIP})
                 <if test="command.sourcePort != null">
@@ -208,6 +209,79 @@
             <if test="whiteListId != null">
                 and white_list_id = #{whiteListId}
             </if>
+        </where>
+    </select>
+
+    <select id="whiteListCommandsCheck" resultMap="whiteListMap">
+        select *, INET_NTOA(white_list_ip) as white_list_ip_d
+        from t_white_list
+        <where>
+            <foreach collection="taskCommandInfos" item="command" open="(" separator=" or " close=")">
+
+                <if test="command.fiveTupleWithMask.sourceIP != null and command.fiveTupleWithMask.maskSourceIP == null">
+                    (white_list_ip = INET_ATON(#{command.fiveTupleWithMask.sourceIP})
+                    <if test="command.fiveTupleWithMask.sourcePort != null">
+                        and white_list_port = CAST(#{command.fiveTupleWithMask.sourcePort} AS UNSIGNED)
+                    </if>)
+                </if>
+                <if test="command.fiveTupleWithMask.sourceIP != null and command.fiveTupleWithMask.maskSourceIP != null">
+                    (( white_list_ip &amp; INET_ATON(#{command.fiveTupleWithMask.maskSourceIP})) =
+                    (INET_ATON(#{command.fiveTupleWithMask.sourceIP}) &amp; INET_ATON(#{command.fiveTupleWithMask.maskSourceIP}))
+                    <if test="command.fiveTupleWithMask.sourcePort != null">
+                        and white_list_port = CAST(#{command.fiveTupleWithMask.sourcePort} AS UNSIGNED)
+                    </if>)
+                </if>
+                <if test="command.fiveTupleWithMask.destinationIP != null and command.fiveTupleWithMask.maskDestinationIP == null">
+                    or (white_list_ip = INET_ATON(#{command.fiveTupleWithMask.destinationIP})
+                    <if test="command.fiveTupleWithMask.destinationPort != null">
+                        and white_list_port = CAST(#{command.fiveTupleWithMask.destinationPort} AS UNSIGNED)
+                    </if>)
+                </if>
+                <if test="command.fiveTupleWithMask.destinationIP != null and command.fiveTupleWithMask.maskDestinationIP != null">
+                    or ((white_list_ip &amp; INET_ATON(#{command.fiveTupleWithMask.maskDestinationIP})) =
+                    (INET_ATON(#{command.fiveTupleWithMask.destinationIP}) &amp; INET_ATON(#{command.fiveTupleWithMask.maskDestinationIP}))
+                    <if test="command.fiveTupleWithMask.destinationPort != null">
+                        and white_list_port = CAST(#{command.fiveTupleWithMask.destinationPort} AS UNSIGNED)
+                    </if>)
+                </if>
+            </foreach>
+        </where>
+
+    </select>
+
+    <select id="whiteListCStaticRulesCheck" resultMap="whiteListMap">
+        select *, INET_NTOA(white_list_ip) as white_list_ip_d
+        from t_white_list
+        <where>
+            <foreach collection="staticRuleObjects" item="staticRule" open="(" separator=" or " close=")">
+
+                <if test="staticRule.staticRuleSip != null and staticRule.staticRuleMsip == null">
+                    (white_list_ip = INET_ATON(#{staticRule.staticRuleSip})
+                    <if test="staticRule.staticRuleSport != null">
+                        and white_list_port = #{staticRule.staticRuleSport}
+                    </if>)
+                </if>
+                <if test="staticRule.staticRuleSip != null and staticRule.staticRuleMsip != null">
+                    (( white_list_ip &amp; INET_ATON(#{staticRule.staticRuleSip})) =
+                    (INET_ATON(#{staticRule.staticRuleSip}) &amp; INET_ATON(#{staticRule.staticRuleMsip}))
+                    <if test="staticRule.staticRuleSport != null">
+                        and white_list_port = #{staticRule.staticRuleSport}
+                    </if>)
+                </if>
+                <if test="staticRule.staticRuleDip != null and staticRule.staticRuleMdip == null">
+                    or (white_list_ip = INET_ATON(#{staticRule.staticRuleDip})
+                    <if test="staticRule.staticRuleDport != null">
+                        and white_list_port = #{staticRule.staticRuleDport}
+                    </if>)
+                </if>
+                <if test="staticRule.staticRuleDip != null and staticRule.staticRuleMdip != null">
+                    or ((white_list_ip &amp; INET_ATON(#{staticRule.staticRuleDip})) =
+                    (INET_ATON(#{staticRule.staticRuleDip}) &amp; INET_ATON(#{staticRule.staticRuleMdip}))
+                    <if test="staticRule.staticRuleDport != null">
+                        and white_list_port = #{staticRule.staticRuleDport}
+                    </if>)
+                </if>
+            </foreach>
         </where>
     </select>
 
