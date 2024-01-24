@@ -39,7 +39,7 @@ public class ProtectObjectService {
             }
 
             List<ProtectObject> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(batchSize);
-            for (ProtectObject protectObject : protectObjectList) {
+            for (ProtectObject protectObject : list) {
                 protectObjectBatch.add(protectObject);
                 if (protectObjectBatch.size() < batchSize) {
                     continue;

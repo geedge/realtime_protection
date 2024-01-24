@@ -3,8 +3,10 @@ package com.realtime.protection.server.task.status;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
+import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.server.command.CommandService;
+import com.realtime.protection.server.task.TaskService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,23 +23,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommandServiceTest extends ProtectionApplicationTests {
 
     private final CommandService commandService;
+    private final TaskService taskService;
     private TaskCommandInfo taskCommandInfo;
 
     private Long startTime;
 
     @Autowired
-    CommandServiceTest(CommandService commandService) {
+    CommandServiceTest(CommandService commandService, TaskService taskService) {
         this.commandService = commandService;
+        this.taskService = taskService;
     }
 
     @BeforeEach
     void mockCommand() {
+        Task task = taskService.queryTasks(null, null, null, null, 1, 1).get(0);
         FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
         fiveTupleWithMask.setMaskSourceIP("192.168.155.24");
 
         taskCommandInfo = new TaskCommandInfo();
         taskCommandInfo.setFrequency(30);
-        taskCommandInfo.setTaskId(30L);
+        taskCommandInfo.setTaskId(task.getTaskId());
         taskCommandInfo.setFiveTupleWithMask(fiveTupleWithMask);
         taskCommandInfo.setTaskAct("阻断");
         taskCommandInfo.setStartTime(LocalDateTime.now().plusDays(10));
@@ -61,11 +66,12 @@ class CommandServiceTest extends ProtectionApplicationTests {
     @Test
     void createCommands() {
         List<TaskCommandInfo> taskCommandInfos = ListUtils.newArrayListWithExpectedSize(100);
+        Task task = taskService.queryTasks(null, null, null, null, 1, 1).get(0);
         for (int i = 0; i < 100; i++) {
             int port = i + 1000;
             TaskCommandInfo taskCommandInfo = new TaskCommandInfo();
             taskCommandInfo.setFiveTupleWithMask(new FiveTupleWithMask());
-            taskCommandInfo.setTaskId(30L);
+            taskCommandInfo.setTaskId(task.getTaskId());
             taskCommandInfo.setTaskAct("阻断");
             taskCommandInfo.getFiveTupleWithMask().setSourcePort(Integer.toString(port));
             taskCommandInfo.setStartTime(LocalDateTime.now().plusDays(5));
@@ -86,7 +92,8 @@ class CommandServiceTest extends ProtectionApplicationTests {
 
     @Test
     void queryCommandInfos() {
-        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(30L,
+        Task task = taskService.queryTasks(null, null, null, null, 1, 1).get(0);
+        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(task.getTaskId(),
                 null, null, null, null,1, 5);
         assertTrue(taskCommandInfos != null && !taskCommandInfos.isEmpty());
 
