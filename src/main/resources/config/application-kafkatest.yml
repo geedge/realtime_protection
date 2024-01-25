@@ -1,0 +1,107 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    com.realtime.protection: info
+  file:
+    name: classpath:log/realtime_protection.log
+
+spring:
+  datasource:
+    dynamic:
+      datasource:
+        mysql:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          password: aiihhbfcsy123!@#
+          url: jdbc:mysql://192.168.107.89:3306/realtime_protection
+          hikari:
+            is-auto-commit: false
+        doris:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          url: jdbc:mysql://10.26.22.133:9030/command
+          hikari:
+            is-auto-commit: false
+      aop:
+        enabled: true
+      primary: mysql
+      strict: false
+      grace-destroy: true
+  mvc:
+    servlet:
+      path: /api/v1
+  jackson:
+    default-property-inclusion: non_null
+  kafka:
+    # kafka集群信息，多个用逗号间隔
+    bootstrap-servers: localhost:9092
+    consumer:
+      topic-name: topic-test
+      # 消费者组
+      group-id: TestObjectGroup
+      # 是否自动提交
+      enable-auto-commit: false
+      # 消费偏移配置
+      # none：如果没有为消费者找到先前的offset的值,即没有自动维护偏移量,也没有手动维护偏移量,则抛出异常
+      # earliest：在各分区下有提交的offset时：从offset处开始消费；在各分区下无提交的offset时：从头开始消费
+      # latest：在各分区下有提交的offset时：从offset处开始消费；在各分区下无提交的offset时：从最新的数据开始消费
+      auto-offset-reset: earliest
+      # 指定消息key和消息体的解码方式：字符串反序列化
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # 值反序列化：使用Json
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      # 信任的包
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.realtime.protection.configuration.entity.alert
+    producer:
+      # 重试次数，设置大于0的值，则客户端会将发送失败的记录重新发送
+      retries: 3
+      #批量处理大小，16K
+      batch-size: 16384
+      #缓冲存储大，32M
+      buffer-memory: 33554432
+      acks: 1
+      # 指定消息key和消息体的编码方式：字符串序列化
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #值序列化：使用Json
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    # 监听
+    listener:
+      # record：当每一条记录被消费者监听器（ListenerConsumer）处理之后提交
+      # batch：当每一批poll()的数据被ListenerConsumer处理之后提交
+      # time：当每一批poll()的数据被ListenerConsumer处理之后，距离上次提交时间大于TIME时提交
+      # count：当每一批poll()的数据被ListenerConsumer处理之后，被处理record数量大于等于COUNT时提交
+      # count_time：TIME或COUNT中有一个条件满足时提交
+      # manual：当每一批poll()的数据被ListenerConsumer处理之后, 手动调用Acknowledgment.acknowledge()后提交
+      # manual_immediate：手动调用Acknowledgment.acknowledge()后立即提交，一般推荐使用这种
+      ack-mode: manual_immediate
+
+
+
+mybatis:
+  mapper-locations: classpath:mappers/*
+
+task:
+  pool:
+    core-pool-size: 20
+    max-pool-size: 100
+    queue-capacity: 100
+    keep-alive-seconds: 120
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger
+  packages-to-scan: com.realtime.protection.server
+
+management:
+  endpoint:
+    shutdown:
+      enabled: true
