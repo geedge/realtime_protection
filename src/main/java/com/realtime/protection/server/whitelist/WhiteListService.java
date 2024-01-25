@@ -129,10 +129,26 @@ public class WhiteListService {
 
     }
 
-    public List<WhiteListObject> whiteListCommandJudge(TaskCommandInfo taskCommandInfo) {
+    public List<WhiteListObject> whiteListCommandCheck(TaskCommandInfo taskCommandInfo) {
         //参数应该是指令，不管动态静态
         // 命中的whitelist列表：每一列包含ip port url
-        return whiteListMapper.whiteListCommandJudge(taskCommandInfo.getFiveTupleWithMask());
+        return whiteListMapper.whiteListCommandCheck(taskCommandInfo.getFiveTupleWithMask());
+
+    }
+
+
+    public List<WhiteListObject> whiteListCommandsCheck(List<TaskCommandInfo> taskCommandInfoList) {
+        //参数应该是指令，不管动态静态
+        // 命中的whitelist列表：每一列包含ip port url
+        return whiteListMapper.whiteListCommandsCheck(taskCommandInfoList);
+
+    }
+
+    public List<WhiteListObject> whiteListStaticRulesCheck(List<Integer> staticRuleId) {
+        //参数应该是指令，不管动态静态
+        // 命中的whitelist列表：每一列包含ip port url
+        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(staticRuleId);
+        return whiteListMapper.whiteListCStaticRulesCheck(staticRuleObjects);
 
     }
 

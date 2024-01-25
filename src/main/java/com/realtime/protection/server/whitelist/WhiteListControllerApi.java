@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -205,4 +206,38 @@ public interface WhiteListControllerApi {
                                                     @PathVariable Integer auditStatus);
 
 
+    /*
+        白名单审核思路：
+        （1）按现在界面：任务创建时提示白名单命中。
+             ①静态任务：任务还没通过审核进入RUNNING状态，指令也没有生成，目前只能check静态规则在不在白名单
+             ②动态任务：任务还没通过审核进入RUNNING状态，告警信息没有接收、指令也没有生成，check不了白名单
+        （2）若对指令进行白名单检查：（直接剔除指令中存在的白名单对象）
+            存在的问题：指令如果是含有掩码的子网IP，就需要把子网拆分成一个个IP，从中剔除白名单IP，然后把一个个IP变成指令。
+                     也就是把含有掩码的指令拆分成不包含掩码的多个指令，此时指令展示会很多。
+            ①静态任务：指令生成后，自动剔除，若出现掩码，存在以上问题
+            ②实时任务：告警接收后，经策略模板指令生成后，自动剔除白名单对象，若出现掩码，存在以上问题
+            ③研判后认务：告警接收后，经策略模板指令生成后，自动剔除白名单对象，若出现掩码，包含掩码的指令都拆分多个指令了，
+                        告警信息如果不拆的话，告警信息只存一个指令的UUID。无法查询拆分后的多个指令对应哪个告警信息。
+                        拆分成多个指令也不好研判下发。
+                        如果说直接研判告警信息的话，多个告警信息还可能对应一个指令，下发了这个告警信息，另一个下发吗？所以研判的应该是指令
+
+         */
+    @Operation(
+            summary = "查询静态规则命中白名单",
+            description = "用于在创建任务的第三页中，查询静态规则命中的白名单",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回静态规则命中的所有白名单",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(title = "ResponseResult和WhiteListObject的属性",
+                                            anyOf = {ResponseResult.class, WhiteListObject.class})
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "staticRuleIds", description = "静态规则id")
+            }
+    )
+    ResponseResult whiteListStaticRulesCheck(@PathVariable List<Integer> staticRuleIds);
 }

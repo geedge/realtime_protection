@@ -1,14 +1,17 @@
 package com.realtime.protection.server.whitelist;
 
 import com.realtime.protection.ProtectionApplicationTests;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
+import com.realtime.protection.server.rule.staticrule.StaticRuleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +23,12 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
     private final WhiteListService whiteListService;
     private WhiteListObject whiteListObject;
 
+    private final StaticRuleService staticRuleService;
+
     @Autowired
-    WhiteListServiceTest(WhiteListService whiteListService) {
+    WhiteListServiceTest(WhiteListService whiteListService, StaticRuleService staticRuleService) {
         this.whiteListService = whiteListService;
+        this.staticRuleService = staticRuleService;
     }
 
     @BeforeEach
@@ -77,7 +83,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
     }
 
     @Test
-    void testWhiteListCommandJudge() {
+    void testWhiteListCommandCheck() {
         FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
         TaskCommandInfo taskCommandInfo = new TaskCommandInfo();
         fiveTupleWithMask.setDestinationIP("128.1.1.123");
@@ -85,8 +91,41 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
         fiveTupleWithMask.setDestinationPort("80");
         taskCommandInfo.setFiveTupleWithMask(fiveTupleWithMask);
 
-        List<WhiteListObject> whitelists = whiteListService.whiteListCommandJudge(taskCommandInfo);
+        List<WhiteListObject> whitelists = whiteListService.whiteListCommandCheck(taskCommandInfo);
         System.out.println(whitelists);
     }
 
+    @Test
+    void testWhiteListStaticRulesCheck() {
+        StaticRuleObject staticRuleTest = new StaticRuleObject();
+        staticRuleTest.setStaticRuleName("test_staticrule");
+        staticRuleTest.setStaticRuleCreateTime(LocalDateTime.now());
+        staticRuleTest.setStaticRuleCreateUsername("mh");
+        staticRuleTest.setStaticRuleCreateDepart("mmeess");
+        staticRuleTest.setStaticRuleCreateUserId(2);
+        staticRuleTest.setStaticRuleAuditStatus(0);
+
+        staticRuleTest.setStaticRuleSip("1.1.2.3");
+        staticRuleTest.setStaticRuleSport(80);
+
+        staticRuleTest.setStaticRulePriority(1);
+        staticRuleTest.setStaticRuleFrequency(1);
+        staticRuleTest.setStaticRuleRange("北京");
+
+        Integer id = staticRuleService.newStaticRuleObject(staticRuleTest);
+        List<Integer> ruleIds = new ArrayList<>(List.of(id));
+        List<StaticRuleObject> staticRules= staticRuleService.queryStaticRule(null,null,null,null,1,2);
+        for (StaticRuleObject staticRule : staticRules) {
+            ruleIds.add(staticRule.getStaticRuleId());
+        }
+        whiteListObject = new WhiteListObject();
+        whiteListObject.setWhiteListName("test");
+        whiteListObject.setWhiteListSystemName("china");
+        whiteListObject.setWhiteListIP("1.1.2.3");
+        whiteListObject.setWhiteListPort(80);
+        whiteListObject.setWhiteListUrl("www.baidu.com");
+        whiteListObject.setWhiteListProtocol("TCP");
+        whiteListService.newWhiteListObject(whiteListObject);
+        System.out.println(whiteListService.whiteListStaticRulesCheck(ruleIds));
+    }
 }

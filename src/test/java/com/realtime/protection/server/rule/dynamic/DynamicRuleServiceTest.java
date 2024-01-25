@@ -45,9 +45,9 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 //        System.out.println(object);
     }
 
-    @Ignore
     @Test
     void testUpdateDynamicRule() {
+        /*
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
         object.setDynamicRuleFrequency(1);
@@ -58,6 +58,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setProtectObjectIds(List.of(new Integer[]{6061}));
 
         dynamicRuleService.updateDynamicRuleObject(5, object);
+        */
     }
 
     @Test

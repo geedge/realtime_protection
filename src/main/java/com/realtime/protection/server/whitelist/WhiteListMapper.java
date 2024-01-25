@@ -2,6 +2,7 @@ package com.realtime.protection.server.whitelist;
 
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -37,7 +38,11 @@ public interface WhiteListMapper {
 
     void deleteWhiteListObjects(@Param("whiteListIds") List<Integer> whiteListBatch);
 
-    List<WhiteListObject> whiteListCommandJudge(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
+    List<WhiteListObject> whiteListCommandCheck(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
 
     Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId);
+
+    List<WhiteListObject> whiteListCommandsCheck(List<TaskCommandInfo> taskCommandInfos);
+
+    List<WhiteListObject> whiteListCStaticRulesCheck(@Param("staticRuleObjects") List<StaticRuleObject> staticRuleObjects);
 }
