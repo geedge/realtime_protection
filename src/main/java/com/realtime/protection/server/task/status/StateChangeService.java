@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 任务状态管理服务类
+ */
 @Service
 @EnableScheduling
 @Slf4j
@@ -27,6 +30,14 @@ public class StateChangeService {
         this.taskService = taskService;
     }
 
+    /**
+     * 切换任务状态
+     * @param stateNum 欲切换的任务状态编号（编号对应的状态请查看configuration/utils/enums/StateEnum类）
+     * @param taskId 任务ID
+     * @param inner 此接口是否为内部调用，如果为内部调用，则取消所有的状态检查
+     * @return 状态切换是否成功
+     * @throws DorisStartException Doris数据库异常
+     */
     @DSTransactional
     public Boolean changeState(Integer stateNum, Long taskId, Boolean inner) throws DorisStartException {
         Integer originalStateNum = taskService.queryTaskStatus(taskId);
@@ -49,6 +60,7 @@ public class StateChangeService {
             return true;
         }
 
+        // 切换到states文件夹中查看每一个状态的handle函数
         if (!originalState.handle(newState, commandService, taskService, taskId)) {
             return false;
         }
@@ -79,6 +91,9 @@ public class StateChangeService {
         return !Objects.equals(originalState, StateEnum.GENERATING.getState());
     }
 
+    /**
+     * 将任务切换为结束状态
+     */
     @Scheduled(cron = "0 0/10 * * * ?")
     @Async
     protected void finishTasks() {

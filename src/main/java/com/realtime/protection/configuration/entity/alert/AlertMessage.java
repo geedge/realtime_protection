@@ -3,11 +3,10 @@ package com.realtime.protection.configuration.entity.alert;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
-import com.realtime.protection.configuration.kafka.KafkaMessage;
 import lombok.Data;
 
 @Data
-public class AlertMessage implements KafkaMessage {
+public class AlertMessage {
 
     @JsonProperty("task_id")
     private Long taskId;

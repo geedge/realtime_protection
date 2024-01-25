@@ -10,6 +10,7 @@ import java.util.Map;
 @Getter
 public enum StateEnum {
     // 仅需修改此处即可将任务状态以及对应的State和Num进行对应
+    // 使用状态模式进行任务状态的管理和切换
     PENDING(0, new PendingState()),
     GENERATING(1, new GeneratingState()),
     RUNNING(2, new RunningState()),
