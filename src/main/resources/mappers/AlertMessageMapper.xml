@@ -34,7 +34,7 @@
         <result column="has_dns" property="hasDNS"/>
     </resultMap>
 
-    <resultMap id="alertMessageMap" type="com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage">
+    <resultMap id="alertMessageMap" type="com.realtime.protection.configuration.entity.alert.AlertMessage">
         <id column="ALERT_MESSAGE_ID" property="alertMessageUUID"/>
         <result column="TASK_ID" property="taskId"/>
         <result column="DYNAMIC_RULE_ID" property="dynamicRuleId"/>

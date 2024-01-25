@@ -1,6 +1,6 @@
 package com.realtime.protection.server.alertmessage;
 
-import com.realtime.protection.configuration.entity.rule.dynamicrule.AlertMessage;
+import com.realtime.protection.configuration.entity.alert.AlertMessage;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

@@ -58,7 +58,7 @@ public class DynamicRuleObject {
     private Integer dynamicRuleCreateUserId;
     @JsonProperty("dynamic_rule_used_task_id")
     @Schema(description = "使用该动态规则的任务ID", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer dynamicRuleUsedTaskId;
+    private Long dynamicRuleUsedTaskId;
 
     //前端不发送事件类型和来源系统了，而是根据事件类型和来源系统确定策略模板id，发过来template_id
     @JsonProperty("dynamic_rule_source_system")

@@ -4,6 +4,7 @@ import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +73,17 @@ public class DynamicRuleService {
 
 
     public void deleteDynamicRuleObject(Integer dynamicRuleId) {
-        //不需要使用 join
-        //在数据库中设置了级联删除 ON DELETE CASCADE，在删除在从父表中删除数据时自动删除子表中的数据
+        //根据任务状态判断能否删除
+        Integer taskStatus = dynamicRuleMapper.queryTaskStatusBydynamicRuleId(dynamicRuleId);
+        switch (StateEnum.getStateEnumByNum(taskStatus)){
+            case RUNNING:
+                throw new IllegalArgumentException("使用该动态规则的任务处于运行状态");
+            case PAUSED:
+                throw new IllegalArgumentException("使用该动态规则的任务处于暂停状态");
+            default:
+                break;
+        }
+        //不需要使用 join,在数据库中设置了级联删除 ON DELETE CASCADE，在删除在从父表中删除数据时自动删除子表中的数据
         dynamicRuleMapper.deleteDynamicRuleObject(dynamicRuleId);
 
     }

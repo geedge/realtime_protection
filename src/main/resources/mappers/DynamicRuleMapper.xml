@@ -237,5 +237,13 @@
 
     </select>
 
+    <select id="queryTaskStatusBydynamicRuleId" resultType="java.lang.Integer">
+        select t_task.task_status
+        from t_dynamic_rule
+        left join realtime_protection.t_task
+            on t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
+        where dynamic_rule_id = #{dynamicRuleId}
+    </select>
+
 
 </mapper>

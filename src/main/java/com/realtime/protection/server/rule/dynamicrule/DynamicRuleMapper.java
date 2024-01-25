@@ -45,4 +45,6 @@ public interface DynamicRuleMapper {
                                      String sourceSystem, String creator);
 
     List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids);
+
+    Integer queryTaskStatusBydynamicRuleId(Integer dynamicRuleId);
 }
