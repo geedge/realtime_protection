@@ -7,14 +7,15 @@ rm -rf .gradle
 
 cd ..
 
-docker stop springboot_backend && docker rm springboot_backend
+echo "============start loading springboot============"
+docker rm -f $(docker ps -a | grep springboot_backend | awk '{print $1}')
 docker image rm protection_springboot
-echo "old containers and images are cleared"
+echo "============old containers and images are cleared============"
 
 docker load < realtime_protection/docker-ubuntu/protection_ubuntu.tar
 
 docker build -t protection_springboot -f realtime_protection/docker-springboot/Dockerfile .
-echo "built backend servers"
+echo "============built backend servers============"
 
 docker run -itd --name springboot_backend -p 8081:8081 protection_springboot
-echo "started backend servers"
+echo "============started backend servers============"

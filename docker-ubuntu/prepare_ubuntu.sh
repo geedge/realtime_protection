@@ -13,4 +13,6 @@ deb-src http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted univers
 deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
 EOF"
-apt install sudo vim git wget screen openjdk-17-jdk nginx -y
+apt install sudo vim git wget screen openjdk-17-jdk nginx language-pack-zh-hans gettext -y
+
+update-locale LANG=zh_CN.UTF-8

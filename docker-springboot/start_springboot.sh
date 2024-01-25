@@ -11,4 +11,4 @@ chmod +x ./gradlew
 ./gradlew clean && ./gradlew bootJar
 
 # 启动SpringBoot服务
-./gradlew bootRun --args="--spring.profiles.active=test"
+./gradlew bootRun --args="--spring.profiles.active=prod"

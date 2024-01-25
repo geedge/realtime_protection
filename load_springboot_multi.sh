@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# 此脚本仅用于测试Nginx负载均衡
+
+# 避免build等文件夹被上传引发问题
+rm -rf build
+rm -rf log
+rm -rf .gradle
+
+cd ..
+
+echo "============start loading springboot============"
+docker stop springboot_backend && docker rm springboot_backend
+docker stop springboot_backend_1 && docker rm springboot_backend_1
+docker stop springboot_backend_2 && docker rm springboot_backend_2
+docker stop springboot_backend_3 && docker rm springboot_backend_3
+docker image rm protection_springboot protection_ubuntu
+echo "============old containers and images are cleared============"
+
+docker load < realtime_protection/docker-ubuntu/protection_ubuntu.tar
+
+docker build -t protection_springboot -f realtime_protection/docker-springboot/Dockerfile .
+echo "============built backend servers============"
+
+# 尝试开启多个SpringBoot
+docker run -itd --name springboot_backend_1 -p 8081:8081 protection_springboot
+docker run -itd --name springboot_backend_2 -p 8082:8081 protection_springboot
+docker run -itd --name springboot_backend_3 -p 8083:8081 protection_springboot
+echo "============started backend servers============"

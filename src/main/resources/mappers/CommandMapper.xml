@@ -143,7 +143,7 @@
             <if test="command_info.taskId != null">
                 AND TASK_ID = #{command_info.taskId}
             </if>
-            <if test="#{command_info.fiveTupleWithMask.addrType} != null">
+            <if test="command_info.fiveTupleWithMask.addrType != null">
                 AND ADDR_TYPE = #{command_info.fiveTupleWithMask.addrType}
             </if>
             <if test="command_info.fiveTupleWithMask.sourceIP != null">
