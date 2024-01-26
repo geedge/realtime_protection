@@ -17,5 +17,6 @@ docker load < realtime_protection/docker-ubuntu/protection_ubuntu.tar
 docker build -t protection_springboot -f realtime_protection/docker-springboot/Dockerfile .
 echo "============built backend servers============"
 
-docker run -itd --name springboot_backend -p 8081:8081 protection_springboot
+# 使用privileged模式，在中心部署时不会遭遇Java内存异常错误
+docker run --privileged -itd --name springboot_backend -p 8081:8081 protection_springboot
 echo "============started backend servers============"
