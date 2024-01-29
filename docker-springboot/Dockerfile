@@ -4,11 +4,18 @@ LABEL authors="Endera"
 COPY realtime_protection realtime_protection
 
 ENV MYSQL_USERNAME="root" \
-    MYSQL_PASSWD="aiihhbfcsy123!@#" \
-    MYSQL_URL="192.168.107.89:3306" \
+    MYSQL_PASSWD="IOmysql" \
+    MYSQL_URL="10.58.72.140:3306" \
     DORIS_USERNAME="root" \
     DORIS_PASSWD="" \
-    DORIS_URL="10.26.22.133:9030"
+    DORIS_URL="10.58.72.135:9030"
+
+#ENV MYSQL_USERNAME="root" \
+#    MYSQL_PASSWD="aiihhbfcsy123!@#" \
+#    MYSQL_URL="192.168.107.89:3306" \
+#    DORIS_USERNAME="root" \
+#    DORIS_PASSWD="" \
+#    DORIS_URL="10.26.22.133:9030"
 
 EXPOSE 8081
 

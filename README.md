@@ -1,5 +1,10 @@
 # SSFY系统 README
 
+若要直接运行，请使用如下指令：
+```shell
+./gradlew clean && ./gradlew bootRun
+```
+
 ## 项目文件夹结构说明：
 
 目前整体分为两大板块：**configuration**和**server**
