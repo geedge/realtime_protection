@@ -5,18 +5,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import lombok.Data;
 
+
 @Data
 public class AlertMessage {
 
     @JsonProperty("task_id")
     private Long taskId;
 
-    @JsonProperty("dynamic_rule_id")
+    @JsonProperty("rule_id")
     private Integer dynamicRuleId;
 
 
     @JsonProperty("five_tuple_with_mask")
     private FiveTupleWithMask fiveTupleWithMask;
+
+    @JsonProperty("content")
+    private String content;
 
 //    @JsonProperty("is_distribute")
 //    private Boolean isDistribute;//待删除

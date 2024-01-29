@@ -35,18 +35,19 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testNewDynamicRule() {
+        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(null, null, 1, 1);
+        List<Template> templates = templateService.queryTemplates(null, 1, 1);
+
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
         object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
-        object.setTemplateId(1);
-        object.setProtectObjectIds(List.of(new Integer[]{5521, 5520}));
-
-
-//        Integer objectId = dynamicRuleService.newDynamicRuleObject(object);
-//        assertTrue(objectId > 0);
+        object.setTemplateId(templates.get(0).getTemplateId());
+        object.setLogRuleId(1);
+        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+        Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
     }
 
     @Test

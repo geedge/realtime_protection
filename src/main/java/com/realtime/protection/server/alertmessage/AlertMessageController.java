@@ -19,7 +19,7 @@ public class AlertMessageController
     @PostMapping("/new")
     public ResponseResult receiveAlertMessage(@RequestBody @Valid AlertMessage alertMessage){
         alertMessageService.processAlertMessage(alertMessage);
-        return ResponseResult.ok();
+        return ResponseResult.ok().setData("success", true);
     }
 
     //实时任务、研判后任务：查看指令对应的告警信息

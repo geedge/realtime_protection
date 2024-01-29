@@ -7,6 +7,9 @@ import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -25,17 +28,39 @@ public class StaticRuleService {
         this.sqlSessionWrapper = sqlSessionWrapper;
     }
 
+    private static int ipToInt(String ip)  {
+        try {
+            byte[] bytes = InetAddress.getByName(ip).getAddress();
+            return ByteBuffer.wrap(bytes).getInt();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private Boolean isIpMaskValid(String ip, String mip)  {
+        if (ip == null && mip != null)  throw new IllegalArgumentException("有ip掩码但没设置ip");
+        if (mip == null) return true;
+
+        int ipToInt = ipToInt(ip);
+        int mipToInt = ipToInt(mip);
+        return ( ipToInt == (ipToInt & mipToInt) ) ;
+    }
+
 
     /*
     新建静态规则
      */
-    public Integer newStaticRuleObject(StaticRuleObject object) {
+    public Integer newStaticRuleObject(StaticRuleObject object)  {
 
         object.setStaticRuleCreateTime(LocalDateTime.now());
         object.setStaticRuleAuditStatus(0);
         /*
         待开发：设置静态规则对象的创建用户、用户所属部门等属性
          */
+        if (!isIpMaskValid(object.getStaticRuleSip(),object.getStaticRuleMsip()) ||
+                !isIpMaskValid(object.getStaticRuleDip(),object.getStaticRuleMdip())
+            ){
+            throw new IllegalArgumentException("IP和IP掩码不匹配");
+        }
         staticRuleMapper.newStaticRuleObject(object);
 
         return object.getStaticRuleId();

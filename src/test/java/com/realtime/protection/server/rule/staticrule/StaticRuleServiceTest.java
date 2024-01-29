@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +25,16 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     void setUp() {
         staticRuleTest = new StaticRuleObject();
         staticRuleTest.setStaticRuleName("test_staticrule");
-        staticRuleTest.setStaticRuleCreateTime(LocalDateTime.now());
         staticRuleTest.setStaticRuleCreateUsername("mh");
         staticRuleTest.setStaticRuleCreateDepart("mmeess");
         staticRuleTest.setStaticRuleCreateUserId(2);
         staticRuleTest.setStaticRuleAuditStatus(0);
 
-        staticRuleTest.setStaticRuleSip("1.1.2.3");
+        staticRuleTest.setStaticRuleSip("1.1.2.0");
+        staticRuleTest.setStaticRuleMsip("255.255.255.0");
+
+//        staticRuleTest.setStaticRuleDip("1.1.1.2");
+//        staticRuleTest.setStaticRuleMdip("255.255.255.0");
         staticRuleTest.setStaticRuleSport(80);
 
         staticRuleTest.setStaticRulePriority(1);
@@ -43,25 +45,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testNewStaticRule(){
-        Integer i = 0;
-        while(i<2) {
-            i++;
-            StaticRuleObject object = new StaticRuleObject();
-
-            object.setStaticRuleName("test_staticrule" + i);
-            //object.setStaticRuleCreateTime(LocalDateTime.now());
-            object.setStaticRuleCreateUsername("boy" + i);
-            object.setStaticRuleCreateDepart("2chu" + i);
-            object.setStaticRuleCreateUserId(i);
-            object.setStaticRuleSip("1.1.1." + i);
-            object.setStaticRuleSport(i);
-            object.setStaticRuleDip("2.2.3." + i);
-            object.setStaticRulePriority(2);
-            object.setStaticRuleFrequency(1);
-            object.setStaticRuleRange("北京");
-
-            Integer id = staticRuleService.newStaticRuleObject(object);
-        }
+        staticRuleService.newStaticRuleObject(staticRuleTest);
         //assertTrue(id>0);
     }
     @Test

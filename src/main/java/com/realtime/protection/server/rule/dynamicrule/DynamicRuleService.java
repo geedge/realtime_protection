@@ -26,8 +26,6 @@ public class DynamicRuleService {
     @Transactional
     public Integer newDynamicRuleObject(DynamicRuleObject dynamicRule) {
 
-        dynamicRuleMapper.newDynamicRule(dynamicRule);
-
         //判断protectObject id是否有效
         boolean ProtectObjIdValid = dynamicRule.getProtectObjectIds().stream()
                 .allMatch(
@@ -36,6 +34,8 @@ public class DynamicRuleService {
         if (!ProtectObjIdValid) {
             throw new IllegalArgumentException("protect object id is invalid");
         }
+
+        dynamicRuleMapper.newDynamicRule(dynamicRule);
         Integer dynamicRuleId = dynamicRule.getDynamicRuleId();
         dynamicRule.getProtectObjectIds().forEach(
                 protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
@@ -104,9 +104,10 @@ public class DynamicRuleService {
             //template在表中删除了，需要重新设置template（感觉这种情况不多见）
             dynamicRuleObject.setDynamicRuleSourceSystem("need reset");
             dynamicRuleObject.setDynamicRuleEventType("need reset");
-        }
+        }else{
         dynamicRuleObject.setDynamicRuleSourceSystem(template.getSourceSystem());
         dynamicRuleObject.setDynamicRuleEventType(template.getTemplateName());
+        }
 
         return dynamicRuleObject;
     }

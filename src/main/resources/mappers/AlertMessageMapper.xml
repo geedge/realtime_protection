@@ -43,6 +43,7 @@
 
         <result column="CREATE_TIME" property="createTime"/>
         <result column="LAST_UPDATE" property="modifyTime"/>
+        <result column="CONTENT" property="content"/>
 
         <association property="fiveTupleWithMask">
             <result column="ADDR_TYPE" property="addrType"/>
@@ -56,6 +57,7 @@
             <result column="MASK_DST_IP" property="maskDestinationIP"/>
             <result column="MASK_DST_PORT" property="maskDestinationPort"/>
             <result column="MASK_PROTOCOL" property="maskProtocol"/>
+
         </association>
 
     </resultMap>
@@ -78,7 +80,8 @@
                             COMMAND_UUID,
                             CREATE_TIME,
                             LAST_UPDATE,
-                            ALERT_MESSAGE_ID)
+                            ALERT_MESSAGE_ID,
+                            CONTENT)
         values (
                 #{taskId},
                 #{dynamicRuleId},
@@ -96,7 +99,8 @@
                 #{commandUUID},
                 NOW(),
                 NOW(),
-                UUID())
+                UUID(),
+                #{content})
 
     </insert>
 
@@ -175,7 +179,8 @@
             t_alertmessage.COMMAND_UUID,
 
             t_alertmessage.CREATE_TIME,
-            t_alertmessage.LAST_UPDATE
+            t_alertmessage.LAST_UPDATE,
+            t_alertmessage.CONTENT
 
             from t_alertmessage
             where
