@@ -49,9 +49,9 @@ spring:
       # none：当各分区都存在已提交的offset时，从提交的offset开始消费；只要有一个分区不存在已提交的offset，则抛出异常
       auto-offset-reset: latest
       # 键的反序列化方式
-      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       # 值的反序列化方式（建议使用Json，这种序列化方式可以无需额外配置传输实体类）
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       # 配置消费者的 Json 反序列化的可信赖包，反序列化实体类需要
       properties:
         spring.json.trusted.packages: com.realtime.protection.configuration.entity.*
@@ -62,8 +62,11 @@ spring:
       # 要避免出现上述问题，提前评估好处理一条消息最长需要多少时间，然后覆盖默认的max.poll.records参数
       # 注：需要开启BatchListener批量监听才会生效，如果不开启BatchListener则不会出现reBalance情况
       #max-poll-records: 3
+        spring.deserializer.key.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
 
-#    properties:
+
+    #    properties:
 #      # 两次poll之间的最大间隔，默认值为5分钟。如果超过这个间隔会触发reBalance
 #      max:
 #        poll:
@@ -73,9 +76,6 @@ spring:
 #      session:
 #        timeout:
 #          ms: 10000
-
-
-
 
     producer:
       # 重试次数，设置大于0的值，则客户端会将发送失败的记录重新发送

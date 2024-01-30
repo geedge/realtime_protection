@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class AlertMessageController
 {
     private final AlertMessageService alertMessageService;
-    public AlertMessageController(final AlertMessageService alertMessageService) {
+    public AlertMessageController(AlertMessageService alertMessageService) {
         this.alertMessageService = alertMessageService;
     }
 
