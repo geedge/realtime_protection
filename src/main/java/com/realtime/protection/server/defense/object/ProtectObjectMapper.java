@@ -12,10 +12,6 @@ public interface ProtectObjectMapper {
 
     void newProtectObjects(@Param("proobjs") List<ProtectObject> protectObject);
 
-    List<ProtectObject> queryProtectObjects(@Param("proobj_name") String protectObjectName,
-                                            @Param("proobj_id") Integer protectObjectId,
-                                            @Param("page") Integer page,
-                                            @Param("page_size") Integer pageSize);
 
     ProtectObject queryProtectObject(@Param("proobj_id") Integer protectObjectId);
 
@@ -30,5 +26,26 @@ public interface ProtectObjectMapper {
 
 
     Integer queryProtectObjectsTotalNum(@Param("proobj_name") String protectObjectName,
-                                        @Param("proobj_id") Integer protectObjectId);
+                                        @Param("proobj_id") Integer protectObjectId,
+                                        @Param("proobj_system_name") String protectObjectSystemName,
+                                        @Param("proobj_ip") String protectObjectIPAddress,
+                                        @Param("proobj_port_min") Integer protectObjectPortMin,
+                                        @Param("proobj_port_max") Integer protectObjectPortMax,
+                                        @Param("proobj_url") String protectObjectURL,
+                                        @Param("proobj_protocol") String protectObjectProtocol,
+                                        @Param("proobj_username") String protectObjectCreateUsername,
+                                        @Param("proobj_audit_status") Integer protectObjectAuditStatus);
+
+    List<ProtectObject> queryProtectObjects(@Param("proobj_name") String protectObjectName,
+                                            @Param("proobj_id") Integer protectObjectId,
+                                            @Param("proobj_system_name") String protectObjectSystemName,
+                                            @Param("proobj_ip") String protectObjectIPAddress,
+                                            @Param("proobj_port_min") Integer protectObjectPortMin,
+                                            @Param("proobj_port_max") Integer protectObjectPortMax,
+                                            @Param("proobj_url") String protectObjectURL,
+                                            @Param("proobj_protocol") String protectObjectProtocol,
+                                            @Param("proobj_username") String protectObjectCreateUsername,
+                                            @Param("proobj_audit_status") Integer protectObjectAuditStatus,
+                                            @Param("page") Integer page,
+                                            @Param("page_size") Integer pageSize);
 }

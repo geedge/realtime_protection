@@ -39,13 +39,18 @@ public class TemplateController implements TemplateControllerApi {
     @Override
     @GetMapping("/query")
     public ResponseResult queryTemplates(@RequestParam(value = "template_name", required = false) String templateName,
+                                         @RequestParam(value = "source_system", required = false) String sourceSystem,
+                                         @RequestParam(value = "create_user_name", required = false) String createUserName,
                                          @RequestParam("page") @Min(1) Integer page,
                                          @RequestParam("page_size") @Min(1) Integer pageSize) {
-        List<Template> templates = templateService.queryTemplates(templateName, page, pageSize);
+        List<Template> templates = templateService.queryTemplates(
+                templateName, sourceSystem, createUserName,
+                page, pageSize
+        );
 
         return ResponseResult.ok()
                 .setData("templates", templates)
-                .setData("total_num", templateService.queryTemplateTotalNum(templateName));
+                .setData("total_num", templateService.queryTemplateTotalNum(templateName, sourceSystem, createUserName));
     }
 
     @Override

@@ -158,14 +158,39 @@ public interface ProtectObjectControllerApi {
             parameters = {
                     @Parameter(name = "proobj_name", description = "防护对象名称"),
                     @Parameter(name = "proobj_id", description = "防护对象ID"),
+                    @Parameter(name = "proobj_system_name", description = "防护对象操作系统"),
+                    @Parameter(name = "proobj_ip_address", description = "防护对象IP地址"),
+                    @Parameter(name = "proobj_port_min", description = "防护对象端口最小值"),
+                    @Parameter(name = "proobj_port_max", description = "防护对象端口最大值"),
+                    @Parameter(name = "proobj_url", description = "防护对象URL"),
+                    @Parameter(name = "proobj_protocol", description = "防护对象网络协议"),
+                    @Parameter(name = "proobj_create_username", description = "防护对象创建人"),
+                    @Parameter(name = "proobj_audit_status", description = "防护对象审核状态"),
                     @Parameter(name = "page", description = "页码", example = "1"),
                     @Parameter(name = "page_size", description = "每页的对象个数", example = "5")
             }
     )
     ResponseResult queryProtectObjects(@RequestParam(value = "proobj_name", required = false)
                                        String protectObjectName,
-                                       @RequestParam(value = "proobj_id", required = false) @Min(1)
+                                       @RequestParam(value = "proobj_id", required = false)
+                                       @Min(value = 1, message = "ID值不可小于1")
                                        Integer protectObjectId,
+                                       @RequestParam(value = "proobj_systemm_name", required = false)
+                                       String protectObjectSystemName,
+                                       @RequestParam(value = "proobj_ip_address", required = false)
+                                       String protectObjectIPAddress,
+                                       @RequestParam(value = "proobj_port_min", required = false)
+                                       Integer protectObjectPortMin,
+                                       @RequestParam(value = "proobj_port_max", required = false)
+                                       Integer protectObjectPortMax,
+                                       @RequestParam(value = "proobj_url", required = false)
+                                       String protectObjectURL,
+                                       @RequestParam(value = "proobj_protocol", required = false)
+                                       String protectObjectProtocol,
+                                       @RequestParam(value = "proobj_create_username", required = false)
+                                       String protectObjectCreateUsername,
+                                       @RequestParam(value = "proobj_audit_status", required = false)
+                                       Integer protectObjectAuditStatus,
                                        @RequestParam("page") @Min(1) Integer page,
                                        @RequestParam("page_size") @Min(1) Integer pageSize);
 
