@@ -71,18 +71,49 @@ class ProtectObjectServiceTest extends ProtectionApplicationTests {
 
         protectObjects.forEach(protectObject -> {
                 assertNotNull(protectObjectService.queryProtectObject(protectObject.getProtectObjectId()));
-                assertNotNull(protectObjectService.queryProtectObjects(null,
-                        protectObject.getProtectObjectId(), 1, 1));
+                assertNotNull(protectObjectService.queryProtectObjects(
+                        null,
+                        protectObject.getProtectObjectId(),
+                        protectObject.getProtectObjectSystemName(),
+                        protectObject.getProtectObjectIPAddress(),
+                        protectObject.getProtectObjectPort(),
+                        protectObject.getProtectObjectPort(),
+                        protectObject.getProtectObjectURL(),
+                        protectObject.getProtectObjectProtocol(),
+                        protectObject.getProtectObjectCreateUsername(),
+                        protectObject.getProtectObjectAuditStatus(),
+                        1, 1));
         });
 
         assertEquals(100,
-                protectObjectService.queryProtectObjects(testName, null, 1, 1000).size());
+                protectObjectService.queryProtectObjects(testName,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        1, 100).size());
 
     }
 
     @Test
     void updateProtectObject() {
-        List<ProtectObject> protectObjects = protectObjectService.queryProtectObjects(null, null, 1, 1);
+        List<ProtectObject> protectObjects = protectObjectService.queryProtectObjects(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1, 1);
         Integer testId = protectObjects.get(0).getProtectObjectId();
 
         protectObject.setProtectObjectName("x-1-1");
