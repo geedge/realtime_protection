@@ -50,4 +50,16 @@ public class TemplateService {
     public Integer queryTemplateTotalNum(String templateName) {
         return templateMapper.queryTemplateTotalNum(templateName);
     }
+
+    public List<String> querySourceSystem() {
+        return templateMapper.querySourceSystem();
+    }
+
+    public List<String> queryEventName(String sourceSystem) {
+        return templateMapper.queryEventName(sourceSystem);
+    }
+
+    public Integer queryTemplateId(String sourceSystem, String eventName) {
+        return templateMapper.queryTemplateId(sourceSystem, eventName);
+    }
 }

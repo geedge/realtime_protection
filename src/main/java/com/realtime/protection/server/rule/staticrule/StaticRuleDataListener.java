@@ -23,6 +23,16 @@ public class StaticRuleDataListener implements ReadListener<StaticRuleObject> {
     @Override
     public void invoke(StaticRuleObject object, AnalysisContext analysisContext) {
         log.info("解析到一条数据:{}", object.toString());
+        if (!staticRuleService.isIpMaskValid(object.getStaticRuleSip(),object.getStaticRuleMsip()) ||
+                !staticRuleService.isIpMaskValid(object.getStaticRuleDip(),object.getStaticRuleMdip())
+        ){
+            throw new IllegalArgumentException("IP和IP掩码不匹配!静态规则名称:" +
+                                                object.getStaticRuleName() + "，源ip:" +
+                                                object.getStaticRuleSip() + "，源ip掩码:" +
+                                                object.getStaticRuleMsip() + "，目的ip:" +
+                                                object.getStaticRuleDip() + "，目的ip掩码:" +
+                                                object.getStaticRuleMdip() );
+        }
         cachedDataList.add(object);
         if (cachedDataList.size() > batchCount) {
             saveData();

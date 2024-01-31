@@ -6,6 +6,7 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,8 @@ public class StaticRuleController implements StaticRuleControllerApi {
     //以Excel方式批量导入静态规则
     @PostMapping("/upload")
     @Override
-    public ResponseResult uploadFile(@RequestPart("file")MultipartFile uploadFile) throws IOException {
+    public ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空")
+                                         MultipartFile uploadFile) throws IOException {
         EasyExcel.read(uploadFile.getInputStream(), StaticRuleObject.class,
                 new StaticRuleDataListener(staticRuleService)).sheet().doRead();
         return ResponseResult.ok();
