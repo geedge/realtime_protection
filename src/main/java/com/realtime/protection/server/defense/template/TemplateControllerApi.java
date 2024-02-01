@@ -13,6 +13,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Tag(name = "防御策略模板API", description = "防御策略模板模块所有接口")
 public interface TemplateControllerApi {
     @PostMapping("/new")
@@ -39,7 +41,7 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "success": 新建防御策略模板是否成功
-                                                    
+                                                                                                        
                                                     "template_id": 新建防御策略模板ID
                                                     """
                                     )
@@ -147,17 +149,17 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "template_id": 防御策略模板ID
-                                                    
+                                                                                                        
                                                     "template_name": 防御策略模板名称
-                                                    
+                                                                                                        
                                                     "protect_level_low": 防御策略模板日常态数据
-                                                    
+                                                                                                        
                                                     "protect_level_medium": 防御策略模板应急态数据
-                                                    
+                                                                                                        
                                                     "protect_level_high": 防御策略模板紧急态数据
-                                                    
+                                                                                                        
                                                     "template_used_times": 防御策略模板使用次数
-                                                    
+                                                                                                        
                                                     "running_tasks": 防御策略模板任务运行数量
                                                     """
                                     )
@@ -232,17 +234,17 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "template_id": 防御策略模板ID
-                                                    
+                                                                                                        
                                                     "template_name": 防御策略模板名称
-                                                    
+                                                                                                        
                                                     "protect_level_low": 防御策略模板日常态数据
-                                                    
+                                                                                                        
                                                     "protect_level_medium": 防御策略模板应急态数据
-                                                    
+                                                                                                        
                                                     "protect_level_high": 防御策略模板紧急态数据
-                                                    
+                                                                                                        
                                                     "template_used_times": 防御策略模板使用次数
-                                                    
+                                                                                                        
                                                     "running_tasks": 防御策略模板任务运行数量
                                                     """
                                     )
@@ -279,7 +281,7 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "success": 更新是否成功
-                                                    
+                                                                                                        
                                                     "template_id": 更新的策略模板ID
                                                     """
                                     )
@@ -317,7 +319,7 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "success": 删除是否成功
-                                                    
+                                                                                                        
                                                     "template_id": 删除的策略模板ID
                                                     """
                                     )
@@ -329,4 +331,54 @@ public interface TemplateControllerApi {
             }
     )
     ResponseResult deleteTemplate(@PathVariable @Min(1) Integer templateId);
+
+
+    @GetMapping("/source_system")
+    @Operation(
+            summary = "查询来源系统名称",
+            description = "查询策略模板中的所有来源系统名称",
+            responses = {
+                    @ApiResponse(
+                            description = "返回来源系统名称查询结果，返回字符串列表",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            }
+    )
+    ResponseResult querySourceSystem();
+
+    @GetMapping("/query/event_name/{sourceSystem}")
+    @Operation(
+            summary = "查询事件类型",
+            description = "查询当前来源系统下的事件类型",
+            responses = {
+                    @ApiResponse(
+                            description = "返回当前来源系统下的事件类型，返回字符串列表",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            }
+    )
+    ResponseResult queryEventName(@PathVariable String sourceSystem);
+
+    @PostMapping("/query/templateId")
+    @Operation(
+            summary = "查询策略模板id",
+            description = "根据来源系统和事件类型查询策略模板id",
+            responses = {
+                    @ApiResponse(
+                            description = "返回来源系统和事件类型对应的策略模板id，整数",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            }
+    )
+
+    public ResponseResult queryTemplateId(@RequestBody Map<String,String> map);
 }

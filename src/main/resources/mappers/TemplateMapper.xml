@@ -113,6 +113,19 @@
             </if>
         </where>
     </select>
+    <select id="querySourceSystem" resultType="java.lang.String">
+        SELECT DISTINCT strategy_template_source_system FROM t_strategy_template
+    </select>
+    <select id="queryEventName" resultType="java.lang.String">
+        SELECT DISTINCT strategy_template_name
+        FROM t_strategy_template
+        WHERE strategy_template_source_system = #{sourceSystem}
+    </select>
+    <select id="queryTemplateId" resultType="java.lang.Integer">
+        SELECT strategy_template_id
+        FROM t_strategy_template
+        WHERE strategy_template_name = #{eventName} AND strategy_template_source_system = #{sourceSystem}
+    </select>
 
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template

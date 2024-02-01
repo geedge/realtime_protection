@@ -28,4 +28,10 @@ public interface TemplateMapper {
     Boolean deleteTemplate(@Param("template_id") Integer templateId);
 
     Integer queryTemplateTotalNum(String templateName);
+
+    List<String> querySourceSystem();
+
+    List<String> queryEventName(String sourceSystem);
+
+    Integer queryTemplateId(String sourceSystem, String eventName);
 }

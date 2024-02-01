@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/template")
@@ -75,4 +76,29 @@ public class TemplateController implements TemplateControllerApi {
                 .setData("template_id", templateId)
                 .setData("success", templateService.deleteTemplate(templateId));
     }
+
+    @Override
+    @GetMapping("/query/source_system")
+    public ResponseResult querySourceSystem() {
+        return ResponseResult.ok()
+                .setData("source_system", templateService.querySourceSystem());
+    }
+
+    @Override
+    @GetMapping("/query/event_name/{sourceSystem}")
+    public ResponseResult queryEventName(@PathVariable String sourceSystem) {
+        return ResponseResult.ok()
+                .setData("event_name", templateService.queryEventName(sourceSystem));
+    }
+
+    @Override
+    @PostMapping("/query/templateId")
+    public ResponseResult queryTemplateId(@RequestBody Map<String,String> map) {
+        String sourceSystem = map.get("source_system");
+        String eventName = map.get("event_name");
+        return ResponseResult.ok()
+                .setData("template_id", templateService.queryTemplateId(sourceSystem, eventName));
+    }
+
+
 }

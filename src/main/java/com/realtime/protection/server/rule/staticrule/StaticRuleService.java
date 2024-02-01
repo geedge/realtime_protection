@@ -36,7 +36,7 @@ public class StaticRuleService {
             throw new RuntimeException(e);
         }
     }
-    private Boolean isIpMaskValid(String ip, String mip)  {
+    public Boolean isIpMaskValid(String ip, String mip)  {
         if (ip == null && mip != null)  throw new IllegalArgumentException("有ip掩码但没设置ip");
         if (mip == null) return true;
 

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,7 +66,7 @@ public interface StaticRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Excel文件")
     )
-    ResponseResult uploadFile(@RequestPart("file")MultipartFile uploadFile) throws IOException;
+    ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空")MultipartFile uploadFile) throws IOException;
 
     @Operation(
             summary = "下载静态规则模板",
