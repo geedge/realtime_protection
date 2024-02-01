@@ -29,8 +29,9 @@ public class TemplateService {
         return template.getTemplateId();
     }
 
-    public List<Template> queryTemplates(String templateName, Integer page, Integer pageSize) {
-        return templateMapper.queryTemplates(templateName, page, pageSize);
+    public List<Template> queryTemplates(String templateName, String sourceSystem, String createUserName,
+                                         Integer page, Integer pageSize) {
+        return templateMapper.queryTemplates(templateName, sourceSystem, createUserName, page, pageSize);
     }
 
     public Boolean updateTemplate(Integer templateId, Template template) {
@@ -47,8 +48,8 @@ public class TemplateService {
         return templateMapper.deleteTemplate(templateId);
     }
 
-    public Integer queryTemplateTotalNum(String templateName) {
-        return templateMapper.queryTemplateTotalNum(templateName);
+    public Integer queryTemplateTotalNum(String templateName, String sourceSystem, String createUserName) {
+        return templateMapper.queryTemplateTotalNum(templateName, sourceSystem, createUserName);
     }
 
     public List<String> querySourceSystem() {

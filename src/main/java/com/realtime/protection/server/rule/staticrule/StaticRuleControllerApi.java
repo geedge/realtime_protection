@@ -11,7 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,24 +35,25 @@ public interface StaticRuleControllerApi {
                                             implementation = ResponseResult.class),
                                     examples = @ExampleObject(
                                             name = "新增静态规则",
-                                            value = "{\n" +
-                                                    "  \"code\": 200,\n" +
-                                                    "  \"message\": \"request succeed\",\n" +
-                                                    "  \"data\": {\n" +
-                                                    "    \"static_rule_id\": 1095,\n" +
-                                                    "    \"static_rule_name\": \"静态规则测试\"\n" +
-                                                    "  }\n" +
-                                                    "}",
-                                            description = "static_rule_id:新增静态规则名称"+
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "static_rule_id": 1095,
+                                                        "static_rule_name": "静态规则测试"
+                                                      }
+                                                    }""",
+                                            description = "static_rule_id:新增静态规则名称" +
                                                     "static_rule_name:新增静态规则id"
                                     )
-                           )
+                            )
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "静态规则信息")
     )
-    ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object) ;
+    ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object);
 
     @Operation(
             summary = "批量导入静态规则",
@@ -66,7 +70,7 @@ public interface StaticRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Excel文件")
     )
-    ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空")MultipartFile uploadFile) throws IOException;
+    ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile) throws IOException;
 
     @Operation(
             summary = "下载静态规则模板",
@@ -81,7 +85,7 @@ public interface StaticRuleControllerApi {
                     )
             }
     )
-    void downloadTemplate(HttpServletResponse response) throws IOException ;
+    void downloadTemplate(HttpServletResponse response) throws IOException;
 
     @Operation(
             summary = "删除静态规则",
@@ -94,17 +98,18 @@ public interface StaticRuleControllerApi {
                                     schema = @Schema(implementation = ResponseResult.class),
                                     examples = @ExampleObject(
                                             name = "删除多个静态规则",
-                                            value = "{\n" +
-                                                    "  \"code\": 200,\n" +
-                                                    "  \"message\": \"request succeed\",\n" +
-                                                    "  \"data\": {\n" +
-                                                    "    \"success\": true,\n" +
-                                                    "    \"static_rule_id\": [\n" +
-                                                    "      11\n" +
-                                                    "    ]\n" +
-                                                    "  }\n" +
-                                                    "}",
-                                            description = "static_rule_id:删除静态规则id列表"+
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "static_rule_id": [
+                                                          11
+                                                        ]
+                                                      }
+                                                    }""",
+                                            description = "static_rule_id:删除静态规则id列表" +
                                                     "success:是否成功"
                                     )
 
@@ -115,7 +120,7 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "ids", description = "静态规则id数组")
             }
     )
-    ResponseResult delete(@PathVariable List<Integer> ids) ;
+    ResponseResult delete(@PathVariable List<Integer> ids);
 
     @Operation(
             summary = "修改静态规则",
@@ -128,11 +133,12 @@ public interface StaticRuleControllerApi {
                                     schema = @Schema(implementation = ResponseResult.class),
                                     examples = @ExampleObject(
                                             name = "修改静态规则",
-                                            value = "{\n" +
-                                                    "  \"code\": 200,\n" +
-                                                    "  \"message\": \"request succeed\",\n" +
-                                                    "  \"data\": {\"success\": true,}\n" +
-                                                    "}"
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {"success": true,}
+                                                    }"""
 
                                     )
                             )
@@ -145,7 +151,7 @@ public interface StaticRuleControllerApi {
                     description = "静态规则信息")
     )
     ResponseResult updateStaticRule(@PathVariable Integer id,
-                                           @RequestBody @Valid StaticRuleObject object) ;
+                                    @RequestBody @Valid StaticRuleObject object);
 
     @Operation(
             summary = "查询单个静态规则",
@@ -162,7 +168,7 @@ public interface StaticRuleControllerApi {
             },
             parameters = {@Parameter(name = "id", description = "静态规则ID", example = "38")}
     )
-    ResponseResult queryStaticRuleById(@PathVariable Integer id) ;
+    ResponseResult queryStaticRuleById(@PathVariable Integer id);
 
     @Operation(
             summary = "分页查询静态规则",
@@ -177,17 +183,18 @@ public interface StaticRuleControllerApi {
                                             anyOf = {ResponseResult.class, StaticRuleObject.class}),
                                     examples = @ExampleObject(
                                             name = "分页查询静态规则",
-                                            value = "{\n" +
-                                                    "  \"code\": 200,\n" +
-                                                    "  \"message\": \"request succeed\",\n" +
-                                                    "  \"data\": {\n" +
-                                                    "    \"static_rule_list\": [\n" +
-                                                    "    ],\n" +
-                                                    "    \"static_rule_total_num\": 1080\n" +
-                                                    "  }\n" +
-                                                    "}",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "static_rule_list": [
+                                                        ],
+                                                        "static_rule_total_num": 1080
+                                                      }
+                                                    }""",
 
-                                            description = "static_rule_list:静态规则列表"+
+                                            description = "static_rule_list:静态规则列表" +
                                                     "static_rule_total_num:静态规则总数"
                                     )
                             )
@@ -211,7 +218,7 @@ public interface StaticRuleControllerApi {
     );
 
 
-    @Operation( summary = "批量查询静态规则",
+    @Operation(summary = "批量查询静态规则",
             description = "根据静态规则ID列表查询多个静态规则的所有详细信息",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -239,11 +246,12 @@ public interface StaticRuleControllerApi {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ResponseResult.class),
                                     examples = @ExampleObject(
-                                            value = "{\n" +
-                                                    "  \"code\": 200,\n" +
-                                                    "  \"message\": \"request succeed\",\n" +
-                                                    "  \"data\": {}\n" +
-                                                    "}"
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {}
+                                                    }"""
                                     )
                             )
                     )
@@ -252,10 +260,7 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "id", description = "静态规则id")
             }
     )
-    ResponseResult deleteStaticRule(@PathVariable Integer id) ;
-
-
-
+    ResponseResult deleteStaticRule(@PathVariable Integer id);
 
 
     @Operation(
@@ -275,6 +280,5 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "auditStatus", description = "要修改为的静态规则审核状态")
             }
     )
-    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) ;
-
-    }
+    ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
+}

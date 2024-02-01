@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,15 +30,16 @@ public interface WhiteListControllerApi {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ResponseResult.class),
                                     examples = {@ExampleObject(
-                                            value = "{\n" +
-                                                    "  \"code\": 200,\n" +
-                                                    "  \"message\": \"request succeed\",\n" +
-                                                    "  \"data\": {\n" +
-                                                    "    \"whiteobj_name\": \"白名单测试\",\n" +
-                                                    "    \"success\": true,\n" +
-                                                    "    \"whiteobj_id\": 7026\n" +
-                                                    "  }\n" +
-                                                    "}"
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "whiteobj_name": "白名单测试",
+                                                        "success": true,
+                                                        "whiteobj_id": 7026
+                                                      }
+                                                    }"""
                             )}
                             )
                     )
