@@ -15,7 +15,7 @@ public class KafkaConsumerService {
         this.alertMessageService = alertMessageService;
     }
 
-    @KafkaListener(id = "${spring.kafka.consumer.group-id}", topics = "${spring.kafka.consumer.topic-name}",
+    @KafkaListener(id = "AlertGroup", topics = "topic-alert",
             errorHandler = "myKafkaListenerErrorHandler",
             properties = {"spring.json.value.default.type=com.realtime.protection.configuration.entity.alert.AlertMessage"})
     public void consume(AlertMessage alert, Acknowledgment ack) {
