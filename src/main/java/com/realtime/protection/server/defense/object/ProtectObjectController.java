@@ -70,14 +70,38 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     @GetMapping("/query")
     public ResponseResult queryProtectObjects(@RequestParam(value = "proobj_name", required = false)
                                               String protectObjectName,
-                                              @RequestParam(value = "proobj_id", required = false) @Min(1)
+                                              @RequestParam(value = "proobj_id", required = false)
+                                              @Min(value = 1, message = "ID值不可小于1")
                                               Integer protectObjectId,
+                                              @RequestParam(value = "proobj_systemm_name", required = false)
+                                              String protectObjectSystemName,
+                                              @RequestParam(value = "proobj_ip_address", required = false)
+                                              String protectObjectIPAddress,
+                                              @RequestParam(value = "proobj_port_min", required = false)
+                                              Integer protectObjectPortMin,
+                                              @RequestParam(value = "proobj_port_max", required = false)
+                                              Integer protectObjectPortMax,
+                                              @RequestParam(value = "proobj_url", required = false)
+                                              String protectObjectURL,
+                                              @RequestParam(value = "proobj_protocol", required = false)
+                                              String protectObjectProtocol,
+                                              @RequestParam(value = "proobj_create_username", required = false)
+                                              String protectObjectCreateUsername,
+                                              @RequestParam(value = "proobj_audit_status", required = false)
+                                              Integer protectObjectAuditStatus,
                                               @RequestParam("page") @Min(1) Integer page,
                                               @RequestParam("page_size") @Min(1) Integer pageSize) {
         return ResponseResult.ok()
-                .setData("proobj_list", protectObjectService.queryProtectObjects(protectObjectName,
-                        protectObjectId, page, pageSize))
-                .setData("total_num", protectObjectService.queryProtectObjectsTotalNum(protectObjectName, protectObjectId));
+                .setData("proobj_list", protectObjectService.queryProtectObjects(
+                        protectObjectName, protectObjectId, protectObjectSystemName, protectObjectIPAddress,
+                        protectObjectPortMin, protectObjectPortMax, protectObjectURL, protectObjectProtocol,
+                        protectObjectCreateUsername, protectObjectAuditStatus,
+                        page, pageSize))
+                .setData("total_num", protectObjectService.queryProtectObjectsTotalNum(
+                        protectObjectName, protectObjectId, protectObjectSystemName, protectObjectIPAddress,
+                        protectObjectPortMin, protectObjectPortMax, protectObjectURL, protectObjectProtocol,
+                        protectObjectCreateUsername, protectObjectAuditStatus
+                ));
     }
 
     @Override

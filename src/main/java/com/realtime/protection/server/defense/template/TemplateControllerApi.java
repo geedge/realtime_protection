@@ -168,11 +168,15 @@ public interface TemplateControllerApi {
             },
             parameters = {
                     @Parameter(name = "template_name", description = "防御策略模板名称", example = "DDOS"),
+                    @Parameter(name = "source_system", description = "策略模板来源那系统", example = "xxx系统"),
+                    @Parameter(name = "create_user_name", description = "创建人名称", example = "xxx"),
                     @Parameter(name = "page", description = "页码", example = "1"),
                     @Parameter(name = "page_size", description = "每页对象数量", example = "5")
             }
     )
     ResponseResult queryTemplates(@RequestParam(value = "template_name", required = false) String templateName,
+                                  @RequestParam(value = "source_system", required = false) String sourceSystem,
+                                  @RequestParam(value = "create_user_name", required = false) String createUserName,
                                   @RequestParam("page") @Min(1) Integer page,
                                   @RequestParam("page_size") @Min(1) Integer pageSize);
 
@@ -379,6 +383,5 @@ public interface TemplateControllerApi {
                     )
             }
     )
-
-    public ResponseResult queryTemplateId(@RequestBody Map<String,String> map);
+    ResponseResult queryTemplateId(@RequestBody Map<String, String> map);
 }

@@ -15,6 +15,8 @@ public interface TemplateMapper {
     void newProtectLevel(@Param("level") ProtectLevel protectLevel);
 
     List<Template> queryTemplates(@Param("template_name") String templateName,
+                                  @Param("source_system") String sourceSystem,
+                                  @Param("create_username") String createUsername,
                                   @Param("page") Integer page,
                                   @Param("page_size") Integer pageSize);
 
@@ -27,7 +29,9 @@ public interface TemplateMapper {
     @Delete("DELETE FROM t_strategy_template WHERE strategy_template_id = #{template_id}")
     Boolean deleteTemplate(@Param("template_id") Integer templateId);
 
-    Integer queryTemplateTotalNum(String templateName);
+    Integer queryTemplateTotalNum(@Param("template_name") String templateName,
+                                  @Param("source_system") String sourceSystem,
+                                  @Param("create_username") String createUsername);
 
     List<String> querySourceSystem();
 

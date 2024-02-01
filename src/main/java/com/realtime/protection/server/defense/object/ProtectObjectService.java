@@ -56,8 +56,17 @@ public class ProtectObjectService {
         return sqlSessionWrapper.startBatchSession(ProtectObjectMapper.class, newProtectObjectFunction, protectObjectList);
     }
 
-    public List<ProtectObject> queryProtectObjects(String protectObjectName, Integer protectObjectId, Integer page, Integer pageSize) {
-        return protectObjectMapper.queryProtectObjects(protectObjectName, protectObjectId, page, pageSize);
+    public List<ProtectObject> queryProtectObjects(String protectObjectName, Integer protectObjectId,
+                                                   String protectObjectSystemName, String protectObjectIPAddress,
+                                                   Integer protectObjectPortMin, Integer protectObjectPortMax,
+                                                   String protectObjectURL, String protectObjectProtocol,
+                                                   String protectObjectCreateUsername, Integer protectObjectAuditStatus,
+                                                   Integer page, Integer pageSize) {
+        return protectObjectMapper.queryProtectObjects(
+                protectObjectName, protectObjectId, protectObjectSystemName, protectObjectIPAddress,
+                protectObjectPortMin, protectObjectPortMax, protectObjectURL, protectObjectProtocol,
+                protectObjectCreateUsername, protectObjectAuditStatus,
+                page, pageSize);
     }
 
     public ProtectObject queryProtectObject(Integer protectObjectId) {
@@ -113,7 +122,15 @@ public class ProtectObjectService {
         return resultMap;
     }
 
-    public Integer queryProtectObjectsTotalNum(String protectObjectName, Integer protectObjectId) {
-        return protectObjectMapper.queryProtectObjectsTotalNum(protectObjectName, protectObjectId);
+    public Integer queryProtectObjectsTotalNum(String protectObjectName, Integer protectObjectId,
+                                               String protectObjectSystemName, String protectObjectIPAddress,
+                                               Integer protectObjectPortMin, Integer protectObjectPortMax,
+                                               String protectObjectURL, String protectObjectProtocol,
+                                               String protectObjectCreateUsername, Integer protectObjectAuditStatus) {
+        return protectObjectMapper.queryProtectObjectsTotalNum(
+                protectObjectName, protectObjectId, protectObjectSystemName, protectObjectIPAddress,
+                protectObjectPortMin, protectObjectPortMax, protectObjectURL, protectObjectProtocol,
+                protectObjectCreateUsername, protectObjectAuditStatus
+        );
     }
 }

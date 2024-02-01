@@ -206,9 +206,12 @@
         from t_protect_object
         where protect_object_id = #{protectObjectId}
     </select>
+
     <select id="queryDynamicRuleTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM t_dynamic_rule
+        left join t_strategy_template
+        on t_dynamic_rule.template_id = t_strategy_template.strategy_template_id
         <where>
             <if test="dynamicRuleName != null">
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
