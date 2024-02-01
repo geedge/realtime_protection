@@ -82,7 +82,8 @@ class TemplateServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testQueryTemplate() {
-        List<Template> templates = templateService.queryTemplates("DDOS", 1, 5);
+        List<Template> templates = templateService.queryTemplates(
+                "DDOS", null, null,1, 5);
         assertEquals(5, templates.size());
         for (Template template : templates) {
             assertTrue(template.getTemplateId() > 0);
@@ -93,7 +94,8 @@ class TemplateServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testUpdateTemplateSuccess() {
-        List<Template> templates = templateService.queryTemplates("DDOS", 1, 1);
+        List<Template> templates = templateService.queryTemplates(
+                "DDOS", null, null, 1, 1);
         Template testTemplate = templates.get(0);
         testTemplate.setTemplateName("洪泛型DDOS攻击-" + LocalDateTime.now());
 

@@ -39,8 +39,12 @@ public class AlertMessageTest {
     @Test
     void testReceiveAlertMessage() {
 
-        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(null, null, 1, 1);
-        List<Template> templates = templateService.queryTemplates(null, 1, 1);
+        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
+                null, null, null, null,
+                null, null, null, null,
+                null, null, 1, 1);
+        List<Template> templates = templateService.queryTemplates(
+                null, null, null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
