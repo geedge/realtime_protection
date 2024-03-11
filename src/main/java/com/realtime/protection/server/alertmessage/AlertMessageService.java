@@ -11,9 +11,9 @@ import com.realtime.protection.server.command.CommandService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
-
-
+// AlertMessage的UUID在mapper插入数据库时生成了，这里提前生成好像美神恶魔用
 @Service
 public class AlertMessageService {
     private final CommandService commandService;
@@ -27,39 +27,41 @@ public class AlertMessageService {
     }
 
     @DSTransactional
-    public void processAlertMessage(AlertMessage alertMessage) {
+    public String processAlertMessage(AlertMessage alertMessage) {
         TaskCommandInfo dynamicTaskCommandInfo = generateDynamicCommand(alertMessage);
 
         Integer taskStatus = dynamicTaskCommandInfo.getTaskStatus();
         Integer taskType = dynamicTaskCommandInfo.getTaskType();
+        String alertMessageUUID = null;
 
         if (taskType == TaskTypeEnum.DYNAMIC.getTaskType())//实时
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, true, alertMessage);
+                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, true, alertMessage);
                     break;
                 case PAUSED:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, true, alertMessage);
+                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, true, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    insertAlertMessageOnly(alertMessage);
+                    alertMessageUUID = insertAlertMessageOnly(alertMessage);
                     break;
             }
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, false, alertMessage);
+                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, false, alertMessage);
                     break;
                 case PAUSED:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, false, alertMessage);
+                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, false, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    insertAlertMessageOnly(alertMessage);
+                    alertMessageUUID = insertAlertMessageOnly(alertMessage);
             }
+        return alertMessageUUID;
     }
 
 
@@ -87,7 +89,7 @@ public class AlertMessageService {
     }
 
     @DSTransactional
-    private void insertCommandAndAlertMessage(TaskCommandInfo dynamicTaskCommandInfo,
+    private String insertCommandAndAlertMessage(TaskCommandInfo dynamicTaskCommandInfo,
                                               Boolean isValid,
                                               Boolean isJudged,
                                               AlertMessage alertMessage){
@@ -98,12 +100,21 @@ public class AlertMessageService {
 
         //alertmessage入库
         alertMessage.setCommandUUID(commandUUID);
+        String alertMessageUUID = UUID.randomUUID().toString();
+        alertMessage.setAlertMessageUUID(alertMessageUUID);
         alertMessageMapper.insertAlertMessage(alertMessage);
+
+        return alertMessageUUID;
     }
-    private void insertAlertMessageOnly(AlertMessage alertMessage){
+    private String insertAlertMessageOnly(AlertMessage alertMessage){
         //alertmessage入库
         alertMessage.setCommandUUID(null);
+        String alertMessageUUID = UUID.randomUUID().toString();
+        alertMessage.setAlertMessageUUID(alertMessageUUID);
         alertMessageMapper.insertAlertMessage(alertMessage);
+
+        return alertMessageUUID;
+
     }
 
 

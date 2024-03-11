@@ -6,10 +6,12 @@ import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.Task;
+import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.server.defense.object.ProtectObjectService;
 import com.realtime.protection.server.defense.template.TemplateService;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
 import com.realtime.protection.server.task.TaskService;
+import com.realtime.protection.server.task.status.StateChangeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,19 +27,22 @@ public class AlertMessageTest {
     private final TemplateService templateService;
     private final DynamicRuleService dynamicRuleService;
     private final TaskService taskService;
+    private final StateChangeService stateChangeService;
     @Autowired
     public AlertMessageTest(AlertMessageService alertMessageService
     ,ProtectObjectService protectObjectService,TemplateService templateService,
-                            DynamicRuleService dynamicRuleService,TaskService taskService) {
+                            DynamicRuleService dynamicRuleService,TaskService taskService,
+                            StateChangeService stateChangeService) {
         this.alertMessageService = alertMessageService;
         this.protectObjectService = protectObjectService;
         this.templateService = templateService;
         this.dynamicRuleService = dynamicRuleService;
         this.taskService = taskService;
+        this.stateChangeService = stateChangeService;
     }
 
     @Test
-    void testReceiveAlertMessage() {
+    void testReceiveAlertMessage() throws DorisStartException {
 
         List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
                 null, null, null, null,
@@ -58,7 +63,7 @@ public class AlertMessageTest {
 
 
         Task task = new Task();
-        task.setTaskName("dong态测试2");
+        task.setTaskName("生产告警信息测试");
         LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
         LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
         task.setTaskStartTime(taskStartTime);
@@ -69,18 +74,29 @@ public class AlertMessageTest {
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
         task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
-
         Long taskId = taskService.newTask(task);
+        //审核状态
+        taskService.changeTaskAuditStatus(taskId, 2);
+        //启动任务
+        stateChangeService.changeState(2, taskId, false);
 
-        AlertMessage alert = new AlertMessage();
-        FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
-        fiveTupleWithMask.setSourceIP("1.1.1.1");
+        for (int i = 0 ; i< 10; i++) {
+            AlertMessage alert = new AlertMessage();
+            FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
+            fiveTupleWithMask.setSourceIP("1.1.1." + i);
+            fiveTupleWithMask.setDestinationIP("2.2.2." + i);
+            fiveTupleWithMask.setSourcePort("80");
+            fiveTupleWithMask.setDestinationPort("80");
+            fiveTupleWithMask.setProtocol("tcp");
 
-        alert.setDynamicRuleId(dynamicRuleId);
-        alert.setTaskId(taskId);
-        alert.setFiveTupleWithMask(fiveTupleWithMask);
-        alert.setContent("testcontent");
-        alertMessageService.processAlertMessage(alert);
+            alert.setDynamicRuleId(dynamicRuleId);
+            alert.setTaskId(taskId);
+            alert.setFiveTupleWithMask(fiveTupleWithMask);
+            alert.setContent("testcontent");
+            alertMessageService.processAlertMessage(alert);
+        }
+
+
 
     }
 

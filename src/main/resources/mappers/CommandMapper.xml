@@ -165,7 +165,7 @@
                 AND MASK_SRC_IP = #{command_info.fiveTupleWithMask.maskSourceIP}
             </if>
             <if test="command_info.fiveTupleWithMask.maskSourcePort != null">
-                AND MASK_SOURCE_PORT = #{command_info.fiveTupleWithMask.maskSourcePort}
+                AND MASK_SRC_PORT = #{command_info.fiveTupleWithMask.maskSourcePort}
             </if>
             <if test="command_info.fiveTupleWithMask.maskDestinationIP != null">
                 AND MASK_DST_IP = #{command_info.fiveTupleWithMask.maskDestinationIP}
