@@ -127,7 +127,13 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testQueryDynamicRuleObject() {
         List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject(
-                null,null,"1", null,1, 10);
+                null,null,null, null,1, 10);
         System.out.println(objects);
+    }
+    @Test
+    void testQueryDynamicRuleTotalNum(){
+        Integer num = dynamicRuleService.queryDynamicRuleTotalNum(
+                null,null,null,null);
+        System.out.println(num);
     }
 }
