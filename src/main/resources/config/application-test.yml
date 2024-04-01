@@ -17,7 +17,7 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           username: root
           password: aiihhbfcsy123!@#
-          url: jdbc:mysql://192.168.107.89:3306/realtime_protection
+          url: jdbc:mysql://192.168.107.89:3306/realtime_protection?serverTimezone=Asia/Shanghai
           hikari:
             is-auto-commit: false
         doris:
