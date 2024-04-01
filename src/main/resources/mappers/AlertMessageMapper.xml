@@ -32,6 +32,7 @@
         <result column="has_protocol" property="hasProtocol"/>
         <result column="has_url" property="hasURL"/>
         <result column="has_dns" property="hasDNS"/>
+        <result column="is_full_flow" property="isFullFlow"/>
     </resultMap>
 
     <resultMap id="alertMessageMap" type="com.realtime.protection.configuration.entity.alert.AlertMessage">
@@ -113,7 +114,8 @@
             t_protect_level.has_peer_port,
             t_protect_level.has_protocol,
             t_protect_level.has_url,
-            t_protect_level.has_dns
+            t_protect_level.has_dns,
+            t_protect_level.is_full_flow
         FROM t_strategy_template
         <if test="protectLevel == 1">
             left join t_protect_level on t_strategy_template.strategy_template_low_level_id = t_protect_level.protect_level_id

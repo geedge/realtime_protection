@@ -97,7 +97,7 @@ public class TaskCommandInfo {
     @Schema(description = "防御策略模板ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer templateId;
 
-    @Schema(description = "防护等级", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防护等级,1代表low、2代表medium、3代表high", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectLevel;
 
     @Schema(description = "指令所属任务的运行状态", accessMode = Schema.AccessMode.READ_ONLY)
