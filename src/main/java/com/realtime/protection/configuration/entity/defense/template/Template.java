@@ -13,13 +13,18 @@ public class Template {
 
     @JsonProperty("template_name")
     @NotNull(message = "template_name字段不能为空。")
-    @Schema(description = "防御策略模板名称", example = "自定义模板")
+    @Schema(description = "防御策略模板名称(事件类型)", example = "APT攻击事件")
     private String templateName;
 
     @JsonProperty("source_system")
     @NotNull(message = "source_system字段不能为空。")
     @Schema(description = "防御策略模板数据来源系统", example = "BW系统")
     private String sourceSystem;
+
+    @JsonProperty("description")
+    @NotNull(message = "source_system字段不能为空。")
+    @Schema(description = "对策略模板的文字描述。方便用户使用", example = "zd防护对象的全流量")
+    private String description;
 
     @JsonProperty("protect_level_low")
     @NotNull(message = "protect_level_low字段不能为空。")

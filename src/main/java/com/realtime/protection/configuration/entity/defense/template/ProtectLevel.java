@@ -28,4 +28,7 @@ public class ProtectLevel {
 
     @Schema(description = "该防护等级是否需要提取DNS")
     private Boolean hasDNS = false;
+
+    @Schema(description = "该防护等级是处置防护对象的全流量or单向流量")
+    private Boolean isFullFlow = false;
 }

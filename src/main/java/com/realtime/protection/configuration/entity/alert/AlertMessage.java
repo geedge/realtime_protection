@@ -35,4 +35,6 @@ public class AlertMessage {
     @JsonProperty("alert_message_uuid")
     private String alertMessageUUID;
 
+    @JsonProperty("protect_object_is_src_dst")
+    private int protectIsSrcOrDst;
 }
