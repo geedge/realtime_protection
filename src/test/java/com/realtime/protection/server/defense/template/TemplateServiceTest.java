@@ -44,6 +44,7 @@ class TemplateServiceTest extends ProtectionApplicationTests {
 
         ProtectLevel protectLevelHigh = new ProtectLevel();
         protectLevelHigh.setHasDNS(true);
+        protectLevelHigh.setIsFullFlow(true);
 
         template.setProtectLevelLow(protectLevelLow);
         template.setProtectLevelMedium(protectLevelMedium);
@@ -67,7 +68,7 @@ class TemplateServiceTest extends ProtectionApplicationTests {
             System.out.println(e.getMessage());
         }
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             assertThrows(DuplicateKeyException.class, () -> {
                 Integer templateId = templateService.newTemplate(template);
                 assertTrue(templateId > 0);

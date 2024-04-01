@@ -8,8 +8,10 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,45 +29,46 @@ public class AlertMessageService {
     }
 
     @DSTransactional
-    public String processAlertMessage(AlertMessage alertMessage) {
-        TaskCommandInfo dynamicTaskCommandInfo = generateDynamicCommand(alertMessage);
+    public void processAlertMessage(AlertMessage alertMessage) {
+        //根据告警信息——>生成指令
+        List<TaskCommandInfo> dynamicTaskCommandInfoList = generateDynamicCommand(alertMessage);
+        //获取任务状态，设置指令的isValid字段，且是否生成指令入库（除了RUNING\PAUSED状态，其他都不入库）。
+        Integer taskStatus = dynamicTaskCommandInfoList.get(0).getTaskStatus();
+        //获取任务类型，设置指令的isJudged字段。
+        Integer taskType = dynamicTaskCommandInfoList.get(0).getTaskType();
 
-        Integer taskStatus = dynamicTaskCommandInfo.getTaskStatus();
-        Integer taskType = dynamicTaskCommandInfo.getTaskType();
-        String alertMessageUUID = null;
 
         if (taskType == TaskTypeEnum.DYNAMIC.getTaskType())//实时
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, true, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, true, alertMessage);
                     break;
                 case PAUSED:
-                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, true, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, true, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    alertMessageUUID = insertAlertMessageOnly(alertMessage);
+                    insertAlertMessageOnly(alertMessage);
                     break;
             }
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, true, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, false, alertMessage);
                     break;
                 case PAUSED:
-                    alertMessageUUID = insertCommandAndAlertMessage(dynamicTaskCommandInfo, false, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, false, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    alertMessageUUID = insertAlertMessageOnly(alertMessage);
+                    insertAlertMessageOnly(alertMessage);
             }
-        return alertMessageUUID;
     }
 
 
-    private TaskCommandInfo generateDynamicCommand(AlertMessage alertMessage){
+    private List<TaskCommandInfo> generateDynamicCommand(AlertMessage alertMessage){
         Long taskId = alertMessage.getTaskId();
         Integer DynamicRuleId = alertMessage.getDynamicRuleId();
 //        查task信息
@@ -79,32 +82,44 @@ public class AlertMessageService {
         ProtectLevel templateProtectLevel = alertMessageMapper.queryTemplateProtectLevel(
                 dynamicCommandInfo.getTemplateId(),
                 dynamicCommandInfo.getProtectLevel());
-        //根据策略模板和alertMessage中的FiveTupleWithMask生成要下发五元组信息
-        FiveTupleWithMask fiveTupleWithMaskNew =  updateFiveTupleWithMask(alertMessage.getFiveTupleWithMask(),
-                templateProtectLevel);
-        //指令加入策略模板筛选后的fiveTupleWithMaskNew
-        dynamicCommandInfo.setFiveTupleWithMask(fiveTupleWithMaskNew);
 
-        return dynamicCommandInfo;
+        //根据策略模板和alertMessage中的FiveTupleWithMask生成要下发五元组信息
+        //根据策略模板的is_full_flow字段，如果是双向流量会生成两个fiveTuple，所以返回List
+        List<FiveTupleWithMask> fiveTupleWithMaskNew =  updateFiveTupleWithMask(alertMessage.getFiveTupleWithMask(),
+                alertMessage.getProtectIsSrcOrDst(), templateProtectLevel);
+
+        //根据fiveTuple生成动态指令信息
+        List<TaskCommandInfo> dynamicCommandInfoList = new ArrayList<TaskCommandInfo>();
+        if (fiveTupleWithMaskNew.size() == 2){
+            TaskCommandInfo dynamicCommandInfo_bi = new TaskCommandInfo();
+            dynamicCommandInfo_bi.copyTaskCommandInfo(dynamicCommandInfo);
+            dynamicCommandInfo_bi.setFiveTupleWithMask(fiveTupleWithMaskNew.get(1));
+            dynamicCommandInfoList.add(dynamicCommandInfo_bi);
+        }
+        dynamicCommandInfo.setFiveTupleWithMask(fiveTupleWithMaskNew.get(0));
+        dynamicCommandInfoList.add(dynamicCommandInfo);
+
+        return dynamicCommandInfoList;
     }
 
     @DSTransactional
-    private String insertCommandAndAlertMessage(TaskCommandInfo dynamicTaskCommandInfo,
+    private void insertCommandAndAlertMessage(List<TaskCommandInfo> dynamicTaskCommandInfoList,
                                               Boolean isValid,
                                               Boolean isJudged,
                                               AlertMessage alertMessage){
-        //command入库
-        dynamicTaskCommandInfo.setIsValid(isValid);
-        dynamicTaskCommandInfo.setIsJudged(isJudged);
-        String commandUUID = commandService.createCommand(dynamicTaskCommandInfo);
+        for (TaskCommandInfo dynamicTaskCommandInfo : dynamicTaskCommandInfoList ){
+            //command入库
+            dynamicTaskCommandInfo.setIsValid(isValid);
+            dynamicTaskCommandInfo.setIsJudged(isJudged);
+            String commandUUID = commandService.createCommand(dynamicTaskCommandInfo);
 
-        //alertmessage入库
-        alertMessage.setCommandUUID(commandUUID);
-        String alertMessageUUID = UUID.randomUUID().toString();
-        alertMessage.setAlertMessageUUID(alertMessageUUID);
-        alertMessageMapper.insertAlertMessage(alertMessage);
+            //alertmessage入库
+            alertMessage.setCommandUUID(commandUUID);
+            String alertMessageUUID = UUID.randomUUID().toString();
+            alertMessage.setAlertMessageUUID(alertMessageUUID);
+            alertMessageMapper.insertAlertMessage(alertMessage);
+            }
 
-        return alertMessageUUID;
     }
     private String insertAlertMessageOnly(AlertMessage alertMessage){
         //alertmessage入库
@@ -119,31 +134,110 @@ public class AlertMessageService {
 
 
 
-    private FiveTupleWithMask updateFiveTupleWithMask(FiveTupleWithMask fiveTupleWithMask, ProtectLevel templateProtectLevel) {
+    private List<FiveTupleWithMask> updateFiveTupleWithMask(FiveTupleWithMask fiveTupleWithMask,
+                                                      int protectIsSrcOrDst,
+                                                      ProtectLevel templateProtectLevel) {
+        //参数是告警信息的FiveTupleWithMask、防护对象是src还是dst、某个安全等级下的安全事件策略模板templateProtectLevel
+        //首先先从告警信息中获取protectObject和peer
+        @Data
+        class CommunicateObject {
+            private String IP;
+            private String maskIP;
+            private String Port;
+            private String maskPort;
 
-        FiveTupleWithMask newFiveTupleWithMask = new FiveTupleWithMask();
-        newFiveTupleWithMask.copyFiveTupleWithMask(fiveTupleWithMask);
+            public CommunicateObject(String IP,
+                                     String maskIP,
+                                     String Port,
+                                     String maskPort) {
+                this.IP = IP;
+                this.maskIP = maskIP;
+                this.Port = Port;
+                this.maskPort = maskPort;
+            }
+        }
+        CommunicateObject protectObject;
+        CommunicateObject peer;
+        if (protectIsSrcOrDst == 0) {
+            protectObject = new CommunicateObject(
+                    fiveTupleWithMask.getSourceIP(),
+                    fiveTupleWithMask.getMaskSourceIP(),
+                    fiveTupleWithMask.getSourcePort(),
+                    fiveTupleWithMask.getMaskSourcePort()
+            );
+            peer = new CommunicateObject(
+                    fiveTupleWithMask.getDestinationIP(),
+                    fiveTupleWithMask.getMaskDestinationIP(),
+                    fiveTupleWithMask.getDestinationPort(),
+                    fiveTupleWithMask.getMaskDestinationPort()
+            );
+        } else {
+            protectObject = new CommunicateObject(
+                    fiveTupleWithMask.getDestinationIP(),
+                    fiveTupleWithMask.getMaskDestinationIP(),
+                    fiveTupleWithMask.getDestinationPort(),
+                    fiveTupleWithMask.getMaskDestinationPort()
+            );
+            peer = new CommunicateObject(
+                    fiveTupleWithMask.getSourceIP(),
+                    fiveTupleWithMask.getMaskSourceIP(),
+                    fiveTupleWithMask.getSourcePort(),
+                    fiveTupleWithMask.getMaskSourcePort()
+            );
+        }
+        //根据模板抽取防护对象和对端需要的字段
+        if (!templateProtectLevel.getHasProtectObjectIP()) {
+            protectObject.setIP(null);
+            protectObject.setMaskIP(null);
+        }
+        if (!templateProtectLevel.getHasProtectObjectPort()) {
+            protectObject.setPort(null);
+            protectObject.setMaskPort(null);
+        }
+        if (!templateProtectLevel.getHasPeerIP()) {
+            peer.setIP(null);
+            peer.setMaskIP(null);
+        }
+        if (!templateProtectLevel.getHasPeerPort()) {
+            peer.setPort(null);
+            peer.setMaskPort(null);
+        }
+        List<FiveTupleWithMask> newFiveTupleWithMask = new ArrayList<FiveTupleWithMask>();
+        //生成指令
+        FiveTupleWithMask command1 = new FiveTupleWithMask();
+        command1.setSourceIP(peer.getIP());
+        command1.setMaskSourceIP(peer.getMaskIP());
+        command1.setSourcePort(peer.getPort());
+        command1.setMaskSourcePort(peer.getMaskPort());
+        command1.setDestinationIP(protectObject.getIP());
+        command1.setMaskDestinationIP(protectObject.getMaskIP());
+        command1.setSourcePort(protectObject.getPort());
+        command1.setMaskSourcePort(protectObject.getMaskPort());
+        if (templateProtectLevel.getHasProtocol()){
+            command1.setProtocol(fiveTupleWithMask.getProtocol());
+            command1.setProtocol(fiveTupleWithMask.getMaskProtocol());
+        }
+        newFiveTupleWithMask.add(command1);
+        //若需要处置全方向流量，再生成防护对象为源的规则
+        if(templateProtectLevel.getIsFullFlow()){
+            FiveTupleWithMask command2 = new FiveTupleWithMask();
 
-        if(!templateProtectLevel.getHasProtectObjectIP()){
-            newFiveTupleWithMask.setDestinationIP(null);
-            newFiveTupleWithMask.setMaskDestinationIP(null);
+            command2.setSourceIP(protectObject.getIP());
+            command2.setMaskSourceIP(protectObject.getMaskIP());
+            command2.setSourcePort(protectObject.getPort());
+            command2.setMaskSourcePort(protectObject.getMaskPort());
+
+            command2.setDestinationIP(peer.getIP());
+            command2.setMaskDestinationIP(peer.getMaskIP());
+            command2.setSourcePort(peer.getPort());
+            command2.setMaskSourcePort(peer.getMaskPort());
+            if (templateProtectLevel.getHasProtocol()){
+                command2.setProtocol(fiveTupleWithMask.getProtocol());
+                command2.setProtocol(fiveTupleWithMask.getMaskProtocol());
+            }
+            newFiveTupleWithMask.add(command2);
         }
-        if(!templateProtectLevel.getHasProtectObjectPort()){
-            newFiveTupleWithMask.setDestinationPort(null);
-            newFiveTupleWithMask.setMaskDestinationPort(null);
-        }
-        if(!templateProtectLevel.getHasPeerIP()){
-            newFiveTupleWithMask.setSourceIP(null);
-            newFiveTupleWithMask.setMaskSourceIP(null);
-        }
-        if(!templateProtectLevel.getHasPeerPort()){
-            newFiveTupleWithMask.setSourcePort(null);
-            newFiveTupleWithMask.setMaskSourcePort(null);
-        }
-        if (!templateProtectLevel.getHasProtocol()) {
-            newFiveTupleWithMask.setProtocol(null);
-            newFiveTupleWithMask.setMaskProtocol(null);
-        }
+
         //目前告警信息还只是五元组，没有url、dns
         return newFiveTupleWithMask;
     }
