@@ -22,7 +22,6 @@ public class Template {
     private String sourceSystem;
 
     @JsonProperty("description")
-    @NotNull(message = "source_system字段不能为空。")
     @Schema(description = "对策略模板的文字描述。方便用户使用", example = "zd防护对象的全流量")
     private String description;
 

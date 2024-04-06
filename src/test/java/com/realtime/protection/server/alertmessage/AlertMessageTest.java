@@ -56,7 +56,7 @@ public class AlertMessageTest {
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
         object.setDynamicRuleRange("北京");
-        object.setDynamicRuleProtectLevel(2);
+        object.setDynamicRuleProtectLevel(1);
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
@@ -75,6 +75,7 @@ public class AlertMessageTest {
         task.setTaskCreateDepart("xxx");
         task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
         Long taskId = taskService.newTask(task);
+        System.out.println(taskId);
         //审核状态
         taskService.changeTaskAuditStatus(taskId, 2);
         //启动任务
@@ -83,16 +84,17 @@ public class AlertMessageTest {
         for (int i = 0 ; i< 10; i++) {
             AlertMessage alert = new AlertMessage();
             FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
-            fiveTupleWithMask.setSourceIP("1.1.1." + i);
-            fiveTupleWithMask.setDestinationIP("2.2.2." + i);
-            fiveTupleWithMask.setSourcePort("80");
-            fiveTupleWithMask.setDestinationPort("80");
+            fiveTupleWithMask.setSourceIP("111.1.1." + i);
+            fiveTupleWithMask.setDestinationIP("222.22.2." + i);
+            fiveTupleWithMask.setSourcePort("111");
+            fiveTupleWithMask.setDestinationPort("222");
             fiveTupleWithMask.setProtocol("tcp");
 
             alert.setDynamicRuleId(dynamicRuleId);
             alert.setTaskId(taskId);
             alert.setFiveTupleWithMask(fiveTupleWithMask);
             alert.setContent("testcontent");
+            alert.setProtectIsSrcOrDst(1);
             alertMessageService.processAlertMessage(alert);
         }
 

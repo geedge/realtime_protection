@@ -158,6 +158,7 @@ public class AlertMessageService {
         }
         CommunicateObject protectObject;
         CommunicateObject peer;
+        //0代表命中防护对象在告警信息的源ip
         if (protectIsSrcOrDst == 0) {
             protectObject = new CommunicateObject(
                     fiveTupleWithMask.getSourceIP(),
@@ -211,8 +212,8 @@ public class AlertMessageService {
         command1.setMaskSourcePort(peer.getMaskPort());
         command1.setDestinationIP(protectObject.getIP());
         command1.setMaskDestinationIP(protectObject.getMaskIP());
-        command1.setSourcePort(protectObject.getPort());
-        command1.setMaskSourcePort(protectObject.getMaskPort());
+        command1.setDestinationPort(protectObject.getPort());
+        command1.setMaskDestinationPort(protectObject.getMaskPort());
         if (templateProtectLevel.getHasProtocol()){
             command1.setProtocol(fiveTupleWithMask.getProtocol());
             command1.setProtocol(fiveTupleWithMask.getMaskProtocol());
@@ -229,8 +230,8 @@ public class AlertMessageService {
 
             command2.setDestinationIP(peer.getIP());
             command2.setMaskDestinationIP(peer.getMaskIP());
-            command2.setSourcePort(peer.getPort());
-            command2.setMaskSourcePort(peer.getMaskPort());
+            command2.setDestinationPort(peer.getPort());
+            command2.setMaskDestinationPort(peer.getMaskPort());
             if (templateProtectLevel.getHasProtocol()){
                 command2.setProtocol(fiveTupleWithMask.getProtocol());
                 command2.setProtocol(fiveTupleWithMask.getMaskProtocol());

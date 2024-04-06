@@ -2,10 +2,7 @@ package com.realtime.protection.server.user.login;
 
 import com.realtime.protection.configuration.entity.user.User;
 import com.realtime.protection.configuration.response.ResponseResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
 
@@ -36,4 +33,13 @@ public class LoginController {
                 .setData("userId", userId)
                 .setData("success", true);
     }
+
+    @PostMapping("/auth")
+    public ResponseResult auth(@RequestParam("sessionData") String sessionData,
+                               @RequestParam("accessToken") String accessToken,
+                               @RequestParam(value = "scopes", required = false) String scopes) {
+        return ResponseResult.ok().setMessage("success")
+                .setData("success", true);
+    }
+
 }
