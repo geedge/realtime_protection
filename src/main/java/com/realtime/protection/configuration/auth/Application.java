@@ -14,9 +14,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class Application implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration ir = registry.addInterceptor(new LoginInterceptor());
-        ir.addPathPatterns("/**");
-        ir.excludePathPatterns("/js/**", "/html/**", "/image/**", "/css/**", "/api/**");
+//        InterceptorRegistration ir = registry.addInterceptor(new LoginInterceptor());
+//        ir.addPathPatterns("/**");
+//        ir.excludePathPatterns("/js/**", "/html/**", "/image/**", "/css/**", "/api/**");
     }
 }
 
