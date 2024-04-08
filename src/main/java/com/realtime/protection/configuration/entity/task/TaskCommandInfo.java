@@ -97,10 +97,37 @@ public class TaskCommandInfo {
     @Schema(description = "防御策略模板ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer templateId;
 
-    @Schema(description = "防护等级", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防护等级,1代表low、2代表medium、3代表high", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectLevel;
 
     @Schema(description = "指令所属任务的运行状态", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer taskStatus;
+
+    // 复制构造函数
+    public void copyTaskCommandInfo(TaskCommandInfo original) {
+        this.UUID = original.UUID;
+        this.taskId = original.taskId;
+        this.ruleId = original.ruleId;
+        this.taskCreateUsername = original.taskCreateUsername;
+        this.taskCreateDepart = original.taskCreateDepart;
+        this.taskCreateUserId = original.taskCreateUserId;
+        this.taskName = original.taskName;
+        this.taskType = original.taskType;
+        this.taskAct = original.taskAct;
+        this.frequency = original.frequency;
+        this.startTime = original.startTime;
+        this.endTime = original.endTime;
+        this.isValid = original.isValid;
+        this.isJudged = original.isJudged;
+        this.fiveTupleWithMask = original.fiveTupleWithMask;
+        this.commandSentTimes = original.commandSentTimes;
+        this.commandSuccessTimes = original.commandSuccessTimes;
+        this.earliestSendTime = original.earliestSendTime;
+        this.latestSendTime = original.latestSendTime;
+        this.templateId = original.templateId;
+        this.protectLevel = original.protectLevel;
+        this.taskStatus = original.taskStatus;
+
+    }
 
 }

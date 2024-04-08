@@ -8,20 +8,22 @@
                                         strategy_template_low_level_id, strategy_template_medium_level_id,
                                         strategy_template_high_level_id,
                                         strategy_template_create_user_id, strategy_template_create_username,
-                                        strategy_template_create_depart)
+                                        strategy_template_create_depart,
+                                        strategy_template_description)
             VALUE (#{template.templateName}, #{template.sourceSystem},
                    #{template.protectLevelLow.protectLevelId}, #{template.protectLevelMedium.protectLevelId},
                    #{template.protectLevelHigh.protectLevelId},
-                   #{template.createUserId}, #{template.createUsername}, #{template.createDepart})
+                   #{template.createUserId}, #{template.createUsername}, #{template.createDepart},
+                    #{template.description})
     </insert>
 
     <insert id="newProtectLevel" useGeneratedKeys="true" keyProperty="protectLevelId">
         INSERT INTO t_protect_level(has_protect_object_ip, has_protect_object_port,
                                     has_protocol, has_url, has_dns,
-                                    has_peer_ip, has_peer_port)
+                                    has_peer_ip, has_peer_port, is_full_flow)
             VALUE (#{level.hasProtectObjectIP}, #{level.hasProtectObjectPort},
                    #{level.hasProtocol}, #{level.hasURL}, #{level.hasDNS},
-                   #{level.hasPeerIP}, #{level.hasPeerPort})
+                   #{level.hasPeerIP}, #{level.hasPeerPort}, #{level.isFullFlow})
     </insert>
 
     <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.Template">
@@ -33,6 +35,7 @@
 
         <result column="strategy_template_used_times" property="usedTimes"/>
         <result column="strategy_template_running_tasks" property="runningTasks"/>
+        <result column="strategy_template_description" property="description"/>
 
         <association property="protectLevelLow"
                      javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
@@ -44,6 +47,7 @@
             <result column="low_has_protocol" property="hasProtocol"/>
             <result column="low_has_url" property="hasURL"/>
             <result column="low_has_dns" property="hasDNS"/>
+            <result column="low_is_full_flow" property="isFullFlow"/>
         </association>
 
         <association property="protectLevelMedium"
@@ -56,6 +60,7 @@
             <result column="medium_has_protocol" property="hasProtocol"/>
             <result column="medium_has_url" property="hasURL"/>
             <result column="medium_has_dns" property="hasDNS"/>
+            <result column="medium_is_full_flow" property="isFullFlow"/>
         </association>
 
         <association property="protectLevelHigh"
@@ -69,6 +74,7 @@
             <result column="high_has_protocol" property="hasProtocol"/>
             <result column="high_has_url" property="hasURL"/>
             <result column="high_has_dns" property="hasDNS"/>
+            <result column="high_is_full_flow" property="isFullFlow"/>
         </association>
     </resultMap>
 
@@ -81,6 +87,7 @@
         <result column="has_protocol" property="hasProtocol"/>
         <result column="has_url" property="hasURL"/>
         <result column="has_dns" property="hasDNS"/>
+        <result column="is_full_flow" property="isFullFlow"/>
     </resultMap>
 
     <select id="queryTemplates" resultMap="templateMap">
