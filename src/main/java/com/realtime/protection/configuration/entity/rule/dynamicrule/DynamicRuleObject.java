@@ -94,5 +94,5 @@ public class DynamicRuleObject {
     @NotNull
     @JsonProperty("log_rule_id")
     @Schema(description = "筛选条件-日志规则id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer logRuleId;
+    private Long logRuleId;
 }
