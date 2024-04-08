@@ -1,0 +1,104 @@
+[33m22b55e9[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{0}: merge origin/master: Merge made by the 'ort' strategy.
+[33m0ed5593[m HEAD@{1}: rebase (finish): returning to refs/heads/master
+[33m0ed5593[m HEAD@{2}: rebase (pick): 在application.yml中添加MySQL连接时区设置，解决时间错误问题
+[33m228eabc[m HEAD@{3}: rebase (pick): 1、更新策略模板增删改查和alertmessage的模板处理，增加is_full_flow和description字段
+[33m6b22a0d[m HEAD@{4}: rebase (pick): 1、前端版本0229，更新至gitlab
+[33m9e41231[m HEAD@{5}: rebase (pick): 1、前端版本0229，更新至gitlab
+[33m98c1c5b[m[33m ([m[1;31morigin/haskafka[m[33m, [m[1;32mhaskafka[m[33m)[m HEAD@{6}: rebase (start): checkout haskafka
+[33m22ada45[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{7}: merge origin/master: Merge made by the 'ort' strategy.
+[33m1aa587f[m HEAD@{8}: cherry-pick: 1、更新策略模板增删改查和alertmessage的模板处理，增加is_full_flow和description字段
+[33m3d717a8[m HEAD@{9}: checkout: moving from tmp_branch to master
+[33mcec0c74[m HEAD@{10}: commit: 1、更新策略模板增删改查和alertmessage的模板处理，增加is_full_flow和description字段
+[33m98c1c5b[m[33m ([m[1;31morigin/haskafka[m[33m, [m[1;32mhaskafka[m[33m)[m HEAD@{11}: checkout: moving from haskafka to tmp_branch
+[33m98c1c5b[m[33m ([m[1;31morigin/haskafka[m[33m, [m[1;32mhaskafka[m[33m)[m HEAD@{12}: checkout: moving from master to haskafka
+[33m3d717a8[m HEAD@{13}: commit: 1、前端版本0229，更新至gitlab
+[33mbdafcf4[m HEAD@{14}: commit: 1、前端版本0229，更新至gitlab
+[33m8c64d04[m HEAD@{15}: checkout: moving from haskafka to master
+[33m98c1c5b[m[33m ([m[1;31morigin/haskafka[m[33m, [m[1;32mhaskafka[m[33m)[m HEAD@{16}: merge origin/master: Merge made by the 'ort' strategy.
+[33m282e598[m HEAD@{17}: checkout: moving from master to haskafka
+[33m8c64d04[m HEAD@{18}: commit: 1、alertmssage入库增加alertmssage的uuid
+[33me7c797e[m HEAD@{19}: commit: 1、bug修复
+[33mb0ba80a[m HEAD@{20}: checkout: moving from haskafka to master
+[33m282e598[m HEAD@{21}: checkout: moving from master to haskafka
+[33mb0ba80a[m HEAD@{22}: checkout: moving from haskafka to master
+[33m282e598[m HEAD@{23}: merge origin/master: Merge made by the 'ort' strategy.
+[33m621c7d1[m HEAD@{24}: checkout: moving from master to haskafka
+[33mb0ba80a[m HEAD@{25}: commit: 1、前端更新，有些文件缺失
+[33m28d671a[m HEAD@{26}: checkout: moving from haskafka to master
+[33m621c7d1[m HEAD@{27}: checkout: moving from master to haskafka
+[33m28d671a[m HEAD@{28}: checkout: moving from haskafka to master
+[33m621c7d1[m HEAD@{29}: commit: 1、生产者测试
+[33mef302a2[m HEAD@{30}: merge origin/master: Merge made by the 'ort' strategy.
+[33m248119d[m HEAD@{31}: checkout: moving from master to haskafka
+[33m28d671a[m HEAD@{32}: commit: 1、前端更新
+[33m5a44af9[m HEAD@{33}: checkout: moving from haskafka to master
+[33m248119d[m HEAD@{34}: commit (merge): Merge remote-tracking branch 'origin/master' into haskafka
+[33m5af9295[m HEAD@{35}: checkout: moving from master to haskafka
+[33m5a44af9[m HEAD@{36}: merge origin/master: Merge made by the 'ort' strategy.
+[33m802f434[m HEAD@{37}: commit: 1、修改queryDynamicRuleTotalNum缺少left join的bug
+[33m384c48a[m HEAD@{38}: checkout: moving from haskafka to master
+[33m5af9295[m HEAD@{39}: commit: 1、修改@KafkaListener id topic为固定值
+[33m6cab8d2[m HEAD@{40}: checkout: moving from master to haskafka
+[33m384c48a[m HEAD@{41}: checkout: moving from haskafka to master
+[33m6cab8d2[m HEAD@{42}: checkout: moving from master to haskafka
+[33m384c48a[m HEAD@{43}: checkout: moving from haskafka to master
+[33m6cab8d2[m HEAD@{44}: commit: 1、修改dockerfile网络配置
+[33mef637d1[m HEAD@{45}: merge master: Merge made by the 'ort' strategy.
+[33mb89fd6c[m HEAD@{46}: checkout: moving from master to haskafka
+[33m384c48a[m HEAD@{47}: commit: 1、静态规则文件上传bug解决，文件上传增加ip、掩码不匹配判断
+[33m11fb439[m HEAD@{48}: checkout: moving from haskafka to master
+[33mb89fd6c[m HEAD@{49}: checkout: moving from master to haskafka
+[33m11fb439[m HEAD@{50}: checkout: moving from haskafka to master
+[33mb89fd6c[m HEAD@{51}: commit: 1、kafka消费者@KafkaListener增加errorHandler属性记录consumer错误，增加properties解决数据获取子系统的消费者发来json数据无法解序列化；
+[33m85410b9[m HEAD@{52}: checkout: moving from master to haskafka
+[33m11fb439[m HEAD@{53}: checkout: moving from haskafka to master
+[33m85410b9[m HEAD@{54}: commit: 1、Kafka consumer和producer的配置类注释掉不需要了
+[33m11fb439[m HEAD@{55}: checkout: moving from master to haskafka
+[33m11fb439[m HEAD@{56}: checkout: moving from haskafka to master
+[33m11fb439[m HEAD@{57}: checkout: moving from master to haskafka
+[33m11fb439[m HEAD@{58}: merge origin/master: Merge made by the 'ort' strategy.
+[33m1be5269[m HEAD@{59}: commit: 1、AlertMessage实体类增加content字段，并同步mapper中新增、查询方法增加content字段
+[33me48f837[m HEAD@{60}: merge origin/master: Fast-forward
+[33me9313f2[m HEAD@{61}: commit: 1、AlertMessage类移动位置
+[33m0864644[m HEAD@{62}: commit: 1、添加kafka依赖、
+[33md5deffa[m HEAD@{63}: merge origin/master: Fast-forward
+[33m6f54afc[m HEAD@{64}: merge origin/master: Merge made by the 'ort' strategy.
+[33mf368c31[m HEAD@{65}: commit: 1、whitelist增加whiteListCommandsCheck、whiteListStaticRulesCheck。支持前端发送staticRuleIds列表，查询静态规则是否存在白名单。记录白名单check指令的问题
+[33m02dd207[m HEAD@{66}: commit: 1、whitelist查询返回审核状态字段，task查询返回动作字段
+[33m7cb8666[m HEAD@{67}: merge origin/master: Merge made by the 'ort' strategy.
+[33m31277b7[m HEAD@{68}: commit: 1、解决指令按条件查询总数bug
+[33m3894839[m HEAD@{69}: merge origin/master: Merge made by the 'ort' strategy.
+[33mb6e046c[m HEAD@{70}: commit: 1、动态、静态规则、任务、白名单、防护对象、策略模板的查询总数增加了条件
+[33m121fff1[m HEAD@{71}: commit: AlertMessage:
+[33m095eb88[m HEAD@{72}: merge origin/master: Fast-forward
+[33md6cf33f[m HEAD@{73}: merge origin/master: Fast-forward
+[33m193862f[m HEAD@{74}: commit: 1、AlertMessage删除is_distribute属性
+[33m63e7270[m HEAD@{75}: commit: 1、修改swagger，scheme中增加显示对象属性
+[33m44abfe0[m HEAD@{76}: commit: AlertMessage：
+[33m073dfc9[m HEAD@{77}: merge origin/master: Fast-forward
+[33m449c320[m HEAD@{78}: merge origin/master: Fast-forward
+[33m1d317eb[m HEAD@{79}: merge origin/master: Fast-forward
+[33mcb6ca74[m HEAD@{80}: commit: 1、添加AlertMessage http接口，接收告警信息。
+[33m914b0f0[m HEAD@{81}: commit: 1、增加AlertMessage http接口，接收告警信息，生成指令入库
+[33m51e7dbc[m HEAD@{82}: commit: 1、增加白名单、静态、动态规则的创建时间和修改时间
+[33m3a77019[m HEAD@{83}: commit (merge): Merge remote-tracking branch 'origin/master'
+[33m07d253e[m HEAD@{84}: commit (merge): Merge remote-tracking branch 'origin/master'
+[33m8315e6e[m HEAD@{85}: commit: 1、DynamicRule的新增、更新添加对id、protectObjectId的判断；分页查询添加creator、sourceSystem查询条件；按id查询新增template_id为null的判断
+[33m135a1ae[m HEAD@{86}: commit: 1、动态规则、静态规则、白名单修改完善接口设计，添加API文档
+[33mbf99b41[m HEAD@{87}: merge origin/master: Fast-forward
+[33mc1a5d24[m HEAD@{88}: merge origin/master: Fast-forward
+[33m8f54511[m HEAD@{89}: merge origin/master: Fast-forward
+[33m6a24e4a[m HEAD@{90}: commit: 1、WhiteList新增testWhiteListCommandJudge方法，判断指令是否命中白名单
+[33m930ba8b[m HEAD@{91}: commit: 1、DynamicRule实现新增、删除、修改、id查询、分页查询功能。并在crud时与ProtectObject关联。
+[33ma04b83e[m HEAD@{92}: merge origin/master: Fast-forward
+[33m1e9fe37[m HEAD@{93}: commit: 1.完成的excel批量新增、按id删除、批量删除、按id查询、分页查询、按id新增、修改审核状态
+[33mdb02907[m HEAD@{94}: merge origin/master: Fast-forward
+[33m776c7c0[m HEAD@{95}: merge origin/master: Fast-forward
+[33mb4db26c[m HEAD@{96}: merge origin/master: Merge made by the 'ort' strategy.
+[33mdba3c9e[m HEAD@{97}: pull --no-stat -v --progress origin master: updating HEAD
+[33mdba3c9e[m HEAD@{98}: commit: 1.完成静态规则的修改、id查询、分页查询、删除（目前直接在数据库delete）
+[33mb0c1700[m HEAD@{99}: merge origin/master: Fast-forward
+[33me6ca420[m HEAD@{100}: checkout: moving from master to master
+[33me6ca420[m HEAD@{101}: branch: Reset to origin/master
+[33me6ca420[m HEAD@{102}: commit: new staticrule
+[33m66c710c[m HEAD@{103}: clone: from https://git.mesalab.cn/EnderByEndera/realtime_protection
