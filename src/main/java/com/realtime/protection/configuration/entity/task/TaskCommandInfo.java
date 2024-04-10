@@ -127,7 +127,9 @@ public class TaskCommandInfo {
         this.templateId = original.templateId;
         this.protectLevel = original.protectLevel;
         this.taskStatus = original.taskStatus;
-
     }
 
+    public void setProtocolNum() {
+        this.fiveTupleWithMask.setProtocolNum();
+    }
 }

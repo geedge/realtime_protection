@@ -1,6 +1,7 @@
 package com.realtime.protection.configuration.entity.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.realtime.protection.configuration.utils.enums.ProtocolEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -82,5 +83,11 @@ public class FiveTupleWithMask {
         this.maskDestinationIP = original.maskDestinationIP;
         this.maskDestinationPort = original.maskDestinationPort;
         this.maskProtocol = original.maskProtocol;
+    }
+
+    public void setProtocolNum() {
+        ProtocolEnum protocol = ProtocolEnum.getProtocolEnumByProtocol(this.protocol);
+        assert protocol != null;
+        this.protocolNum = protocol.getNumber();
     }
 }

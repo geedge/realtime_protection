@@ -108,7 +108,9 @@ public class TaskService {
     }
 
     public List<TaskCommandInfo> getStaticCommandInfos(Long taskId) {
-        return taskMapper.getStaticCommandInfos(taskId);
+        List<TaskCommandInfo> staticCommandInfos = taskMapper.getStaticCommandInfos(taskId);
+        staticCommandInfos.forEach(TaskCommandInfo::setProtocolNum);
+        return staticCommandInfos;
     }
 
     public List<DynamicTaskInfo> getDynamicTaskInfos(Long taskId) {
