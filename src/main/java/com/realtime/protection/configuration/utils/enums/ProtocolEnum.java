@@ -1,30 +1,35 @@
 package com.realtime.protection.configuration.utils.enums;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public enum ProtocolEnum {
-    TCP(6),
-    UDP(17);
+    TCP(6, "TCP"),
+    UDP(17, "UDP");
 
     private final Integer number;
-    private static final Map<Integer, ProtocolEnum> map = new HashMap<>();
+    private final String protocol;
+
+    private static final Map<Integer, ProtocolEnum> protocolNumMap = new HashMap<>();
+    private static final Map<String, ProtocolEnum> protocolMap = new HashMap<>();
 
     static {
         for (ProtocolEnum protocol : ProtocolEnum.values()) {
-            map.put(protocol.getProtocolNumber(), protocol);
+            protocolNumMap.put(protocol.getNumber(), protocol);
+            protocolMap.put(protocol.getProtocol(), protocol);
         }
     }
 
-    ProtocolEnum(int protocolNumber) {
+    ProtocolEnum(int protocolNumber, String protocol) {
         this.number = protocolNumber;
-    }
-
-    public Integer getProtocolNumber() {
-        return this.number;
+        this.protocol = protocol;
     }
 
     public static ProtocolEnum getProtocolEnumByNumber(Integer protocolNum) {
-        return map.get(protocolNum);
+        return protocolNumMap.get(protocolNum);
     }
+    public static ProtocolEnum getProtocolEnumByProtocol(String protocol) { return protocolMap.get(protocol); }
 }

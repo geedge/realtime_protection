@@ -10,6 +10,7 @@ build/
 docker-ubuntu/protection_ubuntu.tar
 VSCode.zip
 Writerside*
+venv
 
 ### STS ###
 .apt_generated
