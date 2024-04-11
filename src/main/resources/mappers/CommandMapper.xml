@@ -4,12 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.realtime.protection.server.command.CommandMapper">
     <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
-        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
+        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
                               PROTOCOL,
                               MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
                               INVALID_TIME, IS_VALID, IS_JUDGED,
                               SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
-        values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.frequency},
+        values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.department}, #{info.distributePoint}, #{info.frequency},
                 DEFAULT,
                 #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
                 #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},
@@ -24,14 +24,14 @@
     </insert>
 
     <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
-        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
+        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY, ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT,
         PROTOCOL,
         MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
         IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED)
         values
         <foreach collection="command_infos" item="info" separator=",">
-            (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.frequency},
+            (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.department}, #{info.distributePoint}, #{info.frequency},
             DEFAULT,
             #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
             #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},

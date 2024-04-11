@@ -48,6 +48,14 @@ public class TaskCommandInfo {
     @JsonProperty("task_act")
     private String taskAct;
 
+    @Schema(description = "部门", example = "XXX")
+    @JsonProperty("department")
+    private String department;
+
+    @Schema(description = "局点", example = "北京")
+    @JsonProperty("distribute_point")
+    private String distributePoint;
+
     @Schema(description = "指令下发频率", example = "30")
     @NotNull(message = "指令下发频率不能为空。")
     @JsonProperty("frequency")
@@ -114,6 +122,8 @@ public class TaskCommandInfo {
         this.taskName = original.taskName;
         this.taskType = original.taskType;
         this.taskAct = original.taskAct;
+        this.department = original.department;
+        this.distributePoint = original.distributePoint;
         this.frequency = original.frequency;
         this.startTime = original.startTime;
         this.endTime = original.endTime;
@@ -131,5 +141,9 @@ public class TaskCommandInfo {
 
     public void setProtocolNum() {
         this.fiveTupleWithMask.setProtocolNum();
+    }
+
+    public void setMask() {
+        this.fiveTupleWithMask.setMask();
     }
 }

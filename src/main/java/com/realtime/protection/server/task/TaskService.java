@@ -109,7 +109,12 @@ public class TaskService {
 
     public List<TaskCommandInfo> getStaticCommandInfos(Long taskId) {
         List<TaskCommandInfo> staticCommandInfos = taskMapper.getStaticCommandInfos(taskId);
-        staticCommandInfos.forEach(TaskCommandInfo::setProtocolNum);
+
+        staticCommandInfos.forEach(taskCommandInfo -> {
+            taskCommandInfo.setProtocolNum();
+            taskCommandInfo.setMask();
+        });
+
         return staticCommandInfos;
     }
 
