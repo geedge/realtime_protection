@@ -25,7 +25,7 @@ public class TaskCommandInfo {
     @JsonProperty("task_create_username")
     private String taskCreateUsername;
 
-    @Schema(description = "任务创建人处室", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "任务创建人处室", example = "XXX")
     @JsonProperty("task_create_depart")
     private String taskCreateDepart;
 
@@ -48,13 +48,13 @@ public class TaskCommandInfo {
     @JsonProperty("task_act")
     private String taskAct;
 
-    @Schema(description = "部门", example = "XXX")
-    @JsonProperty("department")
-    private String department;
-
-    @Schema(description = "局点", example = "北京")
+    @Schema(description = "局点", example = "123456")
     @JsonProperty("distribute_point")
-    private String distributePoint;
+    private Integer distributePoint;
+
+    @Schema(description = "事件类型（策略模板名称）", example = "DDOS")
+    @JsonProperty("event_type")
+    private String eventType;
 
     @Schema(description = "指令下发频率", example = "30")
     @NotNull(message = "指令下发频率不能为空。")
@@ -122,7 +122,6 @@ public class TaskCommandInfo {
         this.taskName = original.taskName;
         this.taskType = original.taskType;
         this.taskAct = original.taskAct;
-        this.department = original.department;
         this.distributePoint = original.distributePoint;
         this.frequency = original.frequency;
         this.startTime = original.startTime;

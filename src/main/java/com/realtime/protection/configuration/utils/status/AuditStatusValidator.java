@@ -24,7 +24,7 @@ public class AuditStatusValidator {
                 return auditStatusOriginal != 1;
             }
             default -> {
-                log.debug("欲修改的审核状态不正确，需要使用正确的审核状态，当前的审核状态：" + auditStatusOriginal);
+                log.debug("欲修改的审核状态不正确，需要使用正确的审核状态，当前的审核状态：{}", auditStatusOriginal);
                 return false;
             }
         }

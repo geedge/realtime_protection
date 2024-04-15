@@ -103,7 +103,7 @@ public class StateHandler {
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 
         Mono<SimpleResponse> mono = client.post()
-                .uri("192.168.107.89:65432")  // todo: unfinished
+                .uri("http://192.168.107.89:9081/api/v1/kafkasend")  // todo: untested
                 .bodyValue(dynamicTaskInfos)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
