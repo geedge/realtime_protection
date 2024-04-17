@@ -5,7 +5,7 @@ import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.response.SimpleResponse;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
-import com.realtime.protection.configuration.utils.status.AuditStatus;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class StateHandler {
         }
 
         // 如果审核状态不为已通过审核，则报错
-        if (taskAuditStatus != AuditStatus.AUDITED.getAuditStatus()) {
+        if (taskAuditStatus != AuditStatusEnum.AUDITED.getNum()) {
             throw new IllegalArgumentException("无效的task_id，因为未通过审核");
         }
 

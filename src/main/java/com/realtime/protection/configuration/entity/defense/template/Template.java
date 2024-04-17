@@ -1,6 +1,7 @@
 package com.realtime.protection.configuration.entity.defense.template;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.realtime.protection.configuration.utils.NonEmptyFieldFetcher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -40,6 +41,18 @@ public class Template {
     @Schema(description = "防御策略模板紧急态字段提取选项")
     private ProtectLevel protectLevelHigh;
 
+    @JsonProperty("has_protect_level_low")
+    @Schema(description = "日常态字段是否不空", accessMode = Schema.AccessMode.READ_ONLY)
+    private Boolean hasProtectLevelLow;
+
+    @JsonProperty("has_protect_level_medium")
+    @Schema(description = "应急态字段是否不空", accessMode = Schema.AccessMode.READ_ONLY)
+    private Boolean hasProtectLevelMedium;
+
+    @JsonProperty("has_protect_level_high")
+    @Schema(description = "紧急态字段是否不空", accessMode = Schema.AccessMode.READ_ONLY)
+    private Boolean hasProtectLevelHigh;
+
     @JsonProperty("template_used_times")
     @Schema(description = "防御策略模板使用次数", example = "20", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer usedTimes;
@@ -59,4 +72,43 @@ public class Template {
     @JsonProperty("create_user_depart")
     @Schema(description = "防御策略模板创建人处室", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
     private String createDepart;
+
+    /**
+     * 设置是否含有日常/应急/紧急防护等级态字段的字段
+     */
+    public void setHasProtectLevel() throws IllegalAccessException {
+        this.hasProtectLevelHigh = hasProtectLevelFields(this.protectLevelHigh);
+        this.hasProtectLevelMedium = hasProtectLevelFields(this.protectLevelMedium);
+        this.hasProtectLevelLow = hasProtectLevelFields(this.protectLevelLow);
+    }
+
+    /**
+     *仅保留是否含有日常/应急/紧急防护等级态字段以及策略模板名称和ID
+     */
+    public void shortenTemplate() {
+        this.sourceSystem = null;
+        this.description = null;
+        this.protectLevelLow = null;
+        this.protectLevelMedium = null;
+        this.protectLevelHigh = null;
+        this.usedTimes = null;
+        this.runningTasks = null;
+        this.createUserId = null;
+        this.createUsername = null;
+        this.createDepart = null;
+    }
+
+    private Boolean hasProtectLevelFields(ProtectLevel protectLevel) throws IllegalAccessException {
+        return NonEmptyFieldFetcher
+                .getNonEmptyFields(protectLevel) // 获取所有非空字段
+                .stream() // 流式处理
+                .filter(field -> field.getType().getName().contains("Boolean")) // 获取所有类型为Boolean的字段
+                .anyMatch(field -> {
+            try {
+                return (Boolean) field.get(protectLevel); // 返回值为true的字段
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 }

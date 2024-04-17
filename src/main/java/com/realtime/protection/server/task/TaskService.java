@@ -5,7 +5,7 @@ import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
-import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

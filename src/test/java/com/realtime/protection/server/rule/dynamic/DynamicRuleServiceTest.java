@@ -49,7 +49,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
         object.setTemplateId(templates.get(0).getTemplateId());
-        object.setLogRuleId(1);
+        object.setLogRuleId(1L);
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
     }

@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @Order(3)
     @ExceptionHandler(value = {Exception.class})
     public ResponseResult handleGlobalException(Exception e) {
-        log.error("遭遇全局异常：" + e.getCause());
+        log.error("遭遇全局异常：{}", e.getMessage());
         return ResponseResult.error().setMessage(e.getMessage());
     }
 
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
             SQLIntegrityConstraintViolationException.class
     })
     public ResponseResult handleSQLException(Exception e) {
-        log.info("遭遇数据库异常：" + e.getMessage());
+        log.info("遭遇数据库异常：{}", e.getMessage());
         return ResponseResult.invalid().setMessage(
                 "请检查json字段的完整性，确保json字段按照文档中要求填写。");
     }
@@ -74,14 +74,14 @@ public class GlobalExceptionHandler {
             IllegalStateException.class
     })
     public ResponseResult handleHandlerMethodValidationException(Exception e) {
-        log.debug("遭遇非法参数异常：" + e.getMessage());
+        log.debug("遭遇非法参数异常：{}", e.getMessage());
         return ResponseResult.invalid().setMessage(e.getMessage());
     }
 
     @Order(2)
     @ExceptionHandler(value = NotLoginException.class)
     public ResponseResult handleNotLoginException(NotLoginException e) {
-        log.debug("遭遇Sa-Token登录异常，登录类型为：" + e.getLoginType());
+        log.debug("遭遇Sa-Token登录异常，登录类型为：{}", e.getLoginType());
         return new ResponseResult(
                 401,
                 e.getMessage()
@@ -91,14 +91,14 @@ public class GlobalExceptionHandler {
     @Order(2)
     @ExceptionHandler(value = SaTokenException.class)
     public ResponseResult handleSaTokenException(SaTokenException e) {
-        log.debug("Sa-token模块遭遇异常：" + e.getMessage());
+        log.debug("Sa-token模块遭遇异常：{}", e.getMessage());
         return ResponseResult.unAuthorized().setMessage(e.getMessage());
     }
 
     @Order(2)
     @ExceptionHandler(value = DorisStartException.class)
     public ResponseResult handleDorisStartException(DorisStartException e) {
-        log.warn("Doris数据库遭遇异常：" + e.getMessage());
+        log.warn("Doris数据库遭遇异常：{}", e.getMessage());
         ResponseResult responseResult = ResponseResult.error()
                 .setMessage("Doris数据库指令生成遭遇异常：" + e.getMessage());
 
