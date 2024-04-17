@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface StaticRuleMapper {
@@ -43,4 +44,6 @@ public interface StaticRuleMapper {
                                     String static_rule_create_username, String ip);
 
     List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids);
+
+    void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch);
 }

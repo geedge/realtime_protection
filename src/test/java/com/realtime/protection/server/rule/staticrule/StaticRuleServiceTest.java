@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -101,7 +103,15 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(null, null, null, null, 1, 10);
         System.out.println(staticRuleObjects);
     }
+    @Test
+    void testUpdateStaticRuleAuditStatusBatch(){
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(1299, 0);
+        map.put(1300, 1);
+        map.put(1301, 1);
 
 
+        System.out.println(staticRuleService.updateAuditStatusBatch(map));
+    }
 
 }

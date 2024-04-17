@@ -50,7 +50,7 @@ public class TaskCommandInfo {
 
     @Schema(description = "局点", example = "123456")
     @JsonProperty("distribute_point")
-    private Integer distributePoint;
+    private String distributePoint;
 
     @Schema(description = "事件类型（策略模板名称）", example = "DDOS")
     @JsonProperty("event_type")
@@ -123,6 +123,7 @@ public class TaskCommandInfo {
         this.taskType = original.taskType;
         this.taskAct = original.taskAct;
         this.distributePoint = original.distributePoint;
+        this.eventType = original.eventType;
         this.frequency = original.frequency;
         this.startTime = original.startTime;
         this.endTime = original.endTime;

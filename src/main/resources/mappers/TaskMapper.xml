@@ -161,7 +161,7 @@
         <result column="static_rule_id" property="ruleId"/>
 
         <result column="task_act" property="taskAct"/>
-        <result column="task_create_depart" property="department"/>
+        <result column="task_create_depart" property="taskCreateDepart"/>
         <result column="static_rule_range" property="distributePoint"/>
         <result column="task_type" property="taskType"/>
         <result column="static_rule_frequency" property="frequency"/>
