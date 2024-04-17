@@ -180,7 +180,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
      */
     @PostMapping("/auditbatch")
     public ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
-        List<Integer> errorIds = new ArrayList<Integer>();
+        List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
             Integer auditStatus = entry.getValue();

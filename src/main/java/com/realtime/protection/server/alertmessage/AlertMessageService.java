@@ -89,7 +89,7 @@ public class AlertMessageService {
                 alertMessage.getProtectIsSrcOrDst(), templateProtectLevel);
 
         //根据fiveTuple生成动态指令信息
-        List<TaskCommandInfo> dynamicCommandInfoList = new ArrayList<TaskCommandInfo>();
+        List<TaskCommandInfo> dynamicCommandInfoList = new ArrayList<>();
         if (fiveTupleWithMaskNew.size() == 2){
             TaskCommandInfo dynamicCommandInfo_bi = new TaskCommandInfo();
             dynamicCommandInfo_bi.copyTaskCommandInfo(dynamicCommandInfo);
@@ -203,7 +203,7 @@ public class AlertMessageService {
             peer.setPort(null);
             peer.setMaskPort(null);
         }
-        List<FiveTupleWithMask> newFiveTupleWithMask = new ArrayList<FiveTupleWithMask>();
+        List<FiveTupleWithMask> newFiveTupleWithMask = new ArrayList<>();
         //生成指令
         FiveTupleWithMask command1 = new FiveTupleWithMask();
         command1.setSourceIP(peer.getIP());
