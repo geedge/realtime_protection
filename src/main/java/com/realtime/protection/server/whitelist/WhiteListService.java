@@ -5,7 +5,7 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
-import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

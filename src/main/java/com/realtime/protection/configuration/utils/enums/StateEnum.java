@@ -1,6 +1,5 @@
 package com.realtime.protection.configuration.utils.enums;
 
-import com.realtime.protection.configuration.utils.status.State;
 import com.realtime.protection.server.task.status.states.*;
 import lombok.Getter;
 

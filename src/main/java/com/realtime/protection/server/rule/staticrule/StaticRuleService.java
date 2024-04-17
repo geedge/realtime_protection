@@ -3,7 +3,10 @@ package com.realtime.protection.server.rule.staticrule;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
-import com.realtime.protection.configuration.utils.status.AuditStatusValidator;
+import com.realtime.protection.configuration.utils.enums.RuleEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Service
@@ -49,6 +53,7 @@ public class StaticRuleService {
     /*
     新建静态规则
      */
+    @SneakyThrows
     public Integer newStaticRuleObject(StaticRuleObject object)  {
 
         object.setStaticRuleCreateTime(LocalDateTime.now());
@@ -60,6 +65,9 @@ public class StaticRuleService {
                 !isIpMaskValid(object.getStaticRuleDip(),object.getStaticRuleMdip())
             ){
             throw new IllegalArgumentException("IP和IP掩码不匹配");
+        }
+        if (!RuleEnum.checkValidate(object)) {
+            throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
         }
         staticRuleMapper.newStaticRuleObject(object);
 
@@ -98,7 +106,22 @@ public class StaticRuleService {
         return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, deleteStaticRulesFunction, staticRuleIds);
     }
 
+    @SneakyThrows
+    @Transactional
     public Boolean updateStaticRule(Integer id, StaticRuleObject object) {
+        StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(id);
+        if (staticRuleObject == null) {
+            throw new IllegalArgumentException("未知的静态规则ID");
+        }
+
+        if (Objects.equals(staticRuleObject.getStaticRuleAuditStatus(), AuditStatusEnum.USING.getNum())) {
+            throw new IllegalArgumentException("静态规则当前正在使用，无法更新");
+        }
+
+        if (!RuleEnum.checkValidate(object)) {
+            throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
+        }
+
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？
         //按id查询该静态规则的used_task_id字段，如果不为空，则不能修改
         object.setStaticRuleModifyTime(LocalDateTime.now());
@@ -169,7 +192,16 @@ public class StaticRuleService {
         return resultMap;
     }
 
+    @Transactional
     public void deleteStaticRuleById(Integer id) {
+        StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(id);
+        if (staticRuleObject == null) {
+            return;
+        }
+
+        if (Objects.equals(staticRuleObject.getStaticRuleAuditStatus(), AuditStatusEnum.USING.getNum())) {
+            throw new IllegalArgumentException("当前静态规则正在使用，无法删除");
+        }
         staticRuleMapper.deleteStaticRuleById(id);
     }
 
