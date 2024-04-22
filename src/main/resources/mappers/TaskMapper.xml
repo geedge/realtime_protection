@@ -71,6 +71,9 @@
             <if test="task_creator != null">
                 AND task_create_username LIKE CONCAT('%', #{task_creator}, '%')
             </if>
+            <if test="task_audit_status != null">
+                AND task_audit_status = #{task_audit_status}
+            </if>
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
@@ -78,7 +81,7 @@
     <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT static_rule_id
         FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id}
+        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = true
     </select>
 
     <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">

@@ -23,6 +23,7 @@ public interface TaskMapper {
 
     List<Task> queryTasks(@Param("task_status") Integer taskStatus, @Param("task_type") Integer task_type,
                           @Param("task_name") String taskName, @Param("task_creator") String taskCreator,
+                          @Param("task_audit_status") Boolean auditStatus,
                           @Param("page") Integer page, @Param("page_size") Integer pageSize);
 
     Task queryTask(@Param("task_id") Long taskId);
