@@ -32,7 +32,7 @@ public class AlertMessageService {
     public void processAlertMessage(AlertMessage alertMessage) {
         //根据告警信息——>生成指令
         List<TaskCommandInfo> dynamicTaskCommandInfoList = generateDynamicCommand(alertMessage);
-        //获取任务状态，设置指令的isValid字段，且是否生成指令入库（除了RUNING\PAUSED状态，其他都不入库）。
+        //获取任务状态，设置指令的isValid字段，且是否生成指令入库（除了RUNING\PAUSED状态，其他都不入command库）。
         Integer taskStatus = dynamicTaskCommandInfoList.get(0).getTaskStatus();
         //获取任务类型，设置指令的isJudged字段。
         Integer taskType = dynamicTaskCommandInfoList.get(0).getTaskType();
@@ -89,7 +89,7 @@ public class AlertMessageService {
                 alertMessage.getProtectIsSrcOrDst(), templateProtectLevel);
 
         //根据fiveTuple生成动态指令信息
-        List<TaskCommandInfo> dynamicCommandInfoList = new ArrayList<TaskCommandInfo>();
+        List<TaskCommandInfo> dynamicCommandInfoList = new ArrayList<>();
         if (fiveTupleWithMaskNew.size() == 2){
             TaskCommandInfo dynamicCommandInfo_bi = new TaskCommandInfo();
             dynamicCommandInfo_bi.copyTaskCommandInfo(dynamicCommandInfo);
@@ -203,7 +203,7 @@ public class AlertMessageService {
             peer.setPort(null);
             peer.setMaskPort(null);
         }
-        List<FiveTupleWithMask> newFiveTupleWithMask = new ArrayList<FiveTupleWithMask>();
+        List<FiveTupleWithMask> newFiveTupleWithMask = new ArrayList<>();
         //生成指令
         FiveTupleWithMask command1 = new FiveTupleWithMask();
         command1.setSourceIP(peer.getIP());

@@ -155,7 +155,7 @@ public class StaticRuleService {
                     }
 
                     List<StaticRuleObject> StaticRuleBatch = ListUtils.newArrayListWithExpectedSize(100);
-                    for (StaticRuleObject staticRule : staticRuleList) {
+                    for (StaticRuleObject staticRule : list) {
                         staticRule.setStaticRuleCreateTime(LocalDateTime.now());
                         StaticRuleBatch.add(staticRule);
                         if (StaticRuleBatch.size() < 100) {
@@ -214,5 +214,32 @@ public class StaticRuleService {
 
     public List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids) {
         return staticRuleMapper.queryStaticRuleByIds(ids);
+    }
+
+    public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+
+        Function<StaticRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateStaticRuleAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, updateStaticRuleAuditStatusFunction, idsWithAuditStatusMap);
     }
 }
