@@ -3,7 +3,7 @@ package com.realtime.protection.server.task.status;
 import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
-import com.realtime.protection.configuration.utils.status.State;
+import com.realtime.protection.server.task.status.states.State;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -98,7 +98,7 @@ public class StateChangeService {
     @Async
     protected void finishTasks() {
         List<Long> finishedTaskIds = taskService.getFinishedTasks();
-        log.debug("成功扫描出所有需要变为结束状态的任务：" + finishedTaskIds);
+        log.debug("成功扫描出所有需要变为结束状态的任务：{}", finishedTaskIds);
 
         for (Long taskId : finishedTaskIds) {
             try {

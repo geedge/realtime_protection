@@ -1,6 +1,7 @@
 package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,21 @@ public class TemplateService {
 
     public Template queryTemplate(Integer templateId) {
         return templateMapper.queryTemplate(templateId);
+    }
+
+    public List<Template> queryTemplatesShort() {
+        List<Template> templates = templateMapper.queryTemplates(null, null, null, 1, 10000);
+
+        templates.forEach(template -> {
+            try {
+                template.setHasProtectLevel();
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        templates.forEach(Template::shortenTemplate);
+
+        return templates;
     }
 
     public Boolean deleteTemplate(Integer templateId) {

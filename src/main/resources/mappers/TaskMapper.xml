@@ -161,6 +161,8 @@
         <result column="static_rule_id" property="ruleId"/>
 
         <result column="task_act" property="taskAct"/>
+        <result column="task_create_depart" property="taskCreateDepart"/>
+        <result column="static_rule_range" property="distributePoint"/>
         <result column="task_type" property="taskType"/>
         <result column="static_rule_frequency" property="frequency"/>
         <result column="task_start_time" property="startTime"/>
@@ -204,6 +206,8 @@
 
                t_task.task_type,
                t_task.task_act,
+               t_task.task_create_depart,
+               tsr.static_rule_range,
                tsr.static_rule_frequency,
 
                t_task.task_start_time,

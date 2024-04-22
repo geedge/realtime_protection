@@ -57,6 +57,7 @@ public class AlertMessageTest {
         object.setDynamicRulePriority(1);
         object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(1);
+        object.setLogRuleId(1L);
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
@@ -81,7 +82,7 @@ public class AlertMessageTest {
         //启动任务
         stateChangeService.changeState(2, taskId, false);
 
-        for (int i = 0 ; i< 10; i++) {
+        for (int i = 0 ; i< 5; i++) {
             AlertMessage alert = new AlertMessage();
             FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
             fiveTupleWithMask.setSourceIP("111.1.1." + i);

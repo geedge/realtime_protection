@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -163,7 +165,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
-                    .setData("whiteobj_id", id)
+                    .setData("staticRule_id", id)
                     .setData("success", false);
         }
         return ResponseResult.ok()
@@ -171,6 +173,31 @@ public class StaticRuleController implements StaticRuleControllerApi {
                 .setData("staticRule_id", id);
 
     }
+
+
+    /**
+     * 批量修改审核状态
+     */
+    @PostMapping("/auditbatch")
+    public ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+        List<Integer> errorIds = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("staticRule_id", errorIds)
+                    .setData("success", false);
+        }
+
+        return ResponseResult.ok()
+                .setData("success", staticRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
+    }
+
 
 
 }

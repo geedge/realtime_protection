@@ -90,4 +90,26 @@ public class FiveTupleWithMask {
         assert protocol != null;
         this.protocolNum = protocol.getNumber();
     }
+
+    public void setMask() {
+        if (this.sourceIP != null && this.maskSourceIP == null) {
+            this.maskSourceIP = "255.255.255.255";
+        }
+
+        if (this.sourcePort != null && this.maskSourcePort == null) {
+            this.maskSourcePort = "65535";
+        }
+
+        if (this.destinationIP != null && this.maskDestinationIP == null) {
+            this.maskDestinationIP = "255.255.255.255";
+        }
+
+        if (this.destinationPort != null && this.maskDestinationPort == null) {
+            this.maskDestinationPort = "65535";
+        }
+
+        if (this.protocol != null && this.maskProtocol == null) {
+            this.maskProtocol = "255"; // 协议掩码这里填写255以确保覆盖大部分协议
+        }
+    }
 }

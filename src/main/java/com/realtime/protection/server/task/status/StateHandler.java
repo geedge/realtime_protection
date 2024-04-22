@@ -5,7 +5,7 @@ import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.response.SimpleResponse;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
-import com.realtime.protection.configuration.utils.status.AuditStatus;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class StateHandler {
         }
 
         // 如果审核状态不为已通过审核，则报错
-        if (taskAuditStatus != AuditStatus.AUDITED.getAuditStatus()) {
+        if (taskAuditStatus != AuditStatusEnum.AUDITED.getNum()) {
             throw new IllegalArgumentException("无效的task_id，因为未通过审核");
         }
 
@@ -75,14 +75,11 @@ public class StateHandler {
     // todo: 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
     //       筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
     private Boolean handleJudgedTaskStart(TaskService taskService, Long taskId) {
-//        return sendFilters(taskService, taskId);
-//        还没配置帅选条件发送的url，不配置会出错，所以先注释
-        return true;
+        return sendFilters(taskService, taskId);
     }
 
     private Boolean handleDynamicTaskStart(TaskService taskService, Long taskId) {
-//        return sendFilters(taskService, taskId);
-        return true;
+        return sendFilters(taskService, taskId);
     }
 
     private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
@@ -106,7 +103,7 @@ public class StateHandler {
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 
         Mono<SimpleResponse> mono = client.post()
-                .uri("")  // todo: unfinished
+                .uri("http://192.168.107.89:9081/api/v1/kafkasend")  // todo: untested
                 .bodyValue(dynamicTaskInfos)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
