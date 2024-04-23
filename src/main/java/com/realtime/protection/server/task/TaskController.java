@@ -70,7 +70,7 @@ public class TaskController implements TaskControllerApi {
                                      @RequestParam(value = "task_type", required = false) Integer taskType,
                                      @RequestParam(value = "task_name", required = false) String taskName,
                                      @RequestParam(value = "task_creator", required = false) String taskCreator,
-                                     @RequestParam(value = "audit_status", required = false) Boolean auditStatus,
+                                     @RequestParam(value = "audit_status", required = false) Integer auditStatus,
                                      @RequestParam("page") @Min(1) Integer page,
                                      @RequestParam("page_size") @Min(1) Integer pageSize) {
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus, page, pageSize);

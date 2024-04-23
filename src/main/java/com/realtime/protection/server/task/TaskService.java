@@ -30,6 +30,8 @@ public class TaskService {
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
 
+        // todo: 添加新建任务时，将动态/静态规则从“已审核”修改为“使用中”
+
         taskMapper.newTask(task);
 
         if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty())
@@ -44,7 +46,7 @@ public class TaskService {
     @Transactional
     public List<Task> queryTasks(Integer taskStatus,
                                  Integer taskType, String taskName, String taskCreator,
-                                 Boolean auditStatus,
+                                 Integer auditStatus,
                                  Integer page, Integer pageSize) {
         List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus, page, pageSize);
         for (Task task : tasks) {

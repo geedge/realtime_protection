@@ -237,6 +237,7 @@
         <result column="task_start_time" property="startTime"/>
         <result column="task_end_time" property="endTime"/>
         <result column="rule_id" property="ruleId"/>
+        <result column="log_rule_id" property="logRuleId"/>
         <result column="source_system" property="sourceSystem"/>
         <result column="event_type" property="eventType"/>
         <collection property="protectObjects">
@@ -255,6 +256,7 @@
                tdr.dynamic_rule_id             as rule_id,
                strategy_template_source_system as source_system,
                strategy_template_name          as event_type,
+               tdr.log_rule_id,
                INET_NTOA(protect_object_ip),
                protect_object_port,
                protect_object_url,
