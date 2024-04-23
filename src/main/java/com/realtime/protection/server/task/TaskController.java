@@ -12,7 +12,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/task")
@@ -154,5 +156,29 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok()
                 .setData("success", commandService.setCommandJudged(commandId, isJudged))
                 .setData("command_id", commandId);
+    }
+
+
+    /**
+     * 批量修改审核状态
+     */
+    @PostMapping("/auditbatch")
+    public ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+        List<Integer> errorIds = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("tasks_id", errorIds)
+                    .setData("success", false);
+        }
+
+        return ResponseResult.ok()
+                .setData("success", taskService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
 }

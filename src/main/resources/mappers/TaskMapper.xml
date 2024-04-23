@@ -148,6 +148,21 @@
         WHERE task_id = #{task_id}
     </update>
 
+    <!-- 批量审核 -->
+    <update id="updateAuditStatusByIdBatch">
+        update t_task
+        set task_audit_status = CASE task_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        ELSE task_audit_status
+        END
+        WHERE task_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
     <delete id="deleteTask">
         DELETE
         FROM t_task

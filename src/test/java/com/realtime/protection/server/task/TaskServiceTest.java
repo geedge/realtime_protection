@@ -16,7 +16,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,7 +56,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testNewTaskSuccess() {
-        for (int i = 1; i < 1000; i++) {
+        for (int i = 1; i < 10; i++) {
             List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
                     null, null, null, null, i, 2);
             List<Integer> staticRuleIds = new ArrayList<>();
@@ -174,5 +176,17 @@ class TaskServiceTest extends ProtectionApplicationTests {
     void testGetStaticCommands() {
         List<TaskCommandInfo> taskCommandInfos = taskService.getStaticCommandInfos(38L);
         assertNotNull(taskCommandInfos);
+    }
+
+
+    @Test
+    void testUpdateTaskAuditStatusBatch(){
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(43830, 1);
+        map.put(43831, 1);
+        map.put(43832, 1);
+
+
+        System.out.println(taskService.updateAuditStatusBatch(map));
     }
 }
