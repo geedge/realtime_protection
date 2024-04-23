@@ -5,6 +5,7 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;
@@ -102,6 +103,12 @@ public class WhiteListService {
     }
 
     public Integer updateWhiteListObject(Integer id, WhiteListObject object) {
+        if (!whiteListMapper.queryWhiteListObjectAuditStuatusById(id).equals(AuditStatusEnum.AUDITED.getNum())) {
+            throw new IllegalStateException("无法修改白名单信息，因为其并未处于" + AuditStatusEnum.AUDITED + "状态");
+        }
+
+        object.setWhiteListAuditStatus(AuditStatusEnum.PENDING.toString());
+
         return whiteListMapper.updateWhiteListObject(id, object);
     }
 

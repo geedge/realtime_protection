@@ -3,6 +3,7 @@ package com.realtime.protection.server.defense.object;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +75,14 @@ public class ProtectObjectService {
     }
 
     public Boolean updateProtectObject(ProtectObject protectObject) {
+        if (!protectObjectMapper.queryProtectObject(protectObject.getProtectObjectId())
+                .getProtectObjectAuditStatus()
+                .equals(AuditStatusEnum.AUDITED.getNum())) {
+            return false;
+        }
+
+        protectObject.setProtectObjectAuditStatus(AuditStatusEnum.PENDING.getNum());
+
         return protectObjectMapper.updateProtectObject(protectObject);
     }
 

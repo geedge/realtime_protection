@@ -25,6 +25,7 @@ public class DynamicTaskInfo {
     private Integer ruleId;
     private String sourceSystem;
     private String eventType;
+    private Long logRuleId;
 
     // 从防护对象列表中获取
     private List<SimpleProtectObject> protectObjects;

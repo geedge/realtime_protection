@@ -114,8 +114,8 @@ public class StaticRuleService {
             throw new IllegalArgumentException("未知的静态规则ID");
         }
 
-        if (Objects.equals(staticRuleObject.getStaticRuleAuditStatus(), AuditStatusEnum.USING.getNum())) {
-            throw new IllegalArgumentException("静态规则当前正在使用，无法更新");
+        if (!staticRuleObject.getStaticRuleAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+            throw new IllegalStateException("无法修改该静态规则，因为其审核状态未处于" + AuditStatusEnum.AUDITED);
         }
 
         if (!RuleEnum.checkValidate(object)) {
@@ -125,6 +125,7 @@ public class StaticRuleService {
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？
         //按id查询该静态规则的used_task_id字段，如果不为空，则不能修改
         object.setStaticRuleModifyTime(LocalDateTime.now());
+        object.setStaticRuleAuditStatus(AuditStatusEnum.PENDING.getNum());
         //修改静态规则
         return staticRuleMapper.updateStaticRule(id, object);
     }

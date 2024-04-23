@@ -12,7 +12,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/task")
@@ -70,9 +72,10 @@ public class TaskController implements TaskControllerApi {
                                      @RequestParam(value = "task_type", required = false) Integer taskType,
                                      @RequestParam(value = "task_name", required = false) String taskName,
                                      @RequestParam(value = "task_creator", required = false) String taskCreator,
+                                     @RequestParam(value = "audit_status", required = false) Integer auditStatus,
                                      @RequestParam("page") @Min(1) Integer page,
                                      @RequestParam("page_size") @Min(1) Integer pageSize) {
-        List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, page, pageSize);
+        List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks)
                 .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator));
@@ -153,5 +156,29 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok()
                 .setData("success", commandService.setCommandJudged(commandId, isJudged))
                 .setData("command_id", commandId);
+    }
+
+
+    /**
+     * 批量修改审核状态
+     */
+    @PostMapping("/auditbatch")
+    public ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+        List<Integer> errorIds = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("tasks_id", errorIds)
+                    .setData("success", false);
+        }
+
+        return ResponseResult.ok()
+                .setData("success", taskService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
 }
