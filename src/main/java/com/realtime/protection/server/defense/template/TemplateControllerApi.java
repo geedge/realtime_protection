@@ -41,7 +41,6 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "success": 新建防御策略模板是否成功
-                                                                                                        
                                                     "template_id": 新建防御策略模板ID
                                                     """
                                     )
@@ -104,7 +103,8 @@ public interface TemplateControllerApi {
                                                               "hasDNS": true
                                                             },
                                                             "template_used_times": 0,
-                                                            "running_tasks": 0
+                                                            "running_tasks": 0,
+                                                            "description": "xxx"
                                                           },
                                                           {
                                                             "template_id": 24,
@@ -140,7 +140,8 @@ public interface TemplateControllerApi {
                                                               "hasDNS": true
                                                             },
                                                             "template_used_times": 0,
-                                                            "running_tasks": 0
+                                                            "running_tasks": 0,
+                                                            "description": "xxx"
                                                           }
                                                         ],
                                                         "total_num": 708
@@ -149,17 +150,17 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "template_id": 防御策略模板ID
-                                                                                                        
+                                                    
                                                     "template_name": 防御策略模板名称
-                                                                                                        
+                                                    
                                                     "protect_level_low": 防御策略模板日常态数据
-                                                                                                        
+                                                    
                                                     "protect_level_medium": 防御策略模板应急态数据
-                                                                                                        
+                                                    
                                                     "protect_level_high": 防御策略模板紧急态数据
-                                                                                                        
+                                                    
                                                     "template_used_times": 防御策略模板使用次数
-                                                                                                        
+                                                    
                                                     "running_tasks": 防御策略模板任务运行数量
                                                     """
                                     )
@@ -231,24 +232,25 @@ public interface TemplateControllerApi {
                                                             "hasDNS": true
                                                           },
                                                           "template_used_times": 0,
-                                                          "running_tasks": 0
+                                                          "running_tasks": 0,
+                                                          "description": "xxx"
                                                         }
                                                       }
                                                     }
                                                     """,
                                             description = """
                                                     "template_id": 防御策略模板ID
-                                                                                                        
+                                                    
                                                     "template_name": 防御策略模板名称
-                                                                                                        
+                                                    
                                                     "protect_level_low": 防御策略模板日常态数据
-                                                                                                        
+                                                    
                                                     "protect_level_medium": 防御策略模板应急态数据
-                                                                                                        
+                                                    
                                                     "protect_level_high": 防御策略模板紧急态数据
-                                                                                                        
+                                                    
                                                     "template_used_times": 防御策略模板使用次数
-                                                                                                        
+                                                    
                                                     "running_tasks": 防御策略模板任务运行数量
                                                     """
                                     )
@@ -260,6 +262,58 @@ public interface TemplateControllerApi {
             }
     )
     ResponseResult queryTemplate(@PathVariable Integer templateId) throws IllegalAccessException;
+
+    @GetMapping("/query/level")
+    @Operation(
+            summary = "查询所有策略模板是否含有不同类型防护等级",
+            description = "查询所有的策略模板是否还有日常态/应急态/紧急态三种防护等级",
+            responses = {
+                    @ApiResponse(
+                            description = "返回策略模板防护等级信息",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "templates": [
+                                                          {
+                                                            "template_id": 18,
+                                                            "template_name": "洪泛型DDOS攻击-2024-01-18T16:46:14.640176900",
+                                                            "has_protect_level_low": false,
+                                                            "has_protect_level_medium": true,
+                                                            "has_protect_level_high": false
+                                                          },
+                                                          {
+                                                            "template_id": 24,
+                                                            "template_name": "反射型DDOS攻击-2024-01-12T17:52:32.077477700",
+                                                            "has_protect_level_low": false,
+                                                            "has_protect_level_medium": true,
+                                                            "has_protect_level_high": true
+                                                          }
+                                                        ],
+                                                        "total_num": 708
+                                                      }
+                                                    }
+                                                    """,
+                                            description =
+                                                    """
+                                                    "has_protect_level_low": 是否包含日常态防护等级
+                                                    
+                                                    "has_protect_level_medium": 是否包含应急态防护等级
+                                                    
+                                                    "has_protect_level_high": 是否包含紧急态防护等级
+                                                    """
+                                    )
+                            )
+                    )
+            }
+    )
+    ResponseResult queryTemplateProtectLevels();
 
     @PostMapping("/{templateId}/update")
     @Operation(
@@ -285,7 +339,7 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "success": 更新是否成功
-                                                                                                        
+                                                    
                                                     "template_id": 更新的策略模板ID
                                                     """
                                     )
@@ -323,7 +377,7 @@ public interface TemplateControllerApi {
                                                     """,
                                             description = """
                                                     "success": 删除是否成功
-                                                                                                        
+                                                    
                                                     "template_id": 删除的策略模板ID
                                                     """
                                     )

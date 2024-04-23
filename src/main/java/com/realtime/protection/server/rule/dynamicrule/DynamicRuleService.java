@@ -28,9 +28,7 @@ public class DynamicRuleService {
 
         //判断protectObject id是否有效
         boolean ProtectObjIdValid = dynamicRule.getProtectObjectIds().stream()
-                .allMatch(
-                        protectObjectId ->  dynamicRuleMapper.queryProtectObjectById(protectObjectId)
-                );
+                .allMatch(dynamicRuleMapper::queryProtectObjectById);
         if (!ProtectObjIdValid) {
             throw new IllegalArgumentException("protect object id is invalid");
         }
@@ -125,9 +123,7 @@ public class DynamicRuleService {
         dynamicRuleMapper.deleteDynamicRuleProtectObjectConcat(dynamicRuleId);
         //新增DynamicRule关联的ProtectObject
         boolean ProtectObjIdValid = dynamicRuleObject.getProtectObjectIds().stream()
-                .allMatch(
-                protectObjectId ->  dynamicRuleMapper.queryProtectObjectById(protectObjectId)
-                );
+                .allMatch(dynamicRuleMapper::queryProtectObjectById);
         if (!ProtectObjIdValid) {
             throw new IllegalArgumentException("protect object id is invalid");
         }

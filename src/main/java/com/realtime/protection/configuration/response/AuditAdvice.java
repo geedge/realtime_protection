@@ -71,7 +71,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                     return null;
                 })
                 .doOnError(WebClientRequestException.class, err ->
-                        log.warn("审计服务器遭遇异常" + err.getMessage()));
+                        log.warn("审计服务器遭遇异常{}", err.getMessage()));
 
         mono.subscribe(AuditAdvice::handleMono);
 

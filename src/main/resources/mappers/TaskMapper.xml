@@ -71,6 +71,9 @@
             <if test="task_creator != null">
                 AND task_create_username LIKE CONCAT('%', #{task_creator}, '%')
             </if>
+            <if test="task_audit_status != null">
+                AND task_audit_status = #{task_audit_status}
+            </if>
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
@@ -78,7 +81,7 @@
     <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT static_rule_id
         FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id}
+        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = true
     </select>
 
     <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">
@@ -234,6 +237,7 @@
         <result column="task_start_time" property="startTime"/>
         <result column="task_end_time" property="endTime"/>
         <result column="rule_id" property="ruleId"/>
+        <result column="log_rule_id" property="logRuleId"/>
         <result column="source_system" property="sourceSystem"/>
         <result column="event_type" property="eventType"/>
         <collection property="protectObjects">
@@ -252,6 +256,7 @@
                tdr.dynamic_rule_id             as rule_id,
                strategy_template_source_system as source_system,
                strategy_template_name          as event_type,
+               tdr.log_rule_id,
                INET_NTOA(protect_object_ip),
                protect_object_port,
                protect_object_url,

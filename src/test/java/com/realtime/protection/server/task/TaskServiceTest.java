@@ -118,17 +118,17 @@ class TaskServiceTest extends ProtectionApplicationTests {
         }
 
 
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, 1, 10);
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, 1, 10);
         assertEquals(10, tasks.size());
 
-        tasks = taskService.queryTasks(0, null, null, null, 1, 10);
+        tasks = taskService.queryTasks(0, null, null, null, null, 1, 10);
         assertEquals(10, tasks.size());
         tasks.forEach(task -> assertEquals(0, task.getTaskStatus()));
 
-        tasks = taskService.queryTasks(null, 0, null, null, 1, 10);
+        tasks = taskService.queryTasks(null, 0, null, null, null, 1, 10);
         assertEquals(0, tasks.size());
 
-        tasks = taskService.queryTasks(null, null, testName, null, 1, 10);
+        tasks = taskService.queryTasks(null, null, testName, null, null, 1, 10);
         assertEquals(10, tasks.size());
         tasks.forEach(task -> assertEquals(testName, task.getTaskName()));
     }
@@ -136,7 +136,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
     @Test
     void testUpdateTasks() {
         Task originalTask = taskService.queryTasks(
-                null, null, null, null, 1, 1)
+                null, null, null, null, null, 1, 1)
                 .get(0);
 
         List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
@@ -153,7 +153,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testDeleteTask() {
-        long testNum = taskService.queryTasks(null, null, null, null, 1, 10)
+        long testNum = taskService.queryTasks(null, null, null, null, null, 1, 10)
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));
@@ -162,7 +162,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testChangeAuditStatus() {
-        long testNum = taskService.queryTasks(null, null, null, null, 1, 1)
+        long testNum = taskService.queryTasks(null, null, null, null, null, 1, 1)
                 .get(0).getTaskId();
 
         assertTrue(taskService.changeTaskAuditStatus(testNum, 2));

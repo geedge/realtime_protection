@@ -65,6 +65,13 @@ public class TemplateController implements TemplateControllerApi {
     }
 
     @Override
+    @GetMapping("/query/level")
+    public ResponseResult queryTemplateProtectLevels() {
+        List<Template> templates = templateService.queryTemplatesShort();
+        return ResponseResult.ok().setData("templates", templates);
+    }
+
+    @Override
     @PostMapping("/{templateId}/update")
     public ResponseResult updateTemplate(@PathVariable @Min(1) Integer templateId,
                                          @RequestBody @Valid Template template) {
