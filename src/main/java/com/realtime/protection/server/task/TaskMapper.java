@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface TaskMapper {
@@ -58,4 +59,6 @@ public interface TaskMapper {
 
     Integer queryTaskTotalNum(@Param("task_status") Integer taskStatus, @Param("task_type") Integer task_type,
                               @Param("task_name") String taskName, @Param("task_creator") String taskCreator);
+
+    void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 }
