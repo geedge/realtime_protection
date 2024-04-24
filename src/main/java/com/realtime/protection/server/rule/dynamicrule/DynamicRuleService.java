@@ -5,11 +5,14 @@ import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -73,16 +76,21 @@ public class DynamicRuleService {
     public void deleteDynamicRuleObject(Integer dynamicRuleId) {
         //根据任务状态判断能否删除
         Integer taskStatus = dynamicRuleMapper.queryTaskStatusBydynamicRuleId(dynamicRuleId);
-        switch (StateEnum.getStateEnumByNum(taskStatus)){
-            case RUNNING:
-                throw new IllegalArgumentException("使用该动态规则的任务处于运行状态");
-            case PAUSED:
-                throw new IllegalArgumentException("使用该动态规则的任务处于暂停状态");
-            default:
-                break;
+        if (taskStatus == null){
+            dynamicRuleMapper.deleteDynamicRuleObject(dynamicRuleId);
+        }else{
+            switch (StateEnum.getStateEnumByNum(taskStatus)){
+                case RUNNING:
+                    throw new IllegalArgumentException("使用该动态规则的任务处于运行状态");
+                case PAUSED:
+                    throw new IllegalArgumentException("使用该动态规则的任务处于暂停状态");
+                default:
+                    break;
+            }
+            //不需要使用 join,在数据库中设置了级联删除 ON DELETE CASCADE，在删除在从父表中删除数据时自动删除子表中的数据
+            dynamicRuleMapper.deleteDynamicRuleObject(dynamicRuleId);
         }
-        //不需要使用 join,在数据库中设置了级联删除 ON DELETE CASCADE，在删除在从父表中删除数据时自动删除子表中的数据
-        dynamicRuleMapper.deleteDynamicRuleObject(dynamicRuleId);
+
 
     }
 
@@ -176,5 +184,56 @@ public class DynamicRuleService {
 
     public List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids) {
         return dynamicRuleMapper.queryDynamicRuleByIds(ids);
+    }
+
+    public Integer queryUsedDynamicRuleTotalNum() {
+        return  dynamicRuleMapper.queryUsedDynamicRuleTotalNum();
+    }
+
+    public Integer queryAuditDynamicRuleTotalNum(int auditStatus) {
+        return  dynamicRuleMapper.queryAuditDynamicRuleTotalNum(auditStatus);
+    }
+
+    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
+        Integer originalAuditStatus = dynamicRuleMapper.queryAuditStatusById(id);
+        if (originalAuditStatus == null) {
+            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+        }
+        if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+            throw new IllegalArgumentException("invalid audit status");
+        }
+        Boolean success = dynamicRuleMapper.updateAuditStatusById(id, auditStatus);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", success);
+        resultMap.put("audit_status", auditStatus);
+        return resultMap;
+    }
+
+    public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        Function<DynamicRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateDynamicRuleAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(DynamicRuleMapper.class, updateDynamicRuleAuditStatusFunction, idsWithAuditStatusMap);
+
     }
 }

@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 public class DynamicRuleServiceTest extends ProtectionApplicationTests {
@@ -136,4 +138,16 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
                 null,null,null,null);
         System.out.println(num);
     }
+
+    @Test
+    void testUpdateDynamicRuleAuditStatusBatch(){
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(101, 1);
+        map.put(102, 2);
+        map.put(103, 2);
+
+
+        System.out.println(dynamicRuleService.updateAuditStatusBatch(map));
+    }
+
 }
