@@ -79,11 +79,11 @@ public class TaskService {
 
     /**
      * 更新任务关联的静态规则审批状态，用于任务新建/停止时候，修改审批状态为已使用/已审批，不能用于其他审批状态修改
-     * @param task 与静态规则关联的任务
+     * @param taskId 与静态规则关联的任务ID
      * @param newAuditStatus 需要修改的审批状态
      */
-    public void updateStaticRuleAuditStatusInTask(Task task, AuditStatusEnum newAuditStatus) {
-        if (task == null) {
+    public void updateStaticRuleAuditStatusInTask(Long taskId, AuditStatusEnum newAuditStatus) {
+        if (taskId == null) {
             return;
         }
 
@@ -92,7 +92,7 @@ public class TaskService {
             return;
         }
 
-        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds());
+        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
         if (staticRuleObjects == null || staticRuleObjects.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
         }
@@ -134,11 +134,11 @@ public class TaskService {
 
     /**
      * 更新任务关联的动态规则审批状态，用于任务新建/停止时候，修改审批状态为已使用/已审批，不能用于其他审批状态修改
-     * @param task 与动态规则关联的任务
+     * @param taskId 与动态规则关联的任务ID
      * @param newAuditStatus 需要修改的审批状态
      */
-    public void updateDynamicRuleAuditStatusInTask(Task task, AuditStatusEnum newAuditStatus) {
-        if (task == null) {
+    public void updateDynamicRuleAuditStatusInTask(Long taskId, AuditStatusEnum newAuditStatus) {
+        if (taskId == null) {
             return;
         }
 
@@ -147,7 +147,7 @@ public class TaskService {
             return;
         }
 
-        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds());
+        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
         if (dynamicRuleObjects == null || dynamicRuleObjects.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
         }
@@ -259,7 +259,10 @@ public class TaskService {
             return true;
         }
 
-        updateStaticRuleAuditStatusInTask(task, AuditStatusEnum.AUDITED);
+        updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
+        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
         return taskMapper.deleteTask(taskId);
     }
 

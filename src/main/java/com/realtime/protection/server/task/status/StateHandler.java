@@ -59,22 +59,23 @@ public class StateHandler {
 
     protected Boolean handleStop(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
-        taskService.updateDynamicRuleAuditStatusInTask(taskService.queryTask(taskId), AuditStatusEnum.AUDITED);
-        taskService.updateStaticRuleAuditStatusInTask(taskService.queryTask(taskId), AuditStatusEnum.AUDITED);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         return true;
     }
 
     protected Boolean handleFinish(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
-        taskService.updateDynamicRuleAuditStatusInTask(taskService.queryTask(taskId), AuditStatusEnum.AUDITED);
-        taskService.updateStaticRuleAuditStatusInTask(taskService.queryTask(taskId), AuditStatusEnum.AUDITED);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+
         return true;
     }
 
     protected Boolean handleFailed(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
-        taskService.updateDynamicRuleAuditStatusInTask(taskService.queryTask(taskId), AuditStatusEnum.AUDITED);
-        taskService.updateStaticRuleAuditStatusInTask(taskService.queryTask(taskId), AuditStatusEnum.AUDITED);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         return true;
     }
 
@@ -96,7 +97,7 @@ public class StateHandler {
         }
 
         // 将所有关联的静态规则全部设置为已使用状态
-        taskService.updateStaticRuleAuditStatusInTask(task, AuditStatusEnum.USING);
+        taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         commandService.createCommands(staticTaskCommandInfos);
         return true;
@@ -109,7 +110,7 @@ public class StateHandler {
             throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
         }
 
-        taskService.updateDynamicRuleAuditStatusInTask(task, AuditStatusEnum.AUDITED);
+        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.AUDITED);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 
