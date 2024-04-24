@@ -1,5 +1,6 @@
 package com.realtime.protection.configuration.entity.rule.dynamicrule;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -95,4 +96,10 @@ public class DynamicRuleObject {
     @JsonProperty("log_rule_id")
     @Schema(description = "筛选条件-日志规则id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long logRuleId;
+
+
+    @JsonProperty("dynamic_rule_audit_status")
+    @ExcelIgnore
+    @Schema(description = "动态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer dynamicRuleAuditStatus;
 }
