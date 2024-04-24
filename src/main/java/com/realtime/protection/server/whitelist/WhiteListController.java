@@ -3,6 +3,7 @@ package com.realtime.protection.server.whitelist;
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -192,6 +193,22 @@ public class WhiteListController implements WhiteListControllerApi {
     public ResponseResult whiteListStaticRulesCheck(@PathVariable List<Integer> staticRuleIds) {
         return ResponseResult.ok()
                 .setData("whiteobj_list", whiteListService.whiteListStaticRulesCheck(staticRuleIds));
+    }
+
+    /*
+    白名单数据统计
+     */
+    @Override
+    @GetMapping("/statistics")
+    public ResponseResult getWhiteListStatisticsData() {
+        return ResponseResult.ok()
+                .setData("whiteobj_num", whiteListService.queryWhiteListTotalNum(null, null))
+                .setData("whiteobj_audit_num", whiteListService.queryAuditWhiteListTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
+                ))
+                .setData("whiteobj_unaudit_num", whiteListService.queryAuditWhiteListTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ));
     }
 
 

@@ -101,6 +101,26 @@
         where
         dynamic_rule_id = #{dynamicRuleId}
     </update>
+    <update id="updateAuditStatusById">
+        update t_dynamic_rule
+        set audit_status = #{auditStatus}
+        where dynamic_rule_id = #{dynamicRuleId}
+    </update>
+
+    <!-- 用于批量更新审核状态 -->
+    <update id="updateAuditStatusByIdBatch">
+        update t_dynamic_rule
+        set audit_status = CASE dynamic_rule_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        ELSE audit_status
+        END
+        WHERE dynamic_rule_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
 
     <resultMap id="dynamicRuleMap"
@@ -133,6 +153,7 @@
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
         <result column="strategy_template_name" property="dynamicRuleEventType"/>
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
+        <result column="audit_status" property="auditStatus"/>
     </resultMap>
 
     <select id="queryDynamicRuleById" resultMap="dynamicRuleMap">
@@ -245,6 +266,20 @@
         from t_dynamic_rule
         left join realtime_protection.t_task
             on t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
+        where dynamic_rule_id = #{dynamicRuleId}
+    </select>
+
+    <select id="queryUsedDynamicRuleTotalNum" resultType="java.lang.Integer">
+
+    </select>
+    <select id="queryAuditDynamicRuleTotalNum" resultType="java.lang.Integer">
+        select count(*)
+        from t_dynamic_rule
+        where audit_status = #{auditStatus}
+    </select>
+    <select id="queryAuditStatusById" resultType="java.lang.Integer">
+        select audit_status
+        from t_dynamic_rule
         where dynamic_rule_id = #{dynamicRuleId}
     </select>
 

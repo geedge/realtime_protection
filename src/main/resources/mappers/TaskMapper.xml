@@ -81,13 +81,13 @@
     <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT static_rule_id
         FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = true
+        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = 2
     </select>
 
     <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT dynamic_rule_id
         FROM t_dynamic_rule
-        WHERE dynamic_rule_used_task_id = #{task_id}
+        WHERE dynamic_rule_used_task_id = #{task_id} AND audit_status = 2
     </select>
 
     <select id="queryTask" resultMap="taskMap">
@@ -130,7 +130,8 @@
 
     <update id="clearTaskConnectedDynamicRule">
         UPDATE t_dynamic_rule
-        SET dynamic_rule_used_task_id = null
+        SET dynamic_rule_used_task_id = null,
+            modify_time = NOW()
         WHERE dynamic_rule_used_task_id = #{task_id}
     </update>
 
@@ -151,7 +152,8 @@
     <!-- 批量审核 -->
     <update id="updateAuditStatusByIdBatch">
         update t_task
-        set task_audit_status = CASE task_id
+        set task_modify_time = NOW(),
+            task_audit_status = CASE task_id
         <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
             WHEN #{id} THEN #{auditStatus}
         </foreach>
@@ -255,7 +257,7 @@
         <result column="log_rule_id" property="logRuleId"/>
         <result column="source_system" property="sourceSystem"/>
         <result column="event_type" property="eventType"/>
-        <collection property="protectObjects">
+        <collection property="protectObjects" ofType="com.realtime.protection.configuration.entity.task.DynamicTaskInfo$SimpleProtectObject">
             <result column="protect_object_ip" property="IP"/>
             <result column="protect_object_port" property="port"/>
             <result column="protect_object_url" property="URL"/>
@@ -264,7 +266,7 @@
     </resultMap>
 
     <select id="getDynamicTaskInfos"
-            resultType="com.realtime.protection.configuration.entity.task.DynamicTaskInfo">
+            resultMap="dynamicTaskInfoMap">
         SELECT task_id,
                task_start_time,
                task_end_time,
@@ -272,7 +274,7 @@
                strategy_template_source_system as source_system,
                strategy_template_name          as event_type,
                tdr.log_rule_id,
-               INET_NTOA(protect_object_ip),
+               INET_NTOA(protect_object_ip) as protect_object_ip,
                protect_object_port,
                protect_object_url,
                protect_object_protocol
@@ -301,5 +303,10 @@
             </if>
         </where>
 
+    </select>
+
+    <select id="queryAuditTaskTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_task
+        WHERE task_audit_status = #{auditStatus}
     </select>
 </mapper>

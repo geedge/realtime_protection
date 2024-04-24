@@ -4,6 +4,7 @@ package com.realtime.protection.server.rule.staticrule;
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -178,6 +179,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     /**
      * 批量修改审核状态
      */
+    @Override
     @PostMapping("/auditbatch")
     public ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
         List<Integer> errorIds = new ArrayList<>();
@@ -197,6 +199,26 @@ public class StaticRuleController implements StaticRuleControllerApi {
         return ResponseResult.ok()
                 .setData("success", staticRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
+
+    /**
+     * 获取统计数据
+     */
+    @Override
+    @GetMapping("/statistics")
+    public ResponseResult getStaticRuleStatisticsData(){
+
+        return ResponseResult.ok()
+                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(null, null, null, null))
+                .setData("static_rule_used_num", staticRuleService.queryAuditStaticRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
+                ))
+                .setData("static_rule_audit_num", staticRuleService.queryAuditStaticRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
+                ))
+                .setData("static_rule_unaudit_num", staticRuleService.queryAuditStaticRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())));
+    }
+
 
 
 

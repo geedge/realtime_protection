@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DynamicRuleMapper {
@@ -47,4 +48,14 @@ public interface DynamicRuleMapper {
     List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids);
 
     Integer queryTaskStatusBydynamicRuleId(Integer dynamicRuleId);
+
+    Integer queryUsedDynamicRuleTotalNum();
+
+    Integer queryAuditDynamicRuleTotalNum(int auditStatus);
+
+    Integer queryAuditStatusById(Integer dynamicRuleId);
+
+    Boolean updateAuditStatusById(Integer dynamicRuleId, Integer auditStatus);
+
+    void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 }

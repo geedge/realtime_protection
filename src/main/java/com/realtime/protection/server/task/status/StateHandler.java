@@ -36,14 +36,14 @@ public class StateHandler {
         }
 
         // 如果审核状态不为已通过审核，则报错
-        if (taskAuditStatus != AuditStatusEnum.AUDITED.getNum()) {
+        if (!taskAuditStatus.equals(AuditStatusEnum.AUDITED.getNum())) {
             throw new IllegalArgumentException("无效的task_id，因为未通过审核");
         }
 
         return switch (TaskTypeEnum.getTaskTypeByNum(task.getTaskType())) {
-            case STATIC -> handleStaticTaskStart(commandService, taskService, taskId);
-            case DYNAMIC -> handleDynamicTaskStart(taskService, taskId);
-            case JUDGED -> handleJudgedTaskStart(taskService, taskId);
+            case STATIC -> handleStaticTaskStart(commandService, taskService, task);
+            case DYNAMIC -> handleDynamicTaskStart(taskService, task);
+            case JUDGED -> handleJudgedTaskStart(taskService, task);
         };
     }
 
@@ -57,48 +57,60 @@ public class StateHandler {
         return true;
     }
 
-    protected Boolean handleStop(CommandService commandService, Long taskId) {
+    protected Boolean handleStop(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         return true;
     }
 
-    protected Boolean handleFinish(CommandService commandService, Long taskId) {
+    protected Boolean handleFinish(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+
         return true;
     }
 
-    protected Boolean handleFailed(CommandService commandService, Long taskId) {
+    protected Boolean handleFailed(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         return true;
     }
 
     // todo: 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
     //       筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
-    private Boolean handleJudgedTaskStart(TaskService taskService, Long taskId) {
-        return sendFilters(taskService, taskId);
+    private Boolean handleJudgedTaskStart(TaskService taskService, Task task) {
+        return sendFilters(taskService, task);
     }
 
-    private Boolean handleDynamicTaskStart(TaskService taskService, Long taskId) {
-        return sendFilters(taskService, taskId);
+    private Boolean handleDynamicTaskStart(TaskService taskService, Task task) {
+        return sendFilters(taskService, task);
     }
 
-    private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Long taskId) {
+    private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Task task) {
         // 如果未能获取staticTaskCommandInfos，需要报错
-        List<TaskCommandInfo> staticTaskCommandInfos = taskService.getStaticCommandInfos(taskId);
+        List<TaskCommandInfo> staticTaskCommandInfos = taskService.getStaticCommandInfos(task.getTaskId());
         if (staticTaskCommandInfos == null || staticTaskCommandInfos.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表为空，请至少选择一个静态规则以启动任务");
         }
+
+        // 将所有关联的静态规则全部设置为已使用状态
+        taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         commandService.createCommands(staticTaskCommandInfos);
         return true;
     }
 
-    private Boolean sendFilters(TaskService taskService, Long taskId) {
-        List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(taskId);
+    private Boolean sendFilters(TaskService taskService, Task task) {
+        List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(task.getTaskId());
 
         if (dynamicTaskInfos == null || dynamicTaskInfos.isEmpty()) {
             throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
         }
+
+        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.AUDITED);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 

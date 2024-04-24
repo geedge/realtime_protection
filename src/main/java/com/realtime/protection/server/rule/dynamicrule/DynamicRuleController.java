@@ -2,11 +2,14 @@ package com.realtime.protection.server.rule.dynamicrule;
 
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("dynamicrule")
@@ -19,7 +22,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
         this.dynamicRuleService = dynamicRuleService;
     }
 
-    // 新增   要关联防护对象！！！！
+    //
     @Override
     @PostMapping("/new")
     public ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject) {
@@ -120,6 +123,65 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     //详情查看？？  就是按id查询吧
 
 
-    //审核？不需要
+    /**
+     * 审批
+     */
+    @GetMapping("/{id}/audit/{auditStatus}")
+    public ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
+        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("staticRule_id", id)
+                    .setData("success", false);
+        }
+        return ResponseResult.ok()
+                .addDataMap(dynamicRuleService.updateAuditStatus(id, auditStatus))
+                .setData("dynamicRule_id", id);
+    }
+
+    /**
+     * 批量审批
+     */
+    @PostMapping("/auditbatch")
+    public ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+        List<Integer> errorIds = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("staticRule_id", errorIds)
+                    .setData("success", false);
+        }
+
+        return ResponseResult.ok()
+                .setData("success",                                                                                dynamicRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
+    }
+
+
+    /**
+     * 获取统计数据
+     */
+    @Override
+    @GetMapping("/statistics")
+    public ResponseResult getStaticRuleStatisticsData(){
+
+        return ResponseResult.ok()
+                .setData("dynamic_rule_num", dynamicRuleService.queryDynamicRuleTotalNum(null, null,
+                        null, null))
+                .setData("dynamic_rule_used_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
+                ))
+                .setData("dynamic_rule_audit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
+                ))
+                .setData("dynamic_rule_unaudit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ));
+    }
+
 
 }

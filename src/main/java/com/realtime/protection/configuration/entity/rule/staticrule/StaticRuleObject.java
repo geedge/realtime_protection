@@ -3,6 +3,8 @@ package com.realtime.protection.configuration.entity.rule.staticrule;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -14,6 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -47,7 +50,7 @@ public class StaticRuleObject {
     @JsonProperty("static_rule_audit_status")
     @ExcelIgnore
     @Schema(description = "静态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer staticRuleAuditStatus;
+    private Integer auditStatus;
     @JsonProperty("static_rule_create_depart")
     @ExcelIgnore
     @Schema(description = "静态规则创建用户所属部门", accessMode = Schema.AccessMode.READ_ONLY)
@@ -142,4 +145,15 @@ public class StaticRuleObject {
     @Schema(description = "频率，最低为1", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer staticRuleFrequency;
 
+    public void checkAuditStatusValidate(AuditStatusEnum newAuditStatus) {
+        if (!List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()).contains(this.getAuditStatus())) {
+            throw new IllegalArgumentException("规则《" + this.getStaticRuleName() + "》原审批状态非法");
+        }
+
+        if (!AuditStatusValidator
+                .setOriginal(this.getAuditStatus())
+                .checkValidate(newAuditStatus.getNum())) {
+            throw new IllegalArgumentException("规则《" + this.getStaticRuleName() + "》审核状态错误");
+        }
+    }
 }

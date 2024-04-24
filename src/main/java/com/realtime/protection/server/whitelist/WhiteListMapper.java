@@ -45,4 +45,6 @@ public interface WhiteListMapper {
     List<WhiteListObject> whiteListCommandsCheck(List<TaskCommandInfo> taskCommandInfos);
 
     List<WhiteListObject> whiteListCStaticRulesCheck(@Param("staticRuleObjects") List<StaticRuleObject> staticRuleObjects);
+
+    Integer queryAuditWhiteListTotalNum(@Param("auditStatus") Integer auditStatus);
 }

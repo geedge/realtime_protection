@@ -7,18 +7,17 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "静态规则API", description = "静态规则模块所有接口")
 public interface StaticRuleControllerApi {
@@ -281,4 +280,62 @@ public interface StaticRuleControllerApi {
             }
     )
     ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
+
+    @PostMapping("/auditbatch")
+    @Operation(
+            summary = "批量更新静态规则审批状态",
+            description = "批量更新静态规则审批状态，0未审核、1审核不通过、2审核通过",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回静态规则审核结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "字典，key是静态规则id，value是静态规则审核状态id",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+
+                    )
+            )
+    )
+    ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+
+    @Operation(
+            summary = "数据统计",
+            description = "数据统计",
+            responses = {
+                    @ApiResponse(
+                            description = "返回数据统计",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                       "code": 200,
+                                                       "message": "request succeed",
+                                                       "data": {
+                                                         "static_rule_num": 7,
+                                                         "static_rule_used_num": 2,
+                                                         "static_rule_audit_num": 3,
+                                                         "static_rule_unaudit_num": 1
+                                                       }
+                                                     }
+                                                    """
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+
+            }
+    )
+    @GetMapping("/statistics")
+    ResponseResult getStaticRuleStatisticsData();
 }

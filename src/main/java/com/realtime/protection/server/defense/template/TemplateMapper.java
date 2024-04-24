@@ -38,4 +38,8 @@ public interface TemplateMapper {
     List<String> queryEventName(String sourceSystem);
 
     Integer queryTemplateId(String sourceSystem, String eventName);
+
+    Integer queryUsedTemplateTotalNum();
+
+    Integer queryAuditTemplateTotalNum(Integer auditState);
 }

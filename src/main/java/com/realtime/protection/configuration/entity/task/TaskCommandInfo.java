@@ -140,10 +140,16 @@ public class TaskCommandInfo {
     }
 
     public void setProtocolNum() {
+        if (this.fiveTupleWithMask == null) {
+            return;
+        }
         this.fiveTupleWithMask.setProtocolNum();
     }
 
     public void setMask() {
+        if (this.fiveTupleWithMask == null) {
+            return;
+        }
         this.fiveTupleWithMask.setMask();
     }
 }

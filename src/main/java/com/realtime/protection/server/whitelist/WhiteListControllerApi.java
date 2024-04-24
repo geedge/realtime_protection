@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -240,4 +242,51 @@ public interface WhiteListControllerApi {
             }
     )
     ResponseResult whiteListStaticRulesCheck(@PathVariable List<Integer> staticRuleIds);
+
+    /*
+        白名单数据统计
+         */
+
+    @Operation(
+            summary = "白名单数据统计",
+            description = "白名单数据统计",
+            responses = {
+                    @ApiResponse(
+                            description = "返回白名单数据统计",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                       "code": 200,
+                                                       "message": "request succeed",
+                                                       "data": {
+                                                         "proobj_num": 2,
+                                                         "proobj_used_num": 2,
+                                                         "proobj_audit_num": 1,
+                                                         "proobj_undit_num": 0
+                                                       }
+                                                     }
+                                                    """,
+                                            description = """
+                                                    "proobj_num": 白名单总数
+                                                    
+                                                    "template_name": 白名单使用数
+                                                    
+                                                    "proobj_audit_num": 审核通过数
+                                                    
+                                                    "proobj_undit_num": 未审核数
+                                                    """
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+
+            }
+    )
+    @GetMapping("/statistics")
+    ResponseResult getWhiteListStatisticsData();
 }

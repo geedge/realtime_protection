@@ -358,5 +358,37 @@ public interface DynamicRuleControllerApi {
                                           @RequestParam(value = "page", defaultValue = "1") Integer page,
                                           @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize);
 
+    @Operation(
+            summary = "数据统计",
+            description = "数据统计",
+            responses = {
+                    @ApiResponse(
+                            description = "返回数据统计",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                          "code": 200,
+                                                          "message": "request succeed",
+                                                          "data": {
+                                                            "dynamic_rule_num": 3,
+                                                            "dynamic_rule_used_num": 0,
+                                                            "dynamic_rule_audit_num": 2,
+                                                            "dynamic_rule_unaudit_num": 0
+                                                          }
+                                                        }
+                                                    """
+                                    )
+                            )
+                    )
+            },
+            parameters = {
 
+            }
+    )
+    @GetMapping("/statistics")
+    ResponseResult getStaticRuleStatisticsData();
 }

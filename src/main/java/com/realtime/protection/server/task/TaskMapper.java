@@ -61,4 +61,6 @@ public interface TaskMapper {
                               @Param("task_name") String taskName, @Param("task_creator") String taskCreator);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
+
+    Integer queryAuditTaskTotalNum(Integer auditState);
 }

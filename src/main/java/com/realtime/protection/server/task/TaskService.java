@@ -1,6 +1,9 @@
 package com.realtime.protection.server.task;
 
+import com.alibaba.excel.util.MapUtils;
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
@@ -8,6 +11,8 @@ import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
+import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +22,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @DS("mysql")
 public class TaskService {
     private final TaskMapper taskMapper;
+    private final StaticRuleMapper staticRuleMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
+    private static final int BATCH_SIZE = 100;
+    private final DynamicRuleMapper dynamicRuleMapper;
 
-    public TaskService(TaskMapper taskMapper,SqlSessionWrapper sqlSessionWrapper) {
+    public TaskService(TaskMapper taskMapper, StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, DynamicRuleMapper dynamicRuleMapper) {
         this.taskMapper = taskMapper;
+        this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
+        this.dynamicRuleMapper = dynamicRuleMapper;
     }
 
     @Transactional
@@ -36,17 +47,144 @@ public class TaskService {
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
 
-        // todo: 添加新建任务时，将动态/静态规则从“已审核”修改为“使用中”
-
         taskMapper.newTask(task);
 
-        if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty())
+        if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
+            staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
+                if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+                    throw new IllegalArgumentException("部分规则审批状态错误");
+                }
+                if (staticRuleObject.getStaticRuleUsedTaskId() != null) {
+                    throw new IllegalArgumentException("部分静态规则已被其他任务使用");
+                }
+            });
             taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+        }
 
-        if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty())
+        if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
+            dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds()).forEach(dynamicRuleObject -> {
+                if (!dynamicRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+                    throw new IllegalArgumentException("部分规则审批状态错误");
+                }
+
+                if (dynamicRuleObject.getDynamicRuleUsedTaskId() != null) {
+                    throw new IllegalArgumentException("部分动态规则已被其他任务使用");
+                }
+            });
             taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+        }
 
         return task.getTaskId();
+    }
+
+    /**
+     * 更新任务关联的静态规则审批状态，用于任务新建/停止时候，修改审批状态为已使用/已审批，不能用于其他审批状态修改
+     * @param taskId 与静态规则关联的任务ID
+     * @param newAuditStatus 需要修改的审批状态
+     */
+    public void updateStaticRuleAuditStatusInTask(Long taskId, AuditStatusEnum newAuditStatus) {
+        if (taskId == null) {
+            return;
+        }
+
+        // 限制该函数仅能用于将规则修改为已审批/使用中
+        if (!List.of(AuditStatusEnum.AUDITED, AuditStatusEnum.USING).contains(newAuditStatus)) {
+            return;
+        }
+
+        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
+        if (staticRuleObjects == null || staticRuleObjects.isEmpty()) {
+            throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
+        }
+
+        // 检查所有的静态规则审批状态是否正确，如果不正确则报错
+        staticRuleObjects.forEach(staticRuleObject -> staticRuleObject.checkAuditStatusValidate(newAuditStatus));
+
+        Map<Integer, Integer> staticRuleAuditStatusBatch = staticRuleObjects
+                .stream()
+                .collect(Collectors.toMap(
+                        StaticRuleObject::getStaticRuleId,
+                        k -> newAuditStatus.getNum(), // 将审核状态全部修改为使用中状态
+                        (existing, replacement) -> existing)); // 如果有重复字段，默认使用先前值
+
+        sqlSessionWrapper.startBatchSession(
+                StaticRuleMapper.class,
+
+                (Function<StaticRuleMapper, Function<Map<Integer, Integer>, Void>>) mapper -> staticRuleBatch -> {
+                    Map<Integer, Integer> batchMap = MapUtils.newHashMapWithExpectedSize(BATCH_SIZE);
+                    for (Map.Entry<Integer, Integer> auditStatusEntry : staticRuleBatch.entrySet()) {
+                        batchMap.put(auditStatusEntry.getKey(), auditStatusEntry.getValue());
+                        if (batchMap.size() < BATCH_SIZE) {
+                            continue;
+                        }
+
+                        mapper.updateAuditStatusByIdBatch(batchMap);
+                        batchMap.clear();
+                    }
+
+                    mapper.updateAuditStatusByIdBatch(batchMap);
+                    batchMap.clear();
+
+                    return null;
+                },
+
+                staticRuleAuditStatusBatch
+        );
+    }
+
+    /**
+     * 更新任务关联的动态规则审批状态，用于任务新建/停止时候，修改审批状态为已使用/已审批，不能用于其他审批状态修改
+     * @param taskId 与动态规则关联的任务ID
+     * @param newAuditStatus 需要修改的审批状态
+     */
+    public void updateDynamicRuleAuditStatusInTask(Long taskId, AuditStatusEnum newAuditStatus) {
+        if (taskId == null) {
+            return;
+        }
+
+        // 限制该函数仅能用于将规则修改为已审批/使用中
+        if (!List.of(AuditStatusEnum.AUDITED, AuditStatusEnum.USING).contains(newAuditStatus)) {
+            return;
+        }
+
+        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
+        if (dynamicRuleObjects == null || dynamicRuleObjects.isEmpty()) {
+            throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
+        }
+
+        // 检查所有的动态规则列表的审批状态是否正确，如不正确则报错
+        dynamicRuleObjects.forEach(dynamicRuleObject -> dynamicRuleObject.checkAuditStatusValidate(newAuditStatus));
+
+        Map<Integer, Integer> dynamicRuleAuditStatusBatch = dynamicRuleObjects
+                .stream()
+                .collect(Collectors.toMap(
+                        DynamicRuleObject::getDynamicRuleId,
+                        k -> newAuditStatus.getNum(),
+                        (existing, replacement) -> existing));
+
+        sqlSessionWrapper.startBatchSession(
+                DynamicRuleMapper.class,
+
+                (Function<DynamicRuleMapper, Function<Map<Integer, Integer>, Void>>) mapper -> batch -> {
+                    Map<Integer, Integer> batchMap = MapUtils.newHashMapWithExpectedSize(BATCH_SIZE);
+                    for (Map.Entry<Integer, Integer> auditStatusEntry : batch.entrySet()) {
+                        batchMap.put(auditStatusEntry.getKey(), auditStatusEntry.getValue());
+                        if (batchMap.size() < BATCH_SIZE) {
+                            continue;
+                        }
+
+                        mapper.updateAuditStatusByIdBatch(batchMap);
+                        batchMap.clear();
+                    }
+
+                    mapper.updateAuditStatusByIdBatch(batchMap);
+                    batchMap.clear();
+
+                    return null;
+                },
+
+                dynamicRuleAuditStatusBatch
+        );
     }
 
     @Transactional
@@ -116,6 +254,15 @@ public class TaskService {
     }
 
     public Boolean deleteTask(Long taskId) {
+        Task task = taskMapper.queryTask(taskId);
+        if (task == null) {
+            return true;
+        }
+
+        updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
+        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
         return taskMapper.deleteTask(taskId);
     }
 
@@ -186,5 +333,9 @@ public class TaskService {
         return sqlSessionWrapper.startBatchSession(TaskMapper.class, updateTaskAuditStatusFunction, idsWithAuditStatusMap);
 
 
+    }
+
+    public Integer queryAuditTaskTotalNum(Integer auditState) {
+        return taskMapper.queryAuditTaskTotalNum(auditState);
     }
 }

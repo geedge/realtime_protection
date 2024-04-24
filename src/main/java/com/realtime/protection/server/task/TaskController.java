@@ -4,6 +4,8 @@ import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.status.StateChangeService;
 import jakarta.validation.Valid;
@@ -162,6 +164,7 @@ public class TaskController implements TaskControllerApi {
     /**
      * 批量修改审核状态
      */
+    @Override
     @PostMapping("/auditbatch")
     public ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
         List<Integer> errorIds = new ArrayList<>();
@@ -172,7 +175,7 @@ public class TaskController implements TaskControllerApi {
                 errorIds.add(id);
             }
         }
-        if (!errorIds.isEmpty()){
+        if (!errorIds.isEmpty()) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("tasks_id", errorIds)
                     .setData("success", false);
@@ -181,4 +184,20 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok()
                 .setData("success", taskService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
+
+    /**
+     * 统计
+     */
+    @Override
+    @GetMapping("/statistics")
+    public ResponseResult statistics() {
+        return ResponseResult.ok()
+                .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null))
+                .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null))
+                .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null))
+                .setData("unaudit_num", taskService.queryAuditTaskTotalNum(
+                        AuditStatusEnum.PENDING.getNum()
+                ));
+    }
+
 }

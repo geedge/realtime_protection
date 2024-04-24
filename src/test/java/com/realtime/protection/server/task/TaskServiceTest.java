@@ -3,8 +3,10 @@ package com.realtime.protection.server.task;
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
 import com.realtime.protection.server.rule.staticrule.StaticRuleService;
 import com.realtime.protection.server.task.status.StateChangeService;
@@ -27,13 +29,15 @@ class TaskServiceTest extends ProtectionApplicationTests {
     private final TaskService taskService;
     private final StaticRuleService staticRuleService;
     private final DynamicRuleService dynamicRuleService;
+    private final StateChangeService stateChangeService;
     private Task task;
 
     @Autowired
-    TaskServiceTest(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService) {
+    TaskServiceTest(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, StateChangeService stateChangeService) {
         this.taskService = taskService;
         this.staticRuleService = staticRuleService;
         this.dynamicRuleService = dynamicRuleService;
+        this.stateChangeService = stateChangeService;
     }
 
     @BeforeEach
@@ -188,5 +192,16 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
 
         System.out.println(taskService.updateAuditStatusBatch(map));
+    }
+    @Test
+    void testGetDynamicTaskInfos(){
+        List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(43844L);
+        System.out.println(dynamicTaskInfos);
+    }
+
+    @Test
+    void changeTaskstatus() throws DorisStartException {
+        stateChangeService.changeState(2, 43844L, false);
+
     }
 }
