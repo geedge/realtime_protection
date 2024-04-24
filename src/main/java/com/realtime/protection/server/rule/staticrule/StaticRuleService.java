@@ -57,7 +57,7 @@ public class StaticRuleService {
     public Integer newStaticRuleObject(StaticRuleObject object)  {
 
         object.setStaticRuleCreateTime(LocalDateTime.now());
-        object.setStaticRuleAuditStatus(0);
+        object.setAuditStatus(0);
         /*
         待开发：设置静态规则对象的创建用户、用户所属部门等属性
          */
@@ -114,7 +114,7 @@ public class StaticRuleService {
             throw new IllegalArgumentException("未知的静态规则ID");
         }
 
-        if (!staticRuleObject.getStaticRuleAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+        if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
             throw new IllegalStateException("无法修改该静态规则，因为其审核状态未处于" + AuditStatusEnum.AUDITED);
         }
 
@@ -125,7 +125,7 @@ public class StaticRuleService {
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？
         //按id查询该静态规则的used_task_id字段，如果不为空，则不能修改
         object.setStaticRuleModifyTime(LocalDateTime.now());
-        object.setStaticRuleAuditStatus(AuditStatusEnum.PENDING.getNum());
+        object.setAuditStatus(AuditStatusEnum.PENDING.getNum());
         //修改静态规则
         return staticRuleMapper.updateStaticRule(id, object);
     }
@@ -200,7 +200,7 @@ public class StaticRuleService {
             return;
         }
 
-        if (Objects.equals(staticRuleObject.getStaticRuleAuditStatus(), AuditStatusEnum.USING.getNum())) {
+        if (Objects.equals(staticRuleObject.getAuditStatus(), AuditStatusEnum.USING.getNum())) {
             throw new IllegalArgumentException("当前静态规则正在使用，无法删除");
         }
         staticRuleMapper.deleteStaticRuleById(id);

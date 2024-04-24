@@ -3,6 +3,8 @@ package com.realtime.protection.configuration.entity.rule.dynamicrule;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -101,5 +103,17 @@ public class DynamicRuleObject {
     @JsonProperty("dynamic_rule_audit_status")
     @ExcelIgnore
     @Schema(description = "动态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer dynamicRuleAuditStatus;
+    private Integer auditStatus;
+
+    public void checkAuditStatusValidate(AuditStatusEnum newAuditStatus) {
+        if (!List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()).contains(this.getAuditStatus())) {
+            throw new IllegalArgumentException("规则《" + this.getDynamicRuleName() + "》原审批状态非法");
+        }
+
+        if (!AuditStatusValidator
+                .setOriginal(this.getAuditStatus())
+                .checkValidate(newAuditStatus.getNum())) {
+            throw new IllegalArgumentException("规则《" + this.getDynamicRuleName() + "》审核状态错误");
+        }
+    }
 }

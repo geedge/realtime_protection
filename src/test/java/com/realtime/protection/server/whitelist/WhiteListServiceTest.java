@@ -103,7 +103,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
         staticRuleTest.setStaticRuleCreateUsername("mh");
         staticRuleTest.setStaticRuleCreateDepart("mmeess");
         staticRuleTest.setStaticRuleCreateUserId(2);
-        staticRuleTest.setStaticRuleAuditStatus(0);
+        staticRuleTest.setAuditStatus(0);
 
         staticRuleTest.setStaticRuleSip("1.1.2.3");
         staticRuleTest.setStaticRuleSport(80);

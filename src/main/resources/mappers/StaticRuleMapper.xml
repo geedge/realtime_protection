@@ -86,7 +86,8 @@
     </update>
     <update id="updateAuditStatusByIdBatch">
         update t_static_rule
-        set static_rule_audit_status = CASE static_rule_id
+        set static_rule_modify_time = NOW(),
+            static_rule_audit_status = CASE static_rule_id
         <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
             WHEN #{id} THEN #{auditStatus}
         </foreach>

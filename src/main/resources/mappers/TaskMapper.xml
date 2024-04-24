@@ -81,13 +81,13 @@
     <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT static_rule_id
         FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = true
+        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = 2
     </select>
 
     <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT dynamic_rule_id
         FROM t_dynamic_rule
-        WHERE dynamic_rule_used_task_id = #{task_id}
+        WHERE dynamic_rule_used_task_id = #{task_id} AND audit_status = 2
     </select>
 
     <select id="queryTask" resultMap="taskMap">
@@ -130,7 +130,8 @@
 
     <update id="clearTaskConnectedDynamicRule">
         UPDATE t_dynamic_rule
-        SET dynamic_rule_used_task_id = null
+        SET dynamic_rule_used_task_id = null,
+            modify_time = NOW()
         WHERE dynamic_rule_used_task_id = #{task_id}
     </update>
 
@@ -151,7 +152,8 @@
     <!-- 批量审核 -->
     <update id="updateAuditStatusByIdBatch">
         update t_task
-        set task_audit_status = CASE task_id
+        set task_modify_time = NOW(),
+            task_audit_status = CASE task_id
         <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
             WHEN #{id} THEN #{auditStatus}
         </foreach>

@@ -30,7 +30,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         staticRuleTest.setStaticRuleCreateUsername("mh");
         staticRuleTest.setStaticRuleCreateDepart("mmeess");
         staticRuleTest.setStaticRuleCreateUserId(2);
-        staticRuleTest.setStaticRuleAuditStatus(0);
+        staticRuleTest.setAuditStatus(0);
 
         staticRuleTest.setStaticRuleSip("1.1.2.0");
         staticRuleTest.setStaticRuleMsip("255.255.255.0");

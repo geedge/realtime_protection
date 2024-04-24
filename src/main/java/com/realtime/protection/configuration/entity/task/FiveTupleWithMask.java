@@ -87,7 +87,9 @@ public class FiveTupleWithMask {
 
     public void setProtocolNum() {
         ProtocolEnum protocol = ProtocolEnum.getProtocolEnumByProtocol(this.protocol);
-        assert protocol != null;
+        if (protocol == null) {
+            return;
+        }
         this.protocolNum = protocol.getNumber();
     }
 

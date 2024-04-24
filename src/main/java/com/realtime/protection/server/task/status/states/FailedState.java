@@ -11,8 +11,8 @@ public class FailedState extends StateHandler implements State {
     public Boolean handle(State newState, CommandService commandService, TaskService taskService, Long taskId) throws DorisStartException {
         return switch (StateEnum.getStateEnumByState(newState)) {
             case RUNNING -> handleStart(taskService, commandService, taskId);
-            case STOP -> handleStop(commandService, taskId);
-            case FINISHED -> handleFinish(commandService, taskId);
+            case STOP -> handleStop(commandService, taskService, taskId);
+            case FINISHED -> handleFinish(commandService, taskService, taskId);
             default -> throw new IllegalStateException("Unexpected value: " + StateEnum.getStateEnumByState(newState));
         };
     }
