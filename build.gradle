@@ -49,6 +49,7 @@ dependencies {
     implementation 'com.alibaba:easyexcel:3.3.3'
     implementation 'com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.0'
     implementation 'com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 }
 
 tasks.named('test') {
