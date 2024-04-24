@@ -193,13 +193,13 @@ public class StaticRuleService {
         return resultMap;
     }
 
+
     @Transactional
     public void deleteStaticRuleById(Integer id) {
         StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(id);
         if (staticRuleObject == null) {
             return;
         }
-
         if (Objects.equals(staticRuleObject.getAuditStatus(), AuditStatusEnum.USING.getNum())) {
             throw new IllegalArgumentException("当前静态规则正在使用，无法删除");
         }
@@ -241,5 +241,13 @@ public class StaticRuleService {
                 };
         //实现事务操作
         return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, updateStaticRuleAuditStatusFunction, idsWithAuditStatusMap);
+    }
+
+    public Integer queryUsedStaticRuleTotalNum() {
+        return staticRuleMapper.queryUsedStaticRuleTotalNum();
+    }
+
+    public Integer queryAuditStaticRuleTotalNum(Integer auditStatus) {
+        return staticRuleMapper.queryAuditStaticRuleTotalNum(auditStatus);
     }
 }

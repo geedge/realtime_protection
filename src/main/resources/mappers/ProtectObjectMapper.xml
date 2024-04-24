@@ -132,6 +132,11 @@
             </if>
         </where>
     </select>
+    <select id="queryUsedProtectObjectsTotalNum"
+            resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT protect_object_id)
+        FROM t_protect_object_dynamic_rule_conn
+    </select>
 
     <update id="updateProtectObject">
         UPDATE t_protect_object

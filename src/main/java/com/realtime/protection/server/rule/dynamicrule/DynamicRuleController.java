@@ -2,6 +2,7 @@ package com.realtime.protection.server.rule.dynamicrule;
 
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -164,15 +165,22 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     /**
      * 获取统计数据
      */
+    @Override
     @GetMapping("/statistics")
     public ResponseResult getStaticRuleStatisticsData(){
 
         return ResponseResult.ok()
                 .setData("dynamic_rule_num", dynamicRuleService.queryDynamicRuleTotalNum(null, null,
                         null, null))
-                .setData("dynamic_rule_used_num", dynamicRuleService.queryUsedDynamicRuleTotalNum())
-                .setData("dynamic_rule_audit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(1))
-                .setData("dynamic_rule_unaudit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(0));
+                .setData("dynamic_rule_used_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
+                ))
+                .setData("dynamic_rule_audit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
+                ))
+                .setData("dynamic_rule_unaudit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ));
     }
 
 

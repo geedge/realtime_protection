@@ -408,4 +408,41 @@ public interface ProtectObjectControllerApi {
     )
     ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
                                                   @PathVariable Integer auditStatus);
+
+    /*
+        防护对象数据统计
+         */
+    @Operation(
+            summary = "数据统计",
+            description = "数据统计",
+            responses = {
+                    @ApiResponse(
+                            description = "返回数据统计",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                         "code": 200,
+                                                         "message": "request succeed",
+                                                         "data": {
+                                                           "proobj_num": 2,
+                                                           "proobj_used_num": 2,
+                                                           "proobj_audit_num": 1,
+                                                           "proobj_undit_num": 0
+                                                         }
+                                                       }
+                                                    """
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+
+            }
+    )
+    @GetMapping("/statistics")
+    ResponseResult statisticsProtectObject();
 }

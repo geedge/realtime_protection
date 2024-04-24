@@ -79,4 +79,12 @@ public class TemplateService {
     public Integer queryTemplateId(String sourceSystem, String eventName) {
         return templateMapper.queryTemplateId(sourceSystem, eventName);
     }
+
+    public Integer queryUsedTemplateTotalNum() {
+        return templateMapper.queryUsedTemplateTotalNum();
+    }
+
+    public Integer queryAuditTemplateTotalNum(Integer auditState) {
+        return templateMapper.queryAuditTemplateTotalNum(auditState);
+    }
 }

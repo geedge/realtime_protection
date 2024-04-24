@@ -3,6 +3,7 @@ package com.realtime.protection.server.defense.object;
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+                                                                            import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -148,5 +149,23 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
         return ResponseResult.ok()
                 .addDataMap(protectObjectService.changeProtectObjectAuditStatus(protectObjectId, auditStatus))
                 .setData("proobj_id", protectObjectId);
+    }
+
+    /*
+    防护对象数据统计
+     */
+    @Override
+    @GetMapping("/statistics")
+    public ResponseResult statisticsProtectObject() {
+        return ResponseResult.ok()
+                .setData("proobj_num", protectObjectService.queryProtectObjectsTotalNum(null, null, null, null,
+                        null, null, null, null, null, null))
+                .setData("proobj_used_num", protectObjectService.queryUsedProtectObjectsTotalNum())
+                .setData("proobj_audit_num", protectObjectService.queryProtectObjectsTotalNum(null, null, null, null,
+                        null, null, null, null, null,
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())))
+                .setData("proobj_undit_num", protectObjectService.queryProtectObjectsTotalNum(null, null, null, null,
+                        null, null, null, null, null,
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())));
     }
 }

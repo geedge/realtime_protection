@@ -153,6 +153,7 @@
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
         <result column="strategy_template_name" property="dynamicRuleEventType"/>
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
+        <result column="audit_status" property="auditStatus"/>
     </resultMap>
 
     <select id="queryDynamicRuleById" resultMap="dynamicRuleMap">
@@ -272,7 +273,9 @@
 
     </select>
     <select id="queryAuditDynamicRuleTotalNum" resultType="java.lang.Integer">
-
+        select count(*)
+        from t_dynamic_rule
+        where audit_status = #{auditStatus}
     </select>
     <select id="queryAuditStatusById" resultType="java.lang.Integer">
         select audit_status

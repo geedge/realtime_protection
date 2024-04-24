@@ -438,4 +438,41 @@ public interface TemplateControllerApi {
             }
     )
     ResponseResult queryTemplateId(@RequestBody Map<String, String> map);
+
+    /*
+        策略模板数据统计
+         */
+    @Operation(
+            summary = "数据统计",
+            description = "数据统计",
+            responses = {
+                    @ApiResponse(
+                            description = "返回数据统计",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                        "code": 200,
+                                                        "message": "request succeed",
+                                                        "data": {
+                                                          "template_num": 1,
+                                                          "template_used_num": 1,
+                                                          "template_audit_num": 0,
+                                                          "template_unaudit_num": 1
+                                                        }
+                                                      }
+                                                    """
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+
+            }
+    )
+    @GetMapping("/statistics")
+    ResponseResult statisticsTemplate();
 }

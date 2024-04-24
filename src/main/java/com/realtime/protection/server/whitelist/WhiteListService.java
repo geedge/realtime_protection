@@ -185,4 +185,7 @@ public class WhiteListService {
     }
 
 
+    public Integer queryAuditWhiteListTotalNum(Integer auditStatus) {
+        return whiteListMapper.queryAuditWhiteListTotalNum(auditStatus);
+    }
 }

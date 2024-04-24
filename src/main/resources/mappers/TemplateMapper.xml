@@ -146,6 +146,17 @@
         WHERE strategy_template_name = #{eventName} AND strategy_template_source_system = #{sourceSystem}
     </select>
 
+    <select id="queryUsedTemplateTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT template_id)
+        FROM t_dynamic_rule
+    </select>
+
+    <select id="queryAuditTemplateTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM t_strategy_template
+        WHERE audit_state = #{auditState}
+    </select>
+
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template
         <set>

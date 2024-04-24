@@ -46,4 +46,8 @@ public interface StaticRuleMapper {
     List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch);
+
+    Integer queryUsedStaticRuleTotalNum();
+
+    Integer queryAuditStaticRuleTotalNum(@Param("auditStatus")Integer auditStatus);
 }

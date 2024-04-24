@@ -17,6 +17,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Tag(name = "任务控制器API", description = "任务管理模块相关的所有接口")
 public interface TaskControllerApi {
     @PostMapping("/new")
@@ -521,4 +523,71 @@ public interface TaskControllerApi {
     @GetMapping("/{commandId}/valid/{isJudged}")
     ResponseResult setCommandJudged(@PathVariable Boolean isJudged,
                                     @PathVariable String commandId);
+
+    @Operation(
+            summary = "批量更新任务审批状态",
+            description = "批量更新任务审批状态，0未审核、1审核不通过、2审核通过",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回任务审核结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "字典，key是任务id，value是任务审核状态id",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+
+                    )
+            )
+    )
+    @PostMapping("/auditbatch")
+    ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+
+    @Operation(
+            summary = "数据统计",
+            description = "数据统计",
+            responses = {
+                    @ApiResponse(
+                            description = "返回数据统计",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "example",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "total_num": 11,
+                                                        "running_num": 2,
+                                                        "finished_num": 5,
+                                                        "unaudit_num": 5
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "total_num": 总数
+                                                    
+                                                    "running_num": 运行任务数
+                                                    
+                                                    "finished_num": 结束任务数
+                                                    
+                                                    "unaudit_num": 未审核数
+                                                    """
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+
+            }
+    )
+    @GetMapping("/statistics")
+    ResponseResult statistics();
 }

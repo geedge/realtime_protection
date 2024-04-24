@@ -284,5 +284,10 @@
             </foreach>
         </where>
     </select>
+    <select id="queryAuditWhiteListTotalNum" resultType="java.lang.Integer">
+        select COUNT(*)
+        from t_white_list
+        where white_list_audit_status = #{auditStatus}
+    </select>
 
 </mapper>

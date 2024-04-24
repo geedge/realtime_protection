@@ -114,4 +114,6 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         System.out.println(staticRuleService.updateAuditStatusBatch(map));
     }
 
+
+
 }

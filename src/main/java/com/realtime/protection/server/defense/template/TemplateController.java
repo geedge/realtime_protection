@@ -2,6 +2,7 @@ package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
@@ -112,5 +113,20 @@ public class TemplateController implements TemplateControllerApi {
                 .setData("template_id", templateService.queryTemplateId(sourceSystem, eventName));
     }
 
-
+    /*
+    策略模板数据统计
+     */
+    @Override
+    @GetMapping("/statistics")
+    public ResponseResult statisticsTemplate() {
+        return ResponseResult.ok()
+                .setData("template_num", templateService.queryTemplateTotalNum(null, null, null))
+                .setData("template_used_num", templateService.queryUsedTemplateTotalNum())
+                .setData("template_audit_num", templateService.queryAuditTemplateTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
+                ))
+                .setData("template_unaudit_num", templateService.queryAuditTemplateTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ));
+    }
 }

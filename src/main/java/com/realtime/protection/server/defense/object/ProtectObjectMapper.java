@@ -1,6 +1,7 @@
 package com.realtime.protection.server.defense.object;
 
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import com.realtime.protection.configuration.response.ResponseResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -48,4 +49,6 @@ public interface ProtectObjectMapper {
                                             @Param("proobj_audit_status") Integer protectObjectAuditStatus,
                                             @Param("page") Integer page,
                                             @Param("page_size") Integer pageSize);
+
+    Integer queryUsedProtectObjectsTotalNum();
 }

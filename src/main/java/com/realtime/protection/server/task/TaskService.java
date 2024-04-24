@@ -334,4 +334,8 @@ public class TaskService {
 
 
     }
+
+    public Integer queryAuditTaskTotalNum(Integer auditState) {
+        return taskMapper.queryAuditTaskTotalNum(auditState);
+    }
 }

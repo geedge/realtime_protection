@@ -2,6 +2,7 @@ package com.realtime.protection.server.defense.object;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
@@ -141,5 +142,9 @@ public class ProtectObjectService {
                 protectObjectPortMin, protectObjectPortMax, protectObjectURL, protectObjectProtocol,
                 protectObjectCreateUsername, protectObjectAuditStatus
         );
+    }
+
+    public Integer queryUsedProtectObjectsTotalNum() {
+        return protectObjectMapper.queryUsedProtectObjectsTotalNum();
     }
 }
