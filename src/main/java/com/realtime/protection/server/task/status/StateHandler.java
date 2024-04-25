@@ -112,6 +112,7 @@ public class StateHandler {
             throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
         }
 
+        // 将所有关联的动态规则审批状态修改为“已使用”
         taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);

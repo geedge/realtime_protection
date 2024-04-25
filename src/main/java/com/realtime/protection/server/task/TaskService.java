@@ -161,7 +161,7 @@ public class TaskService {
 
         List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(dynamicRuleIds);
         if (dynamicRuleObjects == null || dynamicRuleObjects.isEmpty()) {
-            throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
+            throw new IllegalArgumentException("动态规则列表中的ID不存在，请检查动态规则是否真实存在");
         }
 
         // 检查所有的动态规则列表的审批状态是否正确，如不正确则报错
