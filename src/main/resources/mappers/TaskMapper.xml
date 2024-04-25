@@ -81,13 +81,33 @@
     <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT static_rule_id
         FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = 2
+        <where>
+            <if test="task_id != null">
+                AND static_rule_used_task_id = #{task_id}
+            </if>
+            <if test="audit_status_list != null">
+                AND static_rule_audit_status IN
+                <foreach collection="audit_status_list" item="audit_status" open="(" close=")" separator=",">
+                    #{audit_status}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT dynamic_rule_id
         FROM t_dynamic_rule
-        WHERE dynamic_rule_used_task_id = #{task_id} AND audit_status = 2
+        <where>
+            <if test="task_id != null">
+                AND dynamic_rule_used_task_id = #{task_id}
+            </if>
+            <if test="audit_status_list != null">
+                AND audit_status IN
+                <foreach collection="audit_status_list" item="audit_status" open="(" close=")" separator=",">
+                    #{audit_status}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="queryTask" resultMap="taskMap">
@@ -257,7 +277,8 @@
         <result column="log_rule_id" property="logRuleId"/>
         <result column="source_system" property="sourceSystem"/>
         <result column="event_type" property="eventType"/>
-        <collection property="protectObjects" ofType="com.realtime.protection.configuration.entity.task.DynamicTaskInfo$SimpleProtectObject">
+        <collection property="protectObjects"
+                    ofType="com.realtime.protection.configuration.entity.task.DynamicTaskInfo$SimpleProtectObject">
             <result column="protect_object_ip" property="IP"/>
             <result column="protect_object_port" property="port"/>
             <result column="protect_object_url" property="URL"/>
@@ -274,16 +295,16 @@
                strategy_template_source_system as source_system,
                strategy_template_name          as event_type,
                tdr.log_rule_id,
-               INET_NTOA(protect_object_ip) as protect_object_ip,
+               INET_NTOA(protect_object_ip)    as protect_object_ip,
                protect_object_port,
                protect_object_url,
                protect_object_protocol
         FROM t_task AS tt
-                 INNER JOIN realtime_protection.t_dynamic_rule tdr on tt.task_id = tdr.dynamic_rule_used_task_id
-                 INNER JOIN realtime_protection.t_protect_object_dynamic_rule_conn tpodrc
+                 LEFT JOIN realtime_protection.t_dynamic_rule tdr on tt.task_id = tdr.dynamic_rule_used_task_id
+                 LEFT JOIN realtime_protection.t_protect_object_dynamic_rule_conn tpodrc
                             on tdr.dynamic_rule_id = tpodrc.dynamic_rule_id
-                 INNER JOIN realtime_protection.t_protect_object tpo on tpo.protect_object_id = tpodrc.protect_object_id
-                 INNER JOIN realtime_protection.t_strategy_template tst on tdr.template_id = tst.strategy_template_id
+                 LEFT JOIN realtime_protection.t_protect_object tpo on tpo.protect_object_id = tpodrc.protect_object_id
+                 LEFT JOIN realtime_protection.t_strategy_template tst on tdr.template_id = tst.strategy_template_id
         WHERE task_id = #{task_id}
     </select>
     <select id="queryTaskTotalNum" resultType="java.lang.Integer">
@@ -300,6 +321,9 @@
             </if>
             <if test="task_creator != null">
                 AND task_create_username LIKE CONCAT('%', #{task_creator}, '%')
+            </if>
+            <if test="audit_status != null">
+                AND task_audit_status = #{audit_status}
             </if>
         </where>
 

@@ -150,6 +150,7 @@
         <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
         <result column="dynamic_rule_range" property="dynamicRuleRange"/>
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
+        <result column="audit_status" property="auditStatus"/>
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
         <result column="strategy_template_name" property="dynamicRuleEventType"/>
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>

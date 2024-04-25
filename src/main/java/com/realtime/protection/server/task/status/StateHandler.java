@@ -13,13 +13,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StateHandler {
 
     private final WebClient client = WebClient.builder()
-            .baseUrl("")  // todo: unfinished
+            .baseUrl("http://192.168.107.89:9081")
             .build();
 
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {
@@ -79,8 +80,8 @@ public class StateHandler {
         return true;
     }
 
-    // todo: 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
-    //       筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
+    // 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
+    // 筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
     private Boolean handleJudgedTaskStart(TaskService taskService, Task task) {
         return sendFilters(taskService, task);
     }
@@ -98,6 +99,7 @@ public class StateHandler {
 
         // 将所有关联的静态规则全部设置为已使用状态
         taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+//        taskService.changeTaskAuditStatus(task.getTaskId(), AuditStatusEnum.USING.getNum());
 
         commandService.createCommands(staticTaskCommandInfos);
         return true;
@@ -110,12 +112,13 @@ public class StateHandler {
             throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
         }
 
-        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.AUDITED);
+        // 将所有关联的动态规则审批状态修改为“已使用”
+        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 
         Mono<SimpleResponse> mono = client.post()
-                .uri("http://192.168.107.89:9081/api/v1/kafkasend")  // todo: untested
+                .uri("/api/v1/kafkasend")
                 .bodyValue(dynamicTaskInfos)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
@@ -126,9 +129,10 @@ public class StateHandler {
                 })
                 .doOnError(WebClientResponseException.class, res -> success.set(false));
 
-        SimpleResponse response = mono.block();
 
-        if (response == null) {
+        SimpleResponse response = mono.block(Duration.ofSeconds(5));
+
+        if (response == null || response.getSuccess() == null) {
             return false;
         }
 

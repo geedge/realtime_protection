@@ -92,7 +92,13 @@ public class TaskService {
             return;
         }
 
-        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
+        List<Integer> staticRuleIds = taskMapper.queryStaticRuleIdsFromTaskId(taskId,
+                List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()));
+        if (staticRuleIds == null || staticRuleIds.isEmpty()) {
+            return;
+        }
+
+        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(staticRuleIds);
         if (staticRuleObjects == null || staticRuleObjects.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
         }
@@ -147,9 +153,15 @@ public class TaskService {
             return;
         }
 
-        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
+        List<Integer> dynamicRuleIds = taskMapper.queryDynamicRuleIdsFromTaskId(taskId,
+                List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()));
+        if (dynamicRuleIds == null || dynamicRuleIds.isEmpty()) {
+            return;
+        }
+
+        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(dynamicRuleIds);
         if (dynamicRuleObjects == null || dynamicRuleObjects.isEmpty()) {
-            throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
+            throw new IllegalArgumentException("动态规则列表中的ID不存在，请检查动态规则是否真实存在");
         }
 
         // 检查所有的动态规则列表的审批状态是否正确，如不正确则报错
@@ -197,8 +209,10 @@ public class TaskService {
             if (task == null) {
                 continue;
             }
-            task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId()));
-            task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId()));
+            task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId(),
+                    List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
+            task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId(),
+                    List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
         }
 
         return tasks;
@@ -211,8 +225,10 @@ public class TaskService {
             return null;
         }
 
-        task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId()));
-        task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId()));
+        task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId(),
+                List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
+        task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId(),
+                List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
 
         return task;
     }
@@ -303,8 +319,8 @@ public class TaskService {
         return taskMapper.queryTasksByStatus(StateEnum.FINISHED.getStateNum());
     }
 
-    public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator) {
-        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator);
+    public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus) {
+        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus);
     }
 
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {

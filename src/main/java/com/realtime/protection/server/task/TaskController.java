@@ -80,7 +80,7 @@ public class TaskController implements TaskControllerApi {
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks)
-                .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator));
+                .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus));
     }
 
     @Override
@@ -192,9 +192,9 @@ public class TaskController implements TaskControllerApi {
     @GetMapping("/statistics")
     public ResponseResult statistics() {
         return ResponseResult.ok()
-                .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null))
-                .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null))
-                .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null))
+                .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null, null))
+                .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null))
+                .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null))
                 .setData("unaudit_num", taskService.queryAuditTaskTotalNum(
                         AuditStatusEnum.PENDING.getNum()
                 ));
