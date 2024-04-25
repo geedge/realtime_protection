@@ -92,7 +92,12 @@ public class TaskService {
             return;
         }
 
-        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
+        List<Integer> staticRuleIds = taskMapper.queryStaticRuleIdsFromTaskId(taskId);
+        if (staticRuleIds == null || staticRuleIds.isEmpty()) {
+            return;
+        }
+
+        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(staticRuleIds);
         if (staticRuleObjects == null || staticRuleObjects.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
         }
@@ -147,7 +152,12 @@ public class TaskService {
             return;
         }
 
-        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(taskMapper.queryDynamicRuleIdsFromTaskId(taskId));
+        List<Integer> dynamicRuleIds = taskMapper.queryDynamicRuleIdsFromTaskId(taskId);
+        if (dynamicRuleIds == null || dynamicRuleIds.isEmpty()) {
+            return;
+        }
+
+        List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleMapper.queryDynamicRuleByIds(dynamicRuleIds);
         if (dynamicRuleObjects == null || dynamicRuleObjects.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表中的ID不存在，请检查静态规则是否真实存在");
         }

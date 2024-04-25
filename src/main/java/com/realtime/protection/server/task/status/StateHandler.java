@@ -13,13 +13,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StateHandler {
 
     private final WebClient client = WebClient.builder()
-            .baseUrl("")  // todo: unfinished
+            .baseUrl("http://192.168.107.89:9081")
             .build();
 
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {
@@ -110,12 +111,12 @@ public class StateHandler {
             throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
         }
 
-        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.AUDITED);
+        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 
         Mono<SimpleResponse> mono = client.post()
-                .uri("http://192.168.107.89:9081/api/v1/kafkasend")  // todo: untested
+                .uri("/api/v1/kafkasend")
                 .bodyValue(dynamicTaskInfos)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
@@ -126,9 +127,10 @@ public class StateHandler {
                 })
                 .doOnError(WebClientResponseException.class, res -> success.set(false));
 
-        SimpleResponse response = mono.block();
 
-        if (response == null) {
+        SimpleResponse response = mono.block(Duration.ofSeconds(5));
+
+        if (response == null || response.getSuccess() == null) {
             return false;
         }
 
