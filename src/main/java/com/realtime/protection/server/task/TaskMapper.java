@@ -49,16 +49,19 @@ public interface TaskMapper {
 
     Integer queryTaskStatus(@Param("task_id") Long taskId);
 
-    List<Integer> queryDynamicRuleIdsFromTaskId(@Param("task_id") Long taskId);
+    List<Integer> queryDynamicRuleIdsFromTaskId(@Param("task_id") Long taskId,
+                                                @Param("audit_status_list") List<Integer> auditStatusList);
 
-    List<Integer> queryStaticRuleIdsFromTaskId(@Param("task_id") Long taskId);
+    List<Integer> queryStaticRuleIdsFromTaskId(@Param("task_id") Long taskId,
+                                               @Param("audit_status_list") List<Integer> auditStatusList);
 
     @Select("SELECT task_id FROM t_task WHERE task_end_time < NOW() AND task_status != #{task_status}")
     List<Long> queryTasksByStatus(@Param("task_status") Integer taskStatus);
 
 
     Integer queryTaskTotalNum(@Param("task_status") Integer taskStatus, @Param("task_type") Integer task_type,
-                              @Param("task_name") String taskName, @Param("task_creator") String taskCreator);
+                              @Param("task_name") String taskName, @Param("task_creator") String taskCreator,
+                              @Param("audit_status") Integer auditStatus);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 

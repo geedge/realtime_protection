@@ -80,8 +80,8 @@ public class StateHandler {
         return true;
     }
 
-    // todo: 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
-    //       筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
+    // 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
+    // 筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
     private Boolean handleJudgedTaskStart(TaskService taskService, Task task) {
         return sendFilters(taskService, task);
     }
@@ -99,6 +99,7 @@ public class StateHandler {
 
         // 将所有关联的静态规则全部设置为已使用状态
         taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+//        taskService.changeTaskAuditStatus(task.getTaskId(), AuditStatusEnum.USING.getNum());
 
         commandService.createCommands(staticTaskCommandInfos);
         return true;

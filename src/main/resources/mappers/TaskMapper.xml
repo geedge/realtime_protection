@@ -81,13 +81,33 @@
     <select id="queryStaticRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT static_rule_id
         FROM t_static_rule
-        WHERE static_rule_used_task_id = #{task_id} AND static_rule_audit_status = 2
+        <where>
+            <if test="task_id != null">
+                AND static_rule_used_task_id = #{task_id}
+            </if>
+            <if test="audit_status_list != null">
+                AND static_rule_audit_status IN
+                <foreach collection="audit_status_list" item="audit_status" open="(" close=")" separator=",">
+                    #{audit_status}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="queryDynamicRuleIdsFromTaskId" resultType="java.lang.Integer">
         SELECT dynamic_rule_id
         FROM t_dynamic_rule
-        WHERE dynamic_rule_used_task_id = #{task_id} AND audit_status = 2
+        <where>
+            <if test="task_id != null">
+                AND dynamic_rule_used_task_id = #{task_id}
+            </if>
+            <if test="audit_status_list != null">
+                AND audit_status IN
+                <foreach collection="audit_status_list" item="audit_status" open="(" close=")" separator=",">
+                    #{audit_status}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="queryTask" resultMap="taskMap">
@@ -301,6 +321,9 @@
             </if>
             <if test="task_creator != null">
                 AND task_create_username LIKE CONCAT('%', #{task_creator}, '%')
+            </if>
+            <if test="audit_status != null">
+                AND task_audit_status = #{audit_status}
             </if>
         </where>
 
