@@ -5,6 +5,17 @@ import json
 
 app = Flask(__name__)
 
+import socket
+import struct
+
+
+def convert_ipv4_to_int(ip_str):
+    binary_ip = socket.inet_aton(ip_str)
+    # 使用 struct.unpack 解包二进制数据到一个大端整数
+    ip_int = struct.unpack('!I', binary_ip)[0]
+    return ip_int
+
+
 def convert_ipv4_address(ip_int):
 
     return socket.inet_ntoa(struct.pack('!I', ip_int))
@@ -30,6 +41,7 @@ def format_data_to_json(test_data):
     data_parts = test_data.split(",")
 
     src_ip_v4, dst_ip_v4, src_port_v4, dst_port_v4, protocol_v4 = parse_and_convert_ip(data_parts[1])
+
 
     formatted_data = {
         "task_id": 30650,
@@ -96,19 +108,26 @@ def kafka_send():
     if request.method == 'POST' and request.is_json:
         data = request.get_json()
 
-        base_data = "1702017420-1-175833107,1921297587-310737541-53420-6379-6-127-0,140717936336976-140717936336992-0-0-0-131-4481,0,000,440000,1,7,107,1,111,Amazon Data Services UK,0,0,440100,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,,9,10060101189,tcp.banner=$5115"
+        base_data = "1702017420-1-175833107,2682412653-760391609-53420-6379-6-127-0,140717936336976-140717936336992-0-0-0-131-4481,0,000,440000,1,7,107,1,111,Amazon Data Services UK,0,0,440100,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,,9,10060101189,tcp.banner=$5115"
+        base_data2 = "1702017420-1-175833107,760391609-2682412653-53420-6379-6-127-0,140717936336976-140717936336992-0-0-0-131-4481,0,000,440000,1,7,107,1,111,Amazon Data Services UK,0,0,440100,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,,9,10060101189,tcp.banner=$5115"
+
         for item in data:
             task_id = item.get('task_id', '')
             rule_id = item.get('rule_id', '')
             modified_data = f"{base_data}, {task_id}, {rule_id},{0}"
+            modified_data2 = f"{base_data2}, {task_id}, {rule_id},{0}"
             HOST = '127.0.0.1'
             PORT = 65432
+            print(modified_data)
             send_test_data(HOST, PORT, modified_data)
+            send_test_data(HOST, PORT, modified_data2)
 
-        return jsonify({'message': 'Data processed successfully'}), 200
+        return jsonify({"success": True, "code": 200}), 200
 
     return jsonify({'error': 'Invalid request'}), 400
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8081, debug=True)
+    print("convert_ipv4_to_int:", convert_ipv4_to_int("159.226.94.109"))
+    print("convert_ipv4_to_int:", convert_ipv4_to_int("45.82.167.185"))
+    app.run(host='0.0.0.0', port=8088, debug=True)
