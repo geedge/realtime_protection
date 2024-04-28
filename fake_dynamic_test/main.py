@@ -100,5 +100,5 @@ def start_server(host, port, topic):
 if __name__ == "__main__":
     HOST = '127.0.0.1'
     PORT = 65432
-    TOPIC = 'topic-test'
+    TOPIC = 'topic-alert'
     start_server(HOST, PORT, TOPIC)
