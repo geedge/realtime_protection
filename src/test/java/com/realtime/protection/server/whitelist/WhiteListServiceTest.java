@@ -67,7 +67,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
         //object.setWhiteListId(7);
         object.setWhiteListName("test_update");
 
-        whiteListService.updateWhiteListObject(7, object);
+        whiteListService.updateWhiteListObject(7189, object);
     }
 
     @Test
