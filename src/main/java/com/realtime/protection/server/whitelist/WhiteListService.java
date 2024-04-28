@@ -158,6 +158,12 @@ public class WhiteListService {
         return whiteListMapper.whiteListCStaticRulesCheck(staticRuleObjects);
 
     }
+    public List<WhiteListObject> whiteListStaticRulesObjectCheck(List<StaticRuleObject> staticRuleObjects) {
+        //参数应该是指令，不管动态静态
+        // 命中的whitelist列表：每一列包含ip port url
+        return whiteListMapper.whiteListCStaticRulesCheck(staticRuleObjects);
+
+    }
 
     @Transactional
     public Map<String, Object> updateWhiteListObjectAuditStatus(Integer id, Integer auditStatus) {

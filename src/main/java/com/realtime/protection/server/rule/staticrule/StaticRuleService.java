@@ -2,10 +2,12 @@ package com.realtime.protection.server.rule.staticrule;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.RuleEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+import com.realtime.protection.server.whitelist.WhiteListService;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +16,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -25,11 +24,13 @@ public class StaticRuleService {
 
     private final StaticRuleMapper staticRuleMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
+    private final WhiteListService whiteListService;
 
-    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper) {
+    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, WhiteListService whiteListService) {
 
         this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
+        this.whiteListService = whiteListService;
     }
 
     private static int ipToInt(String ip)  {
@@ -68,6 +69,14 @@ public class StaticRuleService {
         }
         if (!RuleEnum.checkValidate(object)) {
             throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
+        }
+        List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
+        staticRuleObjects.add(object);
+        List<WhiteListObject> whiteListsHit = whiteListService.whiteListStaticRulesObjectCheck(staticRuleObjects);
+        if (!whiteListsHit.isEmpty()) {
+            StringBuilder result = new StringBuilder();
+            whiteListsHit.forEach(item -> result.append(item.getWhiteListName()).append(" "));
+            throw new IllegalArgumentException("静态规则与白名单规则冲突，冲突白名单名称:"+result.toString().trim());
         }
         staticRuleMapper.newStaticRuleObject(object);
 
@@ -120,6 +129,15 @@ public class StaticRuleService {
 
         if (!RuleEnum.checkValidate(object)) {
             throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
+        }
+
+        List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
+        staticRuleObjects.add(object);
+        List<WhiteListObject> whiteListsHit = whiteListService.whiteListStaticRulesObjectCheck(staticRuleObjects);
+        if (!whiteListsHit.isEmpty()) {
+            StringBuilder result = new StringBuilder();
+            whiteListsHit.forEach(item -> result.append(item.getWhiteListName()).append(" "));
+            throw new IllegalArgumentException("静态规则与白名单规则冲突，冲突白名单名称:"+result.toString().trim());
         }
 
         //判断当前静态规则是否能够修改---是否存在任务选择的静态规则？？

@@ -32,12 +32,11 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         staticRuleTest.setStaticRuleCreateUserId(2);
         staticRuleTest.setAuditStatus(0);
 
-        staticRuleTest.setStaticRuleSip("1.1.2.0");
-        staticRuleTest.setStaticRuleMsip("255.255.255.0");
+        staticRuleTest.setStaticRuleSip("2.2.2.2");
 
 //        staticRuleTest.setStaticRuleDip("1.1.1.2");
 //        staticRuleTest.setStaticRuleMdip("255.255.255.0");
-        staticRuleTest.setStaticRuleSport(80);
+        staticRuleTest.setStaticRuleSport(11);
 
         staticRuleTest.setStaticRulePriority(1);
         staticRuleTest.setStaticRuleFrequency(1);
