@@ -107,7 +107,7 @@ public class WhiteListService {
             throw new IllegalStateException("无法修改白名单信息，因为其并未处于" + AuditStatusEnum.AUDITED + "状态");
         }
 
-        object.setWhiteListAuditStatus(AuditStatusEnum.PENDING.toString());
+        object.setWhiteListAuditStatus(AuditStatusEnum.PENDING.getNum());
 
         return whiteListMapper.updateWhiteListObject(id, object);
     }

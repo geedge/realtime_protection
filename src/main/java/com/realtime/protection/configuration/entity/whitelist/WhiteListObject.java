@@ -60,5 +60,5 @@ public class WhiteListObject {
     @JsonProperty("audit_status")
     @ExcelIgnore
     @Schema(description = "白名单对象审核状态（0为未审核，1为已退回，2为审核通过）", example = "2")
-    private String whiteListAuditStatus;
+    private Integer whiteListAuditStatus;
 }
