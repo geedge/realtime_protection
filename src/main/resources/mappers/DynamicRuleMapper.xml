@@ -146,7 +146,7 @@
         <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
         <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
         <result column="template_id" property="templateId"/>
-        <result column="dynamic_rule_protec_level" property="dynamicRuleProtectLevel"/>
+        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>
         <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
         <result column="dynamic_rule_range" property="dynamicRuleRange"/>
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
