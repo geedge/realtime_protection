@@ -4,6 +4,7 @@ import org.apache.logging.log4j.util.Strings;
 
 import javax.security.auth.login.LoginException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,9 @@ import io.micrometer.common.util.StringUtils;
 public class LoginService {
 
     private final LoginMapper loginMapper;
+
+    @Value("${sso.host}")
+    private String HostSSO;
 
     public LoginService(LoginMapper loginMapper) {
         this.loginMapper = loginMapper;
@@ -50,7 +54,7 @@ public class LoginService {
         ObjectMapper objectMapper = new ObjectMapper();
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-            .url("http://114.243.134.122:9217/passport/accessToken?grant_type=client_credentials")
+            .url("http://" + HostSSO + "/passport/accessToken?grant_type=client_credentials")
             .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")
             .post(okhttp3.internal.Util.EMPTY_REQUEST)
             .build();
@@ -74,7 +78,7 @@ public class LoginService {
         RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart("sessionData", sessionData).build();
         request = new Request.Builder()
-            .url("http://114.243.134.122:9217/passport/accessApplication")
+            .url("http://" + HostSSO + "/passport/accessApplication")
             .header("Authorization", "Bearer " + accessToken)
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(body)

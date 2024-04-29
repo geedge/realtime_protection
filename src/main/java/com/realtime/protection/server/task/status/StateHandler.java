@@ -8,6 +8,7 @@ import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -19,8 +20,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class StateHandler {
 
+    @Value("${c3.pzff.host}")
+    private String c3_pzff;
     private final WebClient client = WebClient.builder()
-            .baseUrl("http://192.168.107.49:8088")
+//            .baseUrl("http://192.168.107.49:8088")
+            .baseUrl("http://"+c3_pzff)
             .build();
 
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {

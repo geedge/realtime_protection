@@ -47,11 +47,11 @@ def format_data_to_json(test_data):
             "protocol": protocol_v4,
             "event_id": data_parts[24],
             # test_data_2.split(",")[-7],
-            "mask_src_ip": data_parts[5],
-            "mask_dst_ip": data_parts[6],
-            "mask_src_port": int(data_parts[7]),
-            "mask_dst_ip": int(data_parts[8]),
-            "mask_protocol": int(data_parts[9])
+#             "mask_src_ip": data_parts[5],
+#             "mask_dst_ip": data_parts[6],
+#             "mask_src_port": int(data_parts[7]),
+#             "mask_dst_ip": int(data_parts[8]),
+#             "mask_protocol": int(data_parts[9])
         },
         "content": test_data
     }
@@ -65,6 +65,8 @@ def delivery_report(err, msg):
 
 conf = {
     'bootstrap.servers': "192.168.107.49:9092",
+#     ‘bootstrap.servers’: '10.58.72.125:9092,10.58.72.126:9092,10.58.72.127:9092,10.58.72.128:9092,10.58.72.129:9092,\
+#                           10.58.72.130:9092,10.58.72.131:9092,10.58.72.132:9092,10.58.72.133:9092,10.58.72.134:9092',
         'client.id': 'python-server'
     }
 
