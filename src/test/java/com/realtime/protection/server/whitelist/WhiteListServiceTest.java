@@ -114,7 +114,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
         Integer id = staticRuleService.newStaticRuleObject(staticRuleTest);
         List<Integer> ruleIds = new ArrayList<>(List.of(id));
-        List<StaticRuleObject> staticRules= staticRuleService.queryStaticRule(null,null,null,null,1,2);
+        List<StaticRuleObject> staticRules= staticRuleService.queryStaticRule(null,null,null,null,null,1,2);
         for (StaticRuleObject staticRule : staticRules) {
             ruleIds.add(staticRule.getStaticRuleId());
         }

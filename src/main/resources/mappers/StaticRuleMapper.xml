@@ -156,6 +156,9 @@
                 AND (static_rule_sip = INET_ATON(#{ip}) or static_rule_msip = INET_ATON(#{ip})
                 or static_rule_dip = INET_ATON(#{ip}) or static_rule_mdip = INET_ATON(#{ip}))
             </if>
+            <if test="auditStatus != null">
+                AND static_rule_audit_status = #{auditStatus}
+            </if>
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
@@ -187,6 +190,9 @@
             <if test="ip != null and ip != ''">
                 AND (static_rule_sip = INET_ATON(#{ip}) or static_rule_msip = INET_ATON(#{ip})
                 or static_rule_dip = INET_ATON(#{ip}) or static_rule_mdip = INET_ATON(#{ip}))
+            </if>
+            <if test="auditStatus != null">
+                AND static_rule_audit_status = #{auditStatus}
             </if>
         </where>
     </select>

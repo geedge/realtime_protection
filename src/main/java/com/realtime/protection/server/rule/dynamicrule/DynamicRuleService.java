@@ -171,16 +171,17 @@ public class DynamicRuleService {
 
     //分页查询基础的动态规则，暂时不返回关联的保护对象 
     public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
-                                                          String templateSourceSystem,String creator,
+                                                          String templateSourceSystem,String creator,Integer auditStatus,
                                                           Integer page, Integer pageSize) {
         return dynamicRuleMapper.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
-                templateSourceSystem, creator, page, pageSize);
+                templateSourceSystem, creator, auditStatus, page, pageSize);
     }
 
     public Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
-                                            String protectObjectSourceSystem, String creator) {
+                                            String protectObjectSourceSystem, String creator,
+                                            Integer auditStatus) {
         return dynamicRuleMapper.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
-                protectObjectSourceSystem, creator);
+                protectObjectSourceSystem, creator, auditStatus);
     }
 
     public List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids) {

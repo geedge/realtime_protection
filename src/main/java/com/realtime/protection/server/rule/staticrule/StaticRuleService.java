@@ -166,11 +166,11 @@ public class StaticRuleService {
      */
     public List<StaticRuleObject> queryStaticRule(
             String static_rule_name, Integer static_rule_id,
-            String creator, String ip,
+            String creator, String ip, Integer auditStatus,
             Integer page, Integer pageSize) {
 
         return staticRuleMapper.queryStaticRule(static_rule_name, static_rule_id,
-                creator, ip, page, pageSize);
+                creator, ip, auditStatus, page, pageSize);
     }
 
     public Boolean newStaticRuleObjects(List<StaticRuleObject> staticRuleList) {
@@ -233,9 +233,9 @@ public class StaticRuleService {
     }
 
     public Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
-                                           String static_rule_creator, String static_rule_ip) {
+                                           String static_rule_creator, String static_rule_ip, Integer auditStatus) {
         return staticRuleMapper.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
-                static_rule_creator, static_rule_ip);
+                static_rule_creator, static_rule_ip, auditStatus);
     }
 
     public List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids) {

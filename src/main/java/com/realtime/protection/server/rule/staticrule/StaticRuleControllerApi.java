@@ -204,6 +204,7 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "id", description = "静态规则id"),
                     @Parameter(name = "creator", description = "静态规则创建人"),
                     @Parameter(name = "ip", description = "静态规则ip，匹配所有源和目的ip"),
+                    @Parameter(name = "auditStatus", description = "静态规则审核状态"),
                     @Parameter(name = "page", description = "页码"),
                     @Parameter(name = "pageSize", description = "每页条数")
             }
@@ -212,6 +213,7 @@ public interface StaticRuleControllerApi {
                                    @RequestParam(required = false) Integer static_rule_id,
                                    @RequestParam(required = false) String static_rule_creator,
                                    @RequestParam(required = false) String static_rule_ip,
+                                   @RequestParam(required = false) Integer auditStatus,
                                    @RequestParam(defaultValue = "1") Integer page,
                                    @RequestParam(defaultValue = "10") Integer pageSize
     );

@@ -134,6 +134,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
                                           @RequestParam(name = "id", required = false) Integer static_rule_id,
                                           @RequestParam(name = "creator", required = false) String static_rule_creator,
                                           @RequestParam(name = "ip", required = false) String static_rule_ip,
+                                          @RequestParam(name = "auditStatus", required = false) Integer auditStatus,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize
     ) {
@@ -141,11 +142,11 @@ public class StaticRuleController implements StaticRuleControllerApi {
         //调用service新增
         List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(
                 static_rule_name, static_rule_id,
-                static_rule_creator, static_rule_ip, page, pageSize);
+                static_rule_creator, static_rule_ip, auditStatus, page, pageSize);
         return ResponseResult.ok()
                 .setData("static_rule_list", pageResult)
                 .setData("total_num",staticRuleService.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
-                        static_rule_creator, static_rule_ip));
+                        static_rule_creator, static_rule_ip, auditStatus));
     }
 
     @Override
@@ -208,7 +209,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult getStaticRuleStatisticsData(){
 
         return ResponseResult.ok()
-                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(null, null, null, null))
+                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(null, null, null, null, null))
                 .setData("static_rule_used_num", staticRuleService.queryAuditStaticRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
                 ))

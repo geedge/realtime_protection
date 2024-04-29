@@ -73,14 +73,14 @@ class TaskServiceTest extends ProtectionApplicationTests {
     void testNewTaskSuccess() {
         for (int i = 1; i < 10; i++) {
             List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                    null, null, null, null, i, 2);
+                    null, null, null, null,2, i, 2);
             List<Integer> staticRuleIds = new ArrayList<>();
             staticRuleObjects.forEach(staticRuleObject ->
                     staticRuleIds.add(staticRuleObject.getStaticRuleId()));
             task.setStaticRuleIds(staticRuleIds);
 
             List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleObject(
-                    null, null, null, null, i, 2
+                    null, null, null, null,null, i, 2
             );
             List<Integer> dynamicRuleIds = new ArrayList<>();
             dynamicRuleObjects.forEach(dynamicRuleObject ->
@@ -104,6 +104,13 @@ class TaskServiceTest extends ProtectionApplicationTests {
         });
     }
 
+
+    @Test
+    void testPageQueryTask(){
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, 1, 10);
+        System.out.println(tasks);
+    }
+
     @Test
     void testQueryTasks() {
         String testName = "test query";
@@ -113,14 +120,14 @@ class TaskServiceTest extends ProtectionApplicationTests {
             task.setTaskName(testName);
             task.setTaskCreateUsername(testCreateName);
             List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                    null, null, null, null, 1, 5);
+                    null, null, null, null, null,1, 5);
             List<Integer> staticRuleIds = new ArrayList<>();
             staticRuleObjects.forEach(staticRuleObject ->
                     staticRuleIds.add(staticRuleObject.getStaticRuleId()));
             task.setStaticRuleIds(staticRuleIds);
 
             List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleObject(
-                    null, null, null, null, 1, 5
+                    null, null, null, null, null,1, 5
             );
             List<Integer> dynamicRuleIds = new ArrayList<>();
             dynamicRuleObjects.forEach(dynamicRuleObject ->
@@ -157,7 +164,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
                 .get(0);
 
         List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                null, null, null, null, 1, 4
+                null, null, null, null, null,1, 4
         );
         List<Integer> staticRuleIds = new ArrayList<>();
         staticRuleObjects.forEach(staticRuleObject -> staticRuleIds.add(staticRuleObject.getStaticRuleId()));

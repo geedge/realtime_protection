@@ -190,17 +190,20 @@
         left join t_strategy_template
             on t_dynamic_rule.template_id = t_strategy_template.strategy_template_id
         <where>
-            <if test="dynamicRuleName != null">
+            <if test="dynamicRuleName != null and dynamicRuleName !=''" >
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
             </if>
             <if test="dynamicRuleId != null">
                 and t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
             </if>
-            <if test="sourceSystem != null">
+            <if test="sourceSystem != null and sourceSystem !=''">
                 and t_strategy_template.strategy_template_source_system = #{sourceSystem}
             </if>
-            <if test="creator != null">
+            <if test="creator != null and creator !=''">
                 and t_dynamic_rule.dynamic_rule_create_username = #{creator}
+            </if>
+            <if test="auditStatus != null">
+                and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
@@ -243,6 +246,9 @@
             </if>
             <if test="creator != null">
                 and t_dynamic_rule.dynamic_rule_create_username = #{creator}
+            </if>
+            <if test="auditStatus != null">
+                and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
         </where>
     </select>
