@@ -3,12 +3,15 @@ package com.realtime.protection.server.defense.object;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +22,22 @@ public class ProtectObjectService {
     private final ProtectObjectMapper protectObjectMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
     private static final Integer batchSize = 100;
+    private final Counter counter;
 
-    public ProtectObjectService(ProtectObjectMapper protectObjectMapper, SqlSessionWrapper sqlSessionWrapper) {
+    public ProtectObjectService(ProtectObjectMapper protectObjectMapper, SqlSessionWrapper sqlSessionWrapper, Counter counter) {
         this.protectObjectMapper = protectObjectMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
+        this.counter = counter;
     }
 
     public Integer newProtectObject(ProtectObject protectObject) {
+        protectObject.setProtectObjectDisplayId(
+                "FHDX-"
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-"
+                        + String.format("%06d", counter.generateId("protect_object"))
+        );
+
         protectObjectMapper.newProtectObject(protectObject);
 
         if (protectObject.getProtectObjectId() == null) {
@@ -42,6 +54,13 @@ public class ProtectObjectService {
 
             List<ProtectObject> protectObjectBatch = ListUtils.newArrayListWithExpectedSize(batchSize);
             for (ProtectObject protectObject : list) {
+                protectObject.setProtectObjectDisplayId(
+                        "FHDX-"
+                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                + "-"
+                                + String.format("%06d", counter.generateId("protect_object"))
+                );
+
                 protectObjectBatch.add(protectObject);
                 if (protectObjectBatch.size() < batchSize) {
                     continue;

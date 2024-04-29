@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +63,8 @@ public interface TaskMapper {
 
     Integer queryTaskTotalNum(@Param("task_status") Integer taskStatus, @Param("task_type") Integer task_type,
                               @Param("task_name") String taskName, @Param("task_creator") String taskCreator,
-                              @Param("audit_status") Integer auditStatus);
+                              @Param("audit_status") Integer auditStatus,
+                              @Param("task_create_time") LocalDateTime taskCreateTime);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 

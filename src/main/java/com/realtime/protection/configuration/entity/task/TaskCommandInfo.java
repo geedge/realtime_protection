@@ -17,6 +17,10 @@ public class TaskCommandInfo {
     @JsonProperty("task_id")
     private Long taskId;
 
+    @Schema(description = "任务显示ID", accessMode = Schema.AccessMode.READ_ONLY)
+    @JsonProperty("task_display_id")
+    private String taskDisplayId;
+
     @Schema(description = "规则ID", hidden = true)
     @JsonProperty("rule_id")
     private Long ruleId;

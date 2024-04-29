@@ -10,12 +10,12 @@
                                      protect_object_ip, protect_object_port, protect_object_url,
                                      protect_object_protocol,
                                      protect_object_create_username, protect_object_create_depart,
-                                     protect_object_create_user_id)
+                                     protect_object_create_user_id, protect_object_display_id)
             VALUE (#{proobj.protectObjectId}, #{proobj.protectObjectName}, #{proobj.protectObjectSystemName},
                    INET_ATON(#{proobj.protectObjectIPAddress}), #{proobj.protectObjectPort}, #{proobj.protectObjectURL},
                    #{proobj.protectObjectProtocol},
                    #{proobj.protectObjectCreateUsername}, #{proobj.protectObjectCreateDepart},
-                   #{proobj.protectObjectCreateUserId})
+                   #{proobj.protectObjectCreateUserId}, #{proobj.protectObjectDisplayId})
     </insert>
 
     <insert id="newProtectObjects" parameterType="List">
@@ -23,14 +23,14 @@
         protect_object_ip, protect_object_port, protect_object_url,
         protect_object_protocol,
         protect_object_create_username, protect_object_create_depart,
-        protect_object_create_user_id)
+        protect_object_create_user_id, protect_object_display_id)
         VALUES
         <foreach collection="proobjs" item="proobj" separator=",">
             (#{proobj.protectObjectId}, #{proobj.protectObjectName}, #{proobj.protectObjectSystemName},
             INET_ATON(#{proobj.protectObjectIPAddress}), #{proobj.protectObjectPort}, #{proobj.protectObjectURL},
             #{proobj.protectObjectProtocol},
             #{proobj.protectObjectCreateUsername}, #{proobj.protectObjectCreateDepart},
-            #{proobj.protectObjectCreateUserId})
+            #{proobj.protectObjectCreateUserId}, #{proobj.protectObjectDisplayId})
         </foreach>
     </insert>
 

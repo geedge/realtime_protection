@@ -8,12 +8,13 @@
         INSERT INTO t_task(task_name, task_start_time, task_end_time,
                            task_act, task_type,
                            task_create_time, task_modify_time,
-                           task_create_userid, task_create_username, task_create_depart,task_range
-                           )
+                           task_create_userid, task_create_username, task_create_depart,task_range,
+                           task_display_id)
         VALUE (#{task.taskName}, #{task.taskStartTime}, #{task.taskEndTime},
                #{task.taskAct}, #{task.taskType},
                NOW(), NOW(),
-               #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart},#{task.taskRange}
+               #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart},#{task.taskRange},
+               #{task.taskDisplayId}
             )
 
     </insert>
@@ -231,12 +232,12 @@
     <insert id="newTaskUsingCommandInfo" useGeneratedKeys="true" keyProperty="taskId"
             parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
         INSERT INTO t_task(task_name, task_start_time, task_end_time, task_create_time, task_modify_time, task_type,
-                           task_act, task_create_username, task_create_depart, task_create_userid, task_range)
+                           task_act, task_create_username, task_create_depart, task_create_userid, task_range, task_display_id)
             VALUE
             (
             #{info.taskName}, #{info.startTime}, #{info.endTime}, NOW(), NOW(), #{info.taskType},
             #{info.taskAct}, #{info.taskCreateUsername}, #{info.taskCreateDepart}, #{info.taskCreateUserId},
-            #{info.distributePoint}}
+            #{info.distributePoint},#{info.taskDisplayId}
             );
     </insert>
 
@@ -331,7 +332,9 @@
             <if test="audit_status != null">
                 AND task_audit_status = #{audit_status}
             </if>
-
+            <if test="task_create_time != null">
+                AND DATE(#{task_create_time}) = CURRENT_DATE
+            </if>
         </where>
 
     </select>
@@ -340,6 +343,7 @@
         SELECT COUNT(*) FROM t_task
         WHERE task_audit_status = #{auditStatus}
     </select>
+
     <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
         SELECT task_audit_status
         FROM t_task

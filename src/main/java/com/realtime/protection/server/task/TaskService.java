@@ -7,6 +7,7 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
@@ -14,9 +15,18 @@ import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValida
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,19 +40,28 @@ public class TaskService {
     private final SqlSessionWrapper sqlSessionWrapper;
     private static final int BATCH_SIZE = 100;
     private final DynamicRuleMapper dynamicRuleMapper;
+    private final Counter counter;
 
-    public TaskService(TaskMapper taskMapper, StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, DynamicRuleMapper dynamicRuleMapper) {
+    public TaskService(TaskMapper taskMapper, StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, DynamicRuleMapper dynamicRuleMapper, Counter counter) {
         this.taskMapper = taskMapper;
         this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.dynamicRuleMapper = dynamicRuleMapper;
+        this.counter = counter;
     }
 
     @Transactional
     public Long newTask(Task task) {
+        // todo: 目前获取方式还不确定，以后再确定
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
+
+        task.setTaskDisplayId(
+                "RW-"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                + "-"
+                + String.format("%06d", counter.generateId("task")));
 
         taskMapper.newTask(task);
 
@@ -317,7 +336,7 @@ public class TaskService {
     }
 
     public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus) {
-        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus);
+        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus, null);
     }
 
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {

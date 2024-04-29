@@ -22,6 +22,10 @@ public class DynamicRuleObject {
     @Schema(description = "动态规则ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer dynamicRuleId;
 
+    @JsonProperty("dynamic_rule_display_id")
+    @Schema(description = "动态规则显示ID", accessMode = Schema.AccessMode.READ_ONLY)
+    private String dynamicRuleDisplayId;
+
     @NotNull
     @JsonProperty("dynamic_rule_name")
     @Schema(description = "动态规则名称", example = "动态规则测试", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -38,8 +42,6 @@ public class DynamicRuleObject {
     @Schema(description = "动态规则创建用户名称", accessMode = Schema.AccessMode.READ_ONLY)
     private String dynamicRuleCreateUsername;
 
-    //    @JsonProperty("dynamic_rule_audit_status")
-//    private Integer dynamicRuleAuditStatus;
     @JsonProperty("dynamic_rule_create_depart")
     @Schema(description = "动态规则创建用户所属部门", accessMode = Schema.AccessMode.READ_ONLY)
     private String dynamicRuleCreateDepart;
@@ -98,7 +100,6 @@ public class DynamicRuleObject {
     @JsonProperty("log_rule_id")
     @Schema(description = "筛选条件-日志规则id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long logRuleId;
-
 
     @JsonProperty("dynamic_rule_audit_status")
     @ExcelIgnore

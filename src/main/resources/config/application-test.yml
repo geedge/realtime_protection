@@ -15,16 +15,15 @@ spring:
       datasource:
         mysql:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          username: ${MYSQL_USERNAME:root}
-          password: ${MYSQL_PASSWD}
-          url: jdbc:mysql://${MYSQL_URL:localhost:3306}/realtime_protection?serverTimezone=Asia/Shanghai
+          username: root
+          password: aiihhbfcsy123!@#
+          url: jdbc:mysql://192.168.107.89:3306/realtime_protection?serverTimezone=Asia/Shanghai
           hikari:
             is-auto-commit: false
         doris:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          username: ${DORIS_USERNAME:root}
-          password: ${DORIS_PASSWD}
-          url: jdbc:mysql://${DORIS_URL:localhost:9030}/command
+          username: root
+          url: jdbc:mysql://10.26.22.133:9030/command
           hikari:
             is-auto-commit: false
       aop:
@@ -108,6 +107,18 @@ spring:
 #      # 两次poll之间的最大间隔，默认值为5分钟。如果超过这个间隔会触发reBalance
 #      poll-timeout: 600000
 
+  data:
+    redis:
+      host: 192.168.107.89
+      port: 6379
+      database: 1
+      jedis:
+        pool:
+          enabled: true
+          max-active: 10
+          max-idle: 5
+          min-idle: 1
+      connect-timeout: 1000
 
 mybatis:
   mapper-locations: classpath:mappers/*
@@ -122,9 +133,9 @@ task:
 springdoc:
   api-docs:
     enabled: true
-    path: /v3/api-docs
+    path: /api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger
   packages-to-scan: com.realtime.protection.server
 
 management:

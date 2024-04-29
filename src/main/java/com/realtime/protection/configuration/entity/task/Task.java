@@ -16,6 +16,10 @@ public class Task {
     @Schema(description = "任务ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Long taskId;
 
+    @JsonProperty("task_display_id")
+    @Schema(description = "任务显示ID", accessMode = Schema.AccessMode.READ_ONLY)
+    private String taskDisplayId;
+
     @JsonProperty("task_name")
     @NotNull(message = "task_name字段不能为空。")
     @Schema(description = "任务名称", example = "静态任务")

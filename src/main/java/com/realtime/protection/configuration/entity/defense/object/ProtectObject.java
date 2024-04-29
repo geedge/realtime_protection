@@ -17,6 +17,11 @@ public class ProtectObject {
     @Schema(description = "防护对象ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectObjectId;
 
+    @JsonProperty("proobj_display_id")
+    @ExcelProperty("ID")
+    @Schema(description = "防护对象显示ID", accessMode = Schema.AccessMode.READ_ONLY)
+    private String protectObjectDisplayId;
+
     @JsonProperty("proobj_name")
     @NotNull(message = "proobj_name字段不能为空。")
     @ExcelProperty("名称")

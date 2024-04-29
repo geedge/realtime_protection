@@ -28,6 +28,11 @@ public class StaticRuleObject {
     @Schema(description = "静态规则ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer staticRuleId;
 
+    @JsonProperty("static_rule_display_id")
+    @ExcelProperty("ID")
+    @Schema(description = "静态规则显示ID", accessMode = Schema.AccessMode.READ_ONLY)
+    private String staticRuleDisplayId;
+
     @NotNull
     @JsonProperty("static_rule_name")
     @ExcelProperty("名称")

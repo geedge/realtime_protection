@@ -3,6 +3,7 @@ package com.realtime.protection.server.rule.dynamicrule;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +22,12 @@ import java.util.function.Function;
 public class DynamicRuleService {
     private final DynamicRuleMapper dynamicRuleMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
+    private final Counter counter;
 
-    public DynamicRuleService(DynamicRuleMapper dynamicRuleMapper, SqlSessionWrapper sqlSessionWrapper) {
-
+    public DynamicRuleService(DynamicRuleMapper dynamicRuleMapper, SqlSessionWrapper sqlSessionWrapper, Counter counter) {
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.dynamicRuleMapper = dynamicRuleMapper;
+        this.counter = counter;
     }
 
     @Transactional
@@ -36,6 +39,13 @@ public class DynamicRuleService {
         if (!ProtectObjIdValid) {
             throw new IllegalArgumentException("protect object id is invalid");
         }
+
+        dynamicRule.setDynamicRuleDisplayId(
+                "DTGZ-"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                + "-"
+                + String.format("%06d", counter.generateId("dynamic_rule"))
+        );
 
         dynamicRuleMapper.newDynamicRule(dynamicRule);
         Integer dynamicRuleId = dynamicRule.getDynamicRuleId();
@@ -56,6 +66,12 @@ public class DynamicRuleService {
                     List<DynamicRuleObject> DynamicRuleIdBatch = ListUtils.newArrayListWithExpectedSize(100);
                     for (DynamicRuleObject dynamicRule : DynamicRuleList) {
                         dynamicRule.setDynamicRuleCreateTime(LocalDateTime.now());
+                        dynamicRule.setDynamicRuleDisplayId(
+                                "DTGZ-"
+                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                + "-"
+                                + String.format("%06d", counter.generateId("dynamic_rule"))
+                        );
                         DynamicRuleIdBatch.add(dynamicRule);
                         if (DynamicRuleIdBatch.size() < 100) {
                             continue;
