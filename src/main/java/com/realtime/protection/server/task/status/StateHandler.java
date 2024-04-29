@@ -20,11 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class StateHandler {
 
-    @Value("${c3.pzff.host}")
-    private String c3_pzff;
+
     private final WebClient client = WebClient.builder()
-//            .baseUrl("http://192.168.107.49:8088")
-            .baseUrl("http://"+c3_pzff)
+            .baseUrl("http://192.168.107.49:8088")
+//            .baseUrl("http://10.58.72.151:8088")
             .build();
 
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {

@@ -131,10 +131,3 @@ management:
   endpoint:
     shutdown:
       enabled: true
-
-c3:
-  pzff:
-    host: ${C3_PZFF_HOST}
-sso:
-  host: ${SSO_HOST}
-
