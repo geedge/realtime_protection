@@ -135,10 +135,10 @@ public class StaticRuleObject {
     @Min(value = 1)
     @Schema(description = "优先级,1代表高2代表中3代表低", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer staticRulePriority;
-    @JsonProperty("static_rule_range")
-    @ExcelProperty("范围")
-    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String staticRuleRange;
+//    @JsonProperty("static_rule_range")
+//    @ExcelProperty("范围")
+//    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
+//    private String staticRuleRange;
     @JsonProperty("static_rule_frequency")
     @ExcelProperty("频率")
     @Min(value = 1)

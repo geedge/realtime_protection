@@ -78,4 +78,9 @@ public class Task {
     @JsonProperty("task_audit_status")
     @Schema(description = "任务审核状态（0为未审核，1为已退回，2为已通过）", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer taskAuditStatus;
+
+    @JsonProperty("task_range")
+    @NotNull(message = "task_range字段不能为空。")
+    @Schema(description = "局点范围，由规则移动到任务", example = "1009")
+    private String taskRange;
 }

@@ -109,8 +109,8 @@ public class DynamicRuleService {
         Template template = dynamicRuleMapper.queryTemplateByRuleId(dynamicRuleId);
         if (template == null){
             //template在表中删除了，需要重新设置template（感觉这种情况不多见）
-            dynamicRuleObject.setDynamicRuleSourceSystem("need reset");
-            dynamicRuleObject.setDynamicRuleEventType("need reset");
+            dynamicRuleObject.setDynamicRuleSourceSystem(null);
+            dynamicRuleObject.setDynamicRuleEventType(null);
         }else{
         dynamicRuleObject.setDynamicRuleSourceSystem(template.getSourceSystem());
         dynamicRuleObject.setDynamicRuleEventType(template.getTemplateName());

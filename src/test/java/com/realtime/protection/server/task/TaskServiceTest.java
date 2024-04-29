@@ -1,12 +1,17 @@
 package com.realtime.protection.server.task;
 
 import com.realtime.protection.ProtectionApplicationTests;
+import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
+import com.realtime.protection.server.command.CommandService;
+import com.realtime.protection.server.defense.object.ProtectObjectService;
+import com.realtime.protection.server.defense.template.TemplateService;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
 import com.realtime.protection.server.rule.staticrule.StaticRuleService;
 import com.realtime.protection.server.task.status.StateChangeService;
@@ -30,14 +35,20 @@ class TaskServiceTest extends ProtectionApplicationTests {
     private final StaticRuleService staticRuleService;
     private final DynamicRuleService dynamicRuleService;
     private final StateChangeService stateChangeService;
+    private final CommandService commandService;
+    private final ProtectObjectService protectObjectService;
+    private final TemplateService templateService;
     private Task task;
 
     @Autowired
-    TaskServiceTest(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, StateChangeService stateChangeService) {
+    TaskServiceTest(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, StateChangeService stateChangeService, CommandService commandService, ProtectObjectService protectObjectService, TemplateService templateService) {
         this.taskService = taskService;
         this.staticRuleService = staticRuleService;
         this.dynamicRuleService = dynamicRuleService;
         this.stateChangeService = stateChangeService;
+        this.commandService = commandService;
+        this.protectObjectService = protectObjectService;
+        this.templateService = templateService;
     }
 
     @BeforeEach
@@ -203,5 +214,115 @@ class TaskServiceTest extends ProtectionApplicationTests {
     void changeTaskstatus() throws DorisStartException {
         stateChangeService.changeState(2, 43844L, false);
 
+    }
+
+
+    @Test
+    void testStartStaticTask() throws DorisStartException {
+        StaticRuleObject staticRuleTest = new StaticRuleObject();
+        staticRuleTest.setStaticRuleName("mh-静态测试");
+        staticRuleTest.setStaticRuleCreateUsername("mh");
+        staticRuleTest.setStaticRuleCreateDepart("mmeess");
+        staticRuleTest.setStaticRuleCreateUserId(2);
+        staticRuleTest.setAuditStatus(0);
+
+        staticRuleTest.setStaticRuleSip("1.1.2.0");
+//        staticRuleTest.setStaticRuleMsip("255.255.255.0");
+
+//        staticRuleTest.setStaticRuleDip("1.1.1.2");
+//        staticRuleTest.setStaticRuleMdip("255.255.255.0");
+//        staticRuleTest.setStaticRuleSport(80);
+
+        staticRuleTest.setStaticRulePriority(1);
+        staticRuleTest.setStaticRuleFrequency(1);
+//        staticRuleTest.setStaticRuleRange("北京");
+        Integer staticRuleId = staticRuleService.newStaticRuleObject(staticRuleTest);
+
+
+        Task task = new Task();
+        task.setTaskName("mh-task测试3");
+
+        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
+
+        task.setTaskStartTime(taskStartTime);
+        task.setTaskEndTime(taskEndTime);
+        task.setTaskAct("阻断");
+        task.setTaskType(1);
+        task.setTaskRange("1009");
+
+        task.setTaskCreateUserId(1);
+        task.setTaskCreateUsername("xxx");
+        task.setTaskCreateDepart("xxx");
+
+        List<Integer> staticRuleIds = new ArrayList<>();
+        staticRuleIds.add(staticRuleId);
+        staticRuleService.updateAuditStatus(staticRuleId, 2);
+
+        task.setStaticRuleIds(staticRuleIds);
+
+        Long taskId = taskService.newTask(task);
+
+//
+        taskService.changeTaskAuditStatus(taskId, 2);
+
+        stateChangeService.changeState(2, taskId, false);
+
+        System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
+
+    }
+
+    @Test
+    void testQueryCommandsByTaskId() {
+        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(43912L, null, null, null, null, 1, 5);
+        System.out.println(taskCommandInfos);
+
+
+    }
+
+    @Test
+    void testStartDynamicTask() throws DorisStartException {
+        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
+                null, null, null, null,
+                null, null, null, null,
+                null, null, 1, 1);
+        List<Template> templates = templateService.queryTemplates(
+                null, null, null,1, 1);
+
+        DynamicRuleObject object = new DynamicRuleObject();
+        object.setDynamicRuleName("testStartDynamicTask");
+        object.setDynamicRuleFrequency(1);
+        object.setDynamicRulePriority(1);
+//        object.setDynamicRuleRange("北京");
+        object.setDynamicRuleProtectLevel(1);
+        object.setLogRuleId(1L);
+        object.setTemplateId(templates.get(0).getTemplateId());
+        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+        Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
+        dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2);
+
+
+
+        Task task = new Task();
+        task.setTaskName("生产告警信息测试2");
+        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
+        task.setTaskStartTime(taskStartTime);
+        task.setTaskEndTime(taskEndTime);
+        task.setTaskAct("阻断");
+        task.setTaskType(2);
+        task.setTaskRange("1009");
+        task.setTaskCreateUserId(1);
+        task.setTaskCreateUsername("xxx");
+        task.setTaskCreateDepart("xxx");
+        task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
+        Long taskId = taskService.newTask(task);
+        System.out.println(taskId);
+        //审核状态
+        taskService.changeTaskAuditStatus(taskId, 2);
+        //启动任务
+        stateChangeService.changeState(2, taskId, false);
+
+        System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
     }
 }

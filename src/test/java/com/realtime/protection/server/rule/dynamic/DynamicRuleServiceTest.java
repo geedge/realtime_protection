@@ -48,7 +48,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleName("UpdateDynamicRule2");
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
-        object.setDynamicRuleRange("北京");
+//        object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setLogRuleId(1L);
@@ -77,7 +77,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleName("UpdateDynamicRule2");
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
-        object.setDynamicRuleRange("北京");
+//        object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
@@ -117,7 +117,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleName("UpdateDynamicRule2");
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
-        object.setDynamicRuleRange("北京");
+//        object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(2);
         object.setTemplateId(1);
         object.setProtectObjectIds(List.of(new Integer[]{6061}));

@@ -21,7 +21,7 @@
     
         <result column="template_id" property="templateId"/>
 
-        <result column="dynamic_rule_range" property="distributePoint"/>
+        <result column="task_range" property="distributePoint"/>
         <result column="strategy_template_name" property="eventType"/>
 
         <result column="dynamic_rule_protect_level" property="protectLevel"/>
@@ -153,7 +153,7 @@
             t_task.task_end_time,
 
             t_dr.template_id,
-            t_dr.dynamic_rule_range,
+            t_task.task_range,
             t_dr.dynamic_rule_protect_level,
             t_task.task_status,
 

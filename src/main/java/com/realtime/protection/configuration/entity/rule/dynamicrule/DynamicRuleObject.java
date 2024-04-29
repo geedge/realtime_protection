@@ -86,9 +86,9 @@ public class DynamicRuleObject {
     @Schema(description = "优先级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRulePriority;
     @NotNull
-    @JsonProperty("dynamic_rule_range")
-    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String dynamicRuleRange;
+//    @JsonProperty("dynamic_rule_range")
+//    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
+//    private String dynamicRuleRange;
     @NotNull
     @JsonProperty("dynamic_rule_frequency")
     @Schema(description = "频率", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)

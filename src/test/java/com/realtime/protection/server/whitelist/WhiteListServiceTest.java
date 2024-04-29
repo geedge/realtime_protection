@@ -110,7 +110,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
         staticRuleTest.setStaticRulePriority(1);
         staticRuleTest.setStaticRuleFrequency(1);
-        staticRuleTest.setStaticRuleRange("北京");
+//        staticRuleTest.setStaticRuleRange("北京");
 
         Integer id = staticRuleService.newStaticRuleObject(staticRuleTest);
         List<Integer> ruleIds = new ArrayList<>(List.of(id));

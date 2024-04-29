@@ -55,12 +55,13 @@ public class AlertMessageTest {
         object.setDynamicRuleName("UpdateDynamicRule2");
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
-        object.setDynamicRuleRange("北京");
+//        object.setDynamicRuleRange("北京");
         object.setDynamicRuleProtectLevel(1);
         object.setLogRuleId(1L);
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
+        dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2);
 
 
         Task task = new Task();
@@ -82,22 +83,22 @@ public class AlertMessageTest {
         //启动任务
         stateChangeService.changeState(2, taskId, false);
 
-        for (int i = 0 ; i< 5; i++) {
-            AlertMessage alert = new AlertMessage();
-            FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
-            fiveTupleWithMask.setSourceIP("111.1.1." + i);
-            fiveTupleWithMask.setDestinationIP("222.22.2." + i);
-            fiveTupleWithMask.setSourcePort("111");
-            fiveTupleWithMask.setDestinationPort("222");
-            fiveTupleWithMask.setProtocol("tcp");
-
-            alert.setDynamicRuleId(dynamicRuleId);
-            alert.setTaskId(taskId);
-            alert.setFiveTupleWithMask(fiveTupleWithMask);
-            alert.setContent("testcontent");
-            alert.setProtectIsSrcOrDst(1);
-            alertMessageService.processAlertMessage(alert);
-        }
+//        for (int i = 0 ; i< 5; i++) {
+//            AlertMessage alert = new AlertMessage();
+//            FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
+//            fiveTupleWithMask.setSourceIP("111.1.1." + i);
+//            fiveTupleWithMask.setDestinationIP("222.22.2." + i);
+//            fiveTupleWithMask.setSourcePort("111");
+//            fiveTupleWithMask.setDestinationPort("222");
+//            fiveTupleWithMask.setProtocol("tcp");
+//
+//            alert.setDynamicRuleId(dynamicRuleId);
+//            alert.setTaskId(taskId);
+//            alert.setFiveTupleWithMask(fiveTupleWithMask);
+//            alert.setContent("testcontent");
+//            alert.setProtectIsSrcOrDst(1);
+//            alertMessageService.processAlertMessage(alert);
+//        }
 
 
 

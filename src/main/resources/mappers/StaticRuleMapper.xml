@@ -6,22 +6,22 @@
 
     <insert id="newStaticRuleObject" useGeneratedKeys="true" keyProperty="staticRuleId"
             parameterType="com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject">
-
         insert into t_static_rule(static_rule_name, static_rule_create_time,
                                   static_rule_create_username, static_rule_create_depart,
                                   static_rule_create_user_id, static_rule_sip, static_rule_msip,
                                   static_rule_sport, static_rule_msport,
                                   static_rule_dip, static_rule_mdip, static_rule_dport, static_rule_mdport,
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
-                                  static_rule_url, static_rule_priority, static_rule_range,
-                                  static_rule_frequency, static_rule_audit_status)
+                                  static_rule_url, static_rule_priority,
+                                  static_rule_frequency, static_rule_audit_status
+                                  )
         values (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
                 #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
                 INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
                 INET_ATON(#{object.staticRuleDip}), INET_ATON(#{object.staticRuleMdip}), #{object.staticRuleDport},
                 #{object.staticRuleMdport}, #{object.staticRuleProtocol}, #{object.staticRuleMprotocol},
                 #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
-                #{object.staticRuleRange}, #{object.staticRuleFrequency},
+                #{object.staticRuleFrequency},
                 #{object.auditStatus})
     </insert>
     <insert id="newStaticRules">
@@ -31,8 +31,9 @@
                                   static_rule_sport, static_rule_msport,
                                   static_rule_dip, static_rule_mdip, static_rule_dport, static_rule_mdport,
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
-                                  static_rule_url, static_rule_priority, static_rule_range,
-                                  static_rule_frequency,  static_rule_audit_status)
+                                  static_rule_url, static_rule_priority,
+                                  static_rule_frequency,  static_rule_audit_status
+                                  )
         values
         <foreach collection="staticRuleBatch" item="object" separator=",">
             (#{object.staticRuleName}, NOW(), #{object.staticRuleCreateUsername},
@@ -41,8 +42,8 @@
             INET_ATON(#{object.staticRuleDip}), INET_ATON(#{object.staticRuleMdip}), #{object.staticRuleDport},
             #{object.staticRuleMdport}, #{object.staticRuleProtocol}, #{object.staticRuleMprotocol},
             #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
-            #{object.staticRuleRange}, #{object.staticRuleFrequency},
-            0)
+            #{object.staticRuleFrequency}, 0
+            )
         </foreach>
     </insert>
 
@@ -68,9 +69,7 @@
             <if test="object.staticRulePriority != null and object.staticRulePriority != ''">
                 static_rule_priority = #{object.staticRulePriority},
             </if>
-            <if test="object.staticRuleRange != null and object.staticRuleRange != ''">
-                static_rule_range = #{object.staticRuleRange},
-            </if>
+
             <if test="object.staticRuleFrequency != null and object.staticRuleFrequency != ''">
                 static_rule_frequency = #{object.staticRuleFrequency},
             </if>
@@ -132,7 +131,6 @@
         <result column="static_rule_dns" property="staticRuleDns"/>
         <result column="static_rule_url" property="staticRuleURL"/>
         <result column="static_rule_priority" property="staticRulePriority"/>
-        <result column="static_rule_range" property="staticRuleRange"/>
         <result column="static_rule_frequency" property="staticRuleFrequency"/>
     </resultMap>
 

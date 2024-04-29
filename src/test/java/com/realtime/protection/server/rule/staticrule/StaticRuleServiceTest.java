@@ -40,7 +40,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
 
         staticRuleTest.setStaticRulePriority(1);
         staticRuleTest.setStaticRuleFrequency(1);
-        staticRuleTest.setStaticRuleRange("北京");
+//        staticRuleTest.setStaticRuleRange("北京");
 
     }
 
@@ -85,7 +85,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         object.setStaticRuleDip("2.2.3.100");
         object.setStaticRulePriority(2);
         object.setStaticRuleFrequency(1);
-        object.setStaticRuleRange("北京");
+//        object.setStaticRuleRange("北京");
 //        object.setStaticRuleProtectLevel(2);
 
         staticRuleService.updateStaticRule(5, object);

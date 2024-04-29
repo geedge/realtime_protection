@@ -2,6 +2,7 @@ package com.realtime.protection.server.rule.staticrule;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.RuleEnum;
@@ -16,6 +17,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.*;
 import java.util.function.Function;
 
@@ -70,6 +76,9 @@ public class StaticRuleService {
         if (!RuleEnum.checkValidate(object)) {
             throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
         }
+        /*
+        新建静态规则，过一下白名单审核
+         */
         List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
         staticRuleObjects.add(object);
         List<WhiteListObject> whiteListsHit = whiteListService.whiteListStaticRulesObjectCheck(staticRuleObjects);

@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StateHandler {
 
     private final WebClient client = WebClient.builder()
-            .baseUrl("http://192.168.107.89:9081")
+            .baseUrl("http://192.168.107.49:8088")
             .build();
 
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {

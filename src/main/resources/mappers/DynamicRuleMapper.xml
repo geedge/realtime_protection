@@ -12,15 +12,15 @@
         (dynamic_rule_name,
          create_time, modify_time, dynamic_rule_create_username,
          dynamic_rule_create_depart, template_id, dynamic_rule_protect_level,
-         dynamic_rule_priority, dynamic_rule_range,
+         dynamic_rule_priority,
          dynamic_rule_frequency, dynamic_rule_create_user_id, log_rule_id)
         values (#{object.dynamicRuleName},
                 NOW(), #{object.dynamicRuleModifyTime},
                 #{object.dynamicRuleCreateUsername}, #{object.dynamicRuleCreateDepart},
                 #{object.templateId}, #{object.dynamicRuleProtectLevel},
-                #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
+                #{object.dynamicRulePriority},
                 #{object.dynamicRuleFrequency},
-                #{object.dynamicRuleCreateUserId},#{object.logRuleId})
+                #{object.dynamicRuleCreateUserId}, #{object.logRuleId})
 
     </insert>
 
@@ -34,8 +34,8 @@
         (dynamic_rule_name,
         create_time, modify_time, dynamic_rule_create_username,
         dynamic_rule_create_depart, template_id, dynamic_rule_protect_level,
-        dynamic_rule_priority, dynamic_rule_range,
-        dynamic_rule_frequency, dynamic_rule_create_user_id,log_rule_id
+        dynamic_rule_priority,
+        dynamic_rule_frequency, dynamic_rule_create_user_id, log_rule_id
         )
         values
         <foreach collection="dynamicRuleObjects" item="object" separator=",">
@@ -43,9 +43,9 @@
             NOW(),#{object.dynamicRuleModifyTime},
             #{object.dynamicRuleCreateUsername},#{object.dynamicRuleCreateDepart},
             #{object.templateId}, #{object.dynamicRuleProtectLevel},
-            #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
+            #{object.dynamicRulePriority},
             #{object.dynamicRuleFrequency},
-            #{object.dynamicRuleCreateUserId},#{object.logRuleId})
+            #{object.dynamicRuleCreateUserId}, #{object.logRuleId})
         </foreach>
     </insert>
     <insert id="newDynamicRulProtectObjectsConcat">
@@ -95,7 +95,6 @@
             #{object.dynamicRuleProtectLevel},
         </if>
         <if test="object.dynamicRulePriority != null">dynamic_rule_priority = #{object.dynamicRulePriority},</if>
-        <if test="object.dynamicRuleRange != null">dynamic_rule_range = #{object.dynamicRuleRange},</if>
         <if test="object.dynamicRuleFrequency != null">dynamic_rule_frequency = #{object.dynamicRuleFrequency},</if>
         modify_time = NOW()
         where
@@ -134,7 +133,6 @@
         <result column="template_id" property="templateId"/>
         <result column="dynamic_rule_protec_level" property="dynamicRuleProtectLevel"/>
         <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
-        <result column="dynamic_rule_range" property="dynamicRuleRange"/>
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
         <result column="dynamic_rule_create_user_id" property="dynamicRuleCreateUserId"/>
     </resultMap>
@@ -148,7 +146,6 @@
         <result column="template_id" property="templateId"/>
         <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>
         <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
-        <result column="dynamic_rule_range" property="dynamicRuleRange"/>
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
         <result column="audit_status" property="auditStatus"/>
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
