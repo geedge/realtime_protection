@@ -1,11 +1,14 @@
 package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.Template;
-import lombok.SneakyThrows;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TemplateService {
@@ -87,4 +90,66 @@ public class TemplateService {
     public Integer queryAuditTemplateTotalNum(Integer auditState) {
         return templateMapper.queryAuditTemplateTotalNum(auditState);
     }
+
+    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
+        Integer originalAuditStatus = templateMapper.queryAuditStatusById(id);
+        if (originalAuditStatus == null) {
+            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+        }
+        if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+            throw new IllegalArgumentException("invalid audit status");
+        }
+        Boolean success = templateMapper.updateAuditStatusById(id, auditStatus);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", success);
+        resultMap.put("audit_status", auditStatus);
+        return resultMap;
+    }
+/*
+
+    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
+        Integer originalAuditStatus = templateMapper.queryAuditStatusById(id);
+        if (originalAuditStatus == null) {
+            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+        }
+        if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+            throw new IllegalArgumentException("invalid audit status");
+        }
+        Boolean success = templateMapper.updateAuditStatusById(id, auditStatus);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", success);
+        resultMap.put("audit_status", auditStatus);
+        return resultMap;
+    }
+
+    public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        Function<DynamicRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateDynamicRuleAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(DynamicRuleMapper.class, updateDynamicRuleAuditStatusFunction, idsWithAuditStatusMap);
+
+    }
+    */
+
 }

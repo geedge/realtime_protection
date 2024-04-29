@@ -36,6 +36,7 @@
         <result column="strategy_template_used_times" property="usedTimes"/>
         <result column="strategy_template_running_tasks" property="runningTasks"/>
         <result column="strategy_template_description" property="description"/>
+        <result column="audit_status" property="auditStatus"/>
 
         <association property="protectLevelLow"
                      javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
@@ -157,6 +158,12 @@
         WHERE audit_state = #{auditState}
     </select>
 
+    <select id="queryAuditStatusById" resultType="java.lang.Integer">
+        SELECT audit_state
+        FROM t_strategy_template
+        WHERE strategy_template_id = #{id}
+    </select>
+
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template
         <set>
@@ -167,5 +174,11 @@
         <where>
             AND strategy_template_id = #{template.templateId}
         </where>
+    </update>
+
+    <update id="updateAuditStatusById">
+        UPDATE t_strategy_template
+        SET audit_state = #{auditState}
+        WHERE strategy_template_id = #{id}
     </update>
 </mapper>

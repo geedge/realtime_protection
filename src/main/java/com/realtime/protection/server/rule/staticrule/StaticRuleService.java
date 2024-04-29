@@ -235,6 +235,25 @@ public class StaticRuleService {
     }
 
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (originalAuditStatus == null) {
+                errorIds.add(id);
+            }
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new IllegalArgumentException("静态规则id不存在或无法修改为对应审核状态, errorIds: " + errorIds);
+        }
 
         Function<StaticRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateStaticRuleAuditStatusFunction =
                 mapper -> map -> {

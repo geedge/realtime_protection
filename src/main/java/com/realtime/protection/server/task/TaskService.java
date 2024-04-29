@@ -17,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -324,6 +321,26 @@ public class TaskService {
     }
 
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = taskMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (originalAuditStatus == null) {
+                errorIds.add(id);
+            }
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new IllegalArgumentException("动态规则id不存在或无法修改为对应审核状态, errorIds: " + errorIds);
+        }
+
         Function<TaskMapper, Function<Map<Integer, Integer>, Boolean>> updateTaskAuditStatusFunction =
                 mapper -> map -> {
                     if (map == null || map.isEmpty()) {

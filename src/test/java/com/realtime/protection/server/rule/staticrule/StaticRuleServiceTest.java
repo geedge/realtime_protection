@@ -105,9 +105,9 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testUpdateStaticRuleAuditStatusBatch(){
         Map<Integer, Integer> map = new HashMap<>();
-        map.put(1299, 0);
-        map.put(1300, 1);
-        map.put(1301, 1);
+        map.put(1325, 0);
+        map.put(1326, 1);
+        map.put(1328, 1);
 
 
         System.out.println(staticRuleService.updateAuditStatusBatch(map));

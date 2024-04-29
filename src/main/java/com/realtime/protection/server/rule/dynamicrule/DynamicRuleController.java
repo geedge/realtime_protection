@@ -130,7 +130,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     public ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
-                    .setData("staticRule_id", id)
+                    .setData("dynamicRule_id", id)
                     .setData("success", false);
         }
         return ResponseResult.ok()

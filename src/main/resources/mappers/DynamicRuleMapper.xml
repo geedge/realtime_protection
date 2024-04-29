@@ -283,6 +283,14 @@
         from t_dynamic_rule
         where dynamic_rule_id = #{dynamicRuleId}
     </select>
+    <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
+        select audit_status
+        from t_dynamic_rule
+        where dynamic_rule_id in
+        <foreach collection="idsWithAuditStatusMap" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 
 </mapper>

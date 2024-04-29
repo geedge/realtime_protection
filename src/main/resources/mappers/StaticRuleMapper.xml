@@ -217,4 +217,13 @@
         WHERE static_rule_audit_status = #{auditStatus}
     </select>
 
+    <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
+        SELECT static_rule_audit_status
+        FROM t_static_rule
+        WHERE static_rule_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

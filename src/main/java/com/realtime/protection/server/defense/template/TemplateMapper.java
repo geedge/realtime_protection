@@ -42,4 +42,8 @@ public interface TemplateMapper {
     Integer queryUsedTemplateTotalNum();
 
     Integer queryAuditTemplateTotalNum(Integer auditState);
+
+    Integer queryAuditStatusById(Integer id);
+
+    Boolean updateAuditStatusById(Integer id, Integer auditStatus);
 }

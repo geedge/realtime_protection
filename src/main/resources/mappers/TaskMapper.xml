@@ -333,4 +333,12 @@
         SELECT COUNT(*) FROM t_task
         WHERE task_audit_status = #{auditStatus}
     </select>
+    <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
+        SELECT task_audit_status
+        FROM t_task
+        WHERE task_id IN
+        <foreach collection="idWithAuditStatusBatch" item="taskId" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </select>
 </mapper>
