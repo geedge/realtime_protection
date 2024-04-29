@@ -178,7 +178,7 @@
 
     <update id="updateAuditStatusById">
         UPDATE t_strategy_template
-        SET audit_state = #{auditState}
+        SET audit_state = #{auditStatus}
         WHERE strategy_template_id = #{id}
     </update>
 </mapper>

@@ -104,4 +104,12 @@ class TemplateServiceTest extends ProtectionApplicationTests {
         assertTrue(templateService.updateTemplate(testTemplate.getTemplateId(), testTemplate));
     }
 
+    @Test
+    void testUpdateTemplateAuditStatus(){
+        List<Template> templates = templateService.queryTemplates(
+                null, null, null, 1, 1);
+        Template testTemplate = templates.get(0);
+        templateService.updateAuditStatus(testTemplate.getTemplateId(), 2);
+    }
+
 }
