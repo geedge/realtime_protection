@@ -2,7 +2,6 @@ package com.realtime.protection.server.rule.staticrule;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
-import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.RuleEnum;
