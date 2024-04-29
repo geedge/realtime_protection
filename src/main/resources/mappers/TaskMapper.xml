@@ -13,9 +13,9 @@
         VALUE (#{task.taskName}, #{task.taskStartTime}, #{task.taskEndTime},
                #{task.taskAct}, #{task.taskType},
                NOW(), NOW(),
-               #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart},#{task.taskRange})
-               }
-              )
+               #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart},#{task.taskRange}
+            )
+
     </insert>
 
     <update id="newTaskStaticRuleConcat">
@@ -331,9 +331,7 @@
             <if test="audit_status != null">
                 AND task_audit_status = #{audit_status}
             </if>
-            <if test="task_create_time != null">
-                AND DATE(#{task_create_time}) = CURRENT_DATE
-            </if>
+
         </where>
 
     </select>
