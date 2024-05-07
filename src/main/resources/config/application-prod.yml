@@ -108,6 +108,18 @@ spring:
 #      # 两次poll之间的最大间隔，默认值为5分钟。如果超过这个间隔会触发reBalance
 #      poll-timeout: 600000
 
+  data:
+    redis:
+      host: ${REDIS_URL}
+      port: 6379
+      database: 1
+      jedis:
+        pool:
+          enabled: true
+          max-active: 10
+          max-idle: 5
+          min-idle: 1
+      connect-timeout: 1000
 
 mybatis:
   mapper-locations: classpath:mappers/*

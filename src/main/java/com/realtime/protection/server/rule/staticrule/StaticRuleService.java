@@ -3,6 +3,7 @@ package com.realtime.protection.server.rule.staticrule;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.RuleEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
@@ -30,12 +31,14 @@ public class StaticRuleService {
     private final StaticRuleMapper staticRuleMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
     private final WhiteListService whiteListService;
+    private final Counter counter;
 
-    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, WhiteListService whiteListService) {
 
+    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, WhiteListService whiteListService, Counter counter) {
         this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.whiteListService = whiteListService;
+        this.counter = counter;
     }
 
     private static int ipToInt(String ip)  {
@@ -86,6 +89,14 @@ public class StaticRuleService {
             whiteListsHit.forEach(item -> result.append(item.getWhiteListName()).append(" "));
             throw new IllegalArgumentException("静态规则与白名单规则冲突，冲突白名单名称:"+result.toString().trim());
         }
+
+        object.setStaticRuleDisplayId(
+                "JTGZ-"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                + "-"
+                + String.format("%06d", counter.generateId("static_rule"))
+        );
+
         staticRuleMapper.newStaticRuleObject(object);
 
         return object.getStaticRuleId();
@@ -186,6 +197,12 @@ public class StaticRuleService {
                     List<StaticRuleObject> StaticRuleBatch = ListUtils.newArrayListWithExpectedSize(100);
                     for (StaticRuleObject staticRule : list) {
                         staticRule.setStaticRuleCreateTime(LocalDateTime.now());
+                        staticRule.setStaticRuleDisplayId(
+                                "JTGZ-"
+                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                + "-"
+                                + String.format("%06d", counter.generateId("static_rule"))
+                        );
                         StaticRuleBatch.add(staticRule);
                         if (StaticRuleBatch.size() < 100) {
                             continue;

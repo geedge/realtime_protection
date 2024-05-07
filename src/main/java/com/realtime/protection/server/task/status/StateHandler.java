@@ -135,7 +135,7 @@ public class StateHandler {
 
         SimpleResponse response = mono.block(Duration.ofSeconds(5));
 
-        if (response == null || response.getSuccess() == null) {
+        if (response == null || response.getCode() != 200 || response.getSuccess() == null) {
             return false;
         }
 

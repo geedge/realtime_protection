@@ -13,8 +13,8 @@
                                   static_rule_dip, static_rule_mdip, static_rule_dport, static_rule_mdport,
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
                                   static_rule_url, static_rule_priority,
-                                  static_rule_frequency, static_rule_audit_status
-                                  )
+                                  static_rule_frequency, static_rule_audit_status,
+                                  static_rule_display_id)
         values (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
                 #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
                 INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
@@ -22,7 +22,8 @@
                 #{object.staticRuleMdport}, #{object.staticRuleProtocol}, #{object.staticRuleMprotocol},
                 #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
                 #{object.staticRuleFrequency},
-                #{object.auditStatus})
+                #{object.auditStatus},
+                #{object.staticRuleDisplayId})
     </insert>
     <insert id="newStaticRules">
         insert into t_static_rule(static_rule_name, static_rule_create_time,
@@ -32,7 +33,8 @@
                                   static_rule_dip, static_rule_mdip, static_rule_dport, static_rule_mdport,
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
                                   static_rule_url, static_rule_priority,
-                                  static_rule_frequency,  static_rule_audit_status
+                                  static_rule_frequency,  static_rule_audit_status,
+                                  static_rule_display_id
                                   )
         values
         <foreach collection="staticRuleBatch" item="object" separator=",">
@@ -42,7 +44,8 @@
             INET_ATON(#{object.staticRuleDip}), INET_ATON(#{object.staticRuleMdip}), #{object.staticRuleDport},
             #{object.staticRuleMdport}, #{object.staticRuleProtocol}, #{object.staticRuleMprotocol},
             #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
-            #{object.staticRuleFrequency}, 0
+            #{object.staticRuleFrequency}, 0,
+            #{object.staticRuleDisplayId}
             )
         </foreach>
     </insert>
