@@ -172,16 +172,17 @@ public class DynamicRuleService {
     //分页查询基础的动态规则，暂时不返回关联的保护对象 
     public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
                                                           String templateSourceSystem,String creator,Integer auditStatus,
+                                                          String eventType, Integer protectLevel, String templateName,
                                                           Integer page, Integer pageSize) {
         return dynamicRuleMapper.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
-                templateSourceSystem, creator, auditStatus, page, pageSize);
+                templateSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, page, pageSize);
     }
 
     public Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
                                             String protectObjectSourceSystem, String creator,
-                                            Integer auditStatus) {
+                                            Integer auditStatus, String eventType, Integer protectLevel, String templateName) {
         return dynamicRuleMapper.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
-                protectObjectSourceSystem, creator, auditStatus);
+                protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName);
     }
 
     public List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids) {
@@ -215,6 +216,7 @@ public class DynamicRuleService {
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
         //校验id和status是否合法
         List<Integer> originalAuditStatusList = dynamicRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+
         int index = 0;
         List<Integer> errorIds = new ArrayList<>();
         for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {

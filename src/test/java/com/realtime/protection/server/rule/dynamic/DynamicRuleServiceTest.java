@@ -42,7 +42,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
                 null,null,null,null,
                 null,null, 1, 1);
         List<Template> templates = templateService.queryTemplates(
-                null, null, null, 1, 1);
+                null, null, null, null, null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
@@ -71,7 +71,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
                 null,
                 1, 1);
         List<Template> templates = templateService.queryTemplates(
-                null, null,null, 1, 1);
+                null, null,null, null, null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
@@ -129,24 +129,24 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testQueryDynamicRuleObject() {
         List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject(
-                null,null,null, null,2,1, 10);
+                null,null,null, null,2,null,null,null,1, 10);
         System.out.println(objects);
     }
     @Test
     void testQueryDynamicRuleTotalNum(){
         Integer num = dynamicRuleService.queryDynamicRuleTotalNum(
-                null,null,null,null,null);
+                null,null,null,null,null,null,null,null);
         System.out.println(num);
     }
 
     @Test
     void testUpdateDynamicRuleAuditStatusBatch(){
         Map<Integer, Integer> map = new HashMap<>();
-        map.put(101, 1);
-        map.put(102, 2);
-        map.put(103, 2);
+//        map.put(101, 1);
+        map.put(110, 2);
+        map.put(112, 2);
 
-
+//        System.out.println(dynamicRuleMapper.queryAuditStatusByIds(map));
         System.out.println(dynamicRuleService.updateAuditStatusBatch(map));
     }
 

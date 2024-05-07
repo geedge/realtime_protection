@@ -61,7 +61,14 @@
     </resultMap>
 
     <select id="queryTasks" resultMap="taskMap">
-        SELECT * FROM t_task
+        SELECT t_task.* FROM t_task
+        <if test="rule_name != null">
+            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
+            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
+            WHERE
+                t_static_rule.static_rule_name LIKE CONCAT('%', #{rule_name}, '%')
+                OR t_dynamic_rule.dynamic_rule_name LIKE CONCAT('%', #{rule_name}, '%')
+        </if>
         <where>
             <if test="task_status != null">
                 AND task_status = #{task_status}
@@ -78,6 +85,19 @@
             <if test="task_audit_status != null">
                 AND task_audit_status = #{task_audit_status}
             </if>
+            <if test="task_audit_status != null">
+                AND task_audit_status = #{task_audit_status}
+            </if>
+            <if test="task_act != null">
+                AND task_act LIKE CONCAT('%', #{task_act}, '%')
+            </if>
+            <if test="task_auditor != null">
+                AND task_audit_username LIKE CONCAT('%', #{task_auditor}, '%')
+            </if>
+            <if test="task_source != null">
+                AND task_source LIKE CONCAT('%', #{task_source}, '%')
+            </if>
+
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
@@ -315,6 +335,13 @@
     </select>
     <select id="queryTaskTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM t_task
+        <if test="rule_name != null">
+            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
+            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
+            WHERE
+            t_static_rule.static_rule_name LIKE CONCAT('%', #{rule_name}, '%')
+            OR t_dynamic_rule.dynamic_rule_name LIKE CONCAT('%', #{rule_name}, '%')
+        </if>
         <where>
             <if test="task_status != null">
                 AND task_status = #{task_status}
@@ -330,6 +357,15 @@
             </if>
             <if test="audit_status != null">
                 AND task_audit_status = #{audit_status}
+            </if>
+            <if test="task_act != null">
+                AND task_act LIKE CONCAT('%', #{task_act}, '%')
+            </if>
+            <if test="task_auditor != null">
+                AND task_audit_username LIKE CONCAT('%', #{task_auditor}, '%')
+            </if>
+            <if test="task_source != null">
+                AND task_source LIKE CONCAT('%', #{task_source}, '%')
             </if>
 
         </where>

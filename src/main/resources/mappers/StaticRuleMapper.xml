@@ -152,9 +152,27 @@
             <if test="static_rule_create_username != null and static_rule_create_username != ''">
                 AND static_rule_create_username like concat('%', #{static_rule_create_username}, '%')
             </if>
-            <if test="ip != null and ip != ''">
-                AND (static_rule_sip = INET_ATON(#{ip}) or static_rule_msip = INET_ATON(#{ip})
-                or static_rule_dip = INET_ATON(#{ip}) or static_rule_mdip = INET_ATON(#{ip}))
+            <if test="sip != null and sip != ''">
+                AND ((static_rule_msip IS NULL AND static_rule_sip = INET_ATON(#{sip}))
+                OR (
+                static_rule_msip IS NOT NULL AND ( static_rule_sip &amp; static_rule_msip) =
+                (INET_ATON(#{sip}) &amp; static_rule_msip)
+                )
+                )
+            </if>
+            <if test="dip != null and dip != ''">
+                AND ((static_rule_mdip IS NULL AND static_rule_dip = INET_ATON(#{dip}))
+                OR (
+                    static_rule_mdip IS NOT NULL AND ( static_rule_dip &amp; static_rule_mdip) =
+                    (INET_ATON(#{dip}) &amp; static_rule_mdip)
+                    )
+                )
+            </if>
+            <if test="sport != null">
+                AND static_rule_sport = #{sport}
+            </if>
+            <if test="dport != null">
+                AND static_rule_dport = #{dport}
             </if>
             <if test="auditStatus != null">
                 AND static_rule_audit_status = #{auditStatus}
@@ -187,9 +205,27 @@
             <if test="static_rule_create_username != null and static_rule_create_username != ''">
                 AND static_rule_create_username like concat('%', #{static_rule_create_username}, '%')
             </if>
-            <if test="ip != null and ip != ''">
-                AND (static_rule_sip = INET_ATON(#{ip}) or static_rule_msip = INET_ATON(#{ip})
-                or static_rule_dip = INET_ATON(#{ip}) or static_rule_mdip = INET_ATON(#{ip}))
+            <if test="sip != null and sip != ''">
+                AND ((static_rule_msip IS NULL AND static_rule_sip = INET_ATON(#{sip}))
+                OR (
+                static_rule_msip IS NOT NULL AND ( static_rule_sip &amp; static_rule_msip) =
+                (INET_ATON(#{sip}) &amp; static_rule_msip)
+                )
+                )
+            </if>
+            <if test="dip != null and dip != ''">
+                AND ((static_rule_mdip IS NULL AND static_rule_dip = INET_ATON(#{dip}))
+                OR (
+                static_rule_mdip IS NOT NULL AND ( static_rule_dip &amp; static_rule_mdip) =
+                (INET_ATON(#{dip}) &amp; static_rule_mdip)
+                )
+                )
+            </if>
+            <if test="sport != null">
+                AND static_rule_sport = #{sport}
+            </if>
+            <if test="dport != null">
+                AND static_rule_dport = #{dport}
             </if>
             <if test="auditStatus != null">
                 AND static_rule_audit_status = #{auditStatus}

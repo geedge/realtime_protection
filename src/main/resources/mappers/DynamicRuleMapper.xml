@@ -205,6 +205,13 @@
             <if test="auditStatus != null">
                 and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
+            <if test="eventType != null and eventType !=''">
+                and t_strategy_template.strategy_template_name = #{eventType}
+            </if>
+            <if test="protectLevel != null">
+                and t_dynamic_rule.dynamic_rule_protect_level = #{protectLevel}
+            </if>
+
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
@@ -250,8 +257,15 @@
             <if test="auditStatus != null">
                 and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
+            <if test="eventType != null and eventType !=''">
+                and t_strategy_template.strategy_template_name = #{eventType}
+            </if>
+            <if test="protectLevel != null">
+                and t_dynamic_rule.dynamic_rule_protect_level = #{protectLevel}
+            </if>
         </where>
     </select>
+
     <select id="queryDynamicRuleByIds"
             resultMap="dynamicRulePageQueryMap">
         select *
@@ -286,11 +300,12 @@
         from t_dynamic_rule
         where dynamic_rule_id = #{dynamicRuleId}
     </select>
+
     <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
         select audit_status
         from t_dynamic_rule
         where dynamic_rule_id in
-        <foreach collection="idsWithAuditStatusMap" item="id" open="(" separator="," close=")">
+        <foreach collection="idWithAuditStatusBatch" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </select>

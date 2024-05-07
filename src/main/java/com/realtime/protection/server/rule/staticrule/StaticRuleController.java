@@ -133,7 +133,10 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult queryStaticRule(@RequestParam(name = "name", required = false) String static_rule_name,
                                           @RequestParam(name = "id", required = false) Integer static_rule_id,
                                           @RequestParam(name = "creator", required = false) String static_rule_creator,
-                                          @RequestParam(name = "ip", required = false) String static_rule_ip,
+                                          @RequestParam(name = "sip", required = false) String static_rule_sip,
+                                          @RequestParam(name = "sport", required = false) Integer static_rule_sport,
+                                          @RequestParam(name = "dip", required = false) String static_rule_dip,
+                                          @RequestParam(name = "dport", required = false) Integer static_rule_dport,
                                           @RequestParam(name = "auditStatus", required = false) Integer auditStatus,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize
@@ -142,11 +145,11 @@ public class StaticRuleController implements StaticRuleControllerApi {
         //调用service新增
         List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(
                 static_rule_name, static_rule_id,
-                static_rule_creator, static_rule_ip, auditStatus, page, pageSize);
+                static_rule_creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport,  auditStatus, page, pageSize);
         return ResponseResult.ok()
                 .setData("static_rule_list", pageResult)
                 .setData("total_num",staticRuleService.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
-                        static_rule_creator, static_rule_ip, auditStatus));
+                        static_rule_creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport, auditStatus));
     }
 
     @Override
@@ -209,7 +212,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult getStaticRuleStatisticsData(){
 
         return ResponseResult.ok()
-                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(null, null, null, null, null))
+                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(null, null, null, null, null, null, null, null))
                 .setData("static_rule_used_num", staticRuleService.queryAuditStaticRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
                 ))

@@ -101,12 +101,20 @@ public interface WhiteListControllerApi {
             parameters = {
                     @Parameter(name = "whiteobj_name", description = "白名单名称"),
                     @Parameter(name = "whiteobj_id", description = "白名单ID"),
+                    @Parameter(name = "system_name", description = "白名单新建时配置的系统名称"),
+                    @Parameter(name = "audit_status", description = "审核状态"),
+                    @Parameter(name = "creator", description = "创建人名称"),
+
                     @Parameter(name = "page", description = "页码", example = "1"),
                     @Parameter(name = "page_size", description = "每页查询个数", example = "10")
             }
     )
     ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false) String whiteListName,
                                         @RequestParam(value = "whiteobj_id", required = false) Integer whiteListId,
+                                        @RequestParam(value = "system_name", required = false) String systemName,
+                                        @RequestParam(value = "audit_status", required = false) Integer auditStatus,
+                                        @RequestParam(value = "creator", required = false) String creator,
+
                                         @RequestParam(value = "page", defaultValue = "1") Integer page,
                                         @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize);
 

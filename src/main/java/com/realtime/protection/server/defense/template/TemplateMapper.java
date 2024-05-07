@@ -17,6 +17,8 @@ public interface TemplateMapper {
     List<Template> queryTemplates(@Param("template_name") String templateName,
                                   @Param("source_system") String sourceSystem,
                                   @Param("create_username") String createUsername,
+                                  @Param("template_id")Integer templateId,
+                                  @Param("audit_status")Integer auditStatus,
                                   @Param("page") Integer page,
                                   @Param("page_size") Integer pageSize);
 

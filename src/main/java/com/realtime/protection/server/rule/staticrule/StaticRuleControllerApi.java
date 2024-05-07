@@ -203,7 +203,10 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "name", description = "静态规则名称"),
                     @Parameter(name = "id", description = "静态规则id"),
                     @Parameter(name = "creator", description = "静态规则创建人"),
-                    @Parameter(name = "ip", description = "静态规则ip，匹配所有源和目的ip"),
+                    @Parameter(name = "sip", description = "静态规则ip，匹配源ip并考虑掩码"),
+                    @Parameter(name = "sport", description = "静态规则port，匹配源port"),
+                    @Parameter(name = "dip", description = "静态规则ip，匹配目的ip并考虑掩码"),
+                    @Parameter(name = "dport", description = "静态规则port，匹配目的port"),
                     @Parameter(name = "auditStatus", description = "静态规则审核状态"),
                     @Parameter(name = "page", description = "页码"),
                     @Parameter(name = "pageSize", description = "每页条数")
@@ -212,7 +215,10 @@ public interface StaticRuleControllerApi {
     ResponseResult queryStaticRule(@RequestParam(required = false) String static_rule_name,
                                    @RequestParam(required = false) Integer static_rule_id,
                                    @RequestParam(required = false) String static_rule_creator,
-                                   @RequestParam(required = false) String static_rule_ip,
+                                   @RequestParam(required = false) String static_rule_sip,
+                                   @RequestParam(required = false) Integer static_rule_sport,
+                                   @RequestParam(required = false) String static_rule_dip,
+                                   @RequestParam(required = false) Integer static_rule_dport,
                                    @RequestParam(required = false) Integer auditStatus,
                                    @RequestParam(defaultValue = "1") Integer page,
                                    @RequestParam(defaultValue = "10") Integer pageSize

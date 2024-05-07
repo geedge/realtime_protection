@@ -103,6 +103,12 @@
             <if test="template_name != null">
                 AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
+            <if test="template_id != null">
+                AND strategy_template_id = #{template_id}
+            </if>
+            <if test="audit_status != null">
+                AND audit_status = #{audit_status}
+            </if>
         </where>
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
@@ -155,11 +161,11 @@
     <select id="queryAuditTemplateTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM t_strategy_template
-        WHERE audit_state = #{auditState}
+        WHERE audit_status = #{auditState}
     </select>
 
     <select id="queryAuditStatusById" resultType="java.lang.Integer">
-        SELECT audit_state
+        SELECT audit_status
         FROM t_strategy_template
         WHERE strategy_template_id = #{id}
     </select>
@@ -178,7 +184,7 @@
 
     <update id="updateAuditStatusById">
         UPDATE t_strategy_template
-        SET audit_state = #{auditStatus}
+        SET audit_status = #{auditStatus}
         WHERE strategy_template_id = #{id}
     </update>
 </mapper>

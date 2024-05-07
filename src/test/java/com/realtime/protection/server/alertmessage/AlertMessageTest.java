@@ -49,7 +49,7 @@ public class AlertMessageTest {
                 null, null, null, null,
                 null, null, 1, 1);
         List<Template> templates = templateService.queryTemplates(
-                null, null, null,1, 1);
+                null, null, null, null, null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");

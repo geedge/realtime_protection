@@ -166,11 +166,14 @@ public class StaticRuleService {
      */
     public List<StaticRuleObject> queryStaticRule(
             String static_rule_name, Integer static_rule_id,
-            String creator, String ip, Integer auditStatus,
+            String creator,
+            String static_rule_sip, Integer static_rule_sport,
+            String static_rule_dip, Integer static_rule_dport,
+            Integer auditStatus,
             Integer page, Integer pageSize) {
 
         return staticRuleMapper.queryStaticRule(static_rule_name, static_rule_id,
-                creator, ip, auditStatus, page, pageSize);
+                creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport, auditStatus, page, pageSize);
     }
 
     public Boolean newStaticRuleObjects(List<StaticRuleObject> staticRuleList) {
@@ -233,9 +236,13 @@ public class StaticRuleService {
     }
 
     public Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
-                                           String static_rule_creator, String static_rule_ip, Integer auditStatus) {
+                                           String static_rule_creator,
+                                           String static_rule_sip, Integer static_rule_sport,
+                                           String static_rule_dip, Integer static_rule_dport,
+                                           Integer auditStatus) {
         return staticRuleMapper.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
-                static_rule_creator, static_rule_ip, auditStatus);
+                static_rule_creator, static_rule_sip, static_rule_sport,
+                static_rule_dip, static_rule_dport, auditStatus);
     }
 
     public List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids) {

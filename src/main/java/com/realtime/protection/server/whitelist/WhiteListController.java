@@ -63,6 +63,9 @@ public class WhiteListController implements WhiteListControllerApi {
     @GetMapping("/query")
     public ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false) String whiteListName,
                                                @RequestParam(value = "whiteobj_id", required = false) Integer whiteListId,
+                                               @RequestParam(value = "system_name", required = false) String systemName,
+                                               @RequestParam(value = "audit_status", required = false) Integer auditStatus,
+                                               @RequestParam(value = "creator", required = false) String creator,
                                                @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
         if (page <= 0 || pageSize <= 0) {
@@ -70,8 +73,8 @@ public class WhiteListController implements WhiteListControllerApi {
                     .setData("whiteobj_list", null);
         }
         return ResponseResult.ok()
-                .setData("whiteobj_list", whiteListService.queryWhiteListObject(whiteListName, whiteListId, page, pageSize))
-                .setData("total_num", whiteListService.queryWhiteListTotalNum(whiteListName, whiteListId));
+                .setData("whiteobj_list", whiteListService.queryWhiteListObject(whiteListName, whiteListId, systemName, auditStatus, creator, page, pageSize))
+                .setData("total_num", whiteListService.queryWhiteListTotalNum(whiteListName, whiteListId, systemName, auditStatus, creator));
     }
 
     @Override
@@ -202,7 +205,7 @@ public class WhiteListController implements WhiteListControllerApi {
     @GetMapping("/statistics")
     public ResponseResult getWhiteListStatisticsData() {
         return ResponseResult.ok()
-                .setData("whiteobj_num", whiteListService.queryWhiteListTotalNum(null, null))
+                .setData("whiteobj_num", whiteListService.queryWhiteListTotalNum(null, null, null, null, null))
                 .setData("whiteobj_audit_num", whiteListService.queryAuditWhiteListTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
                 ))

@@ -34,8 +34,9 @@ public class TemplateService {
     }
 
     public List<Template> queryTemplates(String templateName, String sourceSystem, String createUserName,
+                                         Integer templateId, Integer auditStatus,
                                          Integer page, Integer pageSize) {
-        return templateMapper.queryTemplates(templateName, sourceSystem, createUserName, page, pageSize);
+        return templateMapper.queryTemplates(templateName, sourceSystem, createUserName, templateId, auditStatus, page, pageSize);
     }
 
     public Boolean updateTemplate(Integer templateId, Template template) {
@@ -49,7 +50,7 @@ public class TemplateService {
     }
 
     public List<Template> queryTemplatesShort() {
-        List<Template> templates = templateMapper.queryTemplates(null, null, null, 1, 10000);
+        List<Template> templates = templateMapper.queryTemplates(null, null, null, null, null,1, 10000);
 
         templates.forEach(template -> {
             try {

@@ -109,6 +109,10 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                                                  @RequestParam(value = "source_system", required = false) String protectObjectSourceSystem,
                                                  @RequestParam(value = "creator", required = false) String creator,
                                                  @RequestParam(value = "audit_status", required = false) Integer auditStatus,
+                                                 @RequestParam(value = "event_type", required = false) String eventType,
+                                                 @RequestParam(value = "protect_level", required = false) Integer protectLevel,
+                                                 @RequestParam(value = "template_name", required = false) String templateName,
+
                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                  @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
         log.info("分页查询动态规则: {}:{}:{}:{}", dynamicRuleName, dynamicRuleId, page, pageSize);
@@ -116,9 +120,9 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
         return ResponseResult.ok()
                 .setData("success", true)
                 .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
-                        protectObjectSourceSystem, creator, auditStatus, page, pageSize))
+                        protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, page, pageSize))
                 .setData("total_num",dynamicRuleService.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
-                        protectObjectSourceSystem, creator, auditStatus));
+                        protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName));
     }
 
     //详情查看？？  就是按id查询吧
@@ -159,7 +163,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
         }
 
         return ResponseResult.ok()
-                .setData("success",                                                                                dynamicRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", dynamicRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
 
 
@@ -172,7 +176,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
 
         return ResponseResult.ok()
                 .setData("dynamic_rule_num", dynamicRuleService.queryDynamicRuleTotalNum(null,null, null,
-                        null, null))
+                        null, null, null, null, null))
                 .setData("dynamic_rule_used_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
                 ))

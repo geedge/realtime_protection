@@ -59,6 +59,15 @@
             <if test="whiteListId != null">
                 and white_list_id = #{whiteListId}
             </if>
+            <if test="systemName != null">
+                and white_list_system_name like concat('%', #{systemName}, '%')
+            </if>
+            <if test="auditStatus != null">
+                and white_list_audit_status = #{auditStatus}
+            </if>
+            <if test="creator != null">
+                and create_username = #{creator}
+            </if>
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
@@ -208,6 +217,15 @@
             </if>
             <if test="whiteListId != null">
                 and white_list_id = #{whiteListId}
+            </if>
+            <if test="systemName != null">
+                and white_list_system_name like concat('%', #{systemName}, '%')
+            </if>
+            <if test="auditStatus != null">
+                and white_list_audit_status = #{auditStatus}
+            </if>
+            <if test="creator != null">
+                and create_username = #{creator}
             </if>
         </where>
     </select>

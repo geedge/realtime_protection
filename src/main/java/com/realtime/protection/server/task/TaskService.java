@@ -200,8 +200,12 @@ public class TaskService {
     public List<Task> queryTasks(Integer taskStatus,
                                  Integer taskType, String taskName, String taskCreator,
                                  Integer auditStatus,
+                                 String taskAct, String taskAuditor,
+                                 String taskSource, String ruleName,
                                  Integer page, Integer pageSize) {
-        List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus, page, pageSize);
+
+        List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
+                taskAct, taskAuditor, taskSource, ruleName, page, pageSize);
         for (Task task : tasks) {
             if (task == null) {
                 continue;
@@ -316,8 +320,10 @@ public class TaskService {
         return taskMapper.queryTasksByStatus(StateEnum.FINISHED.getStateNum());
     }
 
-    public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus) {
-        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus);
+    public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus
+    ,String taskAct, String taskAuditor, String taskSource, String ruleName) {
+        return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
+                taskAct, taskAuditor, taskSource, ruleName);
     }
 
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
@@ -371,4 +377,10 @@ public class TaskService {
     public Integer queryAuditTaskTotalNum(Integer auditState) {
         return taskMapper.queryAuditTaskTotalNum(auditState);
     }
+
+    public List<Integer> queryAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        //校验id和status是否合法
+        return taskMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+    }
+
 }

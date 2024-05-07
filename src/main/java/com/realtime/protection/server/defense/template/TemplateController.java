@@ -42,10 +42,12 @@ public class TemplateController implements TemplateControllerApi {
     public ResponseResult queryTemplates(@RequestParam(value = "template_name", required = false) String templateName,
                                          @RequestParam(value = "source_system", required = false) String sourceSystem,
                                          @RequestParam(value = "create_user_name", required = false) String createUserName,
+                                         @RequestParam(value = "template_id", required = false) Integer templateId,
+                                         @RequestParam(value = "audit_status", required = false) Integer auditStatus,
                                          @RequestParam("page") @Min(1) Integer page,
                                          @RequestParam("page_size") @Min(1) Integer pageSize) {
         List<Template> templates = templateService.queryTemplates(
-                templateName, sourceSystem, createUserName,
+                templateName, sourceSystem, createUserName, templateId, auditStatus,
                 page, pageSize
         );
 

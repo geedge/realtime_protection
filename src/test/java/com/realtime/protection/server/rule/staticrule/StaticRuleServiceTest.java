@@ -99,13 +99,13 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testQueryStaticRules(){
-        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(null, null, null, null,2, 1, 10);
+        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(null, null, null, null,null, null, null,2, 1, 10);
         System.out.println(staticRuleObjects);
     }
     @Test
     void testUpdateStaticRuleAuditStatusBatch(){
         Map<Integer, Integer> map = new HashMap<>();
-        map.put(1325, 0);
+        map.put(1300, 0);
         map.put(1326, 1);
         map.put(1328, 1);
 

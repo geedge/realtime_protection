@@ -73,14 +73,14 @@ class TaskServiceTest extends ProtectionApplicationTests {
     void testNewTaskSuccess() {
         for (int i = 1; i < 10; i++) {
             List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                    null, null, null, null,2, i, 2);
+                    null, null, null, null,null, null, null,2, i, 2);
             List<Integer> staticRuleIds = new ArrayList<>();
             staticRuleObjects.forEach(staticRuleObject ->
                     staticRuleIds.add(staticRuleObject.getStaticRuleId()));
             task.setStaticRuleIds(staticRuleIds);
 
             List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleObject(
-                    null, null, null, null,null, i, 2
+                    null, null, null, null,null, null,null,null,i, 2
             );
             List<Integer> dynamicRuleIds = new ArrayList<>();
             dynamicRuleObjects.forEach(dynamicRuleObject ->
@@ -107,7 +107,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testPageQueryTask(){
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, 1, 10);
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null,null, null, null, null, 1, 10);
         System.out.println(tasks);
     }
 
@@ -120,14 +120,14 @@ class TaskServiceTest extends ProtectionApplicationTests {
             task.setTaskName(testName);
             task.setTaskCreateUsername(testCreateName);
             List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                    null, null, null, null, null,1, 5);
+                    null, null, null, null, null,null, null, null,1, 5);
             List<Integer> staticRuleIds = new ArrayList<>();
             staticRuleObjects.forEach(staticRuleObject ->
                     staticRuleIds.add(staticRuleObject.getStaticRuleId()));
             task.setStaticRuleIds(staticRuleIds);
 
             List<DynamicRuleObject> dynamicRuleObjects = dynamicRuleService.queryDynamicRuleObject(
-                    null, null, null, null, null,1, 5
+                    null, null, null, null, null,null, null, null, 1, 5
             );
             List<Integer> dynamicRuleIds = new ArrayList<>();
             dynamicRuleObjects.forEach(dynamicRuleObject ->
@@ -142,17 +142,17 @@ class TaskServiceTest extends ProtectionApplicationTests {
         }
 
 
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, 1, 10);
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 10);
         assertEquals(10, tasks.size());
 
-        tasks = taskService.queryTasks(0, null, null, null, null, 1, 10);
+        tasks = taskService.queryTasks(0, null, null, null, null,null, null, null, null, 1, 10);
         assertEquals(10, tasks.size());
         tasks.forEach(task -> assertEquals(0, task.getTaskStatus()));
 
-        tasks = taskService.queryTasks(null, 0, null, null, null, 1, 10);
+        tasks = taskService.queryTasks(null, 0, null, null, null, null, null, null, null,1, 10);
         assertEquals(0, tasks.size());
 
-        tasks = taskService.queryTasks(null, null, testName, null, null, 1, 10);
+        tasks = taskService.queryTasks(null, null, testName, null, null, null, null, null, null,1, 10);
         assertEquals(10, tasks.size());
         tasks.forEach(task -> assertEquals(testName, task.getTaskName()));
     }
@@ -160,11 +160,11 @@ class TaskServiceTest extends ProtectionApplicationTests {
     @Test
     void testUpdateTasks() {
         Task originalTask = taskService.queryTasks(
-                null, null, null, null, null, 1, 1)
+                null, null, null, null, null, null, null, null, null,1, 1)
                 .get(0);
 
         List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                null, null, null, null, null,1, 4
+                null, null, null, null, null,null, null, null,1, 4
         );
         List<Integer> staticRuleIds = new ArrayList<>();
         staticRuleObjects.forEach(staticRuleObject -> staticRuleIds.add(staticRuleObject.getStaticRuleId()));
@@ -177,7 +177,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testDeleteTask() {
-        long testNum = taskService.queryTasks(null, null, null, null, null, 1, 10)
+        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 10)
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));
@@ -186,7 +186,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testChangeAuditStatus() {
-        long testNum = taskService.queryTasks(null, null, null, null, null, 1, 1)
+        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 1)
                 .get(0).getTaskId();
 
         assertTrue(taskService.changeTaskAuditStatus(testNum, 2));
@@ -294,7 +294,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
                 null, null, null, null,
                 null, null, 1, 1);
         List<Template> templates = templateService.queryTemplates(
-                null, null, null,1, 1);
+                null, null, null,null, null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("testStartDynamicTask");
@@ -331,5 +331,26 @@ class TaskServiceTest extends ProtectionApplicationTests {
         stateChangeService.changeState(2, taskId, false);
 
         System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
+    }
+
+
+    @Test
+    void testUpdateDynamicRuleAuditStatusBatch(){
+        Map<Integer, Integer> map = new HashMap<>();
+//        map.put(101, 1);
+        map.put(43848, 0);
+        map.put(43849,0);
+
+//        System.out.println(dynamicRuleMapper.queryAuditStatusByIds(map));
+        System.out.println(taskService.updateAuditStatusBatch(map));
+    }
+
+    @Test
+    void testQueryDynamicRuleAuditStatus(){
+        System.out.println(taskService.queryTaskAuditStatus(43848L));
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(43848, 0);
+        map.put(43849,0);
+        System.out.println(taskService.queryAuditStatusBatch(map));
     }
 }

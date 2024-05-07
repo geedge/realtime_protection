@@ -75,12 +75,18 @@ public class TaskController implements TaskControllerApi {
                                      @RequestParam(value = "task_name", required = false) String taskName,
                                      @RequestParam(value = "task_creator", required = false) String taskCreator,
                                      @RequestParam(value = "audit_status", required = false) Integer auditStatus,
+                                     @RequestParam(value = "task_act", required = false) String taskAct,
+                                     @RequestParam(value = "task_auditor", required = false) String taskAuditor,
+                                     @RequestParam(value = "task_source", required = false) String taskSource,
+                                     @RequestParam(value = "rule_name", required = false) String ruleName,
                                      @RequestParam("page") @Min(1) Integer page,
                                      @RequestParam("page_size") @Min(1) Integer pageSize) {
-        List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus, page, pageSize);
+        List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
+                taskAct, taskAuditor, taskSource, ruleName, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks)
-                .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus));
+                .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
+                        taskAct, taskAuditor, taskSource, ruleName));
     }
 
     @Override
@@ -192,9 +198,12 @@ public class TaskController implements TaskControllerApi {
     @GetMapping("/statistics")
     public ResponseResult statistics() {
         return ResponseResult.ok()
-                .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null, null))
-                .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null))
-                .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null))
+                .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null, null,
+                        null, null, null, null))
+                .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null,
+                        null, null, null, null))
+                .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null,
+                        null, null, null, null))
                 .setData("unaudit_num", taskService.queryAuditTaskTotalNum(
                         AuditStatusEnum.PENDING.getNum()
                 ));

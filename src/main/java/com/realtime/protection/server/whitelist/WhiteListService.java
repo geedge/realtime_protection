@@ -113,8 +113,9 @@ public class WhiteListService {
     }
 
     public List<WhiteListObject> queryWhiteListObject(String whiteListName, Integer whiteListId,
+                                                      String systemName, Integer auditStatus, String creator,
                                                       Integer page, Integer pageSize) {
-        return whiteListMapper.queryWhiteListObject(whiteListName, whiteListId, page, pageSize);
+        return whiteListMapper.queryWhiteListObject(whiteListName, whiteListId, systemName, auditStatus, creator, page, pageSize);
     }
 
     public WhiteListObject queryWhiteListObjectById(Integer id) {
@@ -186,8 +187,9 @@ public class WhiteListService {
         return resultMap;
     }
 
-    public Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId){
-        return whiteListMapper.queryWhiteListTotalNum(whiteListName, whiteListId);
+    public Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId
+            , String systemName, Integer auditStatus, String creator){
+        return whiteListMapper.queryWhiteListTotalNum(whiteListName, whiteListId, systemName, auditStatus, creator);
     }
 
 

@@ -184,6 +184,10 @@ public interface TaskControllerApi {
                     @Parameter(name = "task_name", description = "任务名称"),
                     @Parameter(name = "task_creator", description = "任务创建人"),
                     @Parameter(name = "audit_status", description = "审批状态"),
+                    @Parameter(name = "task_act", description = "任务动作"),
+                    @Parameter(name = "task_auditor", description = "任务审核人名称"),
+                    @Parameter(name = "task_source", description = "任务来源系统"),
+                    @Parameter(name = "rule_name", description = "规则名称"),
                     @Parameter(name = "page", description = "页码", example = "1"),
                     @Parameter(name = "page_size", description = "每页查询个数", example = "10")
             }
@@ -193,6 +197,10 @@ public interface TaskControllerApi {
                               @RequestParam(value = "task_name", required = false) String taskName,
                               @RequestParam(value = "task_creator", required = false) String taskCreator,
                               @RequestParam(value = "audit_status", required = false) Integer auditStatus,
+                              @RequestParam(value = "task_act", required = false) String taskAct,
+                              @RequestParam(value = "task_auditor", required = false) String taskAuditor,
+                              @RequestParam(value = "task_source", required = false) String taskSource,
+                              @RequestParam(value = "rule_name", required = false) String ruleName,
                               @RequestParam("page") @Min(1) Integer page,
                               @RequestParam("page_size") @Min(1) Integer pageSize);
 
