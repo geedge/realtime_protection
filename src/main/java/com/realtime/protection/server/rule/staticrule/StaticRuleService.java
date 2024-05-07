@@ -33,9 +33,8 @@ public class StaticRuleService {
     private final WhiteListService whiteListService;
     private final Counter counter;
 
-    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, WhiteListService whiteListService) {
 
-    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, Counter counter) {
+    public StaticRuleService(StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, WhiteListService whiteListService, Counter counter) {
         this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.whiteListService = whiteListService;
