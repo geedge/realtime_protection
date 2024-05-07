@@ -342,7 +342,7 @@ public class TaskService {
     public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus
     ,String taskAct, String taskAuditor, String taskSource, String ruleName) {
         return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName);
+                taskAct, taskAuditor, taskSource, ruleName,null);
     }
 
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
