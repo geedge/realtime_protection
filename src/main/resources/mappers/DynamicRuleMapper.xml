@@ -152,6 +152,8 @@
         <result column="strategy_template_name" property="dynamicRuleEventType"/>
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
         <result column="audit_status" property="auditStatus"/>
+        <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
+
     </resultMap>
 
     <select id="queryDynamicRuleById" resultMap="dynamicRuleMap">

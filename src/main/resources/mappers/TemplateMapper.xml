@@ -9,12 +9,12 @@
                                         strategy_template_high_level_id,
                                         strategy_template_create_user_id, strategy_template_create_username,
                                         strategy_template_create_depart,
-                                        strategy_template_description)
+                                        strategy_template_description, strategy_template_display_id)
             VALUE (#{template.templateName}, #{template.sourceSystem},
                    #{template.protectLevelLow.protectLevelId}, #{template.protectLevelMedium.protectLevelId},
                    #{template.protectLevelHigh.protectLevelId},
                    #{template.createUserId}, #{template.createUsername}, #{template.createDepart},
-                    #{template.description})
+                    #{template.description}, #{template.templateDisplayId})
     </insert>
 
     <insert id="newProtectLevel" useGeneratedKeys="true" keyProperty="protectLevelId">
@@ -37,6 +37,8 @@
         <result column="strategy_template_running_tasks" property="runningTasks"/>
         <result column="strategy_template_description" property="description"/>
         <result column="audit_status" property="auditStatus"/>
+
+        <result column="strategy_template_display_id" property="templateDisplayId"/>
 
         <association property="protectLevelLow"
                      javaType="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">

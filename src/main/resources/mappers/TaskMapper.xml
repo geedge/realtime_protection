@@ -59,6 +59,8 @@
         <result column="task_create_username" property="taskCreateUsername"/>
         <result column="task_create_depart" property="taskCreateDepart"/>
 
+        <result column="task_display_id" property="taskDisplayId"/>
+
     </resultMap>
 
     <select id="queryTasks" resultMap="taskMap">

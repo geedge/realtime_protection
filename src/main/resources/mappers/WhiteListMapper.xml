@@ -8,24 +8,24 @@
         insert into t_white_list(white_list_name, white_list_system_name,
                                  white_list_ip, white_list_port,
                                  white_list_url, white_list_protocol,
-                                 white_list_audit_status, create_time)
+                                 white_list_audit_status, create_time, white_list_display_id)
         values (#{object.whiteListName}, #{object.whiteListSystemName},
                 INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
                 #{object.whiteListUrl}, #{object.whiteListProtocol},
-                0, NOW())
+                0, NOW(), #{object.whiteListDisplayId})
     </insert>
 
     <insert id="newWhiteListObjects">
         insert into t_white_list(white_list_name, white_list_system_name,
         white_list_ip, white_list_port,
         white_list_url, white_list_protocol,
-        white_list_audit_status, create_time)
+        white_list_audit_status, create_time, white_list_display_id)
         values
         <foreach collection="whiteListObjects" item="object" separator=",">
             (#{object.whiteListName}, #{object.whiteListSystemName},
             INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
             #{object.whiteListUrl}, #{object.whiteListProtocol},
-            0, NOW())
+            0, NOW(), #{object.whiteListDisplayId})
         </foreach>
     </insert>
 
@@ -47,6 +47,8 @@
         <result column="white_list_url" property="whiteListUrl"/>
         <result column="white_list_protocol" property="whiteListProtocol"/>
         <result column="white_list_audit_status" property="whiteListAuditStatus"/>
+        <result column="white_list_display_id" property="whiteListDisplayId"/>
+
     </resultMap>
 
     <select id="queryWhiteListObject" resultMap="whiteListMap">

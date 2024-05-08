@@ -4,6 +4,7 @@ import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
@@ -11,6 +12,8 @@ import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,17 +26,27 @@ public class WhiteListService {
     private final StaticRuleMapper staticRuleMapper;
 
     private final SqlSessionWrapper sqlSessionWrapper;
+    private final Counter counter;
 
     public WhiteListService(WhiteListMapper whiteListMapper,
                             StaticRuleMapper staticRuleMapper,
-                            SqlSessionWrapper sqlSessionWrapper) {
+                            SqlSessionWrapper sqlSessionWrapper, Counter counter) {
         this.whiteListMapper = whiteListMapper;
         this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
+        this.counter = counter;
     }
 
     //新建一个whitelist
     public Integer newWhiteListObject(WhiteListObject object) {
+
+        object.setWhiteListDisplayId(
+                "BMD-"
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-"
+                        + String.format("%06d", counter.generateId("white_list"))
+
+        );
 
         whiteListMapper.newWhiteListObject(object);
 
@@ -50,6 +63,13 @@ public class WhiteListService {
 
                     List<WhiteListObject> WhiteListBatch = ListUtils.newArrayListWithExpectedSize(100);
                     for (WhiteListObject whiteListObject : whiteListObjectList) {
+                        whiteListObject.setWhiteListDisplayId(
+                                "BMD-"
+                                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                        + "-"
+                                        + String.format("%06d", counter.generateId("white_list"))
+
+                        );
                         WhiteListBatch.add(whiteListObject);
                         if (WhiteListBatch.size() < 100) {
                             continue;

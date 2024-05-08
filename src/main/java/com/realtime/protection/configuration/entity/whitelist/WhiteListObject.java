@@ -61,4 +61,10 @@ public class WhiteListObject {
     @ExcelIgnore
     @Schema(description = "白名单对象审核状态（0为未审核，1为已退回，2为审核通过）", example = "2")
     private Integer whiteListAuditStatus;
+
+    @JsonProperty("white_list_display_id")
+    @ExcelIgnore
+    @Schema(description = "白名单展示id",  example = "BMD-20200101-123456", accessMode = Schema.AccessMode.READ_ONLY)
+    private String whiteListDisplayId;
+
 }

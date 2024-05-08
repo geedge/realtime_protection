@@ -1,11 +1,14 @@
 package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +17,11 @@ import java.util.Map;
 public class TemplateService {
 
     private final TemplateMapper templateMapper;
+    private final Counter counter;
 
-    public TemplateService(TemplateMapper templateMapper) {
+    public TemplateService(TemplateMapper templateMapper, Counter counter) {
         this.templateMapper = templateMapper;
+        this.counter = counter;
     }
 
     @Transactional
@@ -24,6 +29,13 @@ public class TemplateService {
         templateMapper.newProtectLevel(template.getProtectLevelLow());
         templateMapper.newProtectLevel(template.getProtectLevelMedium());
         templateMapper.newProtectLevel(template.getProtectLevelHigh());
+
+        template.setTemplateDisplayId(
+                "CLMB-"
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-"
+                        + String.format("%06d", counter.generateId("strategy_template"))
+        );
 
         templateMapper.newTemplate(template);
 

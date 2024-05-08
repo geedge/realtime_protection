@@ -196,7 +196,7 @@ public class StaticRuleService {
 
                     List<StaticRuleObject> StaticRuleBatch = ListUtils.newArrayListWithExpectedSize(100);
                     for (StaticRuleObject staticRule : list) {
-                        staticRule.setStaticRuleCreateTime(LocalDateTime.now());
+//                        staticRule.setStaticRuleCreateTime(LocalDateTime.now());
                         staticRule.setStaticRuleDisplayId(
                                 "JTGZ-"
                                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))

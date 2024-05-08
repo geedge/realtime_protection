@@ -77,6 +77,10 @@ public class Template {
     @Schema(description = "防御策略模板审核状态（0为未审核，1为已退回，2为审核通过）", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditStatus;
 
+    @JsonProperty("template_display_id")
+    @Schema(description = "策略模板展示id", accessMode = Schema.AccessMode.READ_ONLY)
+    private String templateDisplayId;
+
 
     /**
      * 设置是否含有日常/应急/紧急防护等级态字段的字段

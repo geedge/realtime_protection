@@ -135,6 +135,8 @@
         <result column="static_rule_url" property="staticRuleURL"/>
         <result column="static_rule_priority" property="staticRulePriority"/>
         <result column="static_rule_frequency" property="staticRuleFrequency"/>
+
+        <result column="static_rule_display_id" property="staticRuleDisplayId"/>
     </resultMap>
 
     <select id="queryStaticRule"  resultMap="staticRuleMap">
