@@ -50,19 +50,19 @@ public class StaticRuleObject {
 
     @JsonProperty("static_rule_create_username")
     @ExcelIgnore
-    @Schema(description = "静态规则创建用户名称", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "静态规则创建用户名称")
     private String staticRuleCreateUsername;
     @JsonProperty("static_rule_audit_status")
     @ExcelIgnore
-    @Schema(description = "静态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "静态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2")
     private Integer auditStatus;
     @JsonProperty("static_rule_create_depart")
     @ExcelIgnore
-    @Schema(description = "静态规则创建用户所属部门", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "静态规则创建用户所属部门")
     private String staticRuleCreateDepart;
     @JsonProperty("static_rule_create_user_id")
     @ExcelIgnore
-    @Schema(hidden = true)
+    @Schema(description = "静态规则创建人ID")
     private Integer staticRuleCreateUserId;
     @JsonProperty("static_rule_used_task_id")
     @ExcelIgnore

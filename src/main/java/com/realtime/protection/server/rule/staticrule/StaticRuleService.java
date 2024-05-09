@@ -266,9 +266,12 @@ public class StaticRuleService {
         return staticRuleMapper.queryStaticRuleByIds(ids);
     }
 
-    public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
         //校验id和status是否合法
         List<Integer> originalAuditStatusList = staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("部分静态规则id不存在");
+        }
         int index = 0;
         List<Integer> errorIds = new ArrayList<>();
         for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
@@ -276,15 +279,12 @@ public class StaticRuleService {
             Integer auditStatus = entry.getValue();
             Integer originalAuditStatus = originalAuditStatusList.get(index);
             index++;
-            if (originalAuditStatus == null) {
-                errorIds.add(id);
-            }
             if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
                 errorIds.add(id);
             }
         }
         if (!errorIds.isEmpty()){
-            return new IllegalArgumentException("静态规则id不存在或无法修改为对应审核状态, errorIds: " + errorIds);
+            throw new IllegalArgumentException("静态规则id无法修改为对应审核状态, 错误id: " + errorIds);
         }
 
         Function<StaticRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateStaticRuleAuditStatusFunction =
@@ -314,6 +314,11 @@ public class StaticRuleService {
 
     public Integer queryUsedStaticRuleTotalNum() {
         return staticRuleMapper.queryUsedStaticRuleTotalNum();
+    }
+
+    public List<Integer>  queryAuditStatusByIds(Map<Integer, Integer> idsWithAuditStatusMap) {
+        List<Integer> originalAuditStatusList = staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        return originalAuditStatusList;
     }
 
     public Integer queryAuditStaticRuleTotalNum(Integer auditStatus) {

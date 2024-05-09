@@ -12,7 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/whiteobj")
@@ -163,12 +165,11 @@ public class WhiteListController implements WhiteListControllerApi {
     @GetMapping("/{id}/audit/{auditStatus}")
     public ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
                                                            @PathVariable Integer auditStatus) {
-//        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
-//            return new ResponseResult(400, "id or status is invalid")
-//                    .setData("whiteobj_id", id)
-//                    .setData("success", false);
-//        }
-
+        if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("whiteobj_id", id)
+                    .setData("success", false);
+        }
         return ResponseResult.ok()
                 .addDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
                 .setData("whiteobj_id", id);
@@ -212,6 +213,30 @@ public class WhiteListController implements WhiteListControllerApi {
                 .setData("whiteobj_unaudit_num", whiteListService.queryAuditWhiteListTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
                 ));
+    }
+
+    /**
+     * 批量修改审核状态
+     */
+    @Override
+    @PostMapping("/auditbatch")
+    public ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+        List<Integer> errorIds = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            return new ResponseResult(400, "id or status is invalid")
+                    .setData("id", errorIds)
+                    .setData("success", false);
+        }
+
+        return ResponseResult.ok()
+                .setData("success", whiteListService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
 
 

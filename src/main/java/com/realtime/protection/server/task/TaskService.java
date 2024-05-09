@@ -53,9 +53,9 @@ public class TaskService {
     @Transactional
     public Long newTask(Task task) {
         // todo: 目前获取方式还不确定，以后再确定
-        task.setTaskCreateUserId(1);
-        task.setTaskCreateUsername("xxx");
-        task.setTaskCreateDepart("xxx");
+//        task.setTaskCreateUserId(1);
+//        task.setTaskCreateUsername("xxx");
+//        task.setTaskCreateDepart("xxx");
 
         task.setTaskDisplayId(
                 "RW-"
@@ -312,7 +312,7 @@ public class TaskService {
 
         staticCommandInfos.forEach(taskCommandInfo -> {
             taskCommandInfo.setProtocolNum();
-            taskCommandInfo.setMask();
+//            taskCommandInfo.setMask();
         });
 
         return staticCommandInfos;
@@ -345,9 +345,13 @@ public class TaskService {
                 taskAct, taskAuditor, taskSource, ruleName,null);
     }
 
-    public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
         //校验id和status是否合法
         List<Integer> originalAuditStatusList = taskMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("任务id部分不存在");
+        }
+
         int index = 0;
         List<Integer> errorIds = new ArrayList<>();
         for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
@@ -355,15 +359,13 @@ public class TaskService {
             Integer auditStatus = entry.getValue();
             Integer originalAuditStatus = originalAuditStatusList.get(index);
             index++;
-            if (originalAuditStatus == null) {
-                errorIds.add(id);
-            }
+
             if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
                 errorIds.add(id);
             }
         }
         if (!errorIds.isEmpty()){
-            return new IllegalArgumentException("动态规则id不存在或无法修改为对应审核状态, errorIds: " + errorIds);
+            throw new IllegalArgumentException("动态规则id无法修改为对应审核状态, errorIds: " + errorIds);
         }
 
         Function<TaskMapper, Function<Map<Integer, Integer>, Boolean>> updateTaskAuditStatusFunction =

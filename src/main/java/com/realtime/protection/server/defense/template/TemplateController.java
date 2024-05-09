@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -148,12 +149,13 @@ public class TemplateController implements TemplateControllerApi {
                 .setData("template_id", id);
     }
 
+
     /**
-     * 批量审批
+     * 批量修改审核状态
      */
-    /*
+    @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
         List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
@@ -164,13 +166,11 @@ public class TemplateController implements TemplateControllerApi {
         }
         if (!errorIds.isEmpty()){
             return new ResponseResult(400, "id or status is invalid")
-                    .setData("staticRule_id", errorIds)
+                    .setData("id", errorIds)
                     .setData("success", false);
         }
 
-        return ResponseResult.ok();
-
-//                .setData("success",dynamicRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
+        return ResponseResult.ok()
+                .setData("success", templateService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
-*/
 }

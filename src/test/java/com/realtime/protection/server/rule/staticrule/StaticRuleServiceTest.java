@@ -112,6 +112,15 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
 
         System.out.println(staticRuleService.updateAuditStatusBatch(map));
     }
+    @Test
+    void testQueryAuditStatusByIds(){
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(1300, 0);
+        map.put(1326, 1);
+        map.put(1328, 1);
+
+        System.out.println(staticRuleService.queryAuditStatusByIds(map));
+    }
 
 
 

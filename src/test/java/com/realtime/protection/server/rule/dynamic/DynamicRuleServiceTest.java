@@ -147,7 +147,8 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         map.put(112, 2);
 
 //        System.out.println(dynamicRuleMapper.queryAuditStatusByIds(map));
-        System.out.println(dynamicRuleService.updateAuditStatusBatch(map));
+        System.out.println(dynamicRuleService.queryAuditStatusByIds(map));
+
     }
 
 }

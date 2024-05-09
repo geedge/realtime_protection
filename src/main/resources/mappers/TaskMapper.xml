@@ -387,7 +387,7 @@
         SELECT task_audit_status
         FROM t_task
         WHERE task_id IN
-        <foreach collection="idWithAuditStatusBatch" item="taskId" open="(" separator="," close=")">
+        <foreach collection="idWithAuditStatusBatch" index="taskId" open="(" separator="," close=")">
             #{taskId}
         </foreach>
     </select>

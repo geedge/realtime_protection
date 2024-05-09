@@ -2,26 +2,32 @@ package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.utils.Counter;
+import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 
+import com.realtime.protection.server.whitelist.WhiteListMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class TemplateService {
 
     private final TemplateMapper templateMapper;
     private final Counter counter;
+    private final SqlSessionWrapper sqlSessionWrapper;
 
-    public TemplateService(TemplateMapper templateMapper, Counter counter) {
+    public TemplateService(TemplateMapper templateMapper, Counter counter, SqlSessionWrapper sqlSessionWrapper) {
         this.templateMapper = templateMapper;
         this.counter = counter;
+        this.sqlSessionWrapper = sqlSessionWrapper;
     }
 
     @Transactional
@@ -119,26 +125,29 @@ public class TemplateService {
         resultMap.put("audit_status", auditStatus);
         return resultMap;
     }
-/*
 
-    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
-        Integer originalAuditStatus = templateMapper.queryAuditStatusById(id);
-        if (originalAuditStatus == null) {
-            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = templateMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("策略模板部分不存在");
         }
-        if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
-            throw new IllegalArgumentException("invalid audit status");
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
         }
-        Boolean success = templateMapper.updateAuditStatusById(id, auditStatus);
+        if (!errorIds.isEmpty()){
+            throw new IllegalArgumentException("策略模板无法修改为对应审核状态, 错误id: " + errorIds);
+        }
 
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("success", success);
-        resultMap.put("audit_status", auditStatus);
-        return resultMap;
-    }
-
-    public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
-        Function<DynamicRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateDynamicRuleAuditStatusFunction =
+        Function<TemplateMapper, Function<Map<Integer, Integer>, Boolean>> updateTemplateAuditStatusFunction =
                 mapper -> map -> {
                     if (map == null || map.isEmpty()) {
                         return false;
@@ -160,9 +169,9 @@ public class TemplateService {
                     return true;
                 };
         //实现事务操作
-        return sqlSessionWrapper.startBatchSession(DynamicRuleMapper.class, updateDynamicRuleAuditStatusFunction, idsWithAuditStatusMap);
+        return sqlSessionWrapper.startBatchSession(TemplateMapper.class, updateTemplateAuditStatusFunction, idsWithAuditStatusMap);
 
     }
-    */
+
 
 }

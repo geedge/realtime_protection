@@ -8,11 +8,15 @@
         insert into t_white_list(white_list_name, white_list_system_name,
                                  white_list_ip, white_list_port,
                                  white_list_url, white_list_protocol,
-                                 white_list_audit_status, create_time, white_list_display_id)
+                                 white_list_audit_status, create_time, white_list_display_id,
+                                 white_list_create_username, white_list_create_depart,
+                                 white_list_create_user_id)
         values (#{object.whiteListName}, #{object.whiteListSystemName},
                 INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
                 #{object.whiteListUrl}, #{object.whiteListProtocol},
-                0, NOW(), #{object.whiteListDisplayId})
+                0, NOW(), #{object.whiteListDisplayId},
+                #{object.createUsername}, #{object.createDepart},
+                #{object.createUserId})
     </insert>
 
     <insert id="newWhiteListObjects">
@@ -112,6 +116,19 @@
         update t_white_list
         set white_list_audit_status = #{status}
         where white_list_id = #{id}
+    </update>
+
+    <update id="updateAuditStatusByIdBatch">
+        update t_white_list
+        set white_list_audit_status = CASE white_list_id
+        <foreach collection="idsWithAuditStatusMap" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        END
+        WHERE white_list_id IN
+        <foreach collection="idsWithAuditStatusMap" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 
     <select id="existWhiteListObject" resultType="java.lang.String">
@@ -308,6 +325,15 @@
         select COUNT(*)
         from t_white_list
         where white_list_audit_status = #{auditStatus}
+    </select>
+
+    <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
+        select white_list_audit_status
+        from t_white_list
+        where white_list_id in
+        <foreach collection="idsWithAuditStatusMap" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

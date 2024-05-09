@@ -141,6 +141,15 @@
         FROM t_protect_object_dynamic_rule_conn
     </select>
 
+    <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
+        select protect_object_audit_status
+        from t_protect_object
+        where protect_object_id in
+        <foreach collection="idsWithAuditStatusMap" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <update id="updateProtectObject">
         UPDATE t_protect_object
         <set>
@@ -178,5 +187,18 @@
         UPDATE t_protect_object
         SET protect_object_audit_status = #{proobj_audit_status}
         WHERE protect_object_id = #{proobj_id}
+    </update>
+
+    <update id="updateAuditStatusByIdBatch">
+        update t_protect_object
+        set protect_object_audit_status = CASE protect_object_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        END
+        WHERE protect_object_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 </mapper>

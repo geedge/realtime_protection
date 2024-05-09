@@ -7,11 +7,13 @@ import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+import com.realtime.protection.server.whitelist.WhiteListMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,5 +167,52 @@ public class ProtectObjectService {
 
     public Integer queryUsedProtectObjectsTotalNum() {
         return protectObjectMapper.queryUsedProtectObjectsTotalNum();
+    }
+
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = protectObjectMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("防护对象部分不存在");
+        }
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            throw new IllegalArgumentException("防护对象无法修改为对应审核状态, 错误id: " + errorIds);
+        }
+
+        Function<ProtectObjectMapper, Function<Map<Integer, Integer>, Boolean>> updateProtectObjectAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(ProtectObjectMapper.class, updateProtectObjectAuditStatusFunction, idsWithAuditStatusMap);
+
     }
 }

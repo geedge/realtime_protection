@@ -172,6 +172,15 @@
         WHERE strategy_template_id = #{id}
     </select>
 
+    <select id="queryAuditStatusByIds" resultType="java.lang.Integer">
+        select audit_status
+        from t_strategy_template
+        where strategy_template_id in
+        <foreach collection="idsWithAuditStatusMap" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template
         <set>
@@ -188,5 +197,18 @@
         UPDATE t_strategy_template
         SET audit_status = #{auditStatus}
         WHERE strategy_template_id = #{id}
+    </update>
+
+    <update id="updateAuditStatusByIdBatch">
+        update t_strategy_template
+        set audit_status = CASE strategy_template_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        END
+        WHERE strategy_template_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 </mapper>

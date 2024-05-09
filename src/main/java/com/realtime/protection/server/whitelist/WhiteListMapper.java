@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface WhiteListMapper {
@@ -50,4 +51,8 @@ public interface WhiteListMapper {
     List<WhiteListObject> whiteListCStaticRulesCheck(@Param("staticRuleObjects") List<StaticRuleObject> staticRuleObjects);
 
     Integer queryAuditWhiteListTotalNum(@Param("auditStatus") Integer auditStatus);
+
+    void updateAuditStatusByIdBatch(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
+
+    List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
 }

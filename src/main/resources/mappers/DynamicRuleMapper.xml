@@ -307,7 +307,7 @@
         select audit_status
         from t_dynamic_rule
         where dynamic_rule_id in
-        <foreach collection="idWithAuditStatusBatch" item="id" open="(" separator="," close=")">
+        <foreach collection="idWithAuditStatusMap" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </select>

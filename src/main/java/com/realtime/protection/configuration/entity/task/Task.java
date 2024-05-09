@@ -56,15 +56,19 @@ public class Task {
     private String taskAct;
 
     @JsonProperty("task_create_username")
-    @Schema(description = "任务创建人名称", accessMode = Schema.AccessMode.READ_ONLY)
+//    @Schema(description = "任务创建人名称", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "任务创建人名称")
+
     private String taskCreateUsername;
 
     @JsonProperty("task_create_depart")
-    @Schema(description = "任务创建人处室", accessMode = Schema.AccessMode.READ_ONLY)
+//    @Schema(description = "任务创建人处室", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "任务创建人处室")
     private String taskCreateDepart;
 
     @JsonProperty("task_create_userid")
-    @Schema(description = "任务创建人ID", accessMode = Schema.AccessMode.READ_ONLY)
+//    @Schema(description = "任务创建人ID", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "任务创建人ID")
     private Integer taskCreateUserId;
 
     @JsonProperty("static_rule_ids")

@@ -480,4 +480,7 @@ public interface TemplateControllerApi {
     )
     @GetMapping("/statistics")
     ResponseResult statisticsTemplate();
+
+    @PostMapping("/auditbatch")
+    ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
 }

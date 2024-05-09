@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface TemplateMapper {
@@ -48,4 +49,8 @@ public interface TemplateMapper {
     Integer queryAuditStatusById(Integer id);
 
     Boolean updateAuditStatusById(Integer id, Integer auditStatus);
+
+    List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
+
+    void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 }

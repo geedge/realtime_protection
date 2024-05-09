@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProtectObjectMapper {
@@ -51,4 +52,8 @@ public interface ProtectObjectMapper {
                                             @Param("page_size") Integer pageSize);
 
     Integer queryUsedProtectObjectsTotalNum();
+
+    void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
+
+    List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
 }

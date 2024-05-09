@@ -66,16 +66,16 @@ public class ProtectObject {
 
     @JsonProperty("proobj_create_username")
     @ExcelIgnore
-    @Schema(description = "防护对象创建人", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防护对象创建人", example = "xxx")
     private String protectObjectCreateUsername;
 
     @JsonProperty("proobj_create_depart")
     @ExcelIgnore
-    @Schema(description = "防护对象创建人处室", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防护对象创建人处室", example = "xxx")
     private String protectObjectCreateDepart;
 
     @JsonProperty("proobj_create_userid")
     @ExcelIgnore
-    @Schema(description = "防护对象创建人ID", example = "0", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防护对象创建人ID", example = "0")
     private Integer protectObjectCreateUserId;
 }

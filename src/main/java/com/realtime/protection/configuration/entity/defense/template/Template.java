@@ -62,15 +62,15 @@ public class Template {
     private Integer runningTasks;
 
     @JsonProperty("create_user_id")
-    @Schema(description = "防御策略模板创建人ID", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防御策略模板创建人ID", example = "1")
     private Integer createUserId;
 
     @JsonProperty("create_user_name")
-    @Schema(description = "防御策略模板创建人名称", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防御策略模板创建人名称", example = "xxx")
     private String createUsername;
 
     @JsonProperty("create_user_depart")
-    @Schema(description = "防御策略模板创建人处室", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "防御策略模板创建人处室", example = "xxx")
     private String createDepart;
 
     @JsonProperty("audit_status")

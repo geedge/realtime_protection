@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "防护对象API", description = "防护对象模块所有接口")
 public interface ProtectObjectControllerApi {
@@ -445,4 +446,7 @@ public interface ProtectObjectControllerApi {
     )
     @GetMapping("/statistics")
     ResponseResult statisticsProtectObject();
+
+    @PostMapping("/auditbatch")
+    ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
 }

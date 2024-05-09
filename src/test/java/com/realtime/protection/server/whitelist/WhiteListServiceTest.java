@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -133,5 +134,12 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
     void testQueryWhiteListObject() {
         List<WhiteListObject> whiteListObjects = whiteListService.queryWhiteListObject(null, null, null, null, null, 1, 2);
         System.out.println(whiteListObjects);
+    }
+
+    @Test
+    void testUpdateAuditStatusByIdBatch() {
+        Map<Integer, Integer> idsWithAuditStatusMap = Map.of(7189, 2, 7192, 2);
+
+        whiteListService.updateAuditStatusBatch(idsWithAuditStatusMap);
     }
 }

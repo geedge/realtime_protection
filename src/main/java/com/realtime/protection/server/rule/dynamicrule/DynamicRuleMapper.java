@@ -61,5 +61,5 @@ public interface DynamicRuleMapper {
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 
-    List<Integer> queryAuditStatusByIds(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusMap);
+    List<Integer> queryAuditStatusByIds(@Param("idWithAuditStatusMap") Map<Integer, Integer> idWithAuditStatusMap);
 }
