@@ -81,6 +81,16 @@ public class Template {
     @Schema(description = "策略模板展示id", accessMode = Schema.AccessMode.READ_ONLY)
     private String templateDisplayId;
 
+    @JsonProperty("audit_user_name")
+    @Schema(description = "审核用户名称", example = "user11")
+    private String auditUserName;
+    @JsonProperty("audit_user_id")
+    @Schema(description = "审核用户id", example = "11111")
+    private String auditUserId;
+    @JsonProperty("audit_user_depart")
+    @Schema(description = "审核用户部门", example = "部门1")
+    private String auditUserDepart;
+
 
     /**
      * 设置是否含有日常/应急/紧急防护等级态字段的字段

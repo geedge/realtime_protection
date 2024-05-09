@@ -229,6 +229,7 @@ public class TaskService {
             if (task == null) {
                 continue;
             }
+
             task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId(),
                     List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
             task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId(),

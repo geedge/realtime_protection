@@ -106,6 +106,16 @@ public class DynamicRuleObject {
     @Schema(description = "动态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer auditStatus;
 
+    @JsonProperty("audit_user_name")
+    @Schema(description = "审核用户名称", example = "user11")
+    private String auditUserName;
+    @JsonProperty("audit_user_id")
+    @Schema(description = "审核用户id", example = "11111")
+    private String auditUserId;
+    @JsonProperty("audit_user_depart")
+    @Schema(description = "审核用户部门", example = "部门1")
+    private String auditUserDepart;
+
     public void checkAuditStatusValidate(AuditStatusEnum newAuditStatus) {
         if (!List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()).contains(this.getAuditStatus())) {
             throw new IllegalArgumentException("规则《" + this.getDynamicRuleName() + "》原审批状态非法");

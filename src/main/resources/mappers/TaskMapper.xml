@@ -344,7 +344,7 @@
     </select>
     <select id="queryTaskTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM t_task
-        <if test="rule_name != null  and creator != '' ">
+        <if test="rule_name != null  and rule_name != '' ">
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
             WHERE

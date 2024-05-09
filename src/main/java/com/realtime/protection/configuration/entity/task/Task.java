@@ -91,4 +91,14 @@ public class Task {
     @NotNull(message = "task_range字段不能为空。")
     @Schema(description = "局点范围，由规则移动到任务", example = "1009")
     private String taskRange;
+
+    @JsonProperty("audit_user_name")
+    @Schema(description = "审核用户名称", example = "user11")
+    private String auditUserName;
+    @JsonProperty("audit_user_id")
+    @Schema(description = "审核用户id", example = "11111")
+    private String auditUserId;
+    @JsonProperty("audit_user_depart")
+    @Schema(description = "审核用户部门", example = "部门1")
+    private String auditUserDepart;
 }

@@ -107,8 +107,9 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testPageQueryTask(){
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, null,null, null, null, null, 1, 10);
-        System.out.println(tasks);
+        List<Task> tasks = taskService.queryTasks(null, null, "", "", null,"", null, "", "", 1, 10);
+//        System.out.println(tasks);
+        tasks.forEach(task -> System.out.println(task));
     }
 
     @Test
@@ -352,5 +353,10 @@ class TaskServiceTest extends ProtectionApplicationTests {
         map.put(43848, 0);
         map.put(43849,0);
         System.out.println(taskService.queryAuditStatusBatch(map));
+    }
+
+    @Test
+    void testQueryTaskTotalNum(){
+        System.out.println(taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", ""));
     }
 }

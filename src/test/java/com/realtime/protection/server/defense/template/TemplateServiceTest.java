@@ -1,6 +1,7 @@
 package com.realtime.protection.server.defense.template;
 
 import com.realtime.protection.ProtectionApplicationTests;
+import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,6 +112,16 @@ class TemplateServiceTest extends ProtectionApplicationTests {
                 null, null, null, null, null,1, 1);
         Template testTemplate = templates.get(0);
         templateService.updateAuditStatus(testTemplate.getTemplateId(), 2);
+    }
+
+    @Test
+    void updateAuditInfo() {
+        List<Template> protectObjectList = templateService.queryTemplates(null, null, null, null, null, 1, 1);
+        List<Integer> idList = new ArrayList<>();
+        idList.add(protectObjectList.get(0).getTemplateId());
+        System.out.println(idList);
+        assertTrue(templateService.updateAuditInfo( idList, "te2st"));
+        assertEquals("te2st", templateService.queryAuditInfo(idList.get(0)));
     }
 
 }
