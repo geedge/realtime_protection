@@ -96,13 +96,13 @@
     <select id="queryTemplates" resultMap="templateMap">
         SELECT * FROM template_view
         <where>
-            <if test="source_system != null">
+            <if test="source_system != null and source_system != '' ">
                 AND strategy_template_source_system = #{source_system}
             </if>
-            <if test="create_username != null">
+            <if test="create_username != null and create_username != '' ">
                 AND strategy_template_create_username = #{create_username}
             </if>
-            <if test="template_name != null">
+            <if test="template_name != null and template_name != '' ">
                 AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
             <if test="template_id != null">
@@ -130,13 +130,13 @@
     <select id="queryTemplateTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(strategy_template_id) FROM t_strategy_template
         <where>
-            <if test="source_system != null">
+            <if test="source_system != null and source_system != '' ">
                 AND strategy_template_source_system = #{source_system}
             </if>
-            <if test="create_username != null">
+            <if test="create_username != null and create_username != '' ">
                 AND strategy_template_create_username = #{create_username}
             </if>
-            <if test="template_name != null">
+            <if test="template_name != null and template_name != '' ">
                 AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
         </where>

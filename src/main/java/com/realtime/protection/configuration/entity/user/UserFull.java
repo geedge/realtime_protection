@@ -28,6 +28,13 @@ public class UserFull {
         return "";
     }
 
+    public String getOrgName() {
+        if (orgs.size() > 0) {
+            return orgs.get(0).orgName;
+        }
+        return "";
+    }
+
     public String getRoleKey() {
         if (roles.size() > 0) {
             return roles.get(0).roleKey;

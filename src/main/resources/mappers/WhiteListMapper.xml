@@ -59,19 +59,19 @@
         select *, INET_NTOA(white_list_ip) as white_list_ip_d
                from t_white_list
         <where>
-            <if test="whiteListName != null">
+            <if test="whiteListName != null and whiteListName != '' ">
                 white_list_name like concat('%', #{whiteListName}, '%')
             </if>
             <if test="whiteListId != null">
                 and white_list_id = #{whiteListId}
             </if>
-            <if test="systemName != null">
+            <if test="systemName != null and systemName != '' ">
                 and white_list_system_name like concat('%', #{systemName}, '%')
             </if>
             <if test="auditStatus != null">
                 and white_list_audit_status = #{auditStatus}
             </if>
-            <if test="creator != null">
+            <if test="creator != null and creator != '' ">
                 and create_username = #{creator}
             </if>
         </where>
@@ -231,19 +231,19 @@
         select COUNT(*)
         from t_white_list
         <where>
-            <if test="whiteListName != null">
+            <if test="whiteListName != null and whiteListName != '' ">
                 white_list_name like concat('%', #{whiteListName}, '%')
             </if>
             <if test="whiteListId != null">
                 and white_list_id = #{whiteListId}
             </if>
-            <if test="systemName != null">
+            <if test="systemName != null and systemName != '' ">
                 and white_list_system_name like concat('%', #{systemName}, '%')
             </if>
             <if test="auditStatus != null">
                 and white_list_audit_status = #{auditStatus}
             </if>
-            <if test="creator != null">
+            <if test="creator != null and creator != '' ">
                 and create_username = #{creator}
             </if>
         </where>
