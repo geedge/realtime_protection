@@ -47,6 +47,12 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
     void testNewWhiteList() {
         WhiteListObject object = new WhiteListObject();
         object.setWhiteListName("test");
+        object.setWhiteListSystemName("china");
+        object.setWhiteListIP("1.1.1.1");
+        object.setWhiteListPort(80);
+        object.setWhiteListUrl("www.baidu.com");
+        object.setWhiteListProtocol("TCP");
+
 
         Integer objectId = whiteListService.newWhiteListObject(object);
         assertTrue(objectId > 0);

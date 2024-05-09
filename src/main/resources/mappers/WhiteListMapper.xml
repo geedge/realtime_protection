@@ -9,13 +9,13 @@
                                  white_list_ip, white_list_port,
                                  white_list_url, white_list_protocol,
                                  white_list_audit_status, create_time, white_list_display_id,
-                                 white_list_create_username, white_list_create_depart,
-                                 white_list_create_user_id)
+                                 create_username, create_user_department,
+                                 create_user_id)
         values (#{object.whiteListName}, #{object.whiteListSystemName},
                 INET_ATON(#{object.whiteListIP}), #{object.whiteListPort},
                 #{object.whiteListUrl}, #{object.whiteListProtocol},
                 0, NOW(), #{object.whiteListDisplayId},
-                #{object.createUsername}, #{object.createDepart},
+                #{object.createUserName}, #{object.createUserDepartment},
                 #{object.createUserId})
     </insert>
 
