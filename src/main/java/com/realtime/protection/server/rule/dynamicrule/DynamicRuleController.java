@@ -131,6 +131,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     /**
      * 审批
      */
+    @Override
     @GetMapping("/{id}/audit/{auditStatus}")
     public ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
@@ -146,6 +147,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     /**
      * 批量审批
      */
+    @Override
     @PostMapping("/auditbatch")
     public ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
         List<Integer> errorIds = new ArrayList<>();
@@ -187,6 +189,22 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                         AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
                 ));
     }
+    @Override
+    @PostMapping("/auditInfo/{ids}")
+    public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
+                                          @RequestBody Map<String, String> auditInfo) {
+        if (auditInfo.get("auditInfo") == null || auditInfo.get("auditInfo").isEmpty()) {
+            throw new IllegalArgumentException("auditInfo is empty");
+        }
+        return ResponseResult.ok()
+                .setData("success", dynamicRuleService.updateAuditInfo(ids, auditInfo.get("auditInfo")));
+    }
 
+    @Override
+    @GetMapping("/auditInfo/{id}")
+    public ResponseResult queryAuditInfo(@PathVariable Integer id) {
+        return ResponseResult.ok()
+                .setData("auditInfo", dynamicRuleService.queryAuditInfo(id));
+    }
 
 }

@@ -56,4 +56,8 @@ public interface ProtectObjectMapper {
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 
     List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
+
+    Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
+
+    String queryProtectObjectAuditInfo(Integer id);
 }

@@ -264,4 +264,12 @@ public class WhiteListService {
         return sqlSessionWrapper.startBatchSession(WhiteListMapper.class, updateWhiteListAuditStatusFunction, idsWithAuditStatusMap);
 
     }
+
+    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+        return whiteListMapper.updateAuditInfo(ids, auditInfo);
+    }
+
+    public String queryAuditInfo(Integer id) {
+        return whiteListMapper.queryWhiteListObjectAuditInfo(id);
+    }
 }

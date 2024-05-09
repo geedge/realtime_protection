@@ -57,4 +57,8 @@ public interface StaticRuleMapper {
     Integer queryAuditStaticRuleTotalNum(@Param("auditStatus")Integer auditStatus);
 
     List<Integer> queryAuditStatusByIds(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idsWithAuditStatusMap);
+
+    Boolean updateAuditInfo(@Param("ids") List<Integer> ids, @Param("auditInfo") String auditInfo);
+
+    String queryAuditInfo(Integer id);
 }

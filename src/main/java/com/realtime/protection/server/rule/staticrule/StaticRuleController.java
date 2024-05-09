@@ -224,6 +224,22 @@ public class StaticRuleController implements StaticRuleControllerApi {
     }
 
 
+    @Override
+    @PostMapping("/auditInfo/{ids}")
+    public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
+                                          @RequestBody Map<String, String> auditInfo) {
+        if (auditInfo.get("auditInfo") == null || auditInfo.get("auditInfo").isEmpty()) {
+            throw new IllegalArgumentException("auditInfo is empty");
+        }
+        return ResponseResult.ok()
+                .setData("success", staticRuleService.updateAuditInfo(ids, auditInfo.get("auditInfo")));
+    }
 
+    @Override
+    @GetMapping("/auditInfo/{id}")
+    public ResponseResult queryAuditInfo(@PathVariable Integer id) {
+        return ResponseResult.ok()
+                .setData("auditInfo", staticRuleService.queryAuditInfo(id));
+    }
 
 }

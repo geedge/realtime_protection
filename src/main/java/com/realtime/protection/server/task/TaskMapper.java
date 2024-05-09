@@ -74,4 +74,8 @@ public interface TaskMapper {
     Integer queryAuditTaskTotalNum(Integer auditState);
 
     List<Integer> queryAuditStatusByIds(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idsWithAuditStatusMap);
+
+    Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
+
+    String queryAuditInfo(Integer id);
 }

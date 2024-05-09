@@ -120,6 +120,14 @@
             #{id}
         </foreach>
     </update>
+    <update id="updateAuditInfo">
+        UPDATE t_dynamic_rule
+        SET dynamic_rule_audit_info = #{auditInfo}
+        WHERE dynamic_rule_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
 
     <resultMap id="dynamicRuleMap"
@@ -310,6 +318,11 @@
         <foreach collection="idWithAuditStatusMap" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+    <select id="queryAuditInfo" resultType="java.lang.String">
+        select dynamic_rule_audit_info
+        from t_dynamic_rule
+        where dynamic_rule_id = #{dynamicRuleId}
     </select>
 
 

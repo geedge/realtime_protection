@@ -53,4 +53,8 @@ public interface TemplateMapper {
     List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
+
+    Boolean updateAuditInfo(List<Integer> ids, String auditInfo);
+
+    String queryAuditInfo(Integer id);
 }

@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "防御策略模板API", description = "防御策略模板模块所有接口")
@@ -481,6 +482,83 @@ public interface TemplateControllerApi {
     @GetMapping("/statistics")
     ResponseResult statisticsTemplate();
 
+    @Operation(
+            summary = "批量更新审批状态",
+            description = "批量更新审批状态，0未审核、1审核不通过、2审核通过",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回审核结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "字典，key是id，value是审核状态",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+
+                    )
+            )
+    )
     @PostMapping("/auditbatch")
     ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+
+    @Operation(
+            summary = "更新审批意见",
+            description = "批量更新审批意见，接收多个id",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "字典，key是'audit_info'，value是审核意见",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class),
+                            examples = @ExampleObject(
+                                    name = "example",
+                                    value = """
+                                    {
+                                         "audit_info": "审核不通过，原因是xxxx"
+                                       }
+                                    """
+                            )
+
+                    )
+            ),
+            parameters = {
+                    @Parameter(name = "ids", description = "欲更新的ID", example = "2,3"),
+            }
+    )
+    @PostMapping("/auditInfo/{ids}")
+    ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
+                                   @RequestBody Map<String, String> auditInfo);
+
+
+    @Operation(
+            summary = "查询审批意见",
+            description = "查询审批意见，只接收一个id",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "id", description = "查询的ID", example = "2"),
+            }
+    )
+    @GetMapping("/auditInfo/{id}")
+    ResponseResult queryAuditInfo(@PathVariable Integer id);
 }

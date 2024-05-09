@@ -215,4 +215,12 @@ public class ProtectObjectService {
         return sqlSessionWrapper.startBatchSession(ProtectObjectMapper.class, updateProtectObjectAuditStatusFunction, idsWithAuditStatusMap);
 
     }
+
+    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+        return protectObjectMapper.updateAuditInfo(ids, auditInfo);
+    }
+
+    public String queryAuditInfo(Integer id) {
+        return protectObjectMapper.queryProtectObjectAuditInfo(id);
+    }
 }

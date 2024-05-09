@@ -174,4 +174,11 @@ public class TemplateService {
     }
 
 
+    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+        return templateMapper.updateAuditInfo(ids, auditInfo);
+    }
+
+    public String queryAuditInfo(Integer id) {
+        return templateMapper.queryAuditInfo(id);
+    }
 }

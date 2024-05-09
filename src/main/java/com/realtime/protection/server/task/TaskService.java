@@ -404,4 +404,11 @@ public class TaskService {
         return taskMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
     }
 
+    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+        return taskMapper.updateAuditInfo(ids, auditInfo);
+    }
+
+    public String queryAuditInfo(Integer id) {
+        return taskMapper.queryAuditInfo(id);
+    }
 }

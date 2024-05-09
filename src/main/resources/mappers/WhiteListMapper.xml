@@ -130,6 +130,14 @@
             #{id}
         </foreach>
     </update>
+    <update id="updateAuditInfo">
+        UPDATE t_white_list
+        SET white_list_audit_info = #{auditInfo}
+        WHERE white_list_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="existWhiteListObject" resultType="java.lang.String">
         select CONCAT(INET_NTOA(white_list_ip)," ", CAST(white_list_port)," ", white_list_url)
@@ -334,6 +342,11 @@
         <foreach collection="idsWithAuditStatusMap" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+    <select id="queryWhiteListObjectAuditInfo" resultType="java.lang.String">
+        select white_list_audit_info
+        from t_white_list
+        where white_list_id = #{id}
     </select>
 
 </mapper>

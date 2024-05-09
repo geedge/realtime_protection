@@ -282,4 +282,12 @@ public class DynamicRuleService {
     public List<Integer> queryAuditStatusByIds(Map<Integer, Integer> idsWithAuditStatusMap) {
         return dynamicRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
     }
+
+    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+        return dynamicRuleMapper.updateAuditInfo(ids, auditInfo);
+    }
+
+    public String queryAuditInfo(Integer id) {
+        return dynamicRuleMapper.queryAuditInfo(id);
+    }
 }

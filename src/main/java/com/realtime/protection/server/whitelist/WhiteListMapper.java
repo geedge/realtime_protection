@@ -55,4 +55,8 @@ public interface WhiteListMapper {
     void updateAuditStatusByIdBatch(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
 
     List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
+
+    Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
+
+    String queryWhiteListObjectAuditInfo(Integer id);
 }

@@ -166,4 +166,14 @@ class ProtectObjectServiceTest extends ProtectionApplicationTests {
         int finalTestNum = testNum;
         assertThrows(IllegalArgumentException.class, () -> protectObjectService.changeProtectObjectAuditStatus(finalTestNum, 2));
     }
+
+    @Test
+    void updateAuditInfo() {
+        List<ProtectObject> protectObjectList = protectObjectService.queryProtectObjects(null, null, null, null, null, null, null, null, null, null, 1, 1);
+        List<Integer> idList = new ArrayList<>();
+        idList.add(protectObjectList.get(0).getProtectObjectId());
+        System.out.println(idList);
+        assertTrue(protectObjectService.updateAuditInfo( idList, "test"));
+        assertEquals("test", protectObjectService.queryAuditInfo(idList.get(0)));
+    }
 }

@@ -101,6 +101,16 @@
         </foreach>
 
     </update>
+
+    <update id="updateAuditInfo">
+        UPDATE t_static_rule
+        SET static_rule_audit_info = #{auditInfo}
+        WHERE static_rule_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+        #{id}
+        </foreach>
+    </update>
+
     <delete id="deleteStaticRules">
         delete from t_static_rule
         where static_rule_id in
@@ -269,6 +279,11 @@
         <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+    <select id="queryAuditInfo" resultType="java.lang.String">
+        SELECT static_rule_audit_info
+        FROM t_static_rule
+        WHERE static_rule_id = #{id}
     </select>
 
 </mapper>

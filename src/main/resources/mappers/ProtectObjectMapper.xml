@@ -149,6 +149,11 @@
             #{id}
         </foreach>
     </select>
+    <select id="queryProtectObjectAuditInfo" resultType="java.lang.String">
+        SELECT protect_object_audit_info
+        FROM t_protect_object
+        WHERE protect_object_id = #{proobj_id}
+    </select>
 
     <update id="updateProtectObject">
         UPDATE t_protect_object
@@ -198,6 +203,15 @@
         END
         WHERE protect_object_id IN
         <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateAuditInfo">
+        UPDATE t_protect_object
+        SET protect_object_audit_info = #{auditInfo}
+        WHERE protect_object_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>

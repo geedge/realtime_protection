@@ -324,4 +324,12 @@ public class StaticRuleService {
     public Integer queryAuditStaticRuleTotalNum(Integer auditStatus) {
         return staticRuleMapper.queryAuditStaticRuleTotalNum(auditStatus);
     }
+
+    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+        return staticRuleMapper.updateAuditInfo(ids, auditInfo);
+    }
+
+    public String queryAuditInfo(Integer id) {
+        return staticRuleMapper.queryAuditInfo(id);
+    }
 }
