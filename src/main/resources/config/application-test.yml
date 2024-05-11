@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /api/v1
 
@@ -119,6 +119,7 @@ spring:
           max-idle: 5
           min-idle: 1
       connect-timeout: 1000
+      password: aiihhbfcsy123!@#
 
 mybatis:
   mapper-locations: classpath:mappers/*

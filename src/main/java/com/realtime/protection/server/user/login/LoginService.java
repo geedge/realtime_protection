@@ -51,7 +51,7 @@ public class LoginService {
         ObjectMapper objectMapper = new ObjectMapper();
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-            .url("https://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
+            .url("http://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
 //            .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
             .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")
             .post(okhttp3.internal.Util.EMPTY_REQUEST)
@@ -76,7 +76,7 @@ public class LoginService {
         RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart("sessionData", sessionData).build();
         request = new Request.Builder()
-            .url("https://114.243.134.122:10217/passport/accessApplication")
+            .url("http://114.243.134.122:10217/passport/accessApplication")
 //            .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
 
             .header("Authorization", "Bearer " + accessToken)
