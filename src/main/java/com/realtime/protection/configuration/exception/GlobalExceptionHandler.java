@@ -5,11 +5,13 @@ import cn.dev33.satoken.exception.SaTokenException;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.server.task.status.StateChangeService;
+import io.lettuce.core.RedisConnectionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -111,5 +113,12 @@ public class GlobalExceptionHandler {
 
         log.error(responseResult.getMessage());
         return responseResult;
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = RedisConnectionFailureException.class)
+    public ResponseResult handleRedisConnectionException(RedisConnectionFailureException e) {
+        log.warn("Redis连接失败，具体原因：{}", e.getCause().getMessage());
+        return ResponseResult.error().setMessage("Redis连接失败");
     }
 }

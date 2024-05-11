@@ -182,7 +182,7 @@ public class TaskController implements TaskControllerApi {
             }
         }
         if (!errorIds.isEmpty()) {
-            return new ResponseResult(400, "id or status is invalid")
+            return ResponseResult.invalid()
                     .setData("tasks_id", errorIds)
                     .setData("success", false);
         }
