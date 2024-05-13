@@ -1,10 +1,10 @@
 package com.realtime.protection.server.user.login;
 
+import com.realtime.protection.configuration.utils.OkHttpUtil;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.security.auth.login.LoginException;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,6 @@ import com.realtime.protection.configuration.entity.user.User;
 import com.realtime.protection.configuration.entity.user.UserFull;
 
 import cn.dev33.satoken.stp.StpUtil;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,6 +20,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import io.micrometer.common.util.StringUtils;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 @Service
 // just for example, not for production environment
@@ -45,13 +47,20 @@ public class LoginService {
         return userId;
     }
 
-    public UserFull loginWithSSO(String sessionData) throws LoginException {
+    public UserFull loginWithSSO(String sessionData) throws LoginException, NoSuchAlgorithmException, KeyManagementException {
         String accessToken = "";
         // 获取 ACCESS_TOKEN
         ObjectMapper objectMapper = new ObjectMapper();
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .sslSocketFactory(OkHttpUtil.getIgnoreInitedSslContext().getSocketFactory(),OkHttpUtil.IGNORE_SSL_TRUST_MANAGER_X509)
+                .hostnameVerifier(OkHttpUtil.getIgnoreSslHostnameVerifier())
+                .build();
+
+
+
         Request request = new Request.Builder()
-            .url("http://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
+//            .url("https://passport.zx.com:10217/passport/accessToken?grant_type=client_credentials")
+            .url("https://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
 //            .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
             .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")
             .post(okhttp3.internal.Util.EMPTY_REQUEST)
@@ -76,9 +85,9 @@ public class LoginService {
         RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart("sessionData", sessionData).build();
         request = new Request.Builder()
-            .url("http://114.243.134.122:10217/passport/accessApplication")
-//            .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
-
+//            .url("https://passport.zx.com:10217/passport/accessApplication")
+            .url("https://114.243.134.122:10217/passport/accessApplication")
+//            .url("https://passport.iam.pub/passport/accessApplication")
             .header("Authorization", "Bearer " + accessToken)
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(body)
@@ -102,4 +111,7 @@ public class LoginService {
             throw new LoginException("校验 SESSION_DATA 失败");
         }
     }
+
+
+
 }

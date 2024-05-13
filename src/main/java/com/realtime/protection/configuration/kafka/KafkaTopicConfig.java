@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class KafkaTopicConfig {
-    @Bean
-    public NewTopic batchTopic() {
-        return new NewTopic("topic-alert", 4, (short) 1);
-    }
+//    @Bean
+//    public NewTopic batchTopic() {
+//        return new NewTopic("topic-alert", 4, (short) 1);
+//    }
 }
