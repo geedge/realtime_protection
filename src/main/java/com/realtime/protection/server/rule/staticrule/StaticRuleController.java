@@ -3,9 +3,12 @@ package com.realtime.protection.server.rule.staticrule;
 
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +39,17 @@ public class StaticRuleController implements StaticRuleControllerApi {
      */
     @PostMapping("/new")
     @Override
-    public ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object) {
-        log.info("新增静态规则: {}", object);
+    public ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object,
+                                              HttpServletRequest request) {
+//        log.info("新增静态规则: {}", object);
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        if (user != null) {
+            object.setStaticRuleCreateUsername(user.name);
+            object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));
+            object.setStaticRuleCreateDepart(user.getOrgName());
+        }
         //调用service新增
         staticRuleService.newStaticRuleObject(object);
         return ResponseResult.ok()

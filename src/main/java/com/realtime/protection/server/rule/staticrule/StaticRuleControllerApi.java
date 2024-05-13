@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -52,7 +53,7 @@ public interface StaticRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "静态规则信息")
     )
-    ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object);
+    ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object, HttpServletRequest request);
 
     @Operation(
             summary = "批量导入静态规则",
