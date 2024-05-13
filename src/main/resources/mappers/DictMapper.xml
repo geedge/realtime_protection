@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.dictionary.DictMapper">
+
+    <resultMap id="DictMap" type="com.realtime.protection.configuration.entity.dict.SysDictData">
+        <result column="dict_type" property="dictType"/>
+        <result column="dict_value" property="dictValue"/>
+        <result column="dict_label" property="dictLabel"/>
+        <result column="remark" property="dictRemark"/>
+    </resultMap>
+
+    <select id="selectDictDataByType" resultMap="DictMap">
+        select dict_type, dict_value, dict_label, remark
+        from t_dict_data
+        where dict_type = #{dictType} and status = 0
+    </select>
+</mapper>

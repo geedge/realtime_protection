@@ -142,7 +142,9 @@
         </where>
     </select>
     <select id="querySourceSystem" resultType="java.lang.String">
-        SELECT DISTINCT strategy_template_source_system FROM t_strategy_template
+        SELECT DISTINCT dict_label
+        FROM  t_dict_data
+        WHERE dict_type = 'source_system' and status = 0
     </select>
     <select id="queryEventName" resultType="java.lang.String">
         SELECT DISTINCT strategy_template_name
