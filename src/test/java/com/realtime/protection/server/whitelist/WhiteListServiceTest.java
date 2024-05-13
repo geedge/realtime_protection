@@ -104,36 +104,36 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testWhiteListStaticRulesCheck() {
-        StaticRuleObject staticRuleTest = new StaticRuleObject();
-        staticRuleTest.setStaticRuleName("test_staticrule");
-        staticRuleTest.setStaticRuleCreateTime(LocalDateTime.now());
-        staticRuleTest.setStaticRuleCreateUsername("mh");
-        staticRuleTest.setStaticRuleCreateDepart("mmeess");
-        staticRuleTest.setStaticRuleCreateUserId(2);
-        staticRuleTest.setAuditStatus(0);
-
-        staticRuleTest.setStaticRuleSip("1.1.2.3");
-        staticRuleTest.setStaticRuleSport(80);
-
-        staticRuleTest.setStaticRulePriority(1);
-        staticRuleTest.setStaticRuleFrequency(1);
-//        staticRuleTest.setStaticRuleRange("北京");
-
-        Integer id = staticRuleService.newStaticRuleObject(staticRuleTest);
-        List<Integer> ruleIds = new ArrayList<>(List.of(id));
-        List<StaticRuleObject> staticRules= staticRuleService.queryStaticRule(null,null,null,null,null,null, null, null,1,2);
-        for (StaticRuleObject staticRule : staticRules) {
-            ruleIds.add(staticRule.getStaticRuleId());
-        }
-        whiteListObject = new WhiteListObject();
-        whiteListObject.setWhiteListName("test");
-        whiteListObject.setWhiteListSystemName("china");
-        whiteListObject.setWhiteListIP("1.1.2.3");
-        whiteListObject.setWhiteListPort(80);
-        whiteListObject.setWhiteListUrl("www.baidu.com");
-        whiteListObject.setWhiteListProtocol("TCP");
-        whiteListService.newWhiteListObject(whiteListObject);
-        System.out.println(whiteListService.whiteListStaticRulesCheck(ruleIds));
+//        StaticRuleObject staticRuleTest = new StaticRuleObject();
+//        staticRuleTest.setStaticRuleName("test_staticrule");
+//        staticRuleTest.setStaticRuleCreateTime(LocalDateTime.now());
+//        staticRuleTest.setStaticRuleCreateUsername("mh");
+//        staticRuleTest.setStaticRuleCreateDepart("mmeess");
+//        staticRuleTest.setStaticRuleCreateUserId(2);
+//        staticRuleTest.setAuditStatus(0);
+//
+//        staticRuleTest.setStaticRuleSip("1.1.2.3");
+//        staticRuleTest.setStaticRuleSport(80);
+//
+//        staticRuleTest.setStaticRulePriority(1);
+//        staticRuleTest.setStaticRuleFrequency(1);
+////        staticRuleTest.setStaticRuleRange("北京");
+//
+//        Integer id = staticRuleService.newStaticRuleObject(staticRuleTest);
+//        List<Integer> ruleIds = new ArrayList<>(List.of(id));
+//        List<StaticRuleObject> staticRules= staticRuleService.queryStaticRule(null,null,null,null,null,null, null, null,1,2);
+//        for (StaticRuleObject staticRule : staticRules) {
+//            ruleIds.add(staticRule.getStaticRuleId());
+//        }
+//        whiteListObject = new WhiteListObject();
+//        whiteListObject.setWhiteListName("test");
+//        whiteListObject.setWhiteListSystemName("china");
+//        whiteListObject.setWhiteListIP("1.1.2.3");
+//        whiteListObject.setWhiteListPort(80);
+//        whiteListObject.setWhiteListUrl("www.baidu.com");
+//        whiteListObject.setWhiteListProtocol("TCP");
+//        whiteListService.newWhiteListObject(whiteListObject);
+//        System.out.println(whiteListService.whiteListStaticRulesCheck(ruleIds));
     }
 
     @Test

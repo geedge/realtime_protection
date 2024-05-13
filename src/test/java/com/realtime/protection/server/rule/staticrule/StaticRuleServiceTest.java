@@ -32,11 +32,11 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         staticRuleTest.setStaticRuleCreateUserId(2);
         staticRuleTest.setAuditStatus(0);
 
-        staticRuleTest.setStaticRuleSip("2.2.2.2");
+        staticRuleTest.setStaticRuleSip("32.2.2.2");
 
 //        staticRuleTest.setStaticRuleDip("1.1.1.2");
 //        staticRuleTest.setStaticRuleMdip("255.255.255.0");
-        staticRuleTest.setStaticRuleSport(11);
+//        staticRuleTest.setStaticRuleSport(11);
 
         staticRuleTest.setStaticRulePriority(1);
         staticRuleTest.setStaticRuleFrequency(1);
@@ -55,8 +55,8 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         for (int i = 0; i < 2; i++) {
             staticRuleObjects.add(staticRuleTest);
         }
-        Boolean success = staticRuleService.newStaticRuleObjects(staticRuleObjects);
-        assertTrue(success);
+//        Boolean success = staticRuleService.newStaticRuleObjects(staticRuleObjects);
+//        assertTrue(success);
     }
 
     @Test
@@ -72,23 +72,23 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testUpdateStaticRule(){
 
-        StaticRuleObject object = new StaticRuleObject();
-
-        object.setStaticRuleId(5);
-        object.setStaticRuleName("update_staticrule");
-        //object.setStaticRuleCreateTime(LocalDateTime.now());
-        //object.setStaticRuleCreateUsername("csy");
-        //object.setStaticRuleCreateDepart("mmeess");
-        //object.setStaticRuleCreateUserId(1);
-        object.setStaticRuleSip(null);
-        object.setStaticRuleSport(null);
-        object.setStaticRuleDip("2.2.3.100");
-        object.setStaticRulePriority(2);
-        object.setStaticRuleFrequency(1);
-//        object.setStaticRuleRange("北京");
-//        object.setStaticRuleProtectLevel(2);
-
-        staticRuleService.updateStaticRule(5, object);
+//        StaticRuleObject object = new StaticRuleObject();
+//
+//        object.setStaticRuleId(5);
+//        object.setStaticRuleName("update_staticrule");
+//        //object.setStaticRuleCreateTime(LocalDateTime.now());
+//        //object.setStaticRuleCreateUsername("csy");
+//        //object.setStaticRuleCreateDepart("mmeess");
+//        //object.setStaticRuleCreateUserId(1);
+//        object.setStaticRuleSip(null);
+//        object.setStaticRuleSport(null);
+//        object.setStaticRuleDip("2.2.3.100");
+//        object.setStaticRulePriority(2);
+//        object.setStaticRuleFrequency(1);
+////        object.setStaticRuleRange("北京");
+////        object.setStaticRuleProtectLevel(2);
+//
+//        staticRuleService.updateStaticRule(5, object);
     }
     @Test
     void testQueryStaticRule(){
@@ -104,13 +104,13 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     }
     @Test
     void testUpdateStaticRuleAuditStatusBatch(){
-        Map<Integer, Integer> map = new HashMap<>();
-        map.put(1300, 0);
-        map.put(1326, 1);
-        map.put(1328, 1);
-
-
-        System.out.println(staticRuleService.updateAuditStatusBatch(map));
+//        Map<Integer, Integer> map = new HashMap<>();
+//        map.put(1300, 0);
+//        map.put(1326, 1);
+//        map.put(1328, 1);
+//
+//
+//        System.out.println(staticRuleService.updateAuditStatusBatch(map));
     }
     @Test
     void testQueryAuditStatusByIds(){

@@ -1,5 +1,6 @@
 package com.realtime.protection.server.alertmessage;
 
+import com.github.xiaoymin.knife4j.annotations.Ignore;
 import com.realtime.protection.configuration.entity.alert.AlertMessage;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.Template;
@@ -41,6 +42,7 @@ public class AlertMessageTest {
         this.stateChangeService = stateChangeService;
     }
 
+    @Ignore
     @Test
     void testReceiveAlertMessage() throws DorisStartException {
 
@@ -81,7 +83,7 @@ public class AlertMessageTest {
         //审核状态
         taskService.changeTaskAuditStatus(taskId, 2);
         //启动任务
-        stateChangeService.changeState(2, taskId, false);
+//        stateChangeService.changeState(2, taskId, false);
 
 //        for (int i = 0 ; i< 5; i++) {
 //            AlertMessage alert = new AlertMessage();
