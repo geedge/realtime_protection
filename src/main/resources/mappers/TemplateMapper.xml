@@ -20,10 +20,10 @@
     <insert id="newProtectLevel" useGeneratedKeys="true" keyProperty="protectLevelId">
         INSERT INTO t_protect_level(has_protect_object_ip, has_protect_object_port,
                                     has_protocol, has_url, has_dns,
-                                    has_peer_ip, has_peer_port, is_full_flow, is_protect_object_dst)
+                                    has_peer_ip, has_peer_port, is_full_flow, is_protect_object_src)
             VALUE (#{level.hasProtectObjectIP}, #{level.hasProtectObjectPort},
                    #{level.hasProtocol}, #{level.hasURL}, #{level.hasDNS},
-                   #{level.hasPeerIP}, #{level.hasPeerPort}, #{level.isFullFlow}, #{level.isProtectObjectDst})
+                   #{level.hasPeerIP}, #{level.hasPeerPort}, #{level.isFullFlow}, #{level.isProtectObjectIPSrc})
     </insert>
 
     <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.Template">
