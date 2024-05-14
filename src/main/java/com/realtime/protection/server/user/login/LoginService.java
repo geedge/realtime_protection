@@ -51,15 +51,15 @@ public class LoginService {
         String accessToken = "";
         // 获取 ACCESS_TOKEN
         ObjectMapper objectMapper = new ObjectMapper();
+//        OkHttpClient client = new OkHttpClient();
+
+        //不做证书验证的OkHttpClient
         OkHttpClient client = new OkHttpClient.Builder()
                 .sslSocketFactory(OkHttpUtil.getIgnoreInitedSslContext().getSocketFactory(),OkHttpUtil.IGNORE_SSL_TRUST_MANAGER_X509)
                 .hostnameVerifier(OkHttpUtil.getIgnoreSslHostnameVerifier())
                 .build();
 
-
-
         Request request = new Request.Builder()
-//            .url("https://passport.zx.com:10217/passport/accessToken?grant_type=client_credentials")
             .url("https://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
 //            .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
             .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")

@@ -57,6 +57,8 @@
         <result column="SUCCESS_TIMES" property="commandSuccessTimes"/>
         <result column="FIRST_SEND_TIME" property="earliestSendTime"/>
         <result column="LAST_SEND_TIME" property="latestSendTime"/>
+        <result column="IS_VALID" property="isValid"/>
+        <result column="IS_JUDGED" property="isJudged"/>
 
         <association property="fiveTupleWithMask">
             <result column="SRC_IP" property="sourceIP"/>
@@ -74,6 +76,8 @@
                SUCCESS_TIMES,
                FIRST_SEND_TIME,
                LASt_SEND_TIME,
+               IS_VALID,
+               IS_JUDGED,
                SRC_IP,
                SRC_PORT,
                DST_IP,
@@ -91,6 +95,8 @@
         SUCCESS_TIMES,
         FIRST_SEND_TIME,
         LASt_SEND_TIME,
+        IS_VALID,
+        IS_JUDGED,
         SRC_IP,
         SRC_PORT,
         DST_IP,
