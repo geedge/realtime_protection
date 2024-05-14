@@ -110,9 +110,8 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_URL}
-      port: 6379
-      database: 1
+      cluster:
+        nodes: 10.58.72.140:7000, 10.58.72.140:7001, 10.58.72.140:7002, 10.58.72.140:7003, 10.58.72.140:7004, 10.58.72.140:7005
       jedis:
         pool:
           enabled: true
@@ -120,6 +119,7 @@ spring:
           max-idle: 5
           min-idle: 1
       connect-timeout: 1000
+      password: Redis123456
 
 mybatis:
   mapper-locations: classpath:mappers/*
