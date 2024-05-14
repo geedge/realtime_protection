@@ -174,6 +174,9 @@ public class TemplateController implements TemplateControllerApi {
                 .setData("success", templateService.updateAuditStatusBatch(idsWithAuditStatusMap));
     }
 
+    /*
+    修改审批信息
+     */
     @Override
     @PostMapping("/auditInfo/{ids}")
     public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,

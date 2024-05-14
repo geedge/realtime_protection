@@ -31,4 +31,7 @@ public class ProtectLevel {
 
     @Schema(description = "该防护等级是处置防护对象的全流量or单向流量")
     private Boolean isFullFlow = false;
+
+    @Schema(description = "该防护等级防护对象ip地址是否作为源ip地址")
+    private Boolean isProtectObjectIPSrc = false;
 }

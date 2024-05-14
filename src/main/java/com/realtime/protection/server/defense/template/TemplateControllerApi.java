@@ -48,7 +48,10 @@ public interface TemplateControllerApi {
                             )
                     )
             },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "防御策略模板信息")
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+
+                    description = "防御策略模板信息")
+
     )
     ResponseResult newTemplate(@RequestBody @Valid Template template);
 
