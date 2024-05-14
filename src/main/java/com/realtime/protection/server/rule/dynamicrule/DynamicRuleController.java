@@ -114,7 +114,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                                                  @RequestParam(value = "template_name", required = false) String templateName,
 
                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                 @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize) {
+                                                 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         log.info("分页查询动态规则: {}:{}:{}:{}", dynamicRuleName, dynamicRuleId, page, pageSize);
         //调用service查询
         return ResponseResult.ok()
@@ -194,7 +194,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
                                           @RequestBody Map<String, String> auditInfo) {
         if (auditInfo.get("auditInfo") == null || auditInfo.get("auditInfo").isEmpty()) {
-            throw new IllegalArgumentException("auditInfo is empty");
+            return ResponseResult.ok();
         }
         return ResponseResult.ok()
                 .setData("success", dynamicRuleService.updateAuditInfo(ids, auditInfo.get("auditInfo")));

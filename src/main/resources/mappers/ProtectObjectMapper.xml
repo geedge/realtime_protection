@@ -75,11 +75,11 @@
             <if test="proobj_url != null and proobj_url != '' ">
                 AND protect_object_url LIKE CONCAT('%', #{proobj_url}, '%')
             </if>
-            <if test="proobj_protocol != null">
+            <if test="proobj_protocol != null and proobj_protocol != ''">
                 AND protect_object_protocol = #{proobj_protocol}
             </if>
-            <if test="proobj_username != null">
-                AND protect_object_create_username = #{proobj_username}
+            <if test="proobj_username != null and proobj_username != ''">
+                AND protect_object_create_username LIKE CONCAT('%', #{proobj_username}, '%')
             </if>
             <if test="proobj_audit_status != null">
                 AND protect_object_audit_status = #{proobj_audit_status}
@@ -124,11 +124,11 @@
             <if test="proobj_url != null and proobj_url != '' ">
                 AND protect_object_url LIKE CONCAT('%', #{proobj_url}, '%')
             </if>
-            <if test="proobj_protocol != null">
+            <if test="proobj_protocol != null and proobj_protocol != ''">
                 AND protect_object_protocol = #{proobj_protocol}
             </if>
-            <if test="proobj_username != null">
-                AND protect_object_create_username = #{proobj_username}
+            <if test="proobj_username != null and proobj_username != ''">
+                AND protect_object_create_username LIKE CONCAT('%', #{proobj_username}, '%')
             </if>
             <if test="proobj_audit_status != null">
                 AND protect_object_audit_status = #{proobj_audit_status}

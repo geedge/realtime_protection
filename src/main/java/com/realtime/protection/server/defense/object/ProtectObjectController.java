@@ -201,7 +201,7 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
                                           @RequestBody Map<String, String> auditInfo) {
         if (auditInfo.get("auditInfo") == null || auditInfo.get("auditInfo").isEmpty()) {
-            throw new IllegalArgumentException("auditInfo is empty");
+            return ResponseResult.ok();
         }
         return ResponseResult.ok()
                 .setData("success", protectObjectService.updateAuditInfo(ids, auditInfo.get("auditInfo")));

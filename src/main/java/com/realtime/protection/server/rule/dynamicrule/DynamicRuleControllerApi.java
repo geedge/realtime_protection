@@ -350,7 +350,7 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "protect_level", description = "保护级别", example = "1"),
 //                    @Parameter(name = "template_name", description = "模板名称", example = "test"),
                     @Parameter(name = "page", description = "页码", example = "1"),
-                    @Parameter(name = "page_size", description = "每页大小", example = "10")
+                    @Parameter(name = "pageSize", description = "每页大小", example = "10")
             }
     )
     ResponseResult queryDynamicRuleObject(@RequestParam(value = "name", required = false) String dynamicRuleName,

@@ -204,7 +204,7 @@ public class AlertMessageService {
             peer.setMaskPort(null);
         }
         List<FiveTupleWithMask> newFiveTupleWithMask = new ArrayList<>();
-        //生成指令
+        //生成指令command1：防护对象为目的的五元组
         FiveTupleWithMask command1 = new FiveTupleWithMask();
         command1.setSourceIP(peer.getIP());
         command1.setMaskSourceIP(peer.getMaskIP());
@@ -218,25 +218,36 @@ public class AlertMessageService {
             command1.setProtocol(fiveTupleWithMask.getProtocol());
             command1.setProtocol(fiveTupleWithMask.getMaskProtocol());
         }
-        newFiveTupleWithMask.add(command1);
-        //若需要处置全方向流量，再生成防护对象为源的规则
+//        newFiveTupleWithMask.add(command1);
+        //生成指令command2：防护对象为源的五元组
+        FiveTupleWithMask command2 = new FiveTupleWithMask();
+
+        command2.setSourceIP(protectObject.getIP());
+        command2.setMaskSourceIP(protectObject.getMaskIP());
+        command2.setSourcePort(protectObject.getPort());
+        command2.setMaskSourcePort(protectObject.getMaskPort());
+
+        command2.setDestinationIP(peer.getIP());
+        command2.setMaskDestinationIP(peer.getMaskIP());
+        command2.setDestinationPort(peer.getPort());
+        command2.setMaskDestinationPort(peer.getMaskPort());
+        if (templateProtectLevel.getHasProtocol()){
+            command2.setProtocol(fiveTupleWithMask.getProtocol());
+            command2.setProtocol(fiveTupleWithMask.getMaskProtocol());
+        }
+
+        //若需要处置全方向流量，防护对象为源和目的的五元组都生成指令下发
         if(templateProtectLevel.getIsFullFlow()){
-            FiveTupleWithMask command2 = new FiveTupleWithMask();
-
-            command2.setSourceIP(protectObject.getIP());
-            command2.setMaskSourceIP(protectObject.getMaskIP());
-            command2.setSourcePort(protectObject.getPort());
-            command2.setMaskSourcePort(protectObject.getMaskPort());
-
-            command2.setDestinationIP(peer.getIP());
-            command2.setMaskDestinationIP(peer.getMaskIP());
-            command2.setDestinationPort(peer.getPort());
-            command2.setMaskDestinationPort(peer.getMaskPort());
-            if (templateProtectLevel.getHasProtocol()){
-                command2.setProtocol(fiveTupleWithMask.getProtocol());
-                command2.setProtocol(fiveTupleWithMask.getMaskProtocol());
-            }
+            newFiveTupleWithMask.add(command1);
             newFiveTupleWithMask.add(command2);
+        }else {
+            //不需要处置全方向流量
+            // 判断防护对象为源还是目的，生成指令
+            if(templateProtectLevel.getIsProtectObjectIPSrc()){
+                newFiveTupleWithMask.add(command2);
+            }else {
+                newFiveTupleWithMask.add(command1);
+            }
         }
 
         //目前告警信息还只是五元组，没有url、dns

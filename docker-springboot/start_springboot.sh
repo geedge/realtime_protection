@@ -5,6 +5,9 @@ export set BASEDIR="/root"
 export set PROTECTION_DIR="$BASEDIR/realtime_protection"
 export set GRADLE_USER_HOME="$PROTECTION_DIR/gradle"
 
+# 后端添加权限系统url的域名解析服务器
+echo nameserver 10.41.8.8 >> /etc/resolv.conf
+
 # 启动gradle，编译java
 cd $PROTECTION_DIR
 chmod +x ./gradlew

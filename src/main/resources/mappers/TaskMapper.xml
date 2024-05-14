@@ -65,7 +65,7 @@
 
     <select id="queryTasks" resultMap="taskMap">
         SELECT t_task.* FROM t_task
-        <if test="rule_name != null">
+        <if test="rule_name != null and task_source != ''">
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
             WHERE
