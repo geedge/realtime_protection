@@ -2,6 +2,8 @@ package com.realtime.protection.server.user.login;
 
 import javax.security.auth.login.LoginException;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +50,7 @@ public class LoginController {
     @PostMapping("/auth")
     public ResponseResult auth(@RequestParam("sessionData") String sessionData,
                                @Autowired HttpServletRequest request,
+                               @Autowired HttpServletResponse response,
                                @RequestParam(value = "scopes", required = false) String scopes) {
         try {
             UserFull userFull = loginService.loginWithSSO(sessionData);
@@ -57,11 +60,22 @@ public class LoginController {
             // 设置 session
             HttpSession session = request.getSession();
             session.setAttribute("user", userFull);
+
+            String sessionId = session.getId();
+
+            // 设置JSESSIONID Cookie
+            Cookie sessionCookie = new Cookie("JSESSIONID", sessionId);
+            sessionCookie.setPath("/api"); // 确保路径正确
+            sessionCookie.setHttpOnly(true); // 防止客户端脚本访问
+            response.addCookie(sessionCookie);
+
             // 返回结果
             return ResponseResult.ok().setMessage("success")
                 .setData("userId", userFull.uid)
                 .setData("userName", userFull.name)
-                .setData("userRole", userFull.getRoleKey());
+                .setData("userRole", userFull.getRoleKey())
+                .setData("UserDepartment", userFull.getOrgName())
+                ;
         } catch (Exception e) {
             return ResponseResult.error(e.getMessage());
         }
