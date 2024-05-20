@@ -97,6 +97,16 @@ class TemplateServiceTest extends ProtectionApplicationTests {
     }
 
     @Test
+    void testQueryTemplateShort() {
+        List<Template> templates = templateService.queryTemplatesShort(
+                );
+//        assertEquals(5, templates.size());
+        for (Template template : templates) {
+            System.out.println(template);
+        }
+    }
+
+    @Test
     void testUpdateTemplateSuccess() {
         List<Template> templates = templateService.queryTemplates(
                 "DDOS", null, null, null, null,1, 1);

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.defense.templatenew.TemplateMapper">
+    <insert id="newTemplate" useGeneratedKeys="true" keyProperty="templateId">
+        INSERT INTO t_strategy_template_new(strategy_template_name, strategy_template_source_system,
+                                        has_protect_object_ip, has_protect_object_port,
+                                        has_protocol, has_url, has_dns,
+                                        has_peer_ip, has_peer_port, is_full_flow, is_protect_object_src,
+                                        strategy_template_create_user_id, strategy_template_create_username,
+                                        strategy_template_create_depart,
+                                        strategy_template_description, strategy_template_display_id)
+            VALUE (#{template.templateName}, #{template.sourceSystem},
+                     #{template.hasProtectObjectIp}, #{template.hasProtectObjectPort},
+                        #{template.hasProtocol}, #{template.hasUrl}, #{template.hasDns},
+                        #{template.hasPeerIp}, #{template.hasPeerPort}, #{template.isFullFlow},
+                        #{template.isProtectObjectSrc},
+                   #{template.createUserId}, #{template.createUsername}, #{template.createDepart},
+                   #{template.description}, #{template.templateDisplayId})
+    </insert>
+
+    <update id="updateTemplateInformation">
+        UPDATE t_strategy_template_new
+        <set>
+            <if test="template.templateName != null">strategy_template_name = #{template.templateName},</if>
+            <if test="template.sourceSystem != null">strategy_template_source_system = #{template.sourceSystem},</if>
+            <if test="template.template.hasProtectObjectIp != null">has_protect_object_ip = #{template.hasProtectObjectIp},</if>
+            <if test="template.template.hasProtectObjectPort != null">has_protect_object_port = #{template.hasProtectObjectPort},</if>
+            <if test="template.template.hasProtocol != null">has_protocol = #{template.hasProtocol},</if>
+            <if test="template.template.hasUrl != null">has_url = #{template.hasUrl},</if>
+            <if test="template.template.hasDns != null">has_dns = #{template.hasDns},</if>
+            <if test="template.template.hasPeerIp != null">has_peer_ip = #{template.hasPeerIp},</if>
+            <if test="template.template.hasPeerPort != null">has_peer_port =  #{template.hasPeerPort},</if>
+            <if test="template.template.isFullFlow != null">is_full_flow = #{template.isFullFlow},</if>
+            <if test="template.template.isProtectObjectSrc != null">is_protect_object_src = #{template.isProtectObjectSrc},</if>
+
+            modify_time = NOW()
+        </set>
+        <where>
+            AND strategy_template_id = #{template.templateId}
+        </where>
+    </update>
+
+
+
+    <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.TemplateNew">
+        <id column="strategy_template_id" property="templateId"/>
+        <result column="strategy_template_name" property="templateName"/>
+
+        <result column="strategy_template_used_times" property="usedTimes"/>
+        <result column="strategy_template_running_tasks" property="runningTasks"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
+
+        <result column="strategy_template_display_id" property="templateDisplayId"/>
+
+        <result column="strategy_template_create_user_id" property="createUserId"/>
+        <result column="strategy_template_create_username" property="createUsername"/>
+        <result column="strategy_template_create_depart" property="createDepart"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <result column="strategy_template_source_system" property="sourceSystem"/>
+        <result column="event_type" property="eventType"/>
+        <result column="protect_level" property="protectLevel"/>
+        <result column="strategy_template_description" property="description"/>
+
+        <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+        <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+        <result column="has_protocol" property="hasProtocol"/>
+        <result column="has_url" property="hasURL"/>
+        <result column="has_dns" property="hasDNS"/>
+        <result column="has_peer_ip" property="hasPeerIP"/>
+        <result column="has_peer_port" property="hasPeerPort"/>
+        <result column="is_full_flow" property="isFullFlow"/>
+        <result column="is_protect_object_src" property="isProtectObjectIPSrc"/>
+
+    </resultMap>
+
+    <select id="queryTemplates" resultMap="templateMap">
+        SELECT * FROM t_strategy_template_new
+        <where>
+            <if test="source_system != null and source_system != '' ">
+                AND strategy_template_source_system = #{source_system}
+            </if>
+            <if test="create_username != null and create_username != '' ">
+                AND strategy_template_create_username = #{create_username}
+            </if>
+            <if test="template_name != null and template_name != '' ">
+                AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
+            </if>
+            <if test="template_id != null">
+                AND strategy_template_id = #{template_id}
+            </if>
+            <if test="audit_status != null">
+                AND audit_status = #{audit_status}
+            </if>
+            <if test="event_type != null and event_type != '' ">
+                AND event_type LIKE CONCAT('%', #{event_type}, '%')
+            </if>
+            <if test="protect_level != null and protect_level != '' ">
+                AND protect_level LIKE CONCAT('%', #{protect_level}, '%')
+            </if>
+        </where>
+        LIMIT ${(page - 1) * page_size}, #{page_size}
+    </select>
+
+    <select id="queryTemplate" resultMap="templateMap">
+        SELECT * FROM t_strategy_template_new
+        <where>
+            strategy_template_id = #{template_id}
+        </where>
+    </select>
+
+    <select id="queryTemplateTotalNum" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_strategy_template_new
+        <where>
+            <if test="source_system != null and source_system != '' ">
+                AND strategy_template_source_system = #{source_system}
+            </if>
+            <if test="create_username != null and create_username != '' ">
+                AND strategy_template_create_username = #{create_username}
+            </if>
+            <if test="template_name != null and template_name != '' ">
+                AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
+            </if>
+            <if test="template_id != null">
+                AND strategy_template_id = #{template_id}
+            </if>
+            <if test="audit_status != null">
+                AND audit_status = #{audit_status}
+            </if>
+            <if test="event_type != null and event_type != '' ">
+                AND event_type LIKE CONCAT('%', #{event_type}, '%')
+            </if>
+            <if test="protect_level != null and protect_level != '' ">
+                AND protect_level LIKE CONCAT('%', #{protect_level}, '%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
