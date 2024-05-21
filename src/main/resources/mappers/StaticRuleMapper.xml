@@ -81,11 +81,17 @@
         </set>
         where static_rule_id = #{id}
     </update>
+
     <update id="updateAuditStatusById">
         update t_static_rule
-        set static_rule_audit_status = #{auditStatus}
+        set static_rule_modify_time = NOW(),
+            static_rule_audit_status = #{auditStatus},
+            audit_user_id =  #{auditUserId},
+            audit_user_name = #{auditUserName},
+            audit_user_depart = #{auditUserDepart}
         where static_rule_id = #{id}
     </update>
+
     <update id="updateAuditStatusByIdBatch">
         update t_static_rule
         set static_rule_modify_time = NOW(),
@@ -110,6 +116,23 @@
         #{id}
         </foreach>
     </update>
+    <update id="updateAuditStatusWithAuditorByIdBatch">
+        update t_static_rule
+        set static_rule_modify_time = NOW(),
+        audit_user_id =  #{auditUserId},
+        audit_user_name = #{auditUserName},
+        audit_user_depart = #{auditUserDepart},
+        static_rule_audit_status = CASE static_rule_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        ELSE static_rule_audit_status
+        END
+        WHERE static_rule_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <delete id="deleteStaticRules">
         delete from t_static_rule
@@ -130,6 +153,9 @@
         <result column="static_rule_audit_status" property="auditStatus"/>
         <result column="static_rule_create_user_id" property="staticRuleCreateUserId"/>
         <result column="static_rule_modify_time" property="staticRuleModifyTime"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
 
         <result column="static_rule_sip_d" property="staticRuleSip"/>
         <result column="static_rule_msip_d" property="staticRuleMsip"/>

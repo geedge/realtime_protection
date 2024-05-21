@@ -102,14 +102,19 @@
     </update>
     <update id="updateAuditStatusById">
         update t_dynamic_rule
-        set audit_status = #{auditStatus}
+        set audit_status = #{auditStatus},
+            audit_user_id = #{auditUserId},
+            audit_user_name = #{auditUserName},
+            audit_user_depart = #{auditUserDepart},
+            modify_time = NOW()
         where dynamic_rule_id = #{dynamicRuleId}
     </update>
 
     <!-- 用于批量更新审核状态 -->
     <update id="updateAuditStatusByIdBatch">
         update t_dynamic_rule
-        set audit_status = CASE dynamic_rule_id
+        set modify_time = NOW(),
+            audit_status = CASE dynamic_rule_id
         <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
             WHEN #{id} THEN #{auditStatus}
         </foreach>
@@ -125,6 +130,23 @@
         SET dynamic_rule_audit_info = #{auditInfo}
         WHERE dynamic_rule_id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="updateAuditStatusWithAuditorByIdBatch">
+        update t_dynamic_rule
+        set audit_user_id = #{auditUserId},
+            audit_user_name = #{auditUserName},
+            audit_user_depart = #{auditUserDepart},
+            modify_time = NOW(),
+            audit_status = CASE dynamic_rule_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        ELSE audit_status
+        END
+        WHERE dynamic_rule_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
@@ -161,6 +183,9 @@
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
         <result column="audit_status" property="auditStatus"/>
         <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
 
     </resultMap>
 

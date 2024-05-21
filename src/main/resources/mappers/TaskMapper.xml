@@ -218,6 +218,33 @@
             #{id}
         </foreach>
     </update>
+    <update id="changeTaskAuditStatusWithAudior">
+        UPDATE t_task
+        SET task_status      = #{state},
+            task_modify_time = NOW(),
+            task_audit_username = #{auditUserName},
+            task_audit_userid = #{auditUserId},
+            task_audit_depart = #{auditUserDepart}
+
+        WHERE task_id = #{task_id}
+    </update>
+    <update id="updateAuditStatusWithAuditorByIdBatch">
+        update t_task
+        set task_modify_time = NOW(),
+            task_audit_username = #{auditUserName},
+            task_audit_userid = #{auditUserId},
+            task_audit_depart = #{auditUserDepart},
+            task_audit_status = CASE task_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        ELSE task_audit_status
+        END
+        WHERE task_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <delete id="deleteTask">
         DELETE

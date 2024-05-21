@@ -277,6 +277,20 @@ public class TaskService {
     }
 
     @Transactional
+    public Boolean changeTaskAuditStatus(Long taskId, Integer taskAuditStatus,
+                                         String auditUserName, String auditUserId, String auditUserDepart) {
+        Integer originalAuditStatus = taskMapper.queryTaskAuditStatus(taskId);
+        if (originalAuditStatus == null) {
+            throw new IllegalArgumentException("无法找到任务ID为" + taskId + "的任务，也许任务不存在？");
+        }
+
+        if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))
+            taskMapper.changeTaskAuditStatusWithAudior(taskId, taskAuditStatus, auditUserName,  auditUserId,  auditUserDepart);
+        else return false;
+
+        return true;
+    }
+    @Transactional
     public Boolean changeTaskAuditStatus(Long taskId, Integer taskAuditStatus) {
         Integer originalAuditStatus = taskMapper.queryTaskAuditStatus(taskId);
         if (originalAuditStatus == null) {
@@ -387,6 +401,57 @@ public class TaskService {
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(TaskMapper.class, updateTaskAuditStatusFunction, idsWithAuditStatusMap);
+
+
+    }
+
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap,
+                                          String auditUserName, String auditUserId, String auditUserDepart) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = taskMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("任务id部分不存在");
+        }
+
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            throw new IllegalArgumentException("动态规则id无法修改为对应审核状态, errorIds: " + errorIds);
+        }
+
+        Function<TaskMapper, Function<Map<Integer, Integer>, Boolean>> updateTaskAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName,  auditUserId,  auditUserDepart);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName,  auditUserId,  auditUserDepart);
                     }
                     return true;
                 };

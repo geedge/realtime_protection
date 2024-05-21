@@ -77,6 +77,7 @@ public class AlertMessageTest {
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
+        task.setTaskRange("北京");
         task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
         Long taskId = taskService.newTask(task);
         System.out.println(taskId);

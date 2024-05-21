@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +41,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     @PostMapping("/new")
     @Override
     public ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object,
-                                              HttpServletRequest request) {
+                                              @Autowired HttpServletRequest request) {
 //        log.info("新增静态规则: {}", object);
         //从http首部session字段获取用户信息
         HttpSession session = request.getSession();
@@ -61,9 +62,15 @@ public class StaticRuleController implements StaticRuleControllerApi {
     @PostMapping("/upload")
     @Override
     public ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空")
-                                         MultipartFile uploadFile) throws IOException {
+                                         MultipartFile uploadFile,
+                                     @Autowired HttpServletRequest request) throws IOException {
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+
+
         EasyExcel.read(uploadFile.getInputStream(), StaticRuleObject.class,
-                new StaticRuleDataListener(staticRuleService)).sheet().doRead();
+                new StaticRuleDataListener(staticRuleService, user)).sheet().doRead();
         return ResponseResult.ok();
     }
 
@@ -179,14 +186,27 @@ public class StaticRuleController implements StaticRuleControllerApi {
      */
     @Override
     @GetMapping("/{id}/audit/{auditStatus}")
-    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
+    public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus,
+                                                    @Autowired HttpServletRequest request) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("staticRule_id", id)
                     .setData("success", false);
         }
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
         return ResponseResult.ok()
-                .addDataMap(staticRuleService.updateAuditStatus(id, auditStatus))
+                .addDataMap(staticRuleService.updateAuditStatus(id, auditStatus,
+                        auditUserName, auditUserId, auditUserDepart))
                 .setData("staticRule_id", id);
 
     }
@@ -197,7 +217,8 @@ public class StaticRuleController implements StaticRuleControllerApi {
      */
     @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                           @Autowired HttpServletRequest request) {
         List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
@@ -212,8 +233,21 @@ public class StaticRuleController implements StaticRuleControllerApi {
                     .setData("success", false);
         }
 
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
+
         return ResponseResult.ok()
-                .setData("success", staticRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", staticRuleService.updateAuditStatusBatch(idsWithAuditStatusMap,
+                        auditUserName, auditUserId, auditUserDepart));
     }
 
     /**

@@ -11,10 +11,12 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,7 +61,7 @@ public interface TaskControllerApi {
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务信息")
     )
-    ResponseResult newTask(@RequestBody @Valid Task task);
+    ResponseResult newTask(@RequestBody @Valid Task task,@Autowired HttpServletRequest request);
 
     // API推送Endpoint
     @PostMapping("/api/new")
@@ -349,7 +351,8 @@ public interface TaskControllerApi {
             }
     )
     ResponseResult changeTaskAuditStatus(@PathVariable @NotNull @Max(10) Integer auditStatus,
-                                         @PathVariable @NotNull @Min(1) Long taskId);
+                                         @PathVariable @NotNull @Min(1) Long taskId,
+                                         @Autowired HttpServletRequest request);
 
     @DeleteMapping("/{taskId}/delete")
     @Operation(
@@ -555,7 +558,8 @@ public interface TaskControllerApi {
             )
     )
     @PostMapping("/auditbatch")
-    ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+    ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+            @Autowired HttpServletRequest request);
 
     @Operation(
             summary = "数据统计",

@@ -40,6 +40,10 @@ public interface StaticRuleMapper {
 
     Integer queryAuditStatusById(Integer id);
 
+    Boolean updateAuditStatusById(Integer id, Integer auditStatus,
+                                  String auditUserName,
+                                  Integer auditUserId,
+                                  String auditUserDepart);
     Boolean updateAuditStatusById(Integer id, Integer auditStatus);
 
     Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
@@ -51,7 +55,10 @@ public interface StaticRuleMapper {
     List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch);
-
+    void updateAuditStatusWithAuditorByIdBatch(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch,
+                                    @Param("auditUserName")String auditUserName,
+                                    @Param("auditUserId")Integer auditUserId,
+                                    @Param("auditUserDepart")String auditUserDepart);
     Integer queryUsedStaticRuleTotalNum();
 
     Integer queryAuditStaticRuleTotalNum(@Param("auditStatus")Integer auditStatus);

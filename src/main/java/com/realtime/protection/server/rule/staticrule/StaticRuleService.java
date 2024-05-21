@@ -222,8 +222,12 @@ public class StaticRuleService {
 
     }
 
+
     @Transactional
-    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
+    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus,
+                                                 String auditUserName,
+                                                 Integer auditUserId,
+                                                 String auditUserDepart) {
         Integer originalAuditStatus = staticRuleMapper.queryAuditStatusById(id);
         if (originalAuditStatus == null) {
             throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
@@ -231,7 +235,7 @@ public class StaticRuleService {
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
             throw new IllegalArgumentException("invalid audit status");
         }
-        Boolean success = staticRuleMapper.updateAuditStatusById(id, auditStatus);
+        Boolean success = staticRuleMapper.updateAuditStatusById(id, auditStatus, auditUserName, auditUserId, auditUserDepart);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
@@ -266,7 +270,58 @@ public class StaticRuleService {
         return staticRuleMapper.queryStaticRuleByIds(ids);
     }
 
-    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap,
+                                          String auditUserName, Integer auditUserId, String auditUserDepart ) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("部分静态规则id不存在");
+        }
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            throw new IllegalArgumentException("静态规则id无法修改为对应审核状态, 错误id: " + errorIds);
+        }
+
+        Function<StaticRuleMapper, Function<Map<Integer, Integer>, Boolean>> updateStaticRuleAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch,
+                                auditUserName, auditUserId, auditUserDepart);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch,
+                                auditUserName, auditUserId, auditUserDepart);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(StaticRuleMapper.class, updateStaticRuleAuditStatusFunction, idsWithAuditStatusMap);
+    }
+
+
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap
+                                          ) {
         //校验id和status是否合法
         List<Integer> originalAuditStatusList = staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
         if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {

@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +40,8 @@ public interface DynamicRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "动态规则信息")
     )
-    ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject) ;
+    ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject,
+                                        @Autowired HttpServletRequest request) ;
 
     @Operation(
             summary = "删除动态规则",
@@ -380,7 +383,8 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "auditStatus", description = "要修改为的审核状态")
             }
     )
-    ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
+    ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus,
+                                                @Autowired HttpServletRequest request);
 
     @Operation(
             summary = "批量更新审批状态",
@@ -403,7 +407,8 @@ public interface DynamicRuleControllerApi {
                     )
             )
     )
-    ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+    ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                     @Autowired HttpServletRequest request);
 
     @Operation(
             summary = "数据统计",

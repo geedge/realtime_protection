@@ -4,6 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -15,9 +16,11 @@ public class StaticRuleDataListener implements ReadListener<StaticRuleObject> {
             = ListUtils.newArrayListWithExpectedSize(batchCount);
 
     private final StaticRuleService staticRuleService;
+    private UserFull user;
 
-    public StaticRuleDataListener(StaticRuleService staticRuleService) {
+    public StaticRuleDataListener(StaticRuleService staticRuleService, UserFull user) {
         this.staticRuleService = staticRuleService;
+        this.user = user;
     }
 
     @Override
@@ -32,6 +35,11 @@ public class StaticRuleDataListener implements ReadListener<StaticRuleObject> {
                                                 object.getStaticRuleMsip() + "，目的ip:" +
                                                 object.getStaticRuleDip() + "，目的ip掩码:" +
                                                 object.getStaticRuleMdip() );
+        }
+        if (user != null) {
+            object.setStaticRuleCreateUsername(user.name);
+            object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));
+            object.setStaticRuleCreateDepart(user.getOrgName());
         }
         cachedDataList.add(object);
         if (cachedDataList.size() > batchCount) {
@@ -54,7 +62,7 @@ public class StaticRuleDataListener implements ReadListener<StaticRuleObject> {
         Boolean success = staticRuleService.newStaticRuleObjects(cachedDataList);
         log.info("存储数据库成功！");
         if (!success) {
-            throw new RuntimeException("Error reading data in /proobj/new");
+            throw new RuntimeException("批量导入静态规则存储数据库时出现错误");
         }
     }
 }

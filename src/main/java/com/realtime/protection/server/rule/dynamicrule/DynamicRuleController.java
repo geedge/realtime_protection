@@ -1,10 +1,14 @@
 package com.realtime.protection.server.rule.dynamicrule;
 
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,8 +29,17 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     //
     @Override
     @PostMapping("/new")
-    public ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject) {
-        log.info("新增动态规则: {}", dynamicRuleObject);
+    public ResponseResult newDynamicRuleObject(@RequestBody @Valid DynamicRuleObject dynamicRuleObject,
+                                               @Autowired HttpServletRequest request) {
+//        log.info("新增动态规则: {}", dynamicRuleObject);
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        if (user != null) {
+            dynamicRuleObject.setAuditUserName(user.name);
+            dynamicRuleObject.setAuditUserId(user.uid);
+            dynamicRuleObject.setAuditUserDepart(user.getOrgName());
+        }
         //调用service新增
         Integer dynamicRuleObjectId = dynamicRuleService.newDynamicRuleObject(dynamicRuleObject);
         return ResponseResult.ok().
@@ -121,7 +134,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                 .setData("success", true)
                 .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
                         protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, page, pageSize))
-                .setData("total_num",dynamicRuleService.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
+                .setData("total_num", dynamicRuleService.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
                         protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName));
     }
 
@@ -133,14 +146,27 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
      */
     @Override
     @GetMapping("/{id}/audit/{auditStatus}")
-    public ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
+    public ResponseResult updateDynamicRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus,
+                                                       @Autowired HttpServletRequest request) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("dynamicRule_id", id)
                     .setData("success", false);
         }
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
         return ResponseResult.ok()
-                .addDataMap(dynamicRuleService.updateAuditStatus(id, auditStatus))
+                .addDataMap(dynamicRuleService.updateAuditStatus(id, auditStatus
+                ,auditUserName, auditUserId, auditUserDepart))
                 .setData("dynamicRule_id", id);
     }
 
@@ -149,23 +175,36 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
      */
     @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateDynamicRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                            @Autowired HttpServletRequest request) {
         List<Integer> errorIds = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
             Integer auditStatus = entry.getValue();
             if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
                 errorIds.add(id);
             }
         }
-        if (!errorIds.isEmpty()){
+        if (!errorIds.isEmpty()) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("staticRule_id", errorIds)
                     .setData("success", false);
         }
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        String auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = user.uid;
+            auditUserDepart = user.getOrgName();
+        }
 
         return ResponseResult.ok()
-                .setData("success", dynamicRuleService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", dynamicRuleService.updateAuditStatusBatch(idsWithAuditStatusMap,
+                         auditUserName,  auditUserId,  auditUserDepart));
     }
 
 
@@ -174,10 +213,10 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
      */
     @Override
     @GetMapping("/statistics")
-    public ResponseResult getStaticRuleStatisticsData(){
+    public ResponseResult getStaticRuleStatisticsData() {
 
         return ResponseResult.ok()
-                .setData("dynamic_rule_num", dynamicRuleService.queryDynamicRuleTotalNum(null,null, null,
+                .setData("dynamic_rule_num", dynamicRuleService.queryDynamicRuleTotalNum(null, null, null,
                         null, null, null, null, null))
                 .setData("dynamic_rule_used_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
@@ -189,6 +228,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                         AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
                 ));
     }
+
     @Override
     @PostMapping("/auditInfo/{ids}")
     public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,

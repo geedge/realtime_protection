@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,7 +71,8 @@ public interface StaticRuleControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Excel文件")
     )
-    ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile) throws IOException;
+    ResponseResult uploadFile(@NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile,
+                              @Autowired HttpServletRequest request) throws IOException;
 
     @Operation(
             summary = "下载静态规则模板",
@@ -288,7 +290,8 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "auditStatus", description = "要修改为的静态规则审核状态")
             }
     )
-    ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
+    ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus,
+                                               @Autowired HttpServletRequest request);
 
     @PostMapping("/auditbatch")
     @Operation(
@@ -312,7 +315,8 @@ public interface StaticRuleControllerApi {
                     )
             )
     )
-    ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+    ResponseResult updateStaticRuleAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                    @Autowired HttpServletRequest request);
 
     @Operation(
             summary = "数据统计",

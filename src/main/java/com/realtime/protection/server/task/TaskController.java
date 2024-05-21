@@ -2,16 +2,20 @@ package com.realtime.protection.server.task;
 
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.status.StateChangeService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,7 +38,18 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @PostMapping("/new")
-    public ResponseResult newTask(@RequestBody @Valid Task task) {
+    public ResponseResult newTask(@RequestBody @Valid Task task,
+                                  @Autowired HttpServletRequest request) {
+
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        if (user != null) {
+            task.setTaskCreateUsername(user.name);
+            task.setTaskCreateUserId(Integer.valueOf(user.uid));
+            task.setTaskCreateDepart(user.getOrgName());
+        }
+
         Long taskId = taskService.newTask(task);
 
         if (taskId > 0) {
@@ -113,11 +128,23 @@ public class TaskController implements TaskControllerApi {
     @Override
     @GetMapping("/{taskId}/audit/{auditStatus}")
     public ResponseResult changeTaskAuditStatus(@PathVariable @NotNull @Max(10) Integer auditStatus,
-                                                @PathVariable @NotNull @Min(1) Long taskId) {
-
+                                                @PathVariable @NotNull @Min(1) Long taskId,
+                                                @Autowired HttpServletRequest request) {
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        String auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = user.uid;
+            auditUserDepart = user.getOrgName();
+        }
         return ResponseResult.ok()
                 .setData("task_id", taskId)
-                .setData("success", taskService.changeTaskAuditStatus(taskId, auditStatus))
+                .setData("success", taskService.changeTaskAuditStatus(taskId, auditStatus,
+                        auditUserName, auditUserId, auditUserDepart))
                 .setData("audit_status", taskService.queryTaskAuditStatus(taskId));
     }
 
@@ -172,7 +199,8 @@ public class TaskController implements TaskControllerApi {
      */
     @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                     @Autowired HttpServletRequest request) {
         List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
@@ -186,9 +214,21 @@ public class TaskController implements TaskControllerApi {
                     .setData("tasks_id", errorIds)
                     .setData("success", false);
         }
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        String auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = user.uid;
+            auditUserDepart = user.getOrgName();
+        }
 
         return ResponseResult.ok()
-                .setData("success", taskService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", taskService.updateAuditStatusBatch(idsWithAuditStatusMap,
+                        auditUserName, auditUserId, auditUserDepart));
     }
 
     /**

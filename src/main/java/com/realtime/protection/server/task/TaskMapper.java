@@ -38,6 +38,11 @@ public interface TaskMapper {
 
     void clearTaskConnectedDynamicRule(@Param("task_id") Long taskId);
 
+    void changeTaskAuditStatusWithAudior(@Param("task_id") Long taskId, @Param("audit_status") Integer auditStatus,
+                               @Param("auditUserName")String auditUserName,
+                               @Param("auditUserId")String auditUserId,
+                               @Param("auditUserDepart")String auditUserDepart);
+
     void changeTaskAuditStatus(@Param("task_id") Long taskId, @Param("audit_status") Integer auditStatus);
 
     Boolean deleteTask(@Param("task_id") Long taskId);
@@ -78,4 +83,9 @@ public interface TaskMapper {
     Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
 
     String queryAuditInfo(Integer id);
+
+    void updateAuditStatusWithAuditorByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch,
+                                               @Param("auditUserName")String auditUserName,
+                                               @Param("auditUserId")String auditUserId,
+                                               @Param("auditUserDepart")String auditUserDepart);
 }

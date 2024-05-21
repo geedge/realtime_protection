@@ -57,7 +57,8 @@ public interface DynamicRuleMapper {
 
     Integer queryAuditStatusById(Integer dynamicRuleId);
 
-    Boolean updateAuditStatusById(Integer dynamicRuleId, Integer auditStatus);
+    Boolean updateAuditStatusById(Integer dynamicRuleId, Integer auditStatus,
+                                  String auditUserName, Integer auditUserId, String auditUserDepart);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 
@@ -66,4 +67,9 @@ public interface DynamicRuleMapper {
     Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
 
     String queryAuditInfo(Integer id);
+
+    void updateAuditStatusWithAuditorByIdBatch(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch,
+                                               @Param("auditUserName")String auditUserName,
+                                               @Param("auditUserId")String auditUserId,
+                                               @Param("auditUserDepart")String auditUserDepart);
 }

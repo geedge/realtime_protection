@@ -29,7 +29,7 @@ public class StaticRuleObject {
     private Integer staticRuleId;
 
     @JsonProperty("static_rule_display_id")
-    @ExcelProperty("ID")
+    @ExcelIgnore
     @Schema(description = "静态规则显示ID", accessMode = Schema.AccessMode.READ_ONLY)
     private String staticRuleDisplayId;
 
@@ -126,7 +126,7 @@ public class StaticRuleObject {
     @Schema(description = "协议掩码", example = "TCP")
     private String staticRuleMprotocol;
     @JsonProperty("static_rule_dns")
-    @ExcelProperty("DNS")
+    @ExcelProperty("域名")
     @Schema(description = "DNS", example = "www.baidu.com")
     private String staticRuleDns;
     @JsonProperty("static_rule_url")
@@ -145,18 +145,21 @@ public class StaticRuleObject {
 //    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
 //    private String staticRuleRange;
     @JsonProperty("static_rule_frequency")
-    @ExcelProperty("频率")
+    @ExcelIgnore
     @Min(value = 1)
     @Schema(description = "频率，最低为1", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer staticRuleFrequency;
+    private Integer staticRuleFrequency = 2;
 
     @JsonProperty("audit_user_name")
+    @ExcelIgnore
     @Schema(description = "审核用户名称", example = "user11")
     private String auditUserName;
     @JsonProperty("audit_user_id")
+    @ExcelIgnore
     @Schema(description = "审核用户id", example = "11111")
     private String auditUserId;
     @JsonProperty("audit_user_depart")
+    @ExcelIgnore
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
 
