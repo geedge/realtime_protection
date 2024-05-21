@@ -2,6 +2,8 @@ package com.realtime.protection.configuration.entity.defense.template;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,7 +15,7 @@ public class TemplateNew {
 
     @JsonProperty("template_name")
     @NotNull(message = "template_name字段不能为空。")
-    @Schema(description = "防御策略模板名称(事件类型)", example = "APT攻击事件")
+    @Schema(description = "防御策略模板名称", example = "APT攻击事件日常态")
     private String templateName;
 
     @JsonProperty("source_system")
@@ -23,12 +25,14 @@ public class TemplateNew {
 
     @JsonProperty("event_type")
     @NotNull(message = "事件类型字段不能为空。")
-    @Schema(description = "防御策略模板数据来源系统", example = "BW系统")
+    @Schema(description = "防御策略模板事件类型", example = "APT攻击事件")
     private String eventType;
 
     @JsonProperty("protect_level")
     @NotNull(message = "防护等级字段不能为空。")
-    @Schema(description = "防御策略模板数据来源系统", example = "BW系统")
+    @Max(value = 3)
+    @Min(value = 1)
+    @Schema(description = "防护等级：1代表日常态、2代表应急态、3代表紧急态", example = "1")
     private String protectLevel;
 
     @JsonProperty("description")
@@ -91,20 +95,20 @@ public class TemplateNew {
     private String templateDisplayId;
 
     @JsonProperty("audit_user_name")
-    @Schema(description = "审核用户名称", example = "user11")
+    @Schema(description = "审核用户名称", example = "user11", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserName;
     @JsonProperty("audit_user_id")
-    @Schema(description = "审核用户id", example = "11111")
+    @Schema(description = "审核用户id", example = "11111", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserId;
     @JsonProperty("audit_user_depart")
-    @Schema(description = "审核用户部门", example = "部门1")
+    @Schema(description = "审核用户部门", example = "部门1", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserDepart;
 
     @JsonProperty("create_time")
-    @Schema(description = "新建时间")
+    @Schema(description = "新建时间", example = "部门1", accessMode = Schema.AccessMode.READ_ONLY)
     private String createTime;
 
     @JsonProperty("update_time")
-    @Schema(description = "更新时间")
+    @Schema(description = "更新时间", example = "部门1", accessMode = Schema.AccessMode.READ_ONLY)
     private String updateTime;
 }

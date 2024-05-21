@@ -82,7 +82,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
-        dynamicRuleService.updateAuditStatus(dynamicRuleId, 2);
+        dynamicRuleService.updateAuditStatus(dynamicRuleId, 2,null,null,null);
 
 
         Task task = new Task();

@@ -5,7 +5,6 @@ import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 
-import com.realtime.protection.server.whitelist.WhiteListMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-@Service
+@Service("TemplateServiceOld")
 public class TemplateService {
 
-    private final TemplateMapper templateMapper;
+    private final TemplateMapperOld templateMapper;
     private final Counter counter;
     private final SqlSessionWrapper sqlSessionWrapper;
 
-    public TemplateService(TemplateMapper templateMapper, Counter counter, SqlSessionWrapper sqlSessionWrapper) {
+    public TemplateService(TemplateMapperOld templateMapper, Counter counter, SqlSessionWrapper sqlSessionWrapper) {
         this.templateMapper = templateMapper;
         this.counter = counter;
         this.sqlSessionWrapper = sqlSessionWrapper;
@@ -147,7 +146,7 @@ public class TemplateService {
             throw new IllegalArgumentException("策略模板无法修改为对应审核状态, 错误id: " + errorIds);
         }
 
-        Function<TemplateMapper, Function<Map<Integer, Integer>, Boolean>> updateTemplateAuditStatusFunction =
+        Function<TemplateMapperOld, Function<Map<Integer, Integer>, Boolean>> updateTemplateAuditStatusFunction =
                 mapper -> map -> {
                     if (map == null || map.isEmpty()) {
                         return false;
@@ -169,7 +168,7 @@ public class TemplateService {
                     return true;
                 };
         //实现事务操作
-        return sqlSessionWrapper.startBatchSession(TemplateMapper.class, updateTemplateAuditStatusFunction, idsWithAuditStatusMap);
+        return sqlSessionWrapper.startBatchSession(TemplateMapperOld.class, updateTemplateAuditStatusFunction, idsWithAuditStatusMap);
 
     }
 

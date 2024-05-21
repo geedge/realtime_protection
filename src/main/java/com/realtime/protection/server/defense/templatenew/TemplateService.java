@@ -1,6 +1,5 @@
 package com.realtime.protection.server.defense.templatenew;
 
-import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
@@ -81,9 +80,9 @@ public class TemplateService {
         return templateMapper.querySourceSystem();
     }
 
-    public List<String> queryEventName(String sourceSystem) {
-        return templateMapper.queryEventName(sourceSystem);
-    }
+//    public List<String> queryEventName(String sourceSystem) {
+//        return templateMapper.queryEventName(sourceSystem);
+//    }
 
 
 
@@ -132,7 +131,7 @@ public class TemplateService {
             throw new IllegalArgumentException("策略模板无法修改为对应审核状态, 错误id: " + errorIds);
         }
 
-        Function<com.realtime.protection.server.defense.template.TemplateMapper, Function<Map<Integer, Integer>, Boolean>> updateTemplateAuditStatusFunction =
+        Function<TemplateMapper, Function<Map<Integer, Integer>, Boolean>> updateTemplateAuditStatusFunction =
                 mapper -> map -> {
                     if (map == null || map.isEmpty()) {
                         return false;
@@ -154,7 +153,7 @@ public class TemplateService {
                     return true;
                 };
         //实现事务操作
-        return sqlSessionWrapper.startBatchSession(com.realtime.protection.server.defense.template.TemplateMapper.class, updateTemplateAuditStatusFunction, idsWithAuditStatusMap);
+        return sqlSessionWrapper.startBatchSession(TemplateMapper.class, updateTemplateAuditStatusFunction, idsWithAuditStatusMap);
 
     }
 

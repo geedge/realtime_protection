@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/template")
+@RestController("TemplateControllerOld")
+@RequestMapping("/templateold")
 public class TemplateController implements TemplateControllerApi {
 
     private final TemplateService templateService;

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/templatenew/")
+@RequestMapping("/template/")
 public class TemplateController implements TemplateNewCpntrollerApi{
     private final TemplateService templateService;
 
@@ -21,7 +21,7 @@ public class TemplateController implements TemplateNewCpntrollerApi{
     }
 
 
-    //    @Override
+    @Override
     @PostMapping("/new")
     public ResponseResult newTemplate(@RequestBody @Valid TemplateNew template) {
 
@@ -110,12 +110,14 @@ public class TemplateController implements TemplateNewCpntrollerApi{
                 .setData("source_system", templateService.querySourceSystem());
     }
 
-    @Override
-    @GetMapping("/query/event_name/{sourceSystem}")
-    public ResponseResult queryEventName(@PathVariable String sourceSystem) {
-        return ResponseResult.ok()
-                .setData("event_name", templateService.queryEventName(sourceSystem));
-    }
+
+
+//    @Override
+//    @GetMapping("/query/event_name/{sourceSystem}")
+//    public ResponseResult queryEventName(@PathVariable String sourceSystem) {
+//        return ResponseResult.ok()
+//                .setData("event_name", templateService.queryEventName(sourceSystem));
+//    }
 
 //    @Override
 //    @PostMapping("/query/templateId")

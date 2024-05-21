@@ -1,7 +1,5 @@
 package com.realtime.protection.server.defense.templatenew;
 
-import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
-import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,7 +10,7 @@ import java.util.Map;
 
 @Mapper
 public interface TemplateMapper {
-    void newTemplate(TemplateNew template);
+    void newTemplate(@Param("template")TemplateNew template);
 
     List<TemplateNew> queryTemplates(@Param("template_name") String templateName,
                                   @Param("source_system") String sourceSystem,
@@ -29,7 +27,7 @@ public interface TemplateMapper {
 
     TemplateNew queryTemplate(@Param("template_id") Integer templateId);
 
-    @Delete("DELETE FROM t_strategy_template WHERE strategy_template_id = #{template_id}")
+    @Delete("DELETE FROM t_strategy_template_new WHERE strategy_template_id = #{template_id}")
     Boolean deleteTemplate(@Param("template_id") Integer templateId);
 
     Integer queryTemplateTotalNum(@Param("template_name") String templateName,
@@ -43,7 +41,7 @@ public interface TemplateMapper {
 
     List<String> querySourceSystem();
 
-    List<String> queryEventName(String sourceSystem);
+//    List<String> queryEventName(String sourceSystem);
 
 //    Integer queryTemplateId(String sourceSystem, String eventName);
 
@@ -59,7 +57,7 @@ public interface TemplateMapper {
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 
-    Boolean updateAuditInfo(List<Integer> ids, String auditInfo);
+    Boolean updateAuditInfo(@Param("ids")List<Integer> ids,@Param("auditInfo") String auditInfo);
 
     String queryAuditInfo(Integer id);
 

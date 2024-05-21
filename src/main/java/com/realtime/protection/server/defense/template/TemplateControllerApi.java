@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "防御策略模板API", description = "防御策略模板模块所有接口")
+@Tag(name = "old防御策略模板API", description = "防御策略模板模块所有接口")
 public interface TemplateControllerApi {
     @PostMapping("/new")
     @Operation(

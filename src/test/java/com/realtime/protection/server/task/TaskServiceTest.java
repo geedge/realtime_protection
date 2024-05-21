@@ -265,7 +265,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
         List<Integer> staticRuleIds = new ArrayList<>();
         staticRuleIds.add(staticRuleId);
-        staticRuleService.updateAuditStatus(staticRuleId, 2);
+        staticRuleService.updateAuditStatus(staticRuleId, 2,null,null,null);
 
         task.setStaticRuleIds(staticRuleIds);
 
@@ -307,7 +307,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
         object.setTemplateId(templates.get(0).getTemplateId());
         object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
-        dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2);
+        dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2,null,null,null);
 
 
 

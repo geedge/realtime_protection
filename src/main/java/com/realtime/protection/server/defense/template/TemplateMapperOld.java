@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Map;
 
-@Mapper
-public interface TemplateMapper {
+@Mapper()
+public interface TemplateMapperOld {
     void newTemplate(@Param("template") Template template);
 
     void newProtectLevel(@Param("level") ProtectLevel protectLevel);
