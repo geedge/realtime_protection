@@ -28,7 +28,7 @@
         <result column="task_status" property="taskStatus"/>
     </resultMap>
     <resultMap id="protectLevelMap" type="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
-        <id column="protect_level_id" property="protectLevelId"/>
+<!--        <id column="protect_level_id" property="protectLevelId"/>-->
         <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
         <result column="has_protect_object_port" property="hasProtectObjectPort"/>
         <result column="has_peer_ip" property="hasPeerIP"/>
@@ -37,6 +37,7 @@
         <result column="has_url" property="hasURL"/>
         <result column="has_dns" property="hasDNS"/>
         <result column="is_full_flow" property="isFullFlow"/>
+        <result column="is_protect_object_src" property="isProtectObjectIPSrc"/>
     </resultMap>
 
     <resultMap id="alertMessageMap" type="com.realtime.protection.configuration.entity.alert.AlertMessage">
@@ -109,28 +110,43 @@
 
     </insert>
 
+<!--    <select id="queryTemplateProtectLevel" resultMap="protectLevelMap">-->
+<!--        SELECT-->
+<!--            t_protect_level.protect_level_id,-->
+<!--            t_protect_level.has_protect_object_ip,-->
+<!--            t_protect_level.has_protect_object_port,-->
+<!--            t_protect_level.has_peer_ip,-->
+<!--            t_protect_level.has_peer_port,-->
+<!--            t_protect_level.has_protocol,-->
+<!--            t_protect_level.has_url,-->
+<!--            t_protect_level.has_dns,-->
+<!--            t_protect_level.is_full_flow-->
+<!--        FROM t_strategy_template-->
+<!--        <if test="protectLevel == 1">-->
+<!--            left join t_protect_level on t_strategy_template.strategy_template_low_level_id = t_protect_level.protect_level_id-->
+<!--        </if>-->
+<!--        <if test="protectLevel == 2">-->
+<!--            left join t_protect_level on t_strategy_template.strategy_template_medium_level_id = t_protect_level.protect_level_id-->
+<!--        </if>-->
+<!--        <if test="protectLevel == 3">-->
+<!--            left join t_protect_level on t_strategy_template.strategy_template_high_level_id = t_protect_level.protect_level_id-->
+<!--        </if>-->
+<!--        WHERE t_strategy_template.strategy_template_id = #{templateId}-->
+<!--    </select>-->
+
     <select id="queryTemplateProtectLevel" resultMap="protectLevelMap">
         SELECT
-            t_protect_level.protect_level_id,
-            t_protect_level.has_protect_object_ip,
-            t_protect_level.has_protect_object_port,
-            t_protect_level.has_peer_ip,
-            t_protect_level.has_peer_port,
-            t_protect_level.has_protocol,
-            t_protect_level.has_url,
-            t_protect_level.has_dns,
-            t_protect_level.is_full_flow
-        FROM t_strategy_template
-        <if test="protectLevel == 1">
-            left join t_protect_level on t_strategy_template.strategy_template_low_level_id = t_protect_level.protect_level_id
-        </if>
-        <if test="protectLevel == 2">
-            left join t_protect_level on t_strategy_template.strategy_template_medium_level_id = t_protect_level.protect_level_id
-        </if>
-        <if test="protectLevel == 3">
-            left join t_protect_level on t_strategy_template.strategy_template_high_level_id = t_protect_level.protect_level_id
-        </if>
-        WHERE t_strategy_template.strategy_template_id = #{templateId}
+        has_protect_object_ip,
+        has_protect_object_port,
+        has_peer_ip,
+        has_peer_port,
+        has_protocol,
+        has_url,
+        has_dns,
+        is_full_flow,
+        is_protect_object_src
+        FROM t_strategy_template_new
+        WHERE strategy_template_id = #{templateId}
     </select>
 
     <select id="getDynamicTaskInfos"
@@ -162,7 +178,7 @@
             from t_task
             left join realtime_protection.t_dynamic_rule t_dr on
                 (t_task.task_id = t_dr.dynamic_rule_used_task_id and t_dr.dynamic_rule_id = #{dynamicRuleId})
-            left join realtime_protection.t_strategy_template t_tmplate on
+            left join realtime_protection.t_strategy_template_new t_tmplate on
                 ( t_dr.template_id = t_tmplate.strategy_template_id )
             where
                 t_task.task_id = #{taskId}

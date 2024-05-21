@@ -2,6 +2,7 @@ package com.realtime.protection.server.rule.dynamicrule;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
@@ -122,7 +123,7 @@ public class DynamicRuleService {
         //查询DynamicRule关联的ProtectObject
         dynamicRuleObject.setProtectObjects(dynamicRuleMapper.queryProtectObjectByRuleId(dynamicRuleId));
         //查询DynamicRule关联的template详细信息
-        Template template = dynamicRuleMapper.queryTemplateByRuleId(dynamicRuleId);
+        TemplateNew template = dynamicRuleMapper.queryTemplateByRuleId(dynamicRuleId);
         if (template == null){
             //template在表中删除了，需要重新设置template（感觉这种情况不多见）
             dynamicRuleObject.setDynamicRuleSourceSystem(null);
@@ -130,6 +131,7 @@ public class DynamicRuleService {
         }else{
         dynamicRuleObject.setDynamicRuleSourceSystem(template.getSourceSystem());
         dynamicRuleObject.setDynamicRuleEventType(template.getTemplateName());
+        dynamicRuleObject.setDynamicRuleProtectLevel(Integer.valueOf(template.getProtectLevel()));
         }
 
         return dynamicRuleObject;

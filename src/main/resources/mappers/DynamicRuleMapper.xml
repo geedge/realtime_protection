@@ -174,13 +174,16 @@
         <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
         <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
         <result column="template_id" property="templateId"/>
-        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>
+<!--        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>-->
         <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
         <result column="audit_status" property="auditStatus"/>
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
         <result column="strategy_template_name" property="dynamicRuleEventType"/>
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
+        <result column="event_type" property="dynamicRuleSourceSystem"/>
+        <result column="protect_level" property="dynamicRuleProtectLevel"/>
+
         <result column="audit_status" property="auditStatus"/>
         <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
         <result column="audit_user_name" property="auditUserName"/>
@@ -222,8 +225,8 @@
         from t_dynamic_rule
 #         left join t_protect_object_dynamic_rule_conn
 #             on t_dynamic_rule.dynamic_rule_id = t_protect_object_dynamic_rule_conn.dynamic_rule_id
-        left join t_strategy_template
-            on t_dynamic_rule.template_id = t_strategy_template.strategy_template_id
+        left join t_strategy_template_new
+            on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
         <where>
             <if test="dynamicRuleName != null and dynamicRuleName !=''" >
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
@@ -232,7 +235,7 @@
                 and t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
             </if>
             <if test="sourceSystem != null and sourceSystem !=''">
-                and t_strategy_template.strategy_template_source_system = #{sourceSystem}
+                and t_strategy_template_new.strategy_template_source_system = #{sourceSystem}
             </if>
             <if test="creator != null and creator !=''">
                 and t_dynamic_rule.dynamic_rule_create_username = #{creator}
@@ -241,10 +244,10 @@
                 and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
             <if test="eventType != null and eventType !=''">
-                and t_strategy_template.strategy_template_name = #{eventType}
+                and t_strategy_template_new.event_type = #{eventType}
             </if>
             <if test="protectLevel != null">
-                and t_dynamic_rule.dynamic_rule_protect_level = #{protectLevel}
+                and t_strategy_template_new.protect_level = #{protectLevel}
             </if>
 
         </where>
@@ -252,17 +255,31 @@
     </select>
 
 
-    <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.Template">
+    <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.TemplateNew">
         <id column="strategy_template_id" property="templateId"/>
         <result column="strategy_template_name" property="templateName"/>
+        <result column="strategy_template_display_id" property="templateDisplayId"/>
         <result column="strategy_template_source_system" property="sourceSystem"/>
+        <result column="event_type" property="eventType"/>
+        <result column="protect_level" property="protectLevel"/>
+        <result column="strategy_template_description" property="description"/>
+        <result column="has_protect_object_ip" property="hasProtectObjectIP"/>
+        <result column="has_protect_object_port" property="hasProtectObjectPort"/>
+        <result column="has_protocol" property="hasProtocol"/>
+        <result column="has_url" property="hasURL"/>
+        <result column="has_dns" property="hasDNS"/>
+        <result column="has_peer_ip" property="hasPeerIP"/>
+        <result column="has_peer_port" property="hasPeerPort"/>
+        <result column="is_full_flow" property="isFullFlow"/>
+        <result column="is_protect_object_src" property="isProtectObjectIPSrc"/>
+
     </resultMap>
 
     <select id="queryTemplateByRuleId" resultMap="templateMap">
         select *
-        from t_strategy_template
+        from t_strategy_template_new
                  inner join t_dynamic_rule
-                            on t_strategy_template.strategy_template_id = t_dynamic_rule.template_id
+                            on t_strategy_template_new.strategy_template_id = t_dynamic_rule.template_id
         where t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
     </select>
     <select id="queryProtectObjectById" resultType="java.lang.Boolean">
@@ -274,8 +291,8 @@
     <select id="queryDynamicRuleTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM t_dynamic_rule
-        left join t_strategy_template
-        on t_dynamic_rule.template_id = t_strategy_template.strategy_template_id
+        left join t_strategy_template_new
+        on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
         <where>
             <if test="dynamicRuleName != null">
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
@@ -284,7 +301,7 @@
                 and t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
             </if>
             <if test="sourceSystem != null">
-                and t_strategy_template.strategy_template_source_system = #{sourceSystem}
+                and t_strategy_template_new.strategy_template_source_system = #{sourceSystem}
             </if>
             <if test="creator != null">
                 and t_dynamic_rule.dynamic_rule_create_username = #{creator}
@@ -293,10 +310,10 @@
                 and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
             <if test="eventType != null and eventType !=''">
-                and t_strategy_template.strategy_template_name = #{eventType}
+                and t_strategy_template_new.strategy_template_name = #{eventType}
             </if>
             <if test="protectLevel != null">
-                and t_dynamic_rule.dynamic_rule_protect_level = #{protectLevel}
+                and t_strategy_template_new.protect_level = #{protectLevel}
             </if>
         </where>
     </select>
@@ -305,8 +322,8 @@
             resultMap="dynamicRulePageQueryMap">
         select *
         from t_dynamic_rule
-        left join t_strategy_template
-        on t_dynamic_rule.template_id = t_strategy_template.strategy_template_id
+        left join t_strategy_template_new
+        on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
         where dynamic_rule_id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}

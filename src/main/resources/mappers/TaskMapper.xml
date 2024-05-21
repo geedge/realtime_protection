@@ -354,8 +354,8 @@
                task_start_time,
                task_end_time,
                tdr.dynamic_rule_id             as rule_id,
-               strategy_template_source_system as source_system,
-               strategy_template_name          as event_type,
+               tst.strategy_template_source_system as source_system,
+               tst.event_type          as event_type,
                tdr.log_rule_id,
                INET_NTOA(protect_object_ip)    as protect_object_ip,
                protect_object_port,
@@ -366,7 +366,7 @@
                  LEFT JOIN realtime_protection.t_protect_object_dynamic_rule_conn tpodrc
                             on tdr.dynamic_rule_id = tpodrc.dynamic_rule_id
                  LEFT JOIN realtime_protection.t_protect_object tpo on tpo.protect_object_id = tpodrc.protect_object_id
-                 LEFT JOIN realtime_protection.t_strategy_template tst on tdr.template_id = tst.strategy_template_id
+                 LEFT JOIN realtime_protection.t_strategy_template_new tst on tdr.template_id = tst.strategy_template_id
         WHERE task_id = #{task_id}
     </select>
     <select id="queryTaskTotalNum" resultType="java.lang.Integer">

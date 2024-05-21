@@ -76,7 +76,7 @@ public class DynamicRuleObject {
     @JsonProperty("template_id")
     @Schema(description = "策略模板id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer templateId;
-    @NotNull
+//    @NotNull
     @JsonProperty("dynamic_rule_protect_level")
     @Max(value = 3)
     @Min(value = 1)
@@ -91,7 +91,7 @@ public class DynamicRuleObject {
 //    @JsonProperty("dynamic_rule_range")
 //    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
 //    private String dynamicRuleRange;
-    @NotNull
+//    @NotNull
     @JsonProperty("dynamic_rule_frequency")
     @Schema(description = "频率", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRuleFrequency;
