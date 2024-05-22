@@ -28,6 +28,9 @@ public interface TaskMapper {
                           @Param("audit_status") Integer auditStatus,
                           @Param("task_act")String taskAct, @Param("task_auditor")String taskAuditor,
                           @Param("task_source")String taskSource, @Param("rule_name")String ruleName,
+                          @Param("event_type")String eventType,
+                          @Param("create_date") String createDateStr,
+                          @Param("start_date")String startDateStr,
                           @Param("page") Integer page, @Param("page_size") Integer pageSize);
 
     Task queryTask(@Param("task_id") Long taskId);
@@ -72,7 +75,10 @@ public interface TaskMapper {
                               @Param("audit_status") Integer auditStatus,
                               @Param("task_act")String taskAct, @Param("task_auditor")String taskAuditor,
                               @Param("task_source")String taskSource, @Param("rule_name")String ruleName,
-                              @Param("task_create_time") LocalDateTime taskCreateTime);
+                              @Param("task_create_time") LocalDateTime taskCreateTime,
+                              @Param("event_type")String eventType,
+                              @Param("create_date")String createDate,
+                              @Param("start_date")String startDate);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 

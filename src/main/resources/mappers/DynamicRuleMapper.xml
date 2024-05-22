@@ -252,6 +252,12 @@
             <if test="protectLevel != null">
                 and t_strategy_template_new.protect_level = #{protectLevel}
             </if>
+            <if test="auditUserName != null and auditUserName !='' ">
+                AND audit_user_name like concat('%', #{auditUserName}, '%')
+            </if>
+            <if test="createDate != null and createDate !=''">
+                AND create_time like concat('%', #{createDate}, '%')
+            </if>
 
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
@@ -317,6 +323,12 @@
             </if>
             <if test="protectLevel != null">
                 and t_strategy_template_new.protect_level = #{protectLevel}
+            </if>
+            <if test="auditUserName != null and auditUserName !='' ">
+                AND audit_user_name like concat('%', #{auditUserName}, '%')
+            </if>
+            <if test="createDate != null and createDate !=''">
+                AND create_time like concat('%', #{createDate}, '%')
             </if>
         </where>
     </select>

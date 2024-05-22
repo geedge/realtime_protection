@@ -36,7 +36,7 @@ class CommandServiceTest extends ProtectionApplicationTests {
 
     @BeforeEach
     void mockCommand() {
-        Task task = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 1).get(0);
+        Task task = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,1, 1).get(0);
         FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
         fiveTupleWithMask.setMaskSourceIP("192.168.155.24");
 
@@ -66,7 +66,7 @@ class CommandServiceTest extends ProtectionApplicationTests {
     @Test
     void createCommands() {
         List<TaskCommandInfo> taskCommandInfos = ListUtils.newArrayListWithExpectedSize(100);
-        Task task = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 1).get(0);
+        Task task = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,1, 1).get(0);
         for (int i = 0; i < 100; i++) {
             int port = i + 1000;
             TaskCommandInfo taskCommandInfo = new TaskCommandInfo();
@@ -92,7 +92,7 @@ class CommandServiceTest extends ProtectionApplicationTests {
 
     @Test
     void queryCommandInfos() {
-        Task task = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 1).get(0);
+        Task task = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,1, 1).get(0);
         List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(task.getTaskId(),
                 null, null, null, null,1, 5);
         assertTrue(taskCommandInfos != null && !taskCommandInfos.isEmpty());

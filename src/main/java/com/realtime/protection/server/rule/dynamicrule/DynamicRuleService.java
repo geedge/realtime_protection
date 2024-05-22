@@ -1,7 +1,6 @@
 package com.realtime.protection.server.rule.dynamicrule;
 
 import com.alibaba.excel.util.ListUtils;
-import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
@@ -191,16 +190,18 @@ public class DynamicRuleService {
     public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
                                                           String templateSourceSystem,String creator,Integer auditStatus,
                                                           String eventType, Integer protectLevel, String templateName,
+                                                          String auditUserName, String createDate,
                                                           Integer page, Integer pageSize) {
         return dynamicRuleMapper.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
-                templateSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, page, pageSize);
+                templateSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, auditUserName, createDate, page, pageSize);
     }
 
     public Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
                                             String protectObjectSourceSystem, String creator,
-                                            Integer auditStatus, String eventType, Integer protectLevel, String templateName) {
+                                            Integer auditStatus, String eventType, Integer protectLevel,
+                                            String templateName,String auditUserName, String createDate) {
         return dynamicRuleMapper.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
-                protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName);
+                protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName,auditUserName, createDate);
     }
 
     public List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids) {

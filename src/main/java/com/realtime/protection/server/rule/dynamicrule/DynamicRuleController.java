@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -125,17 +126,25 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                                                  @RequestParam(value = "event_type", required = false) String eventType,
                                                  @RequestParam(value = "protect_level", required = false) Integer protectLevel,
                                                  @RequestParam(value = "template_name", required = false) String templateName,
+                                                 @RequestParam(name = "auditUserName", required = false) String auditUserName,
+                                                 @RequestParam(name = "createTime", required = false) LocalDate createTime,
 
                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                  @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        log.info("分页查询动态规则: {}:{}:{}:{}", dynamicRuleName, dynamicRuleId, page, pageSize);
+//        log.info("分页查询动态规则: {}:{}:{}:{}", dynamicRuleName, dynamicRuleId, page, pageSize);
         //调用service查询
+        String createDateStr = null;
+        if (createTime != null) {
+            createDateStr = createTime.toString();
+        }
         return ResponseResult.ok()
                 .setData("success", true)
                 .setData("dynamic_rule_list", dynamicRuleService.queryDynamicRuleObject(dynamicRuleName, dynamicRuleId,
-                        protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, page, pageSize))
+                        protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName,
+                        auditUserName, createDateStr, page, pageSize))
                 .setData("total_num", dynamicRuleService.queryDynamicRuleTotalNum(dynamicRuleName, dynamicRuleId,
-                        protectObjectSourceSystem, creator, auditStatus, eventType, protectLevel, templateName));
+                        protectObjectSourceSystem, creator, auditStatus, eventType,
+                        protectLevel, templateName, auditUserName, createDateStr));
     }
 
     //详情查看？？  就是按id查询吧
@@ -217,7 +226,8 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
 
         return ResponseResult.ok()
                 .setData("dynamic_rule_num", dynamicRuleService.queryDynamicRuleTotalNum(null, null, null,
-                        null, null, null, null, null))
+                        null, null, null,
+                        null, null,null,null))
                 .setData("dynamic_rule_used_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
                 ))

@@ -218,6 +218,13 @@
             <if test="auditStatus != null">
                 AND static_rule_audit_status = #{auditStatus}
             </if>
+            <if test="auditUserName != null and auditUserName !='' ">
+                AND audit_user_name like concat('%', #{auditUserName}, '%')
+            </if>
+            <if test="createDate != null and createDate !=''">
+                AND static_rule_create_time like concat('%', #{createDate}, '%')
+            </if>
+
         </where>
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
@@ -270,6 +277,12 @@
             </if>
             <if test="auditStatus != null">
                 AND static_rule_audit_status = #{auditStatus}
+            </if>
+            <if test="auditUserName != null and auditUserName !='' ">
+                AND audit_user_name like concat('%', #{auditUserName}, '%')
+            </if>
+            <if test="createDate != null and createDate !=''">
+                AND static_rule_create_time like concat('%', #{createDate}, '%')
             </if>
         </where>
     </select>

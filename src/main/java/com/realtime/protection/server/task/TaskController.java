@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,14 +95,28 @@ public class TaskController implements TaskControllerApi {
                                      @RequestParam(value = "task_auditor", required = false) String taskAuditor,
                                      @RequestParam(value = "task_source", required = false) String taskSource,
                                      @RequestParam(value = "rule_name", required = false) String ruleName,
+                                     @RequestParam(value = "event_type", required = false) String eventType,
+                                     @RequestParam(value = "create_time", required = false) LocalDate createTime,
+                                     @RequestParam(value = "start_time", required = false) LocalDate startTime,
+
                                      @RequestParam("page") @Min(1) Integer page,
                                      @RequestParam("page_size") @Min(1) Integer pageSize) {
+
+
+        String createDateStr = null , startTimeStr = null;
+        if (createTime != null) {
+            createDateStr = createTime.toString();
+        }
+        if(startTime != null) {
+            startTimeStr = startTime.toString();
+        }
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName, page, pageSize);
+                taskAct, taskAuditor, taskSource, ruleName,
+                eventType, createDateStr, startTimeStr, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks)
                 .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                        taskAct, taskAuditor, taskSource, ruleName));
+                        taskAct, taskAuditor, taskSource, ruleName,eventType, createDateStr, startTimeStr));
     }
 
     @Override
@@ -239,11 +254,11 @@ public class TaskController implements TaskControllerApi {
     public ResponseResult statistics() {
         return ResponseResult.ok()
                 .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null, null,
-                        null, null, null, null))
+                        null, null, null, null,null,null,null))
                 .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null,
-                        null, null, null, null))
+                        null, null, null, null,null,null,null))
                 .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null,
-                        null, null, null, null))
+                        null, null, null, null,null,null,null))
                 .setData("unaudit_num", taskService.queryAuditTaskTotalNum(
                         AuditStatusEnum.PENDING.getNum()
                 ));

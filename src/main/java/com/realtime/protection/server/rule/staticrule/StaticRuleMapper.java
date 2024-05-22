@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public interface StaticRuleMapper {
     List<StaticRuleObject> queryStaticRule(String static_rule_name, Integer static_rule_id,
                                            String static_rule_create_username, String sip,
                                            Integer sport, String dip, Integer dport,
-                                           Integer auditStatus,
+                                           Integer auditStatus, String auditUserName, String createDate,
                                            Integer page, Integer pageSize);
 
 
@@ -50,7 +51,7 @@ public interface StaticRuleMapper {
                                     String static_rule_create_username,
                                     String sip, Integer sport,
                                     String dip, Integer dport,
-                                    Integer auditStatus);
+                                    Integer auditStatus,String auditUserName, String createDate);
 
     List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids);
 

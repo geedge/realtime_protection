@@ -65,14 +65,23 @@
 
     <select id="queryTasks" resultMap="taskMap">
         SELECT t_task.* FROM t_task
-        <if test="rule_name != null and task_source != ''">
+        <if test="rule_name != null and rule_name != '' and (event_type == null or event_type == '')">
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
-            WHERE
+        </if>
+        <if test="event_type != null and event_type != ''">
+            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
+            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
+            LEFT JOIN t_strategy_template_new ON t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
+        </if>
+
+        <where>
+            <if test="rule_name != null and rule_name != ''">
+                (
                 t_static_rule.static_rule_name LIKE CONCAT('%', #{rule_name}, '%')
                 OR t_dynamic_rule.dynamic_rule_name LIKE CONCAT('%', #{rule_name}, '%')
-        </if>
-        <where>
+                                                         )
+            </if>
             <if test="task_status != null">
                 AND task_status = #{task_status}
             </if>
@@ -96,6 +105,15 @@
             </if>
             <if test="task_source != null and task_source != '' ">
                 AND task_source LIKE CONCAT('%', #{task_source}, '%')
+            </if>
+            <if test="event_type != null and event_type != '' ">
+                AND t_strategy_template_new.event_type LIKE CONCAT('%', #{event_type}, '%')
+            </if>
+            <if test="create_date != null and create_date != '' ">
+                AND task_crate_time LIKE CONCAT('%', #{create_date}, '%')
+            </if>
+            <if test="start_date != null and start_date != '' ">
+                AND task_start_time LIKE CONCAT('%', #{start_date}, '%')
             </if>
 
         </where>
@@ -371,14 +389,23 @@
     </select>
     <select id="queryTaskTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM t_task
-        <if test="rule_name != null  and rule_name != '' ">
+        <if test="rule_name != null and rule_name != '' and (event_type == null or event_type == '')">
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
-            WHERE
-            t_static_rule.static_rule_name LIKE CONCAT('%', #{rule_name}, '%')
-            OR t_dynamic_rule.dynamic_rule_name LIKE CONCAT('%', #{rule_name}, '%')
         </if>
+        <if test="event_type != null and event_type != ''">
+            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
+            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
+            LEFT JOIN t_strategy_template_new ON t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
+        </if>
+
         <where>
+            <if test="rule_name != null and task_source != ''">
+                (
+                t_static_rule.static_rule_name LIKE CONCAT('%', #{rule_name}, '%')
+                OR t_dynamic_rule.dynamic_rule_name LIKE CONCAT('%', #{rule_name}, '%')
+                )
+            </if>
             <if test="task_status != null">
                 AND task_status = #{task_status}
             </if>
@@ -406,6 +433,15 @@
 
             <if test="task_create_time != null">
                 AND DATE(#{task_create_time}) = CURRENT_DATE
+            </if>
+            <if test="event_type != null and event_type != '' ">
+                AND t_strategy_template_new.event_type LIKE CONCAT('%', #{event_type}, '%')
+            </if>
+            <if test="create_date != null and create_date != '' ">
+                AND task_crate_time LIKE CONCAT('%', #{create_date}, '%')
+            </if>
+            <if test="start_date != null and start_date != '' ">
+                AND task_start_time LIKE CONCAT('%', #{start_date}, '%')
             </if>
         </where>
 

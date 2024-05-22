@@ -33,6 +33,7 @@ public interface DynamicRuleMapper {
     List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
                                                    String sourceSystem, String creator, Integer auditStatus,
                                                    String eventType, Integer protectLevel, String templateName,
+                                                   String auditUserName, String createDate,
                                                    Integer page, Integer pageSize);
 
     void deleteDynamicRuleProtectObjectConcat(Integer dynamicRuleId);
@@ -45,7 +46,8 @@ public interface DynamicRuleMapper {
 
     Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
                                      String sourceSystem, String creator, Integer auditStatus
-                                    , String eventType, Integer protectLevel, String templateName);
+                                    , String eventType, Integer protectLevel, String templateName,
+                                     String auditUserName, String createDate);
 
     List<DynamicRuleObject> queryDynamicRuleByIds(List<Integer> ids);
 

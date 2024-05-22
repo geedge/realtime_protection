@@ -180,11 +180,12 @@ public class StaticRuleService {
             String creator,
             String static_rule_sip, Integer static_rule_sport,
             String static_rule_dip, Integer static_rule_dport,
-            Integer auditStatus,
+            Integer auditStatus, String auditUserName, String createTime,
             Integer page, Integer pageSize) {
 
         return staticRuleMapper.queryStaticRule(static_rule_name, static_rule_id,
-                creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport, auditStatus, page, pageSize);
+                creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport, auditStatus,
+                auditUserName, createTime,page, pageSize);
     }
 
     public Boolean newStaticRuleObjects(List<StaticRuleObject> staticRuleList) {
@@ -260,10 +261,11 @@ public class StaticRuleService {
                                            String static_rule_creator,
                                            String static_rule_sip, Integer static_rule_sport,
                                            String static_rule_dip, Integer static_rule_dport,
-                                           Integer auditStatus) {
+                                           Integer auditStatus,
+                                           String auditUserName, String createTime) {
         return staticRuleMapper.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
                 static_rule_creator, static_rule_sip, static_rule_sport,
-                static_rule_dip, static_rule_dport, auditStatus);
+                static_rule_dip, static_rule_dport, auditStatus, auditUserName, createTime);
     }
 
     public List<StaticRuleObject> queryStaticRuleByIds(List<Integer> ids) {
@@ -372,8 +374,7 @@ public class StaticRuleService {
     }
 
     public List<Integer>  queryAuditStatusByIds(Map<Integer, Integer> idsWithAuditStatusMap) {
-        List<Integer> originalAuditStatusList = staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
-        return originalAuditStatusList;
+        return staticRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
     }
 
     public Integer queryAuditStaticRuleTotalNum(Integer auditStatus) {

@@ -15,12 +15,9 @@ import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValida
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -221,10 +218,11 @@ public class TaskService {
                                  Integer auditStatus,
                                  String taskAct, String taskAuditor,
                                  String taskSource, String ruleName,
+                                 String eventType,String createDateStr, String startDateStr,
                                  Integer page, Integer pageSize) {
 
         List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName, page, pageSize);
+                taskAct, taskAuditor, taskSource, ruleName,eventType, createDateStr, startDateStr, page, pageSize);
         for (Task task : tasks) {
             if (task == null) {
                 continue;
@@ -355,9 +353,10 @@ public class TaskService {
     }
 
     public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus
-    ,String taskAct, String taskAuditor, String taskSource, String ruleName) {
+    ,String taskAct, String taskAuditor, String taskSource, String ruleName,
+                                     String eventType, String createDate, String startDate) {
         return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName,null);
+                taskAct, taskAuditor, taskSource, ruleName,null, eventType, createDate, startDate);
     }
 
     public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {

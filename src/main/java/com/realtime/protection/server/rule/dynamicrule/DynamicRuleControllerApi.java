@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -351,7 +352,9 @@ public interface DynamicRuleControllerApi {
                     @Parameter(name = "audit_status", description = "审核状态", example = "1"),
                     @Parameter(name = "event_type", description = "事件类型", example = "反射型DDOS"),
                     @Parameter(name = "protect_level", description = "保护级别", example = "1"),
-//                    @Parameter(name = "template_name", description = "模板名称", example = "test"),
+                    @Parameter(name = "auditUserName", description = "审核用户名称", example = "user1"),
+                    @Parameter(name = "createTime", description = "创建日期，不跟具体时间吧", example = "2024-04-25"),
+
                     @Parameter(name = "page", description = "页码", example = "1"),
                     @Parameter(name = "pageSize", description = "每页大小", example = "10")
             }
@@ -364,6 +367,9 @@ public interface DynamicRuleControllerApi {
                                           @RequestParam(value = "event_type", required = false) String eventType,
                                           @RequestParam(value = "protect_level", required = false) Integer protectLevel,
                                           @RequestParam(value = "template_name", required = false) String templateName,
+                                          @RequestParam(name = "auditUserName", required = false) String auditUserName,
+                                          @RequestParam(name = "createTime", required = false) LocalDate createTime,
+
                                           @RequestParam(value = "page", defaultValue = "1") Integer page,
                                           @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize);
     @Operation(

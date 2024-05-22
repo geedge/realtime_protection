@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -211,6 +213,8 @@ public interface StaticRuleControllerApi {
                     @Parameter(name = "dip", description = "静态规则ip，匹配目的ip并考虑掩码"),
                     @Parameter(name = "dport", description = "静态规则port，匹配目的port"),
                     @Parameter(name = "auditStatus", description = "静态规则审核状态"),
+                    @Parameter(name = "auditUserName", description = "静态规则审核用户名称"),
+                    @Parameter(name = "createTime", description = "静态规则创建时间"),
                     @Parameter(name = "page", description = "页码"),
                     @Parameter(name = "pageSize", description = "每页条数")
             }
@@ -223,6 +227,8 @@ public interface StaticRuleControllerApi {
                                    @RequestParam(required = false) String static_rule_dip,
                                    @RequestParam(required = false) Integer static_rule_dport,
                                    @RequestParam(required = false) Integer auditStatus,
+                                   @RequestParam(required = false) String auditUserName,
+                                   @RequestParam(required = false) LocalDate createTime,
                                    @RequestParam(defaultValue = "1") Integer page,
                                    @RequestParam(defaultValue = "10") Integer pageSize
     );

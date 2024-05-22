@@ -99,7 +99,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testQueryStaticRules(){
-        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(null, null, null, null,null, null, null,2, 1, 10);
+        List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(null, null, null, null,null, null, null,2, null,null,1, 10);
         System.out.println(staticRuleObjects);
     }
     @Test

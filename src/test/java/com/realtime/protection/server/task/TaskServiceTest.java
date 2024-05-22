@@ -108,7 +108,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testPageQueryTask(){
-        List<Task> tasks = taskService.queryTasks(null, null, "", "", null,"", null, "", "", 1, 10);
+        List<Task> tasks = taskService.queryTasks(null, null, "", "", null,"", null, "", "", null,null,null,1, 10);
 //        System.out.println(tasks);
         tasks.forEach(task -> System.out.println(task));
     }
@@ -162,11 +162,11 @@ class TaskServiceTest extends ProtectionApplicationTests {
     @Test
     void testUpdateTasks() {
         Task originalTask = taskService.queryTasks(
-                null, null, null, null, null, null, null, null, null,1, 1)
+                null, null, null, null, null, null, null, null, null,null,null,null,1, 1)
                 .get(0);
 
         List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
-                null, null, null, null, null,null, null, null,1, 4
+                null, null, null, null, null,null, null, null,null,null,1, 4
         );
         List<Integer> staticRuleIds = new ArrayList<>();
         staticRuleObjects.forEach(staticRuleObject -> staticRuleIds.add(staticRuleObject.getStaticRuleId()));
@@ -179,7 +179,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testDeleteTask() {
-        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 10)
+        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,1, 10)
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));

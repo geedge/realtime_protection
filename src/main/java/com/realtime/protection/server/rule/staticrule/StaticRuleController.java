@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -157,18 +158,26 @@ public class StaticRuleController implements StaticRuleControllerApi {
                                           @RequestParam(name = "dip", required = false) String static_rule_dip,
                                           @RequestParam(name = "dport", required = false) Integer static_rule_dport,
                                           @RequestParam(name = "auditStatus", required = false) Integer auditStatus,
+                                          @RequestParam(name = "auditUserName", required = false) String auditUserName,
+                                          @RequestParam(name = "createTime", required = false) LocalDate createTime,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize
     ) {
-        log.info("多查询静态规则: {},{},{},{}", static_rule_name, static_rule_id, page, pageSize);
+//        log.info("多查询静态规则: {},{},{},{}", static_rule_name, static_rule_id, page, pageSize);
         //调用service新增
+        String createDateStr = null;
+        if (createTime != null) {
+            createDateStr = createTime.toString();
+        }
         List<StaticRuleObject> pageResult = staticRuleService.queryStaticRule(
                 static_rule_name, static_rule_id,
-                static_rule_creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport,  auditStatus, page, pageSize);
+                static_rule_creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport,  auditStatus,
+                auditUserName, createDateStr, page, pageSize);
         return ResponseResult.ok()
                 .setData("static_rule_list", pageResult)
                 .setData("total_num",staticRuleService.queryStaticRuleTotalNum(static_rule_name, static_rule_id,
-                        static_rule_creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport, auditStatus));
+                        static_rule_creator, static_rule_sip, static_rule_sport, static_rule_dip, static_rule_dport, auditStatus
+                , auditUserName, createDateStr));
     }
 
     @Override
@@ -258,7 +267,10 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult getStaticRuleStatisticsData(){
 
         return ResponseResult.ok()
-                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(null, null, null, null, null, null, null, null))
+                .setData("static_rule_num", staticRuleService.queryStaticRuleTotalNum(
+                        null, null, null, null,
+                        null, null, null, null,
+                        null,null))
                 .setData("static_rule_used_num", staticRuleService.queryAuditStaticRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.USING.getState())
                 ))
