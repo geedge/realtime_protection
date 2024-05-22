@@ -32,6 +32,10 @@ public class AlertMessageService {
     public void processAlertMessage(AlertMessage alertMessage) {
         //根据告警信息——>生成指令
         List<TaskCommandInfo> dynamicTaskCommandInfoList = generateDynamicCommand(alertMessage);
+        //可能isProtectSrcOrDst和isProtectSrcOrDst都为FALSE，说明没有生成指令
+        if(dynamicTaskCommandInfoList == null || dynamicTaskCommandInfoList.isEmpty()){
+            return;
+        }
         //获取任务状态，设置指令的isValid字段，且是否生成指令入库（除了RUNING\PAUSED状态，其他都不入command库）。
         Integer taskStatus = dynamicTaskCommandInfoList.get(0).getTaskStatus();
         //获取任务类型，设置指令的isJudged字段。
@@ -87,7 +91,9 @@ public class AlertMessageService {
         //根据策略模板的is_full_flow字段，如果是双向流量会生成两个fiveTuple，所以返回List
         List<FiveTupleWithMask> fiveTupleWithMaskNew =  updateFiveTupleWithMask(alertMessage.getFiveTupleWithMask(),
                 alertMessage.getProtectIsSrcOrDst(), templateProtectLevel);
-
+        if(fiveTupleWithMaskNew.isEmpty()){
+            return  null;
+        }
         //根据fiveTuple生成动态指令信息
         List<TaskCommandInfo> dynamicCommandInfoList = new ArrayList<>();
         if (fiveTupleWithMaskNew.size() == 2){
@@ -235,7 +241,7 @@ public class AlertMessageService {
             command2.setProtocol(fiveTupleWithMask.getProtocol());
             command2.setProtocol(fiveTupleWithMask.getMaskProtocol());
         }
-
+/*
         //若需要处置全方向流量，防护对象为源和目的的五元组都生成指令下发
         if(templateProtectLevel.getIsFullFlow()){
             newFiveTupleWithMask.add(command1);
@@ -249,6 +255,18 @@ public class AlertMessageService {
                 newFiveTupleWithMask.add(command1);
             }
         }
+*/
+
+        //若需要处置全方向流量，防护对象为源和目的的五元组都生成指令下发
+
+            // 判断防护对象为源还是目的，生成指令
+        if(templateProtectLevel.getIsProtectObjectIPSrc()){
+            newFiveTupleWithMask.add(command2);
+        }
+        if (templateProtectLevel.getIsProtectObjectDst()){
+            newFiveTupleWithMask.add(command1);
+        }
+
 
         //目前告警信息还只是五元组，没有url、dns
         return newFiveTupleWithMask;

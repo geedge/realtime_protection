@@ -3,6 +3,7 @@ package com.realtime.protection.server.task;
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
@@ -11,7 +12,7 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.defense.object.ProtectObjectService;
-import com.realtime.protection.server.defense.template.TemplateService;
+import com.realtime.protection.server.defense.templatenew.TemplateService;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
 import com.realtime.protection.server.rule.staticrule.StaticRuleService;
 import com.realtime.protection.server.task.status.StateChangeService;
@@ -294,8 +295,8 @@ class TaskServiceTest extends ProtectionApplicationTests {
                 null, null, null, null,
                 null, null, null, null,
                 null, null, 1, 1);
-        List<Template> templates = templateService.queryTemplates(
-                null, null, null,null, null,1, 1);
+        List<TemplateNew> templates = templateService.queryTemplates(
+                null, null, null,null, null,null,null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("testStartDynamicTask");
@@ -329,7 +330,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
         //审核状态
         taskService.changeTaskAuditStatus(taskId, 2);
         //启动任务
-//        stateChangeService.changeState(2, taskId, false);
+        stateChangeService.changeState(2, taskId, false);
 
 //        System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
     }

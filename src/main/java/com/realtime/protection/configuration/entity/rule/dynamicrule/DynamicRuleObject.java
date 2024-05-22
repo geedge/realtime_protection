@@ -56,6 +56,10 @@ public class DynamicRuleObject {
     @Schema(description = "响应时回复防护对象完整信息", accessMode = Schema.AccessMode.READ_ONLY)
     private List<ProtectObject> protectObjects;
 
+    @JsonProperty("strategy_template_name")
+    @Schema(description = "动态规则选择的策略模板", accessMode = Schema.AccessMode.READ_ONLY)
+    private String templateName;
+
 
     //还没有建立外键
     @JsonProperty("dynamic_rule_create_user_id")

@@ -60,11 +60,17 @@ public class TemplateNew {
     @Schema(description = "该防护等级是否需要提取DNS")
     private Boolean hasDNS = false;
 
-    @Schema(description = "该防护等级是处置防护对象的全流量or单向流量")
-    private Boolean isFullFlow = false;
+//    @Schema(description = "该防护等级防护对象ip地址是否作为目的地址")
+//    private Boolean isFullFlow = false;
+//
+//    @Schema(description = "该防护等级防护对象ip地址是否作为源地址")
+//    private Boolean isProtectObjectIPSrc = false;
 
-    @Schema(description = "该防护等级防护对象ip地址是否作为源ip地址")
-    private Boolean isProtectObjectIPSrc = false;
+    @Schema(description = "该防护等级防护对象ip地址是否作为目的地址")
+    private Boolean isProtectObjectDst = false;
+
+    @Schema(description = "该防护等级防护对象ip地址是否作为源地址")
+    private Boolean isProtectObjectSrc = false;
 
     @JsonProperty("template_used_times")
     @Schema(description = "防御策略模板使用次数", example = "20", accessMode = Schema.AccessMode.READ_ONLY)

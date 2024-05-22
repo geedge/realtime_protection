@@ -4,12 +4,13 @@ import com.github.xiaoymin.knife4j.annotations.Ignore;
 import com.realtime.protection.configuration.entity.alert.AlertMessage;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.server.defense.object.ProtectObjectService;
-import com.realtime.protection.server.defense.template.TemplateService;
+import com.realtime.protection.server.defense.templatenew.TemplateService;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
 import com.realtime.protection.server.task.TaskService;
 import com.realtime.protection.server.task.status.StateChangeService;
@@ -50,8 +51,8 @@ public class AlertMessageTest {
                 null, null, null, null,
                 null, null, null, null,
                 null, null, 1, 1);
-        List<Template> templates = templateService.queryTemplates(
-                null, null, null, null, null,1, 1);
+        List<TemplateNew> templates = templateService.queryTemplates(
+                null, null, null, null, null,null,null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");

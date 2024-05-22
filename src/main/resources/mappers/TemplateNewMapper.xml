@@ -7,7 +7,7 @@
         INSERT INTO t_strategy_template_new(strategy_template_name, strategy_template_source_system,
                                         has_protect_object_ip, has_protect_object_port,
                                         has_protocol, has_url, has_dns,
-                                        has_peer_ip, has_peer_port, is_full_flow, is_protect_object_src,
+                                        has_peer_ip, has_peer_port, is_protect_object_dst, is_protect_object_src,
                                         strategy_template_create_user_id, strategy_template_create_username,
                                         strategy_template_create_depart,
                                         strategy_template_description, strategy_template_display_id,
@@ -15,8 +15,8 @@
             VALUE (#{template.templateName}, #{template.sourceSystem},
                      #{template.hasProtectObjectIP}, #{template.hasProtectObjectPort},
                         #{template.hasProtocol}, #{template.hasURL}, #{template.hasDNS},
-                        #{template.hasPeerIP}, #{template.hasPeerPort}, #{template.isFullFlow},
-                        #{template.isProtectObjectIPSrc},
+                        #{template.hasPeerIP}, #{template.hasPeerPort}, #{template.isProtectObjectDst},
+                        #{template.isProtectObjectSrc},
                    #{template.createUserId}, #{template.createUsername}, #{template.createDepart},
                    #{template.description}, #{template.templateDisplayId},
             #{template.eventType}, #{template.protectLevel})
@@ -37,8 +37,8 @@
             <if test="template.hasDNS != null">has_dns = #{template.hasDNS},</if>
             <if test="template.hasPeerIP != null">has_peer_ip = #{template.hasPeerIP},</if>
             <if test="template.hasPeerPort != null">has_peer_port =  #{template.hasPeerPort},</if>
-            <if test="template.isFullFlow != null">is_full_flow = #{template.isFullFlow},</if>
-            <if test="template.isProtectObjectIPSrc != null">is_protect_object_src = #{template.isProtectObjectIPSrc},</if>
+            <if test="template.isProtectObjectDst != null">is_protect_object_dst = #{template.isProtectObjectDst},</if>
+            <if test="template.isProtectObjectSrc != null">is_protect_object_src = #{template.isProtectObjectSrc},</if>
 
             modify_time = NOW()
         </set>
@@ -104,8 +104,8 @@
         <result column="has_dns" property="hasDNS"/>
         <result column="has_peer_ip" property="hasPeerIP"/>
         <result column="has_peer_port" property="hasPeerPort"/>
-        <result column="is_full_flow" property="isFullFlow"/>
-        <result column="is_protect_object_src" property="isProtectObjectIPSrc"/>
+        <result column="is_protect_object_dst" property="isProtectObjectDst"/>
+        <result column="is_protect_object_src" property="isProtectObjectSrc"/>
 
     </resultMap>
 

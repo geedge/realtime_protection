@@ -46,7 +46,7 @@ class TemplateServiceTest extends ProtectionApplicationTests {
 
         ProtectLevel protectLevelHigh = new ProtectLevel();
         protectLevelHigh.setHasDNS(true);
-        protectLevelHigh.setIsFullFlow(true);
+//        protectLevelHigh.setIsFullFlow(true);
 
         template.setProtectLevelLow(protectLevelLow);
         template.setProtectLevelMedium(protectLevelMedium);

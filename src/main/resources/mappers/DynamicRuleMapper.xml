@@ -161,10 +161,11 @@
         <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
         <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
         <result column="template_id" property="templateId"/>
-        <result column="dynamic_rule_protec_level" property="dynamicRuleProtectLevel"/>
+        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>
         <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
         <result column="dynamic_rule_create_user_id" property="dynamicRuleCreateUserId"/>
+
     </resultMap>
 
     <resultMap id="dynamicRulePageQueryMap" type="com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject">
@@ -179,10 +180,12 @@
         <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
         <result column="audit_status" property="auditStatus"/>
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
-        <result column="strategy_template_name" property="dynamicRuleEventType"/>
+        <result column="event_type" property="dynamicRuleEventType"/>
         <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
-        <result column="event_type" property="dynamicRuleSourceSystem"/>
+<!--        <result column="event_type" property="dynamicRuleSourceSystem"/>-->
         <result column="protect_level" property="dynamicRuleProtectLevel"/>
+
+        <result column="strategy_template_name" property="templateName"/>
 
         <result column="audit_status" property="auditStatus"/>
         <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
@@ -270,8 +273,8 @@
         <result column="has_dns" property="hasDNS"/>
         <result column="has_peer_ip" property="hasPeerIP"/>
         <result column="has_peer_port" property="hasPeerPort"/>
-        <result column="is_full_flow" property="isFullFlow"/>
-        <result column="is_protect_object_src" property="isProtectObjectIPSrc"/>
+        <result column="is_protect_object_dst" property="isProtectObjectDst"/>
+        <result column="is_protect_object_src" property="isProtectObjectSrc"/>
 
     </resultMap>
 

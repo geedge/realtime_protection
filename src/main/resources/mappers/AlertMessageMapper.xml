@@ -36,8 +36,8 @@
         <result column="has_protocol" property="hasProtocol"/>
         <result column="has_url" property="hasURL"/>
         <result column="has_dns" property="hasDNS"/>
-        <result column="is_full_flow" property="isFullFlow"/>
-        <result column="is_protect_object_src" property="isProtectObjectIPSrc"/>
+        <result column="is_protect_object_dst" property="isProtectObjectDst"/>
+        <result column="is_protect_object_src" property="isProtectObjectSrc"/>
     </resultMap>
 
     <resultMap id="alertMessageMap" type="com.realtime.protection.configuration.entity.alert.AlertMessage">
@@ -143,7 +143,7 @@
         has_protocol,
         has_url,
         has_dns,
-        is_full_flow,
+        is_protect_object_dst,
         is_protect_object_src
         FROM t_strategy_template_new
         WHERE strategy_template_id = #{templateId}

@@ -34,4 +34,10 @@ public class ProtectLevel {
 
     @Schema(description = "该防护等级防护对象ip地址是否作为源ip地址")
     private Boolean isProtectObjectIPSrc = false;
+
+    @Schema(description = "该防护等级防护对象ip地址是否作为目的地址")
+    private Boolean isProtectObjectDst = false;
+    @Schema(description = "该防护等级防护对象ip地址是否作为源地址")
+    private Boolean isProtectObjectSrc = false;
+
 }
