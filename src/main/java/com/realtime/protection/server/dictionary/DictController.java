@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/dict")
-public class DictController {
+public class DictController implements DictControllerApi{
 
     private final DictService dictService;
 
@@ -19,6 +19,7 @@ public class DictController {
     /**
      * 根据字典类型查询字典数据信息
      */
+    @Override
     @GetMapping(value = "/type/{dictType}")
     public ResponseResult dictType(@PathVariable String dictType) {
         return ResponseResult.ok()
