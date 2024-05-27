@@ -61,9 +61,9 @@ public class TaskCommandInfo {
     private String eventType;
 
     @Schema(description = "指令下发频率", example = "30")
-    @NotNull(message = "指令下发频率不能为空。")
+//    @NotNull(message = "指令下发频率不能为空。")
     @JsonProperty("frequency")
-    private Integer frequency;
+    private Integer frequency = 3;
 
     @Schema(description = "任务开始时间", example = "2025-10-14T10:23:33")
     @NotNull(message = "任务开始时间不能为空。")

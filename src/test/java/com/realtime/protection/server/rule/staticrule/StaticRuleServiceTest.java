@@ -38,15 +38,27 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
 //        staticRuleTest.setStaticRuleMdip("255.255.255.0");
 //        staticRuleTest.setStaticRuleSport(11);
 
-        staticRuleTest.setStaticRulePriority(1);
-        staticRuleTest.setStaticRuleFrequency(1);
+//        staticRuleTest.setStaticRulePriority(1);
+//        staticRuleTest.setStaticRuleFrequency(1);
 //        staticRuleTest.setStaticRuleRange("北京");
 
     }
 
     @Test
     void testNewStaticRule(){
-        staticRuleService.newStaticRuleObject(staticRuleTest);
+        for (int i = 1; i < 10; i++) {
+            staticRuleTest = new StaticRuleObject();
+            staticRuleTest.setStaticRuleName("test_staticrule"+i);
+            staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
+            staticRuleTest.setStaticRuleCreateDepart("组织树");
+            staticRuleTest.setStaticRuleCreateUserId(22222222);
+            staticRuleTest.setAuditStatus(0);
+
+            staticRuleTest.setStaticRuleSip("32.2.3."+i);
+            staticRuleTest.setStaticRuleDip(i+".2.3.2");
+            staticRuleService.newStaticRuleObject(staticRuleTest);
+        }
+
         //assertTrue(id>0);
     }
     @Test

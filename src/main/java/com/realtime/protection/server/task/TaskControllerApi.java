@@ -193,6 +193,7 @@ public interface TaskControllerApi {
                     @Parameter(name = "task_source", description = "任务来源系统"),
                     @Parameter(name = "rule_name", description = "规则名称"),
                     @Parameter(name = "event_type", description = "事件类型"),
+                    @Parameter(name = "protect_level", description = "防护等级"),
                     @Parameter(name = "create_time", description = "任务创建时间",example = "2021-01-01" ),
                     @Parameter(name = "start_time", description = "任务开始时间",example = "2024-04-25" ),
 
@@ -212,6 +213,7 @@ public interface TaskControllerApi {
                               @RequestParam(value = "event_type", required = false) String eventType,
                               @RequestParam(value = "create_time", required = false) LocalDate createTime,
                               @RequestParam(value = "start_time", required = false) LocalDate startTime,
+                              @RequestParam(value = "protect_level", required = false) Integer protectLevel,
 
                               @RequestParam("page") @Min(1) Integer page,
                               @RequestParam("page_size") @Min(1) Integer pageSize);

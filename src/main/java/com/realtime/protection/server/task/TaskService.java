@@ -2,6 +2,7 @@ package com.realtime.protection.server.task;
 
 import com.alibaba.excel.util.MapUtils;
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
@@ -10,6 +11,7 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
@@ -54,6 +56,7 @@ public class TaskService {
 //        task.setTaskCreateUsername("xxx");
 //        task.setTaskCreateDepart("xxx");
 
+
         task.setTaskDisplayId(
                 "RW-"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -61,7 +64,6 @@ public class TaskService {
                 + String.format("%06d", counter.generateId("task")));
 
         taskMapper.newTask(task);
-
         if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
             staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
                 if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
@@ -86,6 +88,17 @@ public class TaskService {
             });
             taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
         }
+        if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()){
+            //校验防护对象是否存在
+            boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
+                    .allMatch(dynamicRuleMapper::queryProtectObjectById);
+            if (!ProtectObjIdValid) {
+                throw new IllegalArgumentException("部分防护对象不存在");
+            }
+            //任务和防护对象多对多关联建立
+            taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
+        }
+
 
         return task.getTaskId();
     }
@@ -219,10 +232,11 @@ public class TaskService {
                                  String taskAct, String taskAuditor,
                                  String taskSource, String ruleName,
                                  String eventType,String createDateStr, String startDateStr,
+                                 Integer protectLevel,
                                  Integer page, Integer pageSize) {
 
         List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName,eventType, createDateStr, startDateStr, page, pageSize);
+                taskAct, taskAuditor, taskSource, ruleName,eventType, createDateStr, startDateStr,protectLevel, page, pageSize);
         for (Task task : tasks) {
             if (task == null) {
                 continue;
@@ -243,6 +257,8 @@ public class TaskService {
         if (task == null) {
             return null;
         }
+        List<ProtectObject> protectObjects = taskMapper.queryProtectObjectsByTaskId(id);
+        task.setProtectObjects(protectObjects);
 
         task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId(),
                 List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
@@ -260,7 +276,20 @@ public class TaskService {
 
         task.setTaskAuditStatus(AuditStatusEnum.PENDING.getNum());
 
+        //校验防护对象是否存在
+        boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
+                .allMatch(dynamicRuleMapper::queryProtectObjectById);
+        if (!ProtectObjIdValid) {
+            throw new IllegalArgumentException("部分防护对象不存在");
+        }
+
+        //删除task关联的protectObjects
+        taskMapper.deleteTaskProtectObjectConcat(task.getTaskId());
+        //更新task
         taskMapper.updateTask(task);
+        //重新关联task和protectObjects
+
+        taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
 
         taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
         taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
@@ -354,9 +383,9 @@ public class TaskService {
 
     public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus
     ,String taskAct, String taskAuditor, String taskSource, String ruleName,
-                                     String eventType, String createDate, String startDate) {
+                                     String eventType, String createDate, String startDate,Integer protectLevel) {
         return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName,null, eventType, createDate, startDate);
+                taskAct, taskAuditor, taskSource, ruleName,null, eventType, createDate, startDate, protectLevel);
     }
 
     public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {

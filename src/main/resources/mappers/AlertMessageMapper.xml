@@ -163,14 +163,14 @@
 
             t_task.task_type,
             t_task.task_act,
-            t_dr.dynamic_rule_frequency,
+--             t_dr.dynamic_rule_frequency,
 
             t_task.task_start_time,
             t_task.task_end_time,
 
-            t_dr.template_id,
+            t_task.template_id,
             t_task.task_range,
-            t_dr.dynamic_rule_protect_level,
+            t_task.protect_level,
             t_task.task_status,
 
             t_tmplate.strategy_template_name
@@ -179,7 +179,7 @@
             left join realtime_protection.t_dynamic_rule t_dr on
                 (t_task.task_id = t_dr.dynamic_rule_used_task_id and t_dr.dynamic_rule_id = #{dynamicRuleId})
             left join realtime_protection.t_strategy_template_new t_tmplate on
-                ( t_dr.template_id = t_tmplate.strategy_template_id )
+                ( t_task.template_id = t_tmplate.strategy_template_id )
             where
                 t_task.task_id = #{taskId}
     </select>

@@ -163,7 +163,7 @@
 
     <select id="queryUsedTemplateTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT template_id)
-        FROM t_dynamic_rule
+        FROM t_task
     </select>
 
     <select id="queryAuditTemplateTotalNum" resultType="java.lang.Integer">

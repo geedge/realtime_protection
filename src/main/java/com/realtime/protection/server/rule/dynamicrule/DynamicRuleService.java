@@ -1,7 +1,6 @@
 package com.realtime.protection.server.rule.dynamicrule;
 
 import com.alibaba.excel.util.ListUtils;
-import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
@@ -33,13 +32,6 @@ public class DynamicRuleService {
     @Transactional
     public Integer newDynamicRuleObject(DynamicRuleObject dynamicRule) {
 
-        //判断protectObject id是否有效
-        boolean ProtectObjIdValid = dynamicRule.getProtectObjectIds().stream()
-                .allMatch(dynamicRuleMapper::queryProtectObjectById);
-        if (!ProtectObjIdValid) {
-            throw new IllegalArgumentException("protect object id is invalid");
-        }
-
         dynamicRule.setDynamicRuleDisplayId(
                 "DTGZ-"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -48,11 +40,8 @@ public class DynamicRuleService {
         );
 
         dynamicRuleMapper.newDynamicRule(dynamicRule);
-        Integer dynamicRuleId = dynamicRule.getDynamicRuleId();
-        dynamicRule.getProtectObjectIds().forEach(
-                protectObjectId -> dynamicRuleMapper.newDynamicRulProtectObjectConcat(dynamicRuleId, protectObjectId));
 
-        return dynamicRuleId;
+        return dynamicRule.getDynamicRuleId();
     }
 
     //批量新建多个动态规则
@@ -117,20 +106,7 @@ public class DynamicRuleService {
         //查询DynamicRule
         DynamicRuleObject dynamicRuleObject = dynamicRuleMapper.queryDynamicRuleById(dynamicRuleId);
         if (dynamicRuleObject == null){
-            throw new IllegalArgumentException("dynamic rule id is invalid");
-        }
-        //查询DynamicRule关联的ProtectObject
-        dynamicRuleObject.setProtectObjects(dynamicRuleMapper.queryProtectObjectByRuleId(dynamicRuleId));
-        //查询DynamicRule关联的template详细信息
-        TemplateNew template = dynamicRuleMapper.queryTemplateByRuleId(dynamicRuleId);
-        if (template == null){
-            //template在表中删除了，需要重新设置template（感觉这种情况不多见）
-            dynamicRuleObject.setDynamicRuleSourceSystem(null);
-            dynamicRuleObject.setDynamicRuleEventType(null);
-        }else{
-        dynamicRuleObject.setDynamicRuleSourceSystem(template.getSourceSystem());
-        dynamicRuleObject.setDynamicRuleEventType(template.getTemplateName());
-        dynamicRuleObject.setDynamicRuleProtectLevel(Integer.valueOf(template.getProtectLevel()));
+            throw new IllegalArgumentException("动态规则不存在");
         }
 
         return dynamicRuleObject;
@@ -139,22 +115,24 @@ public class DynamicRuleService {
     @Transactional
     public boolean updateDynamicRuleObject(Integer dynamicRuleId, DynamicRuleObject dynamicRuleObject) {
         //更新DynamicRule
-        dynamicRuleObject.setDynamicRuleModifyTime(LocalDateTime.now());
+
+//        dynamicRuleMapper
 
         Boolean idValid = dynamicRuleMapper.updateDynamicRuleObject(dynamicRuleId, dynamicRuleObject);
         if (!idValid) {
-            throw new IllegalArgumentException("dynamic rule id is invalid");
+            throw new IllegalArgumentException("动态规则id无效");
         }
+        /*
         //删除DynamicRule关联的ProtectObject
         dynamicRuleMapper.deleteDynamicRuleProtectObjectConcat(dynamicRuleId);
         //新增DynamicRule关联的ProtectObject
         boolean ProtectObjIdValid = dynamicRuleObject.getProtectObjectIds().stream()
                 .allMatch(dynamicRuleMapper::queryProtectObjectById);
         if (!ProtectObjIdValid) {
-            throw new IllegalArgumentException("protect object id is invalid");
+            throw new IllegalArgumentException("防护对象id无效");
         }
-
-        return dynamicRuleMapper.newDynamicRulProtectObjectsConcat(dynamicRuleId, dynamicRuleObject.getProtectObjectIds());
+*/
+        return idValid;
 
     }
     //    批量删除
@@ -233,11 +211,7 @@ public class DynamicRuleService {
         return resultMap;
     }
 
-    /**
-     * 用于任务状态修改时，内部批量更新任务所属动态规则的状态，不需要修改审批人信息
-     * @param idsWithAuditStatusMap
-     * @return
-     */
+
     public Object updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
         //校验id和status是否合法
         List<Integer> originalAuditStatusList = dynamicRuleMapper.queryAuditStatusByIds(idsWithAuditStatusMap);

@@ -47,64 +47,72 @@ public class AlertMessageTest {
     @Test
     void testReceiveAlertMessage() throws DorisStartException {
 
-        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
-                null, null, null, null,
-                null, null, null, null,
-                null, null, 1, 1);
-        List<TemplateNew> templates = templateService.queryTemplates(
-                null, null, null, null, null,null,null,1, 1);
-
-        DynamicRuleObject object = new DynamicRuleObject();
-        object.setDynamicRuleName("UpdateDynamicRule2");
-        object.setDynamicRuleFrequency(1);
-        object.setDynamicRulePriority(1);
-//        object.setDynamicRuleRange("北京");
-        object.setDynamicRuleProtectLevel(1);
-        object.setLogRuleId(1L);
-        object.setTemplateId(templates.get(0).getTemplateId());
-        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
-        Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
-        dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2,null,null,null);
+        for(int n = 10;n < 20;n++) {
 
 
-        Task task = new Task();
-        task.setTaskName("生产告警信息测试");
-        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
-        task.setTaskStartTime(taskStartTime);
-        task.setTaskEndTime(taskEndTime);
-        task.setTaskAct("阻断");
-        task.setTaskType(2);
-        task.setTaskCreateUserId(1);
-        task.setTaskCreateUsername("xxx");
-        task.setTaskCreateDepart("xxx");
-        task.setTaskRange("北京");
-        task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
-        Long taskId = taskService.newTask(task);
-        System.out.println(taskId);
-        //审核状态
-        taskService.changeTaskAuditStatus(taskId, 2);
-        //启动任务
-        stateChangeService.changeState(2, taskId, false);
+            List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, 1, 1);
+            List<TemplateNew> templates = templateService.queryTemplates(
+                    null, null, null, null, null, null, null, 1, 1);
 
-        for (int i = 0 ; i< 5; i++) {
-            AlertMessage alert = new AlertMessage();
-            FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
-            fiveTupleWithMask.setSourceIP("111.1.1." + i);
-            fiveTupleWithMask.setDestinationIP("222.22.2." + i);
-            fiveTupleWithMask.setSourcePort("111");
-            fiveTupleWithMask.setDestinationPort("222");
-            fiveTupleWithMask.setProtocol("tcp");
+            DynamicRuleObject object = new DynamicRuleObject();
+            object.setDynamicRuleName("测试动态任务规则"+n);
+            object.setDescription("动态规则新建测试");
+            object.setDynamicRuleSourceSystem("BW");
+            object.setBwSql("select * from test where event_id = 1");
+            object.setDynamicRuleCreateDepart("组织树");
+            object.setDynamicRuleCreateUserId(1100664);
+            object.setDynamicRuleCreateUsername("NSADD管理员");
+            Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
+            dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2, "NSADD管理员", 1100664, "组织树");
 
-            alert.setDynamicRuleId(dynamicRuleId);
-            alert.setTaskId(taskId);
-            alert.setFiveTupleWithMask(fiveTupleWithMask);
-            alert.setContent("testcontent");
-            alert.setProtectIsSrcOrDst(1);
-            alertMessageService.processAlertMessage(alert);
+
+            Task task = new Task();
+            task.setTaskName("生产告警信息测试"+n);
+            LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+            LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
+            task.setTaskStartTime(taskStartTime);
+            task.setTaskEndTime(taskEndTime);
+            task.setTaskAct("23");
+            task.setTaskType(2);
+            task.setTaskCreateUserId(1100664);
+            task.setTaskCreateUsername("NSADD管理员");
+            task.setTaskCreateDepart("组织树");
+            task.setTaskRange("1007");
+            task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
+            task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+            task.setTemplateId(templates.get(0).getTemplateId());
+            task.setSourceSystem(templates.get(0).getSourceSystem());
+            task.setEventType(templates.get(0).getEventType());
+            task.setProtectLevel(Integer.valueOf(templates.get(0).getProtectLevel()));
+            task.setTemplateName(templates.get(0).getTemplateName());
+            Long taskId = taskService.newTask(task);
+            System.out.println(taskId);
+            //审核状态
+            taskService.changeTaskAuditStatus(taskId, 2, "NSADD管理员", "1100664", "组织树");
+            //启动任务
+            stateChangeService.changeState(2, taskId, false);
+
+            for (int i = 0; i < 5; i++) {
+                AlertMessage alert = new AlertMessage();
+                FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
+                fiveTupleWithMask.setSourceIP(n+".1.1." + i);
+                fiveTupleWithMask.setDestinationIP(n+".22.2." + i);
+                fiveTupleWithMask.setSourcePort("111");
+                fiveTupleWithMask.setDestinationPort("80");
+                fiveTupleWithMask.setProtocol("6");
+
+                alert.setDynamicRuleId(dynamicRuleId);
+                alert.setTaskId(taskId);
+                alert.setFiveTupleWithMask(fiveTupleWithMask);
+                alert.setContent("testcontent");
+                alert.setProtectIsSrcOrDst(1);
+                alertMessageService.processAlertMessage(alert);
+            }
+
         }
-
-
 
     }
 

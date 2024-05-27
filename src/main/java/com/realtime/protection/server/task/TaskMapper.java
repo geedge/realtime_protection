@@ -1,5 +1,6 @@
 package com.realtime.protection.server.task;
 
+import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
@@ -31,6 +32,7 @@ public interface TaskMapper {
                           @Param("event_type")String eventType,
                           @Param("create_date") String createDateStr,
                           @Param("start_date")String startDateStr,
+                          @Param("protect_level")Integer protectLevel,
                           @Param("page") Integer page, @Param("page_size") Integer pageSize);
 
     Task queryTask(@Param("task_id") Long taskId);
@@ -78,7 +80,8 @@ public interface TaskMapper {
                               @Param("task_create_time") LocalDateTime taskCreateTime,
                               @Param("event_type")String eventType,
                               @Param("create_date")String createDate,
-                              @Param("start_date")String startDate);
+                              @Param("start_date")String startDate,
+                              @Param("protect_level")Integer protectLevel);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 
@@ -94,4 +97,11 @@ public interface TaskMapper {
                                                @Param("auditUserName")String auditUserName,
                                                @Param("auditUserId")String auditUserId,
                                                @Param("auditUserDepart")String auditUserDepart);
+
+    void newTaskProtectObjectConcat(@Param("taskId")Long taskId,
+                                    @Param("protectObjectIds")List<Integer> protectObjectIds);
+
+    void deleteTaskProtectObjectConcat(Long taskId);
+
+    List<ProtectObject> queryProtectObjectsByTaskId(Long id);
 }

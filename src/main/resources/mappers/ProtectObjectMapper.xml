@@ -138,7 +138,7 @@
     <select id="queryUsedProtectObjectsTotalNum"
             resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT protect_object_id)
-        FROM t_protect_object_dynamic_rule_conn
+        FROM t_task_protectobject_conn
     </select>
 
     <select id="queryAuditStatusByIds" resultType="java.lang.Integer">

@@ -1,8 +1,6 @@
 package com.realtime.protection.configuration.entity.rule.dynamicrule;
 
-import com.alibaba.excel.annotation.ExcelIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,19 +44,7 @@ public class DynamicRuleObject {
     @Schema(description = "动态规则创建用户所属部门", accessMode = Schema.AccessMode.READ_ONLY)
     private String dynamicRuleCreateDepart;
 
-    //动态规则选择的防护对象ids？
-    @NotNull(message = "防护对象不能为NULL")
-    @NotEmpty(message = "防护对象不能为空")
-    @JsonProperty("protect_object_ids")
-    @Schema(description = "请求时发送防护对象ID", accessMode = Schema.AccessMode.WRITE_ONLY, requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<Integer> protectObjectIds;
-    @JsonProperty("protect_objects")
-    @Schema(description = "响应时回复防护对象完整信息", accessMode = Schema.AccessMode.READ_ONLY)
-    private List<ProtectObject> protectObjects;
 
-    @JsonProperty("strategy_template_name")
-    @Schema(description = "动态规则选择的策略模板", accessMode = Schema.AccessMode.READ_ONLY)
-    private String templateName;
 
 
     //还没有建立外键
@@ -73,40 +59,23 @@ public class DynamicRuleObject {
     @JsonProperty("dynamic_rule_source_system")
     @Schema(description = "动态规则数据来源系统", example = "bw系统", requiredMode = Schema.RequiredMode.REQUIRED)
     private String dynamicRuleSourceSystem;
-    @JsonProperty("dynamic_rule_event_type")
-    @Schema(description = "动态规则事件类型", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String dynamicRuleEventType;
-    @NotNull
-    @JsonProperty("template_id")
-    @Schema(description = "策略模板id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer templateId;
-//    @NotNull
-    @JsonProperty("dynamic_rule_protect_level")
-    @Max(value = 3)
-    @Min(value = 1)
-    @Schema(description = "防护等级：1代表日常态、2代表应急态、3代表紧急态", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer dynamicRuleProtectLevel;
 
-    @NotNull
+//    @NotNull
     @JsonProperty("dynamic_rule_priority")
-    @Schema(description = "优先级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @Schema(description = "优先级", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRulePriority;
-    @NotNull
+//    @NotNull
 //    @JsonProperty("dynamic_rule_range")
 //    @Schema(description = "范围", example = "北京", requiredMode = Schema.RequiredMode.REQUIRED)
 //    private String dynamicRuleRange;
 //    @NotNull
     @JsonProperty("dynamic_rule_frequency")
-    @Schema(description = "频率", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @Schema(description = "频率", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer dynamicRuleFrequency;
 
-    @NotNull
-    @JsonProperty("log_rule_id")
-    @Schema(description = "筛选条件-日志规则id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long logRuleId;
+//    @NotNull
 
     @JsonProperty("dynamic_rule_audit_status")
-    @ExcelIgnore
     @Schema(description = "动态规则审核状态（0为未审核，1为已退回，2为审核通过）", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer auditStatus;
 
@@ -119,6 +88,14 @@ public class DynamicRuleObject {
     @JsonProperty("audit_user_depart")
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
+
+    @JsonProperty("bw_sql")
+    @Schema(description = "BW系统所需sql", example = "select * from table1 where rule_id=12222")
+    private String bwSql;
+
+    @JsonProperty("description")
+    @Schema(description = "动态规则描述", example = "动态规则描述")
+    private String description;
 
     public void checkAuditStatusValidate(AuditStatusEnum newAuditStatus) {
         if (!List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()).contains(this.getAuditStatus())) {

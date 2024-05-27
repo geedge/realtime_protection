@@ -11,51 +11,36 @@
         insert into t_dynamic_rule
         (dynamic_rule_name,
          create_time, modify_time, dynamic_rule_create_username,
-         dynamic_rule_create_depart, template_id, dynamic_rule_protect_level,
-         dynamic_rule_priority,
-         dynamic_rule_frequency, dynamic_rule_create_user_id, log_rule_id, dynamic_rule_display_id)
+         dynamic_rule_create_depart,
+        dynamic_rule_create_user_id, bw_sql, dynamic_rule_display_id)
         values (#{object.dynamicRuleName},
-                NOW(), #{object.dynamicRuleModifyTime},
+                NOW(), NOW(),
                 #{object.dynamicRuleCreateUsername}, #{object.dynamicRuleCreateDepart},
-                #{object.templateId}, #{object.dynamicRuleProtectLevel},
-                #{object.dynamicRulePriority},
-                #{object.dynamicRuleFrequency},
-                #{object.dynamicRuleCreateUserId}, #{object.logRuleId}, #{object.dynamicRuleDisplayId})
-
+                #{object.dynamicRuleCreateUserId}, #{object.bwSql}, #{object.dynamicRuleDisplayId})
     </insert>
 
-    <insert id="newDynamicRulProtectObjectConcat">
-        insert into t_protect_object_dynamic_rule_conn(dynamic_rule_id, protect_object_id)
-        values (#{dynamicRuleId}, #{protectObjectId})
-    </insert>
+<!--    <insert id="newDynamicRulProtectObjectConcat">-->
+<!--        insert into t_protect_object_dynamic_rule_conn(dynamic_rule_id, protect_object_id)-->
+<!--        values (#{dynamicRuleId}, #{protectObjectId})-->
+<!--    </insert>-->
 
     <insert id="newDynamicRules">
         insert into t_dynamic_rule
         (dynamic_rule_name,
         create_time, modify_time, dynamic_rule_create_username,
-        dynamic_rule_create_depart, template_id, dynamic_rule_protect_level,
-        dynamic_rule_priority,
-        dynamic_rule_frequency, dynamic_rule_create_user_id, log_rule_id, dynamic_rule_display_id
-        )
+        dynamic_rule_create_depart,
+        dynamic_rule_create_user_id, bw_sql, dynamic_rule_display_id)
         values
         <foreach collection="dynamicRuleObjects" item="object" separator=",">
-            (#{object.dynamicRuleName},
-            NOW(),#{object.dynamicRuleModifyTime},
-            #{object.dynamicRuleCreateUsername},#{object.dynamicRuleCreateDepart},
-            #{object.templateId}, #{object.dynamicRuleProtectLevel},
-            #{object.dynamicRulePriority}, #{object.dynamicRuleRange},
-            #{object.dynamicRuleFrequency},
-            #{object.dynamicRuleCreateUserId},#{object.logRuleId}, #{object.dynamicRuleDisplayId})
+            (
+             #{object.dynamicRuleName},
+            NOW(), NOW(),
+            #{object.dynamicRuleCreateUsername}, #{object.dynamicRuleCreateDepart},
+            #{object.dynamicRuleCreateUserId}, #{object.bwSql}, #{object.dynamicRuleDisplayId}
+            )
         </foreach>
     </insert>
-    <insert id="newDynamicRulProtectObjectsConcat">
-        insert into
-            t_protect_object_dynamic_rule_conn(dynamic_rule_id, protect_object_id)
-        values
-        <foreach collection="protectObjectIds" item="protectObjectId" separator=",">
-                (#{dynamicRuleId}, #{protectObjectId})
-        </foreach>
-    </insert>
+
 
 
     <!--    join删除-->
@@ -70,11 +55,7 @@
         where dynamic_rule_id = #{dynamicRuleId}
     </delete>
     <!--    用于update时删去之前的关联-->
-    <delete id="deleteDynamicRuleProtectObjectConcat">
-        delete
-        from t_protect_object_dynamic_rule_conn
-        where dynamic_rule_id = #{dynamicRuleId}
-    </delete>
+
 
     <delete id="deleteDynamicRules">
         delete from t_dynamic_rule
@@ -89,13 +70,10 @@
         update t_dynamic_rule
         set
         <if test="object.dynamicRuleName != null">dynamic_rule_name = #{object.dynamicRuleName},</if>
-        <if test="object.dynamicRuleModifyTime != null">modify_time = #{object.dynamicRuleModifyTime},</if>
-        <if test="object.templateId != null">template_id = #{object.templateId},</if>
-        <if test="object.dynamicRuleProtectLevel != null">dynamic_rule_protect_level =
-            #{object.dynamicRuleProtectLevel},
-        </if>
-        <if test="object.dynamicRulePriority != null">dynamic_rule_priority = #{object.dynamicRulePriority},</if>
-        <if test="object.dynamicRuleFrequency != null">dynamic_rule_frequency = #{object.dynamicRuleFrequency},</if>
+<!--        <if test="object.dynamicRuleModifyTime != null">modify_time = #{object.dynamicRuleModifyTime},</if>-->
+        <if test="object.description != null">description = #{object.description},</if>
+        <if test="object.dynamicRuleSourceSystem != null">source_system = #{object.dynamicRuleSourceSystem},</if>
+        <if test="object.bwSql != null">bw_sql = #{object.bwSql},</if>
         modify_time = NOW()
         where
         dynamic_rule_id = #{dynamicRuleId}
@@ -160,11 +138,19 @@
         <result column="modify_time" property="dynamicRuleModifyTime"/>
         <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
         <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
-        <result column="template_id" property="templateId"/>
-        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>
-        <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
-        <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
+<!--        <result column="template_id" property="templateId"/>-->
+<!--        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>-->
+<!--        <result column="dynamic_rule_priority" property="dynamicRulePriority"/>-->
+<!--        <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>-->
         <result column="dynamic_rule_create_user_id" property="dynamicRuleCreateUserId"/>
+        <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
+        <result column="bw_sql" property="bwSql"/>
+        <result column="description" property="description"/>
+        <result column="source_system" property="dynamicRuleSourceSystem"/>
 
     </resultMap>
 
@@ -174,24 +160,24 @@
         <result column="create_time" property="dynamicRuleCreateTime"/>
         <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
         <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
-        <result column="template_id" property="templateId"/>
+<!--        <result column="template_id" property="templateId"/>-->
 <!--        <result column="dynamic_rule_protect_level" property="dynamicRuleProtectLevel"/>-->
-        <result column="dynamic_rule_priority" property="dynamicRulePriority"/>
-        <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>
+<!--        <result column="dynamic_rule_priority" property="dynamicRulePriority"/>-->
+<!--        <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>-->
         <result column="audit_status" property="auditStatus"/>
 <!--        <result column="protect_object_id" property="protectObjectIds"/>-->
-        <result column="event_type" property="dynamicRuleEventType"/>
-        <result column="strategy_template_source_system" property="dynamicRuleSourceSystem"/>
+<!--        <result column="event_type" property="dynamicRuleEventType"/>-->
+        <result column="source_system" property="dynamicRuleSourceSystem"/>
 <!--        <result column="event_type" property="dynamicRuleSourceSystem"/>-->
-        <result column="protect_level" property="dynamicRuleProtectLevel"/>
+<!--        <result column="protect_level" property="dynamicRuleProtectLevel"/>-->
+<!--        <result column="strategy_template_name" property="templateName"/>-->
 
-        <result column="strategy_template_name" property="templateName"/>
-
-        <result column="audit_status" property="auditStatus"/>
         <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
         <result column="audit_user_name" property="auditUserName"/>
         <result column="audit_user_id" property="auditUserId"/>
         <result column="audit_user_depart" property="auditUserDepart"/>
+        <result column="bw_sql" property="bwSql"/>
+        <result column="description" property="description"/>
 
     </resultMap>
 
@@ -213,23 +199,13 @@
         <result column="protect_object_audit_status" property="protectObjectAuditStatus"/>
     </resultMap>
 
-    <select id="queryProtectObjectByRuleId"
-            resultMap="protectObjectMap">
-        select t_protect_object.*
-        from t_protect_object
-                 inner join t_protect_object_dynamic_rule_conn
-                            on t_protect_object.protect_object_id = t_protect_object_dynamic_rule_conn.protect_object_id
-        where t_protect_object_dynamic_rule_conn.dynamic_rule_id = #{dynamicRuleId}
-    </select>
+
 
     <select id="queryDynamicRuleObject"
             resultMap="dynamicRulePageQueryMap">
         select *
         from t_dynamic_rule
-#         left join t_protect_object_dynamic_rule_conn
-#             on t_dynamic_rule.dynamic_rule_id = t_protect_object_dynamic_rule_conn.dynamic_rule_id
-        left join t_strategy_template_new
-            on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
+
         <where>
             <if test="dynamicRuleName != null and dynamicRuleName !=''" >
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
@@ -238,7 +214,7 @@
                 and t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
             </if>
             <if test="sourceSystem != null and sourceSystem !=''">
-                and t_strategy_template_new.strategy_template_source_system = #{sourceSystem}
+                and t_dynamic_rule.source_system = #{sourceSystem}
             </if>
             <if test="creator != null and creator !=''">
                 and t_dynamic_rule.dynamic_rule_create_username = #{creator}
@@ -246,12 +222,7 @@
             <if test="auditStatus != null">
                 and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
-            <if test="eventType != null and eventType !=''">
-                and t_strategy_template_new.event_type = #{eventType}
-            </if>
-            <if test="protectLevel != null">
-                and t_strategy_template_new.protect_level = #{protectLevel}
-            </if>
+
             <if test="auditUserName != null and auditUserName !='' ">
                 AND audit_user_name like concat('%', #{auditUserName}, '%')
             </if>
@@ -284,13 +255,7 @@
 
     </resultMap>
 
-    <select id="queryTemplateByRuleId" resultMap="templateMap">
-        select *
-        from t_strategy_template_new
-                 inner join t_dynamic_rule
-                            on t_strategy_template_new.strategy_template_id = t_dynamic_rule.template_id
-        where t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
-    </select>
+
     <select id="queryProtectObjectById" resultType="java.lang.Boolean">
         select count(*)
         from t_protect_object
@@ -300,8 +265,7 @@
     <select id="queryDynamicRuleTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM t_dynamic_rule
-        left join t_strategy_template_new
-        on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
+
         <where>
             <if test="dynamicRuleName != null">
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
@@ -310,7 +274,7 @@
                 and t_dynamic_rule.dynamic_rule_id = #{dynamicRuleId}
             </if>
             <if test="sourceSystem != null">
-                and t_strategy_template_new.strategy_template_source_system = #{sourceSystem}
+                and t_dynamic_rule.source_system = #{sourceSystem}
             </if>
             <if test="creator != null">
                 and t_dynamic_rule.dynamic_rule_create_username = #{creator}
@@ -318,12 +282,7 @@
             <if test="auditStatus != null">
                 and t_dynamic_rule.audit_status = #{auditStatus}
             </if>
-            <if test="eventType != null and eventType !=''">
-                and t_strategy_template_new.strategy_template_name = #{eventType}
-            </if>
-            <if test="protectLevel != null">
-                and t_strategy_template_new.protect_level = #{protectLevel}
-            </if>
+
             <if test="auditUserName != null and auditUserName !='' ">
                 AND audit_user_name like concat('%', #{auditUserName}, '%')
             </if>
@@ -337,8 +296,8 @@
             resultMap="dynamicRulePageQueryMap">
         select *
         from t_dynamic_rule
-        left join t_strategy_template_new
-        on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
+--         left join t_strategy_template_new
+--         on t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
         where dynamic_rule_id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}

@@ -22,8 +22,7 @@ public class AlertMessageService {
     private final AlertMessageMapper alertMessageMapper;
 
     public AlertMessageService(
-            CommandService commandService,
-    AlertMessageMapper alertMessageMapper) {
+            CommandService commandService, AlertMessageMapper alertMessageMapper) {
         this.commandService = commandService;
         this.alertMessageMapper = alertMessageMapper;
     }

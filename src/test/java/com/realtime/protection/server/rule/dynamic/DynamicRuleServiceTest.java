@@ -37,23 +37,23 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testNewDynamicRule() {
-        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
-                null, null, null,null,
-                null,null,null,null,
-                null,null, 1, 1);
-        List<Template> templates = templateService.queryTemplates(
-                null, null, null, null, null,1, 1);
-
-        DynamicRuleObject object = new DynamicRuleObject();
-        object.setDynamicRuleName("UpdateDynamicRule2");
-        object.setDynamicRuleFrequency(1);
-        object.setDynamicRulePriority(1);
-//        object.setDynamicRuleRange("北京");
-        object.setDynamicRuleProtectLevel(2);
-        object.setTemplateId(templates.get(0).getTemplateId());
-        object.setLogRuleId(1L);
-        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
-        Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
+//        List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
+//                null, null, null,null,
+//                null,null,null,null,
+//                null,null, 1, 1);
+//        List<Template> templates = templateService.queryTemplates(
+//                null, null, null, null, null,1, 1);
+        for (int i = 0;i<30; i++) {
+            DynamicRuleObject object = new DynamicRuleObject();
+            object.setDynamicRuleName("动态规则"+i);
+            object.setDescription("动态规则新建测试");
+            object.setDynamicRuleSourceSystem("BW");
+            object.setBwSql("select * from test where event_id = "+i);
+            object.setDynamicRuleCreateDepart("组织树");
+            object.setDynamicRuleCreateUserId(1100664);
+            object.setDynamicRuleCreateUsername("NSADD管理员");
+            dynamicRuleService.newDynamicRuleObject(object);
+        }
     }
 
     @Test
@@ -78,9 +78,9 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
 //        object.setDynamicRuleRange("北京");
-        object.setDynamicRuleProtectLevel(2);
-        object.setTemplateId(templates.get(0).getTemplateId());
-        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+//        object.setDynamicRuleProtectLevel(2);
+//        object.setTemplateId(templates.get(0).getTemplateId());
+//        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
         dynamicRuleService.updateAuditStatus(dynamicRuleId, 2,null,null,null);
 
@@ -107,31 +107,34 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testQueryDynamicRule() {
-//        DynamicRuleObject object = dynamicRuleService.queryDynamicRuleById(9);
-//        System.out.println(object);
+        DynamicRuleObject object = dynamicRuleService.queryDynamicRuleById(166);
+        System.out.println(object);
     }
 
     @Test
     void testUpdateDynamicRule() {
-        /*
+
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");
-        object.setDynamicRuleFrequency(1);
-        object.setDynamicRulePriority(1);
-//        object.setDynamicRuleRange("北京");
-        object.setDynamicRuleProtectLevel(2);
-        object.setTemplateId(1);
-        object.setProtectObjectIds(List.of(new Integer[]{6061}));
+//        object.setDynamicRuleFrequency(1);
+//        object.setDynamicRulePriority(1);
+////        object.setDynamicRuleRange("北京");
+//        object.setDynamicRuleProtectLevel(2);
+//        object.setTemplateId(1);
+//        object.setProtectObjectIds(List.of(new Integer[]{6061}));
 
-        dynamicRuleService.updateDynamicRuleObject(5, object);
-        */
+        dynamicRuleService.updateDynamicRuleObject(166, object);
+
     }
 
     @Test
     void testQueryDynamicRuleObject() {
         List<DynamicRuleObject> objects = dynamicRuleService.queryDynamicRuleObject(
                 null,null,null, null,2,null,null,null,null,null,1, 10);
-        System.out.println(objects);
+        objects.forEach(object-> System.out.println(object));
+        Integer num = dynamicRuleService.queryDynamicRuleTotalNum(
+                null,null,null,null,null,null,null,null,null,null);
+        System.out.println(num);
     }
     @Test
     void testQueryDynamicRuleTotalNum(){
@@ -144,11 +147,14 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
     void testUpdateDynamicRuleAuditStatusBatch(){
         Map<Integer, Integer> map = new HashMap<>();
 //        map.put(101, 1);
-        map.put(110, 2);
-        map.put(112, 2);
+//        map.put(110, 2);
+//        map.put(112, 2);
+        for(int i = 167; i < 197; i++){
+            map.put(i, 2);
+        }
 
 //        System.out.println(dynamicRuleMapper.queryAuditStatusByIds(map));
-        System.out.println(dynamicRuleService.queryAuditStatusByIds(map));
+        System.out.println(dynamicRuleService.updateAuditStatusBatch(map, "NSADD管理员", "1100664", "组织树"));
 
     }
 

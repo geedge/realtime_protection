@@ -15,14 +15,10 @@ public interface DynamicRuleMapper {
     //新建动态规则
     void newDynamicRule(@Param("object") DynamicRuleObject dynamicRuleObject);
 
-    //新建动态规则与保护对象关联
-    Boolean newDynamicRulProtectObjectConcat(long dynamicRuleId, Integer protectObjectId);
-
     void deleteDynamicRuleObject(Integer dynamicRuleId);
 
     DynamicRuleObject queryDynamicRuleById(Integer dynamicRuleId);
 
-    List<ProtectObject> queryProtectObjectByRuleId(Integer dynamicRuleId);
 
     Boolean updateDynamicRuleObject(@Param("dynamicRuleId") Integer dynamicRuleId, @Param("object") DynamicRuleObject dynamicRuleObject);
 
@@ -35,12 +31,6 @@ public interface DynamicRuleMapper {
                                                    String eventType, Integer protectLevel, String templateName,
                                                    String auditUserName, String createDate,
                                                    Integer page, Integer pageSize);
-
-    void deleteDynamicRuleProtectObjectConcat(Integer dynamicRuleId);
-
-    TemplateNew queryTemplateByRuleId(Integer dynamicRuleId);
-
-    boolean newDynamicRulProtectObjectsConcat(Integer dynamicRuleId, List<Integer> protectObjectIds);
 
     boolean queryProtectObjectById(Integer protectObjectId);
 

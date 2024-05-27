@@ -9,12 +9,14 @@
                            task_act, task_type,
                            task_create_time, task_modify_time,
                            task_create_userid, task_create_username, task_create_depart,task_range,
-                           task_display_id)
+                           task_display_id, event_type, protect_level, template_id, template_name, source_system)
         VALUE (#{task.taskName}, #{task.taskStartTime}, #{task.taskEndTime},
                #{task.taskAct}, #{task.taskType},
                NOW(), NOW(),
                #{task.taskCreateUserId}, #{task.taskCreateUsername}, #{task.taskCreateDepart},#{task.taskRange},
-               #{task.taskDisplayId}
+               #{task.taskDisplayId},
+            #{task.eventType},#{task.protectLevel},#{task.templateId},
+            #{task.templateName},#{task.sourceSystem}
             )
 
     </insert>
@@ -61,7 +63,16 @@
 
         <result column="task_display_id" property="taskDisplayId"/>
 
+<!--策略模板字段-->
+        <result column="event_type" property="eventType"/>
+        <result column="protect_level" property="protectLevel"/>
+        <result column="template_id" property="templateId"/>
+        <result column="template_name" property="templateName"/>
+        <result column="source_system" property="sourceSystem"/>
+<!--防护对象字段-->
     </resultMap>
+
+
 
     <select id="queryTasks" resultMap="taskMap">
         SELECT t_task.* FROM t_task
@@ -69,11 +80,11 @@
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
         </if>
-        <if test="event_type != null and event_type != ''">
-            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
-            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
-            LEFT JOIN t_strategy_template_new ON t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
-        </if>
+<!--        <if test="event_type != null and event_type != ''">-->
+<!--            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id-->
+<!--            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id-->
+<!--            LEFT JOIN t_strategy_template_new ON t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id-->
+<!--        </if>-->
 
         <where>
             <if test="rule_name != null and rule_name != ''">
@@ -107,13 +118,16 @@
                 AND task_source LIKE CONCAT('%', #{task_source}, '%')
             </if>
             <if test="event_type != null and event_type != '' ">
-                AND t_strategy_template_new.event_type LIKE CONCAT('%', #{event_type}, '%')
+                AND event_type LIKE CONCAT('%', #{event_type}, '%')
             </if>
             <if test="create_date != null and create_date != '' ">
                 AND task_crate_time LIKE CONCAT('%', #{create_date}, '%')
             </if>
             <if test="start_date != null and start_date != '' ">
                 AND task_start_time LIKE CONCAT('%', #{start_date}, '%')
+            </if>
+            <if test="protect_level != null ">
+                AND protect_level = #{protect_level}
             </if>
 
         </where>
@@ -180,6 +194,11 @@
             <if test="task.taskStartTime != null">task_start_time = #{task.taskStartTime},</if>
             <if test="task.taskEndTime != null">task_end_time = #{task.taskEndTime},</if>
             <if test="task.taskRange != null">task_range = #{task.taskRange},</if>
+            <if test="task.eventType != null">event_type = #{task.eventType},</if>
+            <if test="task.protectLevel != null">protect_level = #{task.protectLevel},</if>
+            <if test="task.templateId != null">template_id = #{task.templateId},</if>
+            <if test="task.templateName != null">template_name = #{task.templateName},</if>
+            <if test="task.sourceSystem != null">source_system = #{task.sourceSystem},</if>
             task_modify_time = NOW(),
         </set>
         WHERE task_id = #{task.taskId}
@@ -238,7 +257,7 @@
     </update>
     <update id="changeTaskAuditStatusWithAudior">
         UPDATE t_task
-        SET task_status      = #{state},
+        SET task_status      = #{audit_status},
             task_modify_time = NOW(),
             task_audit_username = #{auditUserName},
             task_audit_userid = #{auditUserId},
@@ -268,6 +287,12 @@
         DELETE
         FROM t_task
         WHERE task_id = #{task_id}
+    </delete>
+
+    <delete id="deleteTaskProtectObjectConcat">
+        DELETE
+        FROM t_task_protectobject_conn
+        WHERE task_id = #{taskId}
     </delete>
 
     <resultMap id="staticCommandMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
@@ -312,6 +337,15 @@
             #{info.taskAct}, #{info.taskCreateUsername}, #{info.taskCreateDepart}, #{info.taskCreateUserId},
             #{info.distributePoint},#{info.taskDisplayId}
             );
+    </insert>
+    <insert id="newTaskProtectObjectConcat">
+        INSERT INTO t_task_protectobject_conn(task_id, protect_object_id)
+        VALUES
+        <foreach collection="protectObjectIds" item="protectObjectId" separator=",">
+            (
+            #{taskId}, #{protectObjectId}
+            )
+        </foreach>
     </insert>
 
     <select id="getStaticCommandInfos" resultMap="staticCommandMap">
@@ -393,11 +427,6 @@
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
         </if>
-        <if test="event_type != null and event_type != ''">
-            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
-            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
-            LEFT JOIN t_strategy_template_new ON t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id
-        </if>
 
         <where>
             <if test="rule_name != null and task_source != ''">
@@ -435,13 +464,16 @@
                 AND DATE(#{task_create_time}) = CURRENT_DATE
             </if>
             <if test="event_type != null and event_type != '' ">
-                AND t_strategy_template_new.event_type LIKE CONCAT('%', #{event_type}, '%')
+                AND event_type LIKE CONCAT('%', #{event_type}, '%')
             </if>
             <if test="create_date != null and create_date != '' ">
                 AND task_crate_time LIKE CONCAT('%', #{create_date}, '%')
             </if>
             <if test="start_date != null and start_date != '' ">
                 AND task_start_time LIKE CONCAT('%', #{start_date}, '%')
+            </if>
+            <if test="protect_level != null ">
+                AND protect_level = #{protect_level}
             </if>
         </where>
 
@@ -464,5 +496,26 @@
         SELECT task_audit_info
         FROM t_task
         WHERE task_id = #{taskId}
+    </select>
+
+    <resultMap id="protectObjectMap" type="com.realtime.protection.configuration.entity.defense.object.ProtectObject">
+        <id column="protect_object_id" property="protectObjectId"/>
+        <result column="protect_object_name" property="protectObjectName"/>
+        <result column="protect_object_system_name" property="protectObjectSystemName"/>
+        <result column="protect_object_ip" property="protectObjectIPAddress"/>
+        <result column="protect_object_port" property="protectObjectPort"/>
+        <result column="protect_object_url" property="protectObjectURL"/>
+        <result column="protect_object_protocol" property="protectObjectProtocol"/>
+        <result column="protect_object_audit_status" property="protectObjectAuditStatus"/>
+    </resultMap>
+
+    <select id="queryProtectObjectsByTaskId"
+            resultMap="protectObjectMap">
+        select t_protect_object.*
+        from t_protect_object
+                 inner join t_task_protectobject_conn
+                            on t_protect_object.protect_object_id = t_task_protectobject_conn.protect_object_id
+        where t_task_protectobject_conn.task_id = #{id}
+
     </select>
 </mapper>

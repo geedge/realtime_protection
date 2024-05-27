@@ -2,7 +2,6 @@ package com.realtime.protection.server.task;
 
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
-import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testPageQueryTask(){
-        List<Task> tasks = taskService.queryTasks(null, null, "", "", null,"", null, "", "", null,null,null,1, 10);
+        List<Task> tasks = taskService.queryTasks(null, null, "", "", null,"", null, "", "", null,null,null,null,1, 10);
 //        System.out.println(tasks);
         tasks.forEach(task -> System.out.println(task));
     }
@@ -121,7 +121,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 //        for (int i = 0; i < 10; i++) {
 //            task.setTaskName(testName);
 //            task.setTaskCreateUsername(testCreateName);
-//            List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
+//            List<StaticRuleObject> staticRuleObjects = s                                                                                                                              taticRuleService.queryStaticRule(
 //                    null, null, null, null, null,null, null, null,1, 5);
 //            List<Integer> staticRuleIds = new ArrayList<>();
 //            staticRuleObjects.forEach(staticRuleObject ->
@@ -144,8 +144,8 @@ class TaskServiceTest extends ProtectionApplicationTests {
 //        }
 //
 //
-//        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, null,1, 10);
-//        assertEquals(10, tasks.size());
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 10);
+        assertEquals(10, tasks.size());
 //
 //        tasks = taskService.queryTasks(0, null, null, null, null,null, null, null, null, 1, 10);
 //        assertEquals(10, tasks.size());
@@ -162,7 +162,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
     @Test
     void testUpdateTasks() {
         Task originalTask = taskService.queryTasks(
-                null, null, null, null, null, null, null, null, null,null,null,null,1, 1)
+                null, null, null, null, null, null, null, null, null,null,null,null,null,1, 1)
                 .get(0);
 
         List<StaticRuleObject> staticRuleObjects = staticRuleService.queryStaticRule(
@@ -179,7 +179,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testDeleteTask() {
-        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,1, 10)
+        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 10)
                 .get(0).getTaskId();
 
         assertTrue(taskService.deleteTask(testNum));
@@ -226,59 +226,62 @@ class TaskServiceTest extends ProtectionApplicationTests {
     }
 
 
+    @Transactional
     @Test
     void testStartStaticTask() throws DorisStartException {
-        StaticRuleObject staticRuleTest = new StaticRuleObject();
-        staticRuleTest.setStaticRuleName("mh-静态测试");
-        staticRuleTest.setStaticRuleCreateUsername("mh");
-        staticRuleTest.setStaticRuleCreateDepart("mmeess");
-        staticRuleTest.setStaticRuleCreateUserId(2);
-        staticRuleTest.setAuditStatus(0);
 
-        staticRuleTest.setStaticRuleSip("1.1.2.0");
-//        staticRuleTest.setStaticRuleMsip("255.255.255.0");
+        for (int n = 10; n < 20; n++) {
+            List<Integer> staticRuleIds = new ArrayList<>();
+            for (int i = 10; i < 15; i++) {
+                StaticRuleObject staticRuleTest = new StaticRuleObject();
+                staticRuleTest.setStaticRuleName(n+"test_staticrule" + i);
+                staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
+                staticRuleTest.setStaticRuleCreateDepart("组织树");
+                staticRuleTest.setStaticRuleCreateUserId(22222222);
+                staticRuleTest.setAuditStatus(0);
 
-//        staticRuleTest.setStaticRuleDip("1.1.1.2");
-//        staticRuleTest.setStaticRuleMdip("255.255.255.0");
-//        staticRuleTest.setStaticRuleSport(80);
+                staticRuleTest.setStaticRuleSip("32.2.3." + i);
+                staticRuleTest.setStaticRuleDip(n + ".2.3.2");
+                staticRuleService.newStaticRuleObject(staticRuleTest);
+                staticRuleIds.add(staticRuleTest.getStaticRuleId());
+                staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "xxx管理员", 1111111, "组织树");
 
-        staticRuleTest.setStaticRulePriority(1);
-        staticRuleTest.setStaticRuleFrequency(1);
-//        staticRuleTest.setStaticRuleRange("北京");
-        Integer staticRuleId = staticRuleService.newStaticRuleObject(staticRuleTest);
+            }
 
 
-        Task task = new Task();
-        task.setTaskName("mh-task测试3");
+            Task task = new Task();
+            task.setTaskName("静态task测试"+n);
 
-        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
+            LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+            LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
 
-        task.setTaskStartTime(taskStartTime);
-        task.setTaskEndTime(taskEndTime);
-        task.setTaskAct("阻断");
-        task.setTaskType(1);
-        task.setTaskRange("1009");
+            task.setTaskStartTime(taskStartTime);
+            task.setTaskEndTime(taskEndTime);
+            task.setTaskAct("23");
+            task.setTaskType(1);
+            task.setTaskRange("1007");
 
-        task.setTaskCreateUserId(1);
-        task.setTaskCreateUsername("xxx");
-        task.setTaskCreateDepart("xxx");
+            task.setTaskCreateUserId(111111);
+            task.setTaskCreateUsername("xxx管理员");
+            task.setTaskCreateDepart("xxx");
 
-        List<Integer> staticRuleIds = new ArrayList<>();
-        staticRuleIds.add(staticRuleId);
-        staticRuleService.updateAuditStatus(staticRuleId, 2,null,null,null);
+            task.setStaticRuleIds(staticRuleIds);
 
-        task.setStaticRuleIds(staticRuleIds);
+            List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, 1, 1);
 
-        Long taskId = taskService.newTask(task);
+
+            Long taskId = taskService.newTask(task);
 
 //
-        taskService.changeTaskAuditStatus(taskId, 2);
+            taskService.changeTaskAuditStatus(taskId, 2);
 
-        stateChangeService.changeState(2, taskId, false);
+            stateChangeService.changeState(2, taskId, false);
 
-        System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
-
+//            System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
+        }
     }
 
     @Test
@@ -303,10 +306,10 @@ class TaskServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
 //        object.setDynamicRuleRange("北京");
-        object.setDynamicRuleProtectLevel(1);
-        object.setLogRuleId(1L);
-        object.setTemplateId(templates.get(0).getTemplateId());
-        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+//        object.setDynamicRuleProtectLevel(1);
+//        object.setLogRuleId(1L);
+//        object.setTemplateId(templates.get(0).getTemplateId());
+//        object.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
         Integer dynamicRuleId = dynamicRuleService.newDynamicRuleObject(object);
         dynamicRuleService.updateAuditStatus(object.getDynamicRuleId(), 2,null,null,null);
 
@@ -325,12 +328,19 @@ class TaskServiceTest extends ProtectionApplicationTests {
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
         task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
+        task.setEventType("ddos");
+        task.setProtectLevel(1);
+        task.setTemplateName(templates.get(0).getTemplateName());
+        task.setSourceSystem("bw");
+        task.setTemplateId(templates.get(0).getTemplateId());
+        task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+
         Long taskId = taskService.newTask(task);
         System.out.println(taskId);
         //审核状态
-        taskService.changeTaskAuditStatus(taskId, 2);
+//        taskService.changeTaskAuditStatus(taskId, 2);
         //启动任务
-        stateChangeService.changeState(2, taskId, false);
+//        stateChangeService.changeState(2, taskId, false);
 
 //        System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
     }
@@ -358,6 +368,6 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testQueryTaskTotalNum(){
-        System.out.println(taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", ""));
+        System.out.println(taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", "",null,null,null,null));
     }
 }

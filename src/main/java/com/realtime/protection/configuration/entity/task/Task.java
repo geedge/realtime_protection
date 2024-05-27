@@ -1,6 +1,7 @@
 package com.realtime.protection.configuration.entity.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -101,4 +102,40 @@ public class Task {
     @JsonProperty("audit_user_depart")
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
+
+
+    /*
+    策略模板（事件类型、防护等级）都移动到任务表中
+     */
+    @JsonProperty("event_type")
+    @Schema(description = "事件类型", example = "反射型ddos")
+    private String eventType;
+
+    @JsonProperty("protect_level")
+    @Schema(description = "防护等级", example = "低=1，中=2，高=3")
+    private Integer protectLevel;
+
+    @JsonProperty("template_id")
+    @Schema(description = "策略模板ID", example = "1")
+    private Integer templateId;
+
+    @JsonProperty("template_name")
+    @Schema(description = "策略模板名称", example = "策略模板1")
+    private String templateName;
+
+    @JsonProperty("source_system")
+    @Schema(description = "数据来源系统", example = "bw系统")
+    private String sourceSystem;
+
+    @JsonProperty("protect_object_ids")
+    @Schema(description = "防护对象ID列表", example = "[1, 2, 3]")
+    private List<Integer> protectObjectIds;
+
+    @JsonProperty("protect_objects")
+    @Schema(description = "完整防护对象列表", example = "[{protect_object_id: 1, protect_object_name: '北京'}, {protect_object_id: 2, protect_object_name: '上海'}]",
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private List<ProtectObject> protectObjects;
+
+
+
 }
