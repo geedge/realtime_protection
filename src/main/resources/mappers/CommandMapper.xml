@@ -9,7 +9,7 @@
                               MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
                               INVALID_TIME, IS_VALID, IS_JUDGED,
                               SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASK_TYPE, RULE_ID)
+                              TASKTYPE, RULE_ID)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
                 #{info.frequency},
                 DEFAULT,
@@ -32,7 +32,7 @@
         MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
         IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASK_TYPE, RULE_ID)
+                              TASKTYPE, RULE_ID)
         values
         <foreach collection="command_infos" item="info" separator=",">
             (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},

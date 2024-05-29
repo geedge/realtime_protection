@@ -92,7 +92,7 @@ public class TaskService {
             //校验防护对象是否存在
             boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
                     .allMatch(dynamicRuleMapper::queryProtectObjectById);
-            if (!ProtectObjIdValid) {
+            if (!ProtectObjIdValid && !task.getProtectObjectIds().isEmpty()){
                 throw new IllegalArgumentException("部分防护对象不存在");
             }
             //任务和防护对象多对多关联建立

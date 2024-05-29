@@ -4,6 +4,7 @@ import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.server.defense.object.ProtectObjectService;
 import com.realtime.protection.server.defense.template.TemplateService;
@@ -156,6 +157,18 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 //        System.out.println(dynamicRuleMapper.queryAuditStatusByIds(map));
         System.out.println(dynamicRuleService.updateAuditStatusBatch(map, "NSADD管理员", "1100664", "组织树"));
 
+    }
+
+
+    @Test
+    void testParseSql(){
+        List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(43991L);
+
+        dynamicTaskInfos.forEach(dynamicTaskInfo -> {
+                dynamicTaskInfo.parseSql();
+                System.out.println(dynamicTaskInfo.getConditions());
+
+          });
     }
 
 }

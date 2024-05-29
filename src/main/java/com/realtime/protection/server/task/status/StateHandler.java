@@ -8,11 +8,10 @@ import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.util.List;
@@ -114,11 +113,17 @@ public class StateHandler {
         if (dynamicTaskInfos == null || dynamicTaskInfos.isEmpty()) {
             throw new IllegalArgumentException("动态规则列表为空，请至少选择一个动态规则以启动动态/研判后类型任务");
         }
+        //解析sql
+        dynamicTaskInfos.forEach(dynamicTaskInfo -> {
+            dynamicTaskInfo.parseSql();
+        });
 
         // 将所有关联的动态规则审批状态修改为“已使用”
         taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);
+
+//        System.out.println(dynamicTaskInfos);
 
         Mono<SimpleResponse> mono = client.post()
                 .uri("/api/v1/kafkasend")
@@ -144,3 +149,4 @@ public class StateHandler {
         return success.get();
     }
 }
+

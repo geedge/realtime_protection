@@ -41,7 +41,7 @@ public class ResponseResult implements Serializable {
     }
 
     public static ResponseResult ok() {
-        return new ResponseResult(200, "request succeed");
+        return new ResponseResult(200, "请求成功");
     }
 
     public static ResponseResult ok(String message) {
@@ -49,11 +49,11 @@ public class ResponseResult implements Serializable {
     }
 
     public static ResponseResult error() {
-        return new ResponseResult(500, "request failed");
+        return new ResponseResult(500, "请求失败");
     }
 
     public static ResponseResult invalid() {
-        return new ResponseResult(400, "invalid request");
+        return new ResponseResult(400, "请求无效");
     }
 
     public static ResponseResult invalid(String message) {
@@ -61,7 +61,7 @@ public class ResponseResult implements Serializable {
     }
 
     public static ResponseResult unAuthorized() {
-        return new ResponseResult(401, "UnAuthorized User");
+        return new ResponseResult(401, "未授权用户");
     }
 
     public static ResponseResult error(String message) {

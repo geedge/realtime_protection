@@ -50,6 +50,8 @@ dependencies {
     implementation 'com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.0'
     implementation 'com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.alibaba:druid:1.2.23'
+
 }
 
 tasks.named('test') {

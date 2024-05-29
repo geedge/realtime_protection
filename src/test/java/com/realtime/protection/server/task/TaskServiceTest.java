@@ -1,5 +1,6 @@
 package com.realtime.protection.server.task;
 
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
@@ -226,7 +227,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
     }
 
 
-    @Transactional
+    @DSTransactional
     @Test
     void testStartStaticTask() throws DorisStartException {
 
@@ -305,6 +306,9 @@ class TaskServiceTest extends ProtectionApplicationTests {
         object.setDynamicRuleName("testStartDynamicTask");
         object.setDynamicRuleFrequency(1);
         object.setDynamicRulePriority(1);
+        object.setDynamicRuleSourceSystem("bw");
+//        object.setDynamicRuleSourceSystem("bw");
+        object.setBwSql("select c_src_ipv4,c_src_port,c_dest_ipv4,c_dest_port from topic_xxxxxx where c_event_id in (11113333311,222222222222) and c_netnum = 111111111 and  c_flowid=22222222"  );
 //        object.setDynamicRuleRange("北京");
 //        object.setDynamicRuleProtectLevel(1);
 //        object.setLogRuleId(1L);
@@ -316,31 +320,32 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
 
         Task task = new Task();
-        task.setTaskName("生产告警信息测试2");
+        task.setTaskName("test动态任务sql");
         LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
         LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
         task.setTaskStartTime(taskStartTime);
         task.setTaskEndTime(taskEndTime);
-        task.setTaskAct("阻断");
+        task.setTaskAct("23");
         task.setTaskType(2);
-        task.setTaskRange("1009");
+        task.setTaskRange("1007");
         task.setTaskCreateUserId(1);
         task.setTaskCreateUsername("xxx");
         task.setTaskCreateDepart("xxx");
         task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
-        task.setEventType("ddos");
-        task.setProtectLevel(1);
+        task.setEventType(templates.get(0).getEventType());
+        task.setProtectLevel(Integer.valueOf(templates.get(0).getProtectLevel()));
         task.setTemplateName(templates.get(0).getTemplateName());
-        task.setSourceSystem("bw");
+        task.setSourceSystem(templates.get(0).getSourceSystem());
         task.setTemplateId(templates.get(0).getTemplateId());
+
         task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
 
         Long taskId = taskService.newTask(task);
         System.out.println(taskId);
         //审核状态
-//        taskService.changeTaskAuditStatus(taskId, 2);
+        taskService.changeTaskAuditStatus(taskId, 2);
         //启动任务
-//        stateChangeService.changeState(2, taskId, false);
+        stateChangeService.changeState(2, taskId, false);
 
 //        System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
     }

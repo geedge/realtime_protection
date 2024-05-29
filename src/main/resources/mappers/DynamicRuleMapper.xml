@@ -12,11 +12,12 @@
         (dynamic_rule_name,
          create_time, modify_time, dynamic_rule_create_username,
          dynamic_rule_create_depart,
-        dynamic_rule_create_user_id, bw_sql, dynamic_rule_display_id)
+        dynamic_rule_create_user_id, bw_sql, dynamic_rule_display_id, source_system)
         values (#{object.dynamicRuleName},
                 NOW(), NOW(),
                 #{object.dynamicRuleCreateUsername}, #{object.dynamicRuleCreateDepart},
-                #{object.dynamicRuleCreateUserId}, #{object.bwSql}, #{object.dynamicRuleDisplayId})
+                #{object.dynamicRuleCreateUserId}, #{object.bwSql}, #{object.dynamicRuleDisplayId}
+               ,#{object.dynamicRuleSourceSystem})
     </insert>
 
 <!--    <insert id="newDynamicRulProtectObjectConcat">-->
