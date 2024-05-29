@@ -34,7 +34,7 @@ public class AlertMessage {
     private String modifyTime;
     @JsonProperty("alert_message_uuid")
     private String alertMessageUUID;
-
+//1代表防护对象命中告警信息里的是目的ip，0代表防护对象命中告警信息里的是源ip
     @JsonProperty("protect_object_is_src_dst")
     private int protectIsSrcOrDst;
 }

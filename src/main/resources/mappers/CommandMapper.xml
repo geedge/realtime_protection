@@ -61,6 +61,8 @@
         <result column="LAST_SEND_TIME" property="latestSendTime"/>
         <result column="IS_VALID" property="isValid"/>
         <result column="IS_JUDGED" property="isJudged"/>
+<!--        <result column="IS_DELETED" property=""/>-->
+
 
         <association property="fiveTupleWithMask">
             <result column="SRC_IP" property="sourceIP"/>
@@ -107,7 +109,7 @@
         FROM t_command
         <where>
             AND TASK_ID = #{task_id}
-            AND IS_DELETED = FALSE
+--             AND IS_DELETED = FALSE
             <if test="src_ip != null">AND SRC_IP = #{src_ip}</if>
             <if test="dst_ip != null">AND DST_IP = #{dst_ip}</if>
             <if test="src_port != null">AND SRC_PORT = #{src_port}</if>

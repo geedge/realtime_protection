@@ -85,6 +85,9 @@ public class DynamicTaskInfo {
 
     public void parseSql()  {
         String bwSql = this.bwSql;
+        if (bwSql == null) {
+            return;
+        }
         //解析SQL语句
         SQLStatementParser parser = new MySqlStatementParser(bwSql);
         // 使用Parser解析生成AST，这里SQLStatement就是AST

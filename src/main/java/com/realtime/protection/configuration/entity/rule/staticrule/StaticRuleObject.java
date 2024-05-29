@@ -135,7 +135,7 @@ public class StaticRuleObject {
     private String staticRuleURL;
 
     @JsonProperty("static_rule_priority")
-    @ExcelProperty("优先级")
+    @ExcelIgnore
     @Max(value = 3)
     @Min(value = 1)
     @Schema(description = "优先级,1代表高2代表中3代表低", example = "1")

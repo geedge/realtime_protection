@@ -88,17 +88,19 @@ public class TaskService {
             });
             taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
         }
-        if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()){
-            //校验防护对象是否存在
-            boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
-                    .allMatch(dynamicRuleMapper::queryProtectObjectById);
-            if (!ProtectObjIdValid && !task.getProtectObjectIds().isEmpty()){
-                throw new IllegalArgumentException("部分防护对象不存在");
-            }
-            //任务和防护对象多对多关联建立
-            taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
-        }
+        if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()) {
+            if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
+                //校验防护对象是否存在
+                boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
+                        .allMatch(dynamicRuleMapper::queryProtectObjectById);
+                if (!ProtectObjIdValid) {
+                    throw new IllegalArgumentException("部分防护对象不存在");
+                }
+                //任务和防护对象多对多关联建立
+                taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
 
+            }
+        }
 
         return task.getTaskId();
     }

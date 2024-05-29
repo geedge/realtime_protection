@@ -112,10 +112,10 @@ public class TemplateService {
     public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
         Integer originalAuditStatus = templateMapper.queryAuditStatusById(id);
         if (originalAuditStatus == null) {
-            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+            throw new IllegalArgumentException("不能找到静态规则：" + id + ", 可能静态规则不存在?");
         }
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
-            throw new IllegalArgumentException("invalid audit status");
+            throw new IllegalArgumentException("审核状态修改不合逻辑");
         }
         Boolean success = templateMapper.updateAuditStatusById(id, auditStatus);
 

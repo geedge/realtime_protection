@@ -210,9 +210,11 @@ class TaskServiceTest extends ProtectionApplicationTests {
 //        map.put(43830, 1);
 //        map.put(43831, 1);
 //        map.put(43832, 1);
-
-
 //        System.out.println(taskService.updateAuditStatusBatch(map));
+
+        System.out.println(taskService.changeTaskAuditStatus(44047L, 2, null, null, null));
+
+
     }
     @Test
     void testGetDynamicTaskInfos(){
@@ -308,7 +310,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
         object.setDynamicRulePriority(1);
         object.setDynamicRuleSourceSystem("bw");
 //        object.setDynamicRuleSourceSystem("bw");
-        object.setBwSql("select c_src_ipv4,c_src_port,c_dest_ipv4,c_dest_port from topic_xxxxxx where c_event_id in (11113333311,222222222222) and c_netnum = 111111111 and  c_flowid=22222222"  );
+//        object.setBwSql("select c_src_ipv4,c_src_port,c_dest_ipv4,c_dest_port from topic_xxxxxx where c_event_id in (11113333311,222222222222) and c_netnum = 111111111 and  c_flowid=22222222"  );
 //        object.setDynamicRuleRange("北京");
 //        object.setDynamicRuleProtectLevel(1);
 //        object.setLogRuleId(1L);
@@ -338,7 +340,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
         task.setSourceSystem(templates.get(0).getSourceSystem());
         task.setTemplateId(templates.get(0).getTemplateId());
 
-        task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
+//        task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
 
         Long taskId = taskService.newTask(task);
         System.out.println(taskId);

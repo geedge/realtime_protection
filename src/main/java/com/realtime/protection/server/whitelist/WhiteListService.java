@@ -151,7 +151,7 @@ public class WhiteListService {
         StaticRuleObject staticRuleObject = staticRuleMapper.queryStaticRuleById(ruleId);
 
         if (staticRuleObject == null) {
-            throw new IllegalArgumentException("invalid rule id");
+            throw new IllegalArgumentException("无效的静态规则");
         }
         // 命中的whitelist列表：每一列包含ip port url
         return whiteListMapper.existWhiteListObject(staticRuleObject);
@@ -192,11 +192,11 @@ public class WhiteListService {
         //查询目前curStatus
         Integer originalAuditStatus = whiteListMapper.queryWhiteListObjectAuditStuatusById(id);
         if (originalAuditStatus == null){
-            throw new IllegalArgumentException("cannot find audit status of whitelist " + id + ", maybe whitelist doesn't exist?");
+            throw new IllegalArgumentException("不能找到白名单 " + id + ", 可能该白名单不存在");
         }
         //判断是否可以修改
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
-            throw new IllegalArgumentException("invalid audit status");
+            throw new IllegalArgumentException("审核状态修改违规");
         }
 
         Boolean success = whiteListMapper.updateWhiteListObjectAuditStatus(id, auditStatus);

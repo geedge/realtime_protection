@@ -257,12 +257,11 @@
     </update>
     <update id="changeTaskAuditStatusWithAudior">
         UPDATE t_task
-        SET task_status      = #{audit_status},
+        SET task_audit_status      = #{audit_status},
             task_modify_time = NOW(),
             task_audit_username = #{auditUserName},
             task_audit_userid = #{auditUserId},
             task_audit_depart = #{auditUserDepart}
-
         WHERE task_id = #{task_id}
     </update>
     <update id="updateAuditStatusWithAuditorByIdBatch">
