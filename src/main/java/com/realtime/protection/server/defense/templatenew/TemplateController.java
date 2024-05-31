@@ -1,8 +1,10 @@
 package com.realtime.protection.server.defense.templatenew;
 
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,14 @@ public class TemplateController implements TemplateNewCpntrollerApi{
     @Override
     @PostMapping("/new")
     public ResponseResult newTemplate(@RequestBody @Valid TemplateNew template) {
-
+        //从http首部session字段获取用户信息
+//        HttpSession session = request.getSession();
+//        UserFull user = (UserFull) session.getAttribute("user");
+//        if (user != null) {
+//            object.setStaticRuleCreateUsername(user.name);
+//            object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));
+//            object.setStaticRuleCreateDepart(user.getOrgName());
+//        }
         Integer templateId = templateService.newTemplate(template);
 
         if (templateId > 0) {

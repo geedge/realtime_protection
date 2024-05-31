@@ -163,6 +163,9 @@ public class StaticRuleObject {
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
 
+    @Schema(description = "事件类型", example = "DDos")
+    private String eventType;
+
 
     public void checkAuditStatusValidate(AuditStatusEnum newAuditStatus) {
         if (!List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()).contains(this.getAuditStatus())) {

@@ -60,11 +60,12 @@ public class LoginService {
                 .build();
 
         Request request = new Request.Builder()
-            .url("https://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
-//            .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
-            .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")
-            .post(okhttp3.internal.Util.EMPTY_REQUEST)
-            .build();
+//            .url("https://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
+                .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
+//            .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")
+                .header("Authorization", "Basic TlNBREQ6bkhRbE5zN3lLeVd5bzJOc2JmNk5oRmFhYmlWWUlBU1NsdWJRZ3pUaDhOU2xOUkE1V2xQUTF3PT0=")
+                .post(okhttp3.internal.Util.EMPTY_REQUEST)
+                .build();
         try  {
             Response response = client.newCall(request).execute();
             String rsp = response.body().string();

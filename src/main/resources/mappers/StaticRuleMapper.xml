@@ -14,7 +14,7 @@
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
                                   static_rule_url, static_rule_priority,
                                   static_rule_frequency, static_rule_audit_status,
-                                  static_rule_display_id)
+                                  static_rule_display_id,event_type)
         values (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
                 #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
                 INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
@@ -23,7 +23,7 @@
                 #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
                 #{object.staticRuleFrequency},
                 #{object.auditStatus},
-                #{object.staticRuleDisplayId})
+                #{object.staticRuleDisplayId},#{object.eventType})
     </insert>
     <insert id="newStaticRules">
         insert into t_static_rule(static_rule_name, static_rule_create_time,
@@ -34,7 +34,7 @@
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
                                   static_rule_url, static_rule_priority,
                                   static_rule_frequency,  static_rule_audit_status,
-                                  static_rule_display_id
+                                  static_rule_display_id,event_type
                                   )
         values
         <foreach collection="staticRuleBatch" item="object" separator=",">
@@ -45,7 +45,7 @@
             #{object.staticRuleMdport}, #{object.staticRuleProtocol}, #{object.staticRuleMprotocol},
             #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
             #{object.staticRuleFrequency}, 0,
-            #{object.staticRuleDisplayId}
+            #{object.staticRuleDisplayId},#{object.eventType}
             )
         </foreach>
     </insert>
@@ -76,6 +76,11 @@
             <if test="object.staticRuleFrequency != null and object.staticRuleFrequency != ''">
                 static_rule_frequency = #{object.staticRuleFrequency},
             </if>
+
+            <if test="object.eventType != null and object.eventType != ''">
+                event_type = #{eventType},
+            </if>
+
             static_rule_modify_time = NOW()
 
         </set>
@@ -173,6 +178,7 @@
         <result column="static_rule_frequency" property="staticRuleFrequency"/>
 
         <result column="static_rule_display_id" property="staticRuleDisplayId"/>
+        <result column="event_type" property="eventType"/>
     </resultMap>
 
     <select id="queryStaticRule"  resultMap="staticRuleMap">
