@@ -163,6 +163,7 @@ public class StaticRuleObject {
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
 
+    @JsonProperty("event_type")
     @Schema(description = "事件类型", example = "DDos")
     private String eventType;
 
