@@ -146,6 +146,14 @@
         <result column="white_list_protocol" property="whiteListProtocol"/>
         <result column="white_list_audit_status" property="whiteListAuditStatus"/>
         <result column="white_list_display_id" property="whiteListDisplayId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="create_username" property="createUserName"/>
+        <result column="create_user_department" property="createUserDepartment"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
 
     </resultMap>
 
@@ -173,7 +181,7 @@
     </select>
 
     <select id="queryWhiteListObjectById" resultMap="whiteListMap">
-        select *
+        select *, INET_NTOA(white_list_ip) as white_list_ip_d
         from t_white_list
         where white_list_id = #{whiteListId}
     </select>

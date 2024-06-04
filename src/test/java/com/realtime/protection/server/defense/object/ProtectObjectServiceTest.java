@@ -56,6 +56,16 @@ class ProtectObjectServiceTest extends ProtectionApplicationTests {
 //        Boolean success = protectObjectService.newProtectObjects(protectObjects);
 //        assertTrue(success);
     }
+    @Test
+    void queryProtectObjectByid() {
+
+        protectObjectService.newProtectObject(protectObject);
+
+        System.out.println(protectObjectService.queryProtectObject(protectObject.getProtectObjectId()));
+
+
+    }
+
 
     @Test
     void queryProtectObject() {

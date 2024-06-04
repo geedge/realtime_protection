@@ -141,6 +141,13 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
         List<WhiteListObject> whiteListObjects = whiteListService.queryWhiteListObject(null, null, null, null, null, 1, 2);
         System.out.println(whiteListObjects);
     }
+    @Test
+    void testQueryWhiteListObjectbyid() {
+        List<WhiteListObject> whiteListObjects = whiteListService.queryWhiteListObject(null, null, null, null, null, 1, 2);
+        System.out.println(
+                whiteListService.queryWhiteListObjectById(
+                        whiteListObjects.get(0).getWhiteListId()));
+    }
 
     @Test
     void testUpdateAuditStatusByIdBatch() {

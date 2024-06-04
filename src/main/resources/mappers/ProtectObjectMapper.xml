@@ -10,12 +10,14 @@
                                      protect_object_ip, protect_object_port, protect_object_url,
                                      protect_object_protocol,
                                      protect_object_create_username, protect_object_create_depart,
-                                     protect_object_create_user_id, protect_object_display_id)
+                                     protect_object_create_user_id, protect_object_display_id
+        ,create_time, modify_time)
             VALUE (#{proobj.protectObjectId}, #{proobj.protectObjectName}, #{proobj.protectObjectSystemName},
                    INET_ATON(#{proobj.protectObjectIPAddress}), #{proobj.protectObjectPort}, #{proobj.protectObjectURL},
                    #{proobj.protectObjectProtocol},
                    #{proobj.protectObjectCreateUsername}, #{proobj.protectObjectCreateDepart},
-                   #{proobj.protectObjectCreateUserId}, #{proobj.protectObjectDisplayId})
+                   #{proobj.protectObjectCreateUserId}, #{proobj.protectObjectDisplayId},
+                   NOW(), NOW())
     </insert>
 
     <insert id="newProtectObjects" parameterType="List">
@@ -23,14 +25,14 @@
         protect_object_ip, protect_object_port, protect_object_url,
         protect_object_protocol,
         protect_object_create_username, protect_object_create_depart,
-        protect_object_create_user_id, protect_object_display_id)
+        protect_object_create_user_id, protect_object_display_id, create_time, modify_time)
         VALUES
         <foreach collection="proobjs" item="proobj" separator=",">
             (#{proobj.protectObjectId}, #{proobj.protectObjectName}, #{proobj.protectObjectSystemName},
             INET_ATON(#{proobj.protectObjectIPAddress}), #{proobj.protectObjectPort}, #{proobj.protectObjectURL},
             #{proobj.protectObjectProtocol},
             #{proobj.protectObjectCreateUsername}, #{proobj.protectObjectCreateDepart},
-            #{proobj.protectObjectCreateUserId}, #{proobj.protectObjectDisplayId})
+            #{proobj.protectObjectCreateUserId}, #{proobj.protectObjectDisplayId}, NOW(), NOW()
         </foreach>
     </insert>
     <insert id="insertStaticRuleStatusLog">
@@ -131,12 +133,23 @@
         <id column="protect_object_id" property="protectObjectId"/>
         <result column="protect_object_name" property="protectObjectName"/>
         <result column="protect_object_system_name" property="protectObjectSystemName"/>
+
         <result column="protect_object_ip" property="protectObjectIPAddress"/>
         <result column="protect_object_port" property="protectObjectPort"/>
         <result column="protect_object_url" property="protectObjectURL"/>
         <result column="protect_object_protocol" property="protectObjectProtocol"/>
         <result column="protect_object_audit_status" property="protectObjectAuditStatus"/>
         <result column="protect_object_display_id" property="protectObjectDisplayId"/>
+
+        <result column="protect_object_create_username" property="protectObjectCreateUsername"/>
+        <result column="protect_object_create_user_id" property="protectObjectCreateUserId"/>
+        <result column="protect_object_create_user_depart" property="protectObjectCreateDepart"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+
 
     </resultMap>
 
@@ -189,7 +202,17 @@
                protect_object_port,
                protect_object_url,
                protect_object_protocol,
-               protect_object_audit_status,protect_object_display_id
+               protect_object_audit_status,
+               protect_object_display_id,
+               protect_object_create_username,
+                protect_object_create_user_id,
+                protect_object_create_depart,
+                audit_user_name,
+                audit_user_id,
+                audit_user_deaprt,
+                create_time,
+                modify_time
+
         FROM t_protect_object
         WHERE protect_object_id = #{proobj_id}
     </select>

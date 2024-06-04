@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class WhiteListObject {
     @JsonProperty("whiteobj_id")
@@ -88,4 +90,10 @@ public class WhiteListObject {
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
 
+    @JsonProperty("create_time")
+    @Schema(description = "创建时间", example = "")
+    private LocalDateTime createTime;
+    @JsonProperty("modify_time")
+    @Schema(description = "修改时间", example = "")
+    private LocalDateTime modifyTime;
 }
