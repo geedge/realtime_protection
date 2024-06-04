@@ -69,8 +69,14 @@ public class StateHandler {
 
     protected Boolean handleFinish(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
+
         taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        // 要删去规则的used_task_id,因为在新建时检查了是否有重复使用的规则
+        taskService.removeDynamicRuleUsedTaskIdInTask(taskId);
+
         taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.removeStaticRuleUsedTaskIdInTask(taskId);
+
 
         return true;
     }

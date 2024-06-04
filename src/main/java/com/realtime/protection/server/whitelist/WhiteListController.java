@@ -212,6 +212,9 @@ public class WhiteListController implements WhiteListControllerApi {
                 ))
                 .setData("whiteobj_unaudit_num", whiteListService.queryAuditWhiteListTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ))
+                .setData("whiteobj_returned_num", whiteListService.queryAuditWhiteListTotalNum(
+                       AuditStatusEnum.RETURNED.getNum()
                 ));
     }
 
@@ -255,6 +258,16 @@ public class WhiteListController implements WhiteListControllerApi {
     public ResponseResult queryAuditInfo(@PathVariable Integer id) {
         return ResponseResult.ok()
                 .setData("auditInfo", whiteListService.queryAuditInfo(id));
+    }
+
+    @Override
+    @GetMapping("/{id}/history")
+    public ResponseResult queryHistory(@PathVariable Integer id,
+                                       @RequestParam(value = "page", required = true) Integer page,
+                                       @RequestParam(value = "page_size", required = true) Integer pageSize) {
+
+        return ResponseResult.ok()
+                .setData("history", whiteListService.queryHistory(id, page, pageSize));
     }
 
 

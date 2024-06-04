@@ -279,7 +279,9 @@ public class StaticRuleController implements StaticRuleControllerApi {
                         AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())
                 ))
                 .setData("static_rule_unaudit_num", staticRuleService.queryAuditStaticRuleTotalNum(
-                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())));
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())))
+                .setData("static_rule_returned_num", staticRuleService.queryAuditStaticRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.RETURNED.getState())));
     }
 
 
@@ -299,6 +301,16 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult queryAuditInfo(@PathVariable Integer id) {
         return ResponseResult.ok()
                 .setData("auditInfo", staticRuleService.queryAuditInfo(id));
+    }
+
+    @Override
+    @GetMapping("/{id}/history")
+    public ResponseResult queryHistory(@PathVariable Integer id,
+                                       @RequestParam(value = "page", required = true) Integer page,
+                                       @RequestParam(value = "page_size", required = true) Integer pageSize) {
+
+        return ResponseResult.ok()
+                .setData("history", staticRuleService.queryHistory(id, page, pageSize));
     }
 
 }

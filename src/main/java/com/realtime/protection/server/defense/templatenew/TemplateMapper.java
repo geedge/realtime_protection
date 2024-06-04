@@ -69,4 +69,6 @@ public interface TemplateMapper {
     void updateStatusLogExpireTimeBatch(List<Integer> ids);
 
     void insertStatusLogBatch(List<Integer> ids);
+
+    List<TemplateNew> queryHistory(Integer id, Integer page, Integer pageSize);
 }

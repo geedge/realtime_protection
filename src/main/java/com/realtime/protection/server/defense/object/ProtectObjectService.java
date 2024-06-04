@@ -246,4 +246,8 @@ public class ProtectObjectService {
         protectObjectMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
         protectObjectMapper.insertStaticRuleStatusLogBatch(ids);
     }
+
+    public List<ProtectObject> queryHistory(Integer id, Integer page, Integer pageSize) {
+        return protectObjectMapper.queryHistory(id, page, pageSize);
+    }
 }

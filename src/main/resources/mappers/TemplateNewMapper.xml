@@ -278,6 +278,7 @@
                 AND protect_level LIKE CONCAT('%', #{protect_level}, '%')
             </if>
         </where>
+        ORDER BY strategy_template_id DESC
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
 
@@ -345,6 +346,13 @@
         SELECT audit_info
         FROM t_strategy_template_new
         WHERE strategy_template_id = #{id}
+    </select>
+    <select id="queryHistory" resultMap="templateMap">
+        SELECT *
+        FROM t_strategy_template_new_status_log
+        WHERE strategy_template_id = #{id}
+        ORDER BY effective_time DESC
+            LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
 </mapper>

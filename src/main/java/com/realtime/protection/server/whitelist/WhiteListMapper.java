@@ -68,4 +68,6 @@ public interface WhiteListMapper {
     void updateStatusLogExpireTimeBatch(List<Integer> ids);
 
     void insertStatusLogBatch(List<Integer> ids);
+
+    List<WhiteListObject> queryHistory(Integer id, Integer page, Integer pageSize);
 }

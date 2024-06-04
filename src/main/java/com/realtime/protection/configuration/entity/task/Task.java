@@ -136,6 +136,13 @@ public class Task {
             accessMode = Schema.AccessMode.READ_ONLY)
     private List<ProtectObject> protectObjects;
 
+    @JsonProperty("effecive_time")
+    @Schema(description = "日志表中有效开始时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime effeciveTime;
+
+    @JsonProperty("expire_time")
+    @Schema(description = "日志表中到期时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime expireTime;
 
 
 }

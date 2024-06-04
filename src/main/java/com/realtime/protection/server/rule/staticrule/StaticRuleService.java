@@ -420,4 +420,8 @@ public class StaticRuleService {
         staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
         staticRuleMapper.insertStaticRuleStatusLogBatch(ids);
     }
+
+    public List<StaticRuleObject> queryHistory(Integer id, Integer page, Integer pageSize) {
+        return staticRuleMapper.queryHistory(id, page, pageSize);
+    }
 }

@@ -1,10 +1,8 @@
 package com.realtime.protection.server.defense.templatenew;
 
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
-import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
@@ -151,6 +149,9 @@ public class TemplateController implements TemplateNewCpntrollerApi{
                 ))
                 .setData("template_unaudit_num", templateService.queryAuditTemplateTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ))
+                .setData("template_returned_num", templateService.queryAuditTemplateTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.RETURNED.getState())
                 ));
     }
 
@@ -215,5 +216,15 @@ public class TemplateController implements TemplateNewCpntrollerApi{
     public ResponseResult queryAuditInfo(@PathVariable Integer id) {
         return ResponseResult.ok()
                 .setData("auditInfo", templateService.queryAuditInfo(id));
+    }
+
+    @Override
+    @GetMapping("/{id}/history")
+    public ResponseResult queryHistory(@PathVariable Integer id,
+                                       @RequestParam(value = "page", required = true) Integer page,
+                                       @RequestParam(value = "page_size", required = true) Integer pageSize) {
+
+        return ResponseResult.ok()
+                .setData("history", templateService.queryHistory(id, page, pageSize));
     }
 }

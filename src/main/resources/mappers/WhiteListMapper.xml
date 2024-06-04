@@ -177,6 +177,7 @@
                 and create_username = #{creator}
             </if>
         </where>
+        order by white_list_id desc
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
@@ -463,6 +464,14 @@
         select white_list_audit_info
         from t_white_list
         where white_list_id = #{id}
+    </select>
+    <select id="queryHistory"
+            resultMap="whiteListMap">
+        select *, INET_NTOA(white_list_ip) as white_list_ip_d
+        FROM t_white_list_status_log
+        WHERE white_list_id = #{id}
+        ORDER BY effective_time DESC
+            LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
 </mapper>

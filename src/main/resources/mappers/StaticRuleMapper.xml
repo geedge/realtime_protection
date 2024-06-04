@@ -290,6 +290,11 @@
         </foreach>
         AND expire_time IS NULL
     </update>
+    <update id="removeUsedTaskId">
+        update t_static_rule
+        set static_rule_used_task_id = NULL
+        where static_rule_used_task_id = #{taskId}
+    </update>
 
     <delete id="deleteStaticRules">
         delete from t_static_rule
@@ -331,6 +336,10 @@
 
         <result column="static_rule_display_id" property="staticRuleDisplayId"/>
         <result column="event_type" property="eventType"/>
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="used_task_name" property="usedTaskName"/>
+
     </resultMap>
 
     <select id="queryStaticRule"  resultMap="staticRuleMap">
@@ -338,7 +347,8 @@
                INET_NTOA(static_rule_sip) as static_rule_sip_d,
                 INET_NTOA(static_rule_msip) as static_rule_msip_d,
                 INET_NTOA(static_rule_dip) as static_rule_dip_d,
-                INET_NTOA(static_rule_mdip) as static_rule_mdip_d
+                INET_NTOA(static_rule_mdip) as static_rule_mdip_d,
+                task_name as used_task_name
                FROM t_static_rule
         left join t_task on t_static_rule.static_rule_used_task_id = t_task.task_id
         <where>
@@ -384,6 +394,7 @@
             </if>
 
         </where>
+        ORDER BY static_rule_id DESC
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
@@ -481,6 +492,21 @@
         SELECT static_rule_audit_info
         FROM t_static_rule
         WHERE static_rule_id = #{id}
+    </select>
+
+    <select id="queryHistory"
+            resultMap="staticRuleMap">
+        SELECT *,
+               INET_NTOA(static_rule_sip) as static_rule_sip_d,
+               INET_NTOA(static_rule_msip) as static_rule_msip_d,
+               INET_NTOA(static_rule_dip) as static_rule_dip_d,
+               INET_NTOA(static_rule_mdip) as static_rule_mdip_d,
+               t_task.task_name as used_task_name
+        FROM t_static_rule_status_log
+        left join t_task on t_static_rule_status_log.static_rule_used_task_id = t_task.task_id
+        WHERE static_rule_id = #{id}
+        ORDER BY effective_time DESC
+            LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
 </mapper>

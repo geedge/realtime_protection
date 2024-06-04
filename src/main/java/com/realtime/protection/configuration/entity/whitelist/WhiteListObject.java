@@ -96,4 +96,12 @@ public class WhiteListObject {
     @JsonProperty("modify_time")
     @Schema(description = "修改时间", example = "")
     private LocalDateTime modifyTime;
+
+    @JsonProperty("effecive_time")
+    @Schema(description = "日志表中有效开始时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime effeciveTime;
+
+    @JsonProperty("expire_time")
+    @Schema(description = "日志表中到期时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime expireTime;
 }

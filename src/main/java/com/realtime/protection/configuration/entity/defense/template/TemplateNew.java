@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class TemplateNew {
     @JsonProperty("template_id")
@@ -117,4 +119,12 @@ public class TemplateNew {
     @JsonProperty("update_time")
     @Schema(description = "更新时间", example = "部门1", accessMode = Schema.AccessMode.READ_ONLY)
     private String updateTime;
+
+    @JsonProperty("effecive_time")
+    @Schema(description = "日志表中有效开始时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime effeciveTime;
+
+    @JsonProperty("expire_time")
+    @Schema(description = "日志表中到期时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime expireTime;
 }

@@ -233,6 +233,11 @@
         </foreach>
         and expire_time is null
     </update>
+    <update id="removeUsedTaskId">
+        update t_dynamic_rule
+        set dynamic_rule_used_task_id = null
+        where dynamic_rule_used_task_id = #{taskId}
+    </update>
 
 
     <resultMap id="dynamicRuleMap"
@@ -248,6 +253,8 @@
 <!--        <result column="dynamic_rule_priority" property="dynamicRulePriority"/>-->
 <!--        <result column="dynamic_rule_frequency" property="dynamicRuleFrequency"/>-->
         <result column="dynamic_rule_create_user_id" property="dynamicRuleCreateUserId"/>
+        <result column="dynamic_rule_used_task_id" property="dynamicRuleUsedTaskId"/>
+
         <result column="dynamic_rule_display_id" property="dynamicRuleDisplayId"/>
         <result column="audit_status" property="auditStatus"/>
         <result column="audit_user_id" property="auditUserId"/>
@@ -256,6 +263,8 @@
         <result column="bw_sql" property="bwSql"/>
         <result column="description" property="description"/>
         <result column="source_system" property="dynamicRuleSourceSystem"/>
+        <result column="used_task_name" property="usedTaskName"/>
+
 
     </resultMap>
 
@@ -263,6 +272,7 @@
         <id column="dynamic_rule_id" property="dynamicRuleId"/>
         <result column="dynamic_rule_name" property="dynamicRuleName"/>
         <result column="create_time" property="dynamicRuleCreateTime"/>
+        <result column="dynamic_rule_create_user_id" property="dynamicRuleCreateUserId"/>
         <result column="dynamic_rule_create_username" property="dynamicRuleCreateUsername"/>
         <result column="dynamic_rule_create_depart" property="dynamicRuleCreateDepart"/>
 <!--        <result column="template_id" property="templateId"/>-->
@@ -283,6 +293,9 @@
         <result column="audit_user_depart" property="auditUserDepart"/>
         <result column="bw_sql" property="bwSql"/>
         <result column="description" property="description"/>
+
+        <result column="dynamic_rule_used_task_id" property="dynamicRuleUsedTaskId"/>
+        <result column="used_task_name" property="usedTaskName"/>
 
     </resultMap>
 
@@ -308,9 +321,11 @@
 
     <select id="queryDynamicRuleObject"
             resultMap="dynamicRulePageQueryMap">
-        select *
+        select *,
+               t_task.task_name as used_task_name
         from t_dynamic_rule
-
+        left join t_task
+            on t_dynamic_rule.dynamic_rule_used_task_id = t_task.task_id
         <where>
             <if test="dynamicRuleName != null and dynamicRuleName !=''" >
                 t_dynamic_rule.dynamic_rule_name like concat('%', #{dynamicRuleName}, '%')
@@ -336,6 +351,7 @@
             </if>
 
         </where>
+        ORDER BY dynamic_rule_id DESC
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
@@ -445,6 +461,16 @@
         from t_dynamic_rule
         where dynamic_rule_id = #{dynamicRuleId}
     </select>
-
+    <select id="queryHistory"
+            resultMap="dynamicRulePageQueryMap">
+        select *,
+               t_task.task_name as used_task_name
+        from t_dynamic_rule
+                 left join t_task
+                           on t_dynamic_rule.dynamic_rule_used_task_id = t_task.task_id
+        where dynamic_rule_id = #{id}
+        ORDER BY effective_time DESC
+        LIMIT ${(page - 1) * pageSize}, #{pageSize}
+    </select>
 
 </mapper>

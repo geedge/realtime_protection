@@ -236,6 +236,9 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
                 ))
                 .setData("dynamic_rule_unaudit_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
                         AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())
+                ))
+                .setData("dynamic_rule_returned_num", dynamicRuleService.queryAuditDynamicRuleTotalNum(
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.RETURNED.getState())
                 ));
     }
 
@@ -255,6 +258,16 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     public ResponseResult queryAuditInfo(@PathVariable Integer id) {
         return ResponseResult.ok()
                 .setData("auditInfo", dynamicRuleService.queryAuditInfo(id));
+    }
+
+    @Override
+    @GetMapping("/{id}/history")
+    public ResponseResult queryHistory(@PathVariable Integer id,
+                                       @RequestParam(value = "page", required = true) Integer page,
+                                       @RequestParam(value = "page_size", required = true) Integer pageSize) {
+
+        return ResponseResult.ok()
+                .setData("history", dynamicRuleService.queryHistory(id, page, pageSize));
     }
 
 }

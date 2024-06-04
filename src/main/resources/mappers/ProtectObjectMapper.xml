@@ -150,6 +150,8 @@
         <result column="create_time" property="createTime"/>
         <result column="modify_time" property="modifyTime"/>
 
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
 
     </resultMap>
 
@@ -191,6 +193,7 @@
                 AND protect_object_audit_status = #{proobj_audit_status}
             </if>
         </where>
+        ORDER BY protect_object_id DESC
         LIMIT ${(page-1) * page_size}, #{page_size}
     </select>
 
@@ -269,6 +272,13 @@
         SELECT protect_object_audit_info
         FROM t_protect_object
         WHERE protect_object_id = #{proobj_id}
+    </select>
+    <select id="queryHistory" resultMap="protectObjectMap">
+        SELECT *
+        FROM t_protect_object_status_log
+        WHERE protect_object_id = #{id}
+        ORDER BY effective_time DESC
+            LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 
     <update id="updateProtectObject">

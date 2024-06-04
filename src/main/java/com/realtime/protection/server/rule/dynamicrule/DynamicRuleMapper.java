@@ -73,4 +73,8 @@ public interface DynamicRuleMapper {
     void insertStatusLogBatch(List<Integer> ids);
 
     void updateStatusLogExpireTimeBatch(List<Integer> ids);
+
+    List<DynamicRuleObject> queryHistory(Integer id, Integer page, Integer pageSize);
+
+    void removeUsedTaskId(Long taskId);
 }

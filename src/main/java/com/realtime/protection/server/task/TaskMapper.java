@@ -112,4 +112,6 @@ public interface TaskMapper {
     void insertTaskStatusLogBatch(List<Integer> idWithAuditStatusBatch);
 
     void updateTaskStatusLogExpireTimeBatch(List<Integer> taskIds);
+
+    List<Task> queryHistory(Long id, Integer page, Integer pageSize);
 }

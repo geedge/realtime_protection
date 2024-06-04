@@ -262,9 +262,11 @@ public class TaskController implements TaskControllerApi {
                         null, null, null, null,null,null,null,null))
                 .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null,
                         null, null, null, null,null,null,null,null))
-                .setData("unaudit_num", taskService.queryAuditTaskTotalNum(
-                        AuditStatusEnum.PENDING.getNum()
-                ));
+                .setData("unaudit_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.PENDING.getNum()))
+                .setData("audited_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.AUDITED.getNum()))
+                .setData("rejected_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.RETURNED.getNum()))
+                .setData("using_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.USING.getNum()));
+
     }
 
     @Override
@@ -283,6 +285,16 @@ public class TaskController implements TaskControllerApi {
     public ResponseResult queryAuditInfo(@PathVariable Integer id) {
         return ResponseResult.ok()
                 .setData("auditInfo", taskService.queryAuditInfo(id));
+    }
+
+    @Override
+    @GetMapping("/{id}/history")
+    public ResponseResult queryHistory(@PathVariable Long id,
+                                       @RequestParam(value = "page", required = true) Integer page,
+                                       @RequestParam(value = "page_size", required = true) Integer pageSize) {
+
+        return ResponseResult.ok()
+                .setData("history", taskService.queryHistory(id, page, pageSize));
     }
 
 

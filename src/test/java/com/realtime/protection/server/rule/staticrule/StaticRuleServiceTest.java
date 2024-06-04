@@ -143,6 +143,12 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
         System.out.println(staticRuleService.queryAuditStatusByIds(map));
     }
 
+    @Test
+    void testQueryHisttory(){
+        List<StaticRuleObject> lists= staticRuleService.queryHistory(1559, 1, 10);
+        lists.forEach(System.out::println);
+    }
+
 
 
 }

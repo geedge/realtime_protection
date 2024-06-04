@@ -1,5 +1,6 @@
 package com.realtime.protection.configuration.entity.rule.dynamicrule;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
@@ -96,6 +97,19 @@ public class DynamicRuleObject {
     @JsonProperty("description")
     @Schema(description = "动态规则描述", example = "动态规则描述")
     private String description;
+
+    @JsonProperty("effecive_time")
+    @Schema(description = "日志表中有效开始时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime effeciveTime;
+
+    @JsonProperty("expire_time")
+    @Schema(description = "日志表中到期时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime expireTime;
+
+    @JsonProperty("used_task_name")
+    @ExcelIgnore
+    @Schema(description = "使用该规则的任务名称", example = "任务1", accessMode = Schema.AccessMode.READ_ONLY)
+    private String usedTaskName;
 
     public void checkAuditStatusValidate(AuditStatusEnum newAuditStatus) {
         if (!List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum()).contains(this.getAuditStatus())) {

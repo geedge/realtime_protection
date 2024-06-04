@@ -76,6 +76,8 @@
         <result column="template_id" property="templateId"/>
         <result column="template_name" property="templateName"/>
         <result column="source_system" property="sourceSystem"/>
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
 <!--防护对象字段-->
     </resultMap>
 
@@ -134,7 +136,7 @@
             </if>
 
         </where>
-
+        order by task_id desc
         LIMIT ${(page - 1) * page_size}, #{page_size}
     </select>
 
@@ -646,5 +648,13 @@
                             on t_protect_object.protect_object_id = t_task_protectobject_conn.protect_object_id
         where t_task_protectobject_conn.task_id = #{id}
 
+    </select>
+
+    <select id="queryHistory" resultMap="taskMap">
+        SELECT *
+        FROM t_task_status_log
+        WHERE task_id = #{id}
+        ORDER BY effective_time DESC
+        LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
 </mapper>

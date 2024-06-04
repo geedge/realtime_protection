@@ -168,7 +168,10 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
                         AuditStatusEnum.getNumByState(AuditStatusEnum.AUDITED.getState())))
                 .setData("proobj_undit_num", protectObjectService.queryProtectObjectsTotalNum(null, null, null, null,
                         null, null, null, null, null,
-                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())));
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())))
+                .setData("proobj_returned_num", protectObjectService.queryProtectObjectsTotalNum(null, null, null, null,
+                        null, null, null, null, null,
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.RETURNED.getState())));
     }
 
 
@@ -212,6 +215,16 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     public ResponseResult queryAuditInfo(@PathVariable Integer id) {
         return ResponseResult.ok()
                 .setData("auditInfo", protectObjectService.queryAuditInfo(id));
+    }
+
+    @Override
+    @GetMapping("/{id}/history")
+    public ResponseResult queryHistory(@PathVariable Integer id,
+                                       @RequestParam(value = "page", required = true) Integer page,
+                                       @RequestParam(value = "page_size", required = true) Integer pageSize) {
+
+        return ResponseResult.ok()
+                .setData("history", protectObjectService.queryHistory(id, page, pageSize));
     }
 
 }

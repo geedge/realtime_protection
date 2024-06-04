@@ -526,4 +526,9 @@ public interface ProtectObjectControllerApi {
     )
     @GetMapping("/auditInfo/{id}")
     ResponseResult queryAuditInfo(@PathVariable Integer id);
+
+    @GetMapping("/{id}/history")
+    ResponseResult queryHistory(@PathVariable Integer id,
+                                @RequestParam(value = "page", required = true) Integer page,
+                                @RequestParam(value = "page_size", required = true) Integer pageSize);
 }

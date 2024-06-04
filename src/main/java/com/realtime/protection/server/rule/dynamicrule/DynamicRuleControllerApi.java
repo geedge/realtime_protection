@@ -505,4 +505,29 @@ public interface DynamicRuleControllerApi {
     @GetMapping("/auditInfo/{id}")
     ResponseResult queryAuditInfo(@PathVariable Integer id);
 
+
+
+    @Operation(
+            summary = "查询历史变化",
+            description = "查询历史变化，只接收一个id",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "page", description = "页数", example = "2"),
+                    @Parameter(name = "page_size", description = "每页个数", example = "10"),
+            }
+    )
+    @GetMapping("/{id}/history")
+    ResponseResult queryHistory(@PathVariable Integer id,
+                                @RequestParam(value = "page", required = true) Integer page,
+                                @RequestParam(value = "page_size", required = true) Integer pageSize);
+
+
 }

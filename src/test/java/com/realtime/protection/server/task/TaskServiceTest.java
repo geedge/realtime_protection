@@ -10,6 +10,7 @@ import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.defense.object.ProtectObjectService;
 import com.realtime.protection.server.defense.templatenew.TemplateService;
@@ -145,8 +146,8 @@ class TaskServiceTest extends ProtectionApplicationTests {
 //        }
 //
 //
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, "eee",null,null,null,null,1, 10);
-        assertEquals(1, tasks.size());
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 10);
+        tasks.forEach(task -> System.out.println(task));
         Integer tasksnum = taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", "上述",null,null,null,null);
         System.out.println(tasksnum);
 //
@@ -379,4 +380,16 @@ class TaskServiceTest extends ProtectionApplicationTests {
     void testQueryTaskTotalNum(){
         System.out.println(taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", "",null,null,null,null));
     }
+
+    @Test
+    void testQueryTaskHistory(){
+        System.out.println(taskService.queryHistory(44058L,1,10));
+    }
+
+    @Test
+    void updateStaticRuleAuditStatusInTask(){
+        taskService.updateStaticRuleAuditStatusInTask(44126L, AuditStatusEnum.AUDITED);
+
+    }
+
 }

@@ -294,4 +294,8 @@ public class WhiteListService {
         whiteListMapper.updateStatusLogExpireTimeBatch(ids);
         whiteListMapper.insertStatusLogBatch(ids);
     }
+
+    public List<WhiteListObject> queryHistory(Integer id, Integer page, Integer pageSize) {
+        return whiteListMapper.queryHistory(id, page, pageSize);
+    }
 }

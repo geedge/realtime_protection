@@ -68,34 +68,42 @@ public class ProtectObject {
 
     @JsonProperty("proobj_create_username")
     @ExcelIgnore
-    @Schema(description = "防护对象创建人", example = "xxx")
+    @Schema(description = "防护对象创建人", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
     private String protectObjectCreateUsername;
 
     @JsonProperty("proobj_create_depart")
     @ExcelIgnore
-    @Schema(description = "防护对象创建人处室", example = "xxx")
+    @Schema(description = "防护对象创建人处室", example = "xxx", accessMode = Schema.AccessMode.READ_ONLY)
     private String protectObjectCreateDepart;
 
     @JsonProperty("proobj_create_userid")
     @ExcelIgnore
-    @Schema(description = "防护对象创建人ID", example = "0")
+    @Schema(description = "防护对象创建人ID", example = "0", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer protectObjectCreateUserId;
 
     @JsonProperty("audit_user_name")
-    @Schema(description = "审核用户名称", example = "user11")
+    @Schema(description = "审核用户名称", example = "user11", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserName;
     @JsonProperty("audit_user_id")
-    @Schema(description = "审核用户id", example = "11111")
+    @Schema(description = "审核用户id", example = "11111", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserId;
     @JsonProperty("audit_user_depart")
-    @Schema(description = "审核用户部门", example = "部门1")
+    @Schema(description = "审核用户部门", example = "部门1", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserDepart;
 
     @JsonProperty("create_time")
-    @Schema(description = "创建时间", example = "")
+    @Schema(description = "创建时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createTime;
 
     @JsonProperty("modify_time")
-    @Schema(description = "修改时间", example = "")
+    @Schema(description = "修改时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime modifyTime;
+
+    @JsonProperty("effecive_time")
+    @Schema(description = "日志表中有效开始时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime effeciveTime;
+
+    @JsonProperty("expire_time")
+    @Schema(description = "日志表中有效结束时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime expireTime;
 }

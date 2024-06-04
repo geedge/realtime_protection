@@ -116,6 +116,7 @@
             <if test="src_port != null">AND SRC_PORT = #{src_port}</if>
             <if test="dst_port != null">AND DST_PORT = #{dst_port}</if>
         </where>
+        ORDER BY CREATE_TIME DESC
         LIMIT ${(page-1) * page_num}, #{page_num}
     </select>
 

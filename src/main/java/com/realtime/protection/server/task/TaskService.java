@@ -153,10 +153,12 @@ public class TaskService {
                         }
 
                         mapper.updateAuditStatusByIdBatch(batchMap);
+                        insertStaticRuleStatusLog(batchMap);
                         batchMap.clear();
                     }
 
                     mapper.updateAuditStatusByIdBatch(batchMap);
+                    insertStaticRuleStatusLog(batchMap);
                     batchMap.clear();
 
                     return null;
@@ -214,10 +216,12 @@ public class TaskService {
                         }
 
                         mapper.updateAuditStatusByIdBatch(batchMap);
+                        insertDynamicRuleStatusLog(batchMap);
                         batchMap.clear();
                     }
 
                     mapper.updateAuditStatusByIdBatch(batchMap);
+                    insertDynamicRuleStatusLog(batchMap);
                     batchMap.clear();
 
                     return null;
@@ -243,6 +247,8 @@ public class TaskService {
             if (task == null) {
                 continue;
             }
+            List<ProtectObject> protectObjects = taskMapper.queryProtectObjectsByTaskId(task.getTaskId());
+            task.setProtectObjects(protectObjects);
 
             task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId(),
                     List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
@@ -522,5 +528,47 @@ public class TaskService {
 
         taskMapper.updateTaskStatusLogExpireTimeBatch(taskIds);
         taskMapper.insertTaskStatusLogBatch(taskIds);
+    }
+
+    public List<Task> queryHistory(Long id, Integer page, Integer pageSize) {
+        List<Task> tasks =  taskMapper.queryHistory(id, page, pageSize);
+
+        for (Task task : tasks) {
+            if (task == null) {
+                continue;
+            }
+            List<ProtectObject> protectObjects = taskMapper.queryProtectObjectsByTaskId(task.getTaskId());
+            task.setProtectObjects(protectObjects);
+
+            task.setStaticRuleIds(taskMapper.queryStaticRuleIdsFromTaskId(task.getTaskId(),
+                    List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
+            task.setDynamicRuleIds(taskMapper.queryDynamicRuleIdsFromTaskId(task.getTaskId(),
+                    List.of(AuditStatusEnum.AUDITED.getNum(), AuditStatusEnum.USING.getNum())));
+        }
+        return tasks;
+    }
+
+    public void removeDynamicRuleUsedTaskIdInTask(Long taskId) {
+        dynamicRuleMapper.removeUsedTaskId(taskId);
+    }
+
+    public void removeStaticRuleUsedTaskIdInTask(Long taskId) {
+        staticRuleMapper.removeUsedTaskId(taskId);
+    }
+
+    public void insertStaticRuleStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> ids = new ArrayList<>(keys);
+
+        staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
+        staticRuleMapper.insertStaticRuleStatusLogBatch(ids);
+    }
+    public void insertDynamicRuleStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> ids = new ArrayList<>(keys);
+
+        dynamicRuleMapper.updateStatusLogExpireTimeBatch(ids);
+        dynamicRuleMapper.insertStatusLogBatch(ids);
+
     }
 }

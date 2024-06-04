@@ -155,4 +155,12 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
         whiteListService.updateAuditStatusBatch(idsWithAuditStatusMap);
     }
+
+    @Test
+    void testQueryHistory() {
+        whiteListService.queryHistory(1, 1, 2).forEach(
+                System.out::println
+        );
+
+    }
 }

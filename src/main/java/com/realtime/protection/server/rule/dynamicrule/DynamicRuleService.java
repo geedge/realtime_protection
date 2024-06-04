@@ -362,4 +362,7 @@ public class DynamicRuleService {
     }
 
 
+    public List<DynamicRuleObject> queryHistory(Integer id, Integer page, Integer pageSize) {
+        return dynamicRuleMapper.queryHistory(id, page, pageSize);
+    }
 }

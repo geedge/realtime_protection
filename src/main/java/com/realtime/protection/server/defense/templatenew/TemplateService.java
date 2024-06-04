@@ -188,4 +188,8 @@ public class TemplateService {
         templateMapper.updateStatusLogExpireTimeBatch(ids);
         templateMapper.insertStatusLogBatch(ids);
     }
+
+    public List<TemplateNew> queryHistory(Integer id, Integer page, Integer pageSize) {
+        return templateMapper.queryHistory(id, page, pageSize);
+    }
 }
