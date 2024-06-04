@@ -24,6 +24,7 @@ public class MyKafkaListenerErrorHandler implements KafkaListenerErrorHandler {
 
         log.error("消息详情：" + message);
         log.error("异常信息：：" + exception.getCause());
+        exception.printStackTrace();
         log.error("消费者详情：：" + consumer.groupMetadata());
         log.error("监听主题：：" + consumer.listTopics());
         return KafkaListenerErrorHandler.super.handleError(message, exception, consumer);

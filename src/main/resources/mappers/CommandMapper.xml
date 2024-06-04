@@ -9,7 +9,7 @@
                               MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
                               INVALID_TIME, IS_VALID, IS_JUDGED,
                               SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID)
+                              TASKTYPE, RULE_ID, display_id)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
                 #{info.frequency},
                 DEFAULT,
@@ -22,7 +22,8 @@
                 #{info.startTime}, #{info.endTime}, #{info.isValid},
                 #{info.isJudged},
                 0, 0,
-                NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId})
+                NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId}
+                )
     </insert>
 
     <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
@@ -32,7 +33,7 @@
         MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
         IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID)
+                              TASKTYPE, RULE_ID, display_id)
         values
         <foreach collection="command_infos" item="info" separator=",">
             (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
@@ -47,7 +48,7 @@
             #{info.startTime}, #{info.endTime}, #{info.isValid},
             #{info.isJudged},
             0, 0,
-            NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}
+            NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId}
             )
         </foreach>
     </insert>
