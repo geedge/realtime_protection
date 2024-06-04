@@ -6,6 +6,7 @@ import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRule
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,4 +65,12 @@ public interface DynamicRuleMapper {
                                                @Param("auditUserName")String auditUserName,
                                                @Param("auditUserId")String auditUserId,
                                                @Param("auditUserDepart")String auditUserDepart);
+
+    void insertStatusLog(Integer id);
+
+    void updateStatusLogExpireTime(Integer id);
+
+    void insertStatusLogBatch(List<Integer> ids);
+
+    void updateStatusLogExpireTimeBatch(List<Integer> ids);
 }

@@ -5,12 +5,15 @@ import com.realtime.protection.configuration.entity.alert.AlertMessage;
 import com.realtime.protection.configuration.entity.defense.template.ProtectLevel;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,11 +23,13 @@ import java.util.UUID;
 public class AlertMessageService {
     private final CommandService commandService;
     private final AlertMessageMapper alertMessageMapper;
+    private  final Counter counter;
 
     public AlertMessageService(
-            CommandService commandService, AlertMessageMapper alertMessageMapper) {
+            CommandService commandService, AlertMessageMapper alertMessageMapper, Counter counter) {
         this.commandService = commandService;
         this.alertMessageMapper = alertMessageMapper;
+        this.counter = counter;
     }
 
     @DSTransactional
@@ -119,9 +124,17 @@ public class AlertMessageService {
             String commandUUID = commandService.createCommand(dynamicTaskCommandInfo);
 
             //alertmessage入库
+
             alertMessage.setCommandUUID(commandUUID);
             String alertMessageUUID = UUID.randomUUID().toString();
             alertMessage.setAlertMessageUUID(alertMessageUUID);
+            alertMessage.setDisplay_id(
+                    "GJ-"
+                            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                            + "-"
+                            + String.format("%06d", counter.generateId("alert_message"))
+
+            );
             alertMessageMapper.insertAlertMessage(alertMessage);
             }
 
@@ -131,6 +144,13 @@ public class AlertMessageService {
         alertMessage.setCommandUUID(null);
         String alertMessageUUID = UUID.randomUUID().toString();
         alertMessage.setAlertMessageUUID(alertMessageUUID);
+        alertMessage.setDisplay_id(
+                "GJ-"
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-"
+                        + String.format("%06d", counter.generateId("alert_message"))
+
+        );
         alertMessageMapper.insertAlertMessage(alertMessage);
 
         return alertMessageUUID;

@@ -145,8 +145,10 @@ class TaskServiceTest extends ProtectionApplicationTests {
 //        }
 //
 //
-        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 10);
-        assertEquals(10, tasks.size());
+        List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, "eee",null,null,null,null,1, 10);
+        assertEquals(1, tasks.size());
+        Integer tasksnum = taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", "上述",null,null,null,null);
+        System.out.println(tasksnum);
 //
 //        tasks = taskService.queryTasks(0, null, null, null, null,null, null, null, null, 1, 10);
 //        assertEquals(10, tasks.size());

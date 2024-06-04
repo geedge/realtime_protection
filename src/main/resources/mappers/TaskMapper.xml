@@ -60,6 +60,13 @@
 
         <result column="task_create_username" property="taskCreateUsername"/>
         <result column="task_create_depart" property="taskCreateDepart"/>
+        <result column="task_create_userid" property="taskCreateUserId"/>
+        <result column="task_create_time" property="taskCreateTime"/>
+        <result column="task_modify_time" property="taskModifyTime"/>
+        <result column="task_audit_username" property="auditUserName"/>
+        <result column="task_audit_userid" property="auditUserId"/>
+        <result column="task_audit_depart" property="auditUserDepart"/>
+
 
         <result column="task_display_id" property="taskDisplayId"/>
 
@@ -76,15 +83,11 @@
 
     <select id="queryTasks" resultMap="taskMap">
         SELECT t_task.* FROM t_task
-        <if test="rule_name != null and rule_name != '' and (event_type == null or event_type == '')">
+        <if test="rule_name != null and rule_name != ''">
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
         </if>
-<!--        <if test="event_type != null and event_type != ''">-->
-<!--            LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id-->
-<!--            LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id-->
-<!--            LEFT JOIN t_strategy_template_new ON t_dynamic_rule.template_id = t_strategy_template_new.strategy_template_id-->
-<!--        </if>-->
+
 
         <where>
             <if test="rule_name != null and rule_name != ''">
@@ -281,6 +284,20 @@
             #{id}
         </foreach>
     </update>
+    <update id="updateTaskStatusLogExpireTime">
+        UPDATE t_task_status_log
+        SET expire_time = NOW()
+        WHERE task_id = #{taskId} AND expire_time IS NULL
+    </update>
+    <update id="updateTaskStatusLogExpireTimeBatch">
+        UPDATE t_task_status_log
+        SET expire_time = NOW()
+        WHERE task_id IN
+        <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+        AND expire_time IS NULL
+    </update>
 
     <delete id="deleteTask">
         DELETE
@@ -344,6 +361,119 @@
             (
             #{taskId}, #{protectObjectId}
             )
+        </foreach>
+    </insert>
+    <insert id="insertTaskStatusLog">
+        INSERT INTO t_task_status_log(task_id,task_name,
+                    effective_time,expire_time,
+                    task_start_time,
+                    task_end_time,
+                    task_create_time,
+                    task_modify_time,
+                    task_type,
+                    task_act,
+                    task_create_username,
+                    task_create_depart,
+                    task_create_userid,
+                    task_status,
+                    task_audit_status,
+                    task_display_id,
+                    task_range,
+                    task_audit_username,
+                    task_audit_depart,
+                    task_audit_userid,
+                    task_source,
+                    task_audit_info,
+                    event_type,
+                    protect_level,
+                    template_id,
+                    template_name,
+                    source_system
+        )
+        select task_id,task_name,
+               NOW(),NULL,
+                task_start_time,
+               task_end_time,
+               task_create_time,
+               task_modify_time,
+               task_type,
+               task_act,
+               task_create_username,
+               task_create_depart,
+               task_create_userid,
+               task_status,
+               task_audit_status,
+               task_display_id,
+               task_range,
+               task_audit_username,
+               task_audit_depart,
+               task_audit_userid,
+               task_source,
+               task_audit_info,
+               event_type,
+               protect_level,
+               template_id,
+               template_name,
+               source_system
+        from t_task
+        where task_id = #{taskId}
+        </insert>
+    <insert id="insertTaskStatusLogBatch">
+        INSERT INTO t_task_status_log(task_id,task_name,
+                    effective_time,expire_time,
+                    task_start_time,
+                    task_end_time,
+                    task_create_time,
+                    task_modify_time,
+                    task_type,
+                    task_act,
+                    task_create_username,
+                    task_create_depart,
+                    task_create_userid,
+                    task_status,
+                    task_audit_status,
+                    task_display_id,
+                    task_range,
+                    task_audit_username,
+                    task_audit_depart,
+                    task_audit_userid,
+                    task_source,
+                    task_audit_info,
+                    event_type,
+                    protect_level,
+                    template_id,
+                    template_name,
+                    source_system
+        )
+        select task_id,task_name,
+               NOW(),NULL,
+                task_start_time,
+               task_end_time,
+               task_create_time,
+               task_modify_time,
+               task_type,
+               task_act,
+               task_create_username,
+               task_create_depart,
+               task_create_userid,
+               task_status,
+               task_audit_status,
+               task_display_id,
+               task_range,
+               task_audit_username,
+               task_audit_depart,
+               task_audit_userid,
+               task_source,
+               task_audit_info,
+               event_type,
+               protect_level,
+               template_id,
+               template_name,
+               source_system
+        from t_task
+        where task_id in
+        <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+            #{taskId}
         </foreach>
     </insert>
 
@@ -422,13 +552,13 @@
     </select>
     <select id="queryTaskTotalNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM t_task
-        <if test="rule_name != null and rule_name != '' and (event_type == null or event_type == '')">
+        <if test="rule_name != null and rule_name != '' ">
             LEFT JOIN t_static_rule ON t_task.task_id = t_static_rule.static_rule_used_task_id
             LEFT JOIN t_dynamic_rule ON t_task.task_id = t_dynamic_rule.dynamic_rule_used_task_id
         </if>
 
         <where>
-            <if test="rule_name != null and task_source != ''">
+            <if test="rule_name != null and rule_name != ''">
                 (
                 t_static_rule.static_rule_name LIKE CONCAT('%', #{rule_name}, '%')
                 OR t_dynamic_rule.dynamic_rule_name LIKE CONCAT('%', #{rule_name}, '%')

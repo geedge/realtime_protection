@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,4 +60,12 @@ public interface WhiteListMapper {
     Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
 
     String queryWhiteListObjectAuditInfo(Integer id);
+
+    void updateStatusLogExpireTime(Integer id);
+
+    void insertStatusLog(Integer id);
+
+    void updateStatusLogExpireTimeBatch(List<Integer> ids);
+
+    void insertStatusLogBatch(List<Integer> ids);
 }

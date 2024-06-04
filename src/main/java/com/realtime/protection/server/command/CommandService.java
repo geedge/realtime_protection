@@ -4,10 +4,13 @@ import com.alibaba.excel.util.ListUtils;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -19,11 +22,13 @@ public class CommandService {
 
     private final CommandMapper commandMapper;
     private final SqlSessionWrapper sqlSessionWrapper;
+    private final Counter counter;
     private static final int BatchSize = 100;
 
-    public CommandService(CommandMapper commandMapper, SqlSessionWrapper sqlSessionWrapper) {
+    public CommandService(CommandMapper commandMapper, SqlSessionWrapper sqlSessionWrapper, Counter counter) {
         this.commandMapper = commandMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
+        this.counter = counter;
     }
 
     @DSTransactional
@@ -32,6 +37,12 @@ public class CommandService {
         if (uuid != null) {
             return uuid;
         }
+        commandInfo.setDisplayId(
+                "ZL-"
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-"
+                        + String.format("%06d", counter.generateId("command"))
+        );
 
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);

@@ -58,7 +58,7 @@ public class AlertMessageTest {
                     null, null, null, null, null, null, null, 1, 1);
 
             DynamicRuleObject object = new DynamicRuleObject();
-            object.setDynamicRuleName("测试动态任务规则"+n);
+            object.setDynamicRuleName("测试display_id"+n);
             object.setDescription("动态规则新建测试");
             object.setDynamicRuleSourceSystem("BW");
             object.setBwSql("select * from test where event_id = 1");

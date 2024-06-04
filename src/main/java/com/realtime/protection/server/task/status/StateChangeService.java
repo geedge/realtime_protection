@@ -70,8 +70,15 @@ public class StateChangeService {
                 originalState.getClass().getSimpleName(),
                 newState.getClass().getSimpleName()));
 
+
         // 这里一定是handle成功的状态，我们再进行task status的修改，如果handle失败，要么返回false，要么抛出异常，不会进入此处
-        return taskService.changeTaskStatus(taskId, stateNum);
+        Boolean isChanged = taskService.changeTaskStatus(taskId, stateNum);
+        //记录状态日志
+        if (isChanged) {
+            taskService.insertTaskStatusLog(taskId);
+        }
+
+        return isChanged;
     }
 
     private Boolean checkState(State originalState, State newState) {

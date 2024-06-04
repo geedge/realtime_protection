@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public interface StaticRuleMapper {
 
     void deleteStaticRules(@Param("staticRuleIds") List<Integer> staticRuleBatch);
 
-    void newStaticRules(List<StaticRuleObject> staticRuleBatch);
+    void newStaticRules(List<StaticRuleObject> list);
 
     Integer queryAuditStatusById(Integer id);
 
@@ -69,4 +68,12 @@ public interface StaticRuleMapper {
     Boolean updateAuditInfo(@Param("ids") List<Integer> ids, @Param("auditInfo") String auditInfo);
 
     String queryAuditInfo(Integer id);
+
+    void insertStaticRuleStatusLog(Integer id);
+
+    void updateStaticRuleStatusLogExpireTime(Integer id);
+
+    void insertStaticRuleStatusLogBatch(List<Integer> ids);
+
+    void updateStaticRuleStatusLogExpireTimeBatch(List<Integer> ids);
 }

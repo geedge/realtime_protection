@@ -1,6 +1,7 @@
 package com.realtime.protection.server.defense.templatenew;
 
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
@@ -8,10 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -41,6 +39,7 @@ public class TemplateService {
         if (template.getTemplateId() == null) {
             return 0;
         }
+        insertStatusLog(template.getTemplateId());
         return template.getTemplateId();
     }
 
@@ -103,7 +102,7 @@ public class TemplateService {
             throw new IllegalArgumentException("invalid audit status");
         }
         Boolean success = templateMapper.updateAuditStatusById(id, auditStatus);
-
+        insertStatusLog(id);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
         resultMap.put("audit_status", auditStatus);
@@ -145,10 +144,12 @@ public class TemplateService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -164,5 +165,27 @@ public class TemplateService {
 
     public String queryAuditInfo(Integer id) {
         return templateMapper.queryAuditInfo(id);
+    }
+
+    public void insertStatusLog(Integer id) {
+        templateMapper.updateStatusLogExpireTime(id);
+        templateMapper.insertStatusLog(id);
+    }
+    public void insertStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> ids = new ArrayList<>(keys);
+
+        templateMapper.updateStatusLogExpireTimeBatch(ids);
+        templateMapper.insertStatusLogBatch(ids);
+    }
+
+    public void insertStatusLog(List<StaticRuleObject> objects) {
+        List<Integer> ids = new ArrayList<>();
+        for (StaticRuleObject staticRuleObject : objects) {
+            ids.add(staticRuleObject.getStaticRuleId());
+        }
+
+        templateMapper.updateStatusLogExpireTimeBatch(ids);
+        templateMapper.insertStatusLogBatch(ids);
     }
 }

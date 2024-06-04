@@ -26,7 +26,7 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     @BeforeEach
     void setUp() {
         staticRuleTest = new StaticRuleObject();
-        staticRuleTest.setStaticRuleName("test_staticrule");
+        staticRuleTest.setStaticRuleName("test_stasticrule");
         staticRuleTest.setStaticRuleCreateUsername("mh");
         staticRuleTest.setStaticRuleCreateDepart("mmeess");
         staticRuleTest.setStaticRuleCreateUserId(2);
@@ -64,11 +64,20 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     @Test
     void testNewStaticRules(){
         List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 1; i < 10; i++) {
+            staticRuleTest = new StaticRuleObject();
+            staticRuleTest.setStaticRuleName("test_staticrule"+i);
+            staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
+            staticRuleTest.setStaticRuleCreateDepart("组织树");
+            staticRuleTest.setStaticRuleCreateUserId(22222222);
+            staticRuleTest.setAuditStatus(0);
+
+            staticRuleTest.setStaticRuleSip("32.2.3."+i);
+            staticRuleTest.setStaticRuleDip(i+".2.3.2");
             staticRuleObjects.add(staticRuleTest);
         }
-//        Boolean success = staticRuleService.newStaticRuleObjects(staticRuleObjects);
-//        assertTrue(success);
+        Boolean success = staticRuleService.newStaticRuleObjects(staticRuleObjects);
+        assertTrue(success);
     }
 
     @Test
@@ -116,13 +125,13 @@ public class StaticRuleServiceTest extends ProtectionApplicationTests {
     }
     @Test
     void testUpdateStaticRuleAuditStatusBatch(){
-//        Map<Integer, Integer> map = new HashMap<>();
-//        map.put(1300, 0);
-//        map.put(1326, 1);
-//        map.put(1328, 1);
-//
-//
-//        System.out.println(staticRuleService.updateAuditStatusBatch(map));
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(1398, 2);
+        map.put(1399, 2);
+        map.put(1400, 2);
+
+
+        System.out.println(staticRuleService.updateAuditStatusBatch(map));
     }
     @Test
     void testQueryAuditStatusByIds(){

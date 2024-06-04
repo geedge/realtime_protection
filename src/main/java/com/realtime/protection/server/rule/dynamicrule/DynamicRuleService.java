@@ -2,6 +2,7 @@ package com.realtime.protection.server.rule.dynamicrule;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
@@ -11,10 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -40,7 +38,7 @@ public class DynamicRuleService {
         );
 
         dynamicRuleMapper.newDynamicRule(dynamicRule);
-
+        insertStatusLog(dynamicRule.getDynamicRuleId());
         return dynamicRule.getDynamicRuleId();
     }
 
@@ -205,6 +203,8 @@ public class DynamicRuleService {
         }
         Boolean success = dynamicRuleMapper.updateAuditStatusById(id, auditStatus ,auditUserName, auditUserId, auditUserDepart);
 
+        insertStatusLog(id);
+
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
         resultMap.put("audit_status", auditStatus);
@@ -250,10 +250,12 @@ public class DynamicRuleService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -309,10 +311,13 @@ public class DynamicRuleService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName,  auditUserId,  auditUserDepart);
+                        insertStatusLog(idWithAuditStatusBatch);
+
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName,  auditUserId,  auditUserDepart);
+                        insertStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -331,4 +336,30 @@ public class DynamicRuleService {
     public String queryAuditInfo(Integer id) {
         return dynamicRuleMapper.queryAuditInfo(id);
     }
+
+    public void insertStatusLog(Integer id) {
+
+        dynamicRuleMapper.updateStatusLogExpireTime(id);
+        dynamicRuleMapper.insertStatusLog(id);
+    }
+    public void insertStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> ids = new ArrayList<>(keys);
+
+        dynamicRuleMapper.updateStatusLogExpireTimeBatch(ids);
+        dynamicRuleMapper.insertStatusLogBatch(ids);
+
+    }
+
+    public void insertSStatusLog(List<StaticRuleObject> objects) {
+        List<Integer> ids = new ArrayList<>();
+        for (StaticRuleObject staticRuleObject : objects) {
+            ids.add(staticRuleObject.getStaticRuleId());
+        }
+
+        dynamicRuleMapper.updateStatusLogExpireTimeBatch(ids);
+        dynamicRuleMapper.insertStatusLogBatch(ids);
+    }
+
+
 }

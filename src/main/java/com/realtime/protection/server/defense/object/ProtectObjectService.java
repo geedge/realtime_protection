@@ -2,21 +2,17 @@ package com.realtime.protection.server.defense.object;
 
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
-import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
-import com.realtime.protection.server.whitelist.WhiteListMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -45,6 +41,7 @@ public class ProtectObjectService {
         if (protectObject.getProtectObjectId() == null) {
             return 0;
         }
+        insertStaticRuleStatusLog(protectObject.getProtectObjectId());
         return protectObject.getProtectObjectId();
     }
 
@@ -145,6 +142,7 @@ public class ProtectObjectService {
         }
         Boolean success = protectObjectMapper.changeProtectObjectAuditStatus(protectObjectId, auditStatus);
 
+        insertStaticRuleStatusLog(protectObjectId);
         Integer auditStatusNow = protectObjectMapper.queryProtectObject(protectObjectId).getProtectObjectAuditStatus();
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
@@ -204,10 +202,12 @@ public class ProtectObjectService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStaticRuleStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStaticRuleStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -222,5 +222,28 @@ public class ProtectObjectService {
 
     public String queryAuditInfo(Integer id) {
         return protectObjectMapper.queryProtectObjectAuditInfo(id);
+    }
+
+    public void insertStaticRuleStatusLog(Integer id) {
+        //先把之前的状态日志过期，再插入新的状态日志
+        protectObjectMapper.updateStaticRuleStatusLogExpireTime(id);
+        protectObjectMapper.insertStaticRuleStatusLog(id);
+    }
+    public void insertStaticRuleStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> ids = new ArrayList<>(keys);
+
+        protectObjectMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
+        protectObjectMapper.insertStaticRuleStatusLogBatch(ids);
+    }
+
+    public void insertStaticRuleStatusLog(List<StaticRuleObject> objects) {
+        List<Integer> ids = new ArrayList<>();
+        for (StaticRuleObject staticRuleObject : objects) {
+            ids.add(staticRuleObject.getStaticRuleId());
+        }
+
+        protectObjectMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
+        protectObjectMapper.insertStaticRuleStatusLogBatch(ids);
     }
 }

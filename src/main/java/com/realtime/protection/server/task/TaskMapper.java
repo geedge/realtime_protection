@@ -104,4 +104,12 @@ public interface TaskMapper {
     void deleteTaskProtectObjectConcat(Long taskId);
 
     List<ProtectObject> queryProtectObjectsByTaskId(Long id);
+
+    void insertTaskStatusLog(Long taskId);
+
+    void updateTaskStatusLogExpireTime(Long taskId);
+
+    void insertTaskStatusLogBatch(List<Integer> idWithAuditStatusBatch);
+
+    void updateTaskStatusLogExpireTimeBatch(List<Integer> taskIds);
 }

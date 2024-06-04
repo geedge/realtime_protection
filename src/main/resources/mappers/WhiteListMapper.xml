@@ -32,6 +32,100 @@
             0, NOW(), #{object.whiteListDisplayId})
         </foreach>
     </insert>
+    <insert id="insertStatusLog">
+        insert into t_white_list_status_log(
+        white_list_id,
+        white_list_name,
+        effective_time,expire_time,
+        white_list_system_name,
+        white_list_ip,
+        white_list_url,
+        white_list_port,
+        white_list_audit_status,
+        white_list_protocol,
+        create_time,
+        modify_time,
+        create_username,
+        white_list_display_id,
+        create_user_department,
+        create_user_id,
+        white_list_audit_info,
+        audit_user_name,
+        audit_user_id,
+        audit_user_depart
+        )
+        select
+            white_list_id,
+            white_list_name,
+            effective_time,expire_time,
+            white_list_system_name,
+            white_list_ip,
+            white_list_url,
+            white_list_port,
+            white_list_audit_status,
+            white_list_protocol,
+            create_time,
+            modify_time,
+            create_username,
+            white_list_display_id,
+            create_user_department,
+            create_user_id,
+            white_list_audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+        from t_white_list
+        where white_list_id = #{id}
+    </insert>
+    <insert id="insertStatusLogBatch">
+        insert into t_white_list_status_log(
+            white_list_id,
+            white_list_name,
+            effective_time,expire_time,
+            white_list_system_name,
+            white_list_ip,
+            white_list_url,
+            white_list_port,
+            white_list_audit_status,
+            white_list_protocol,
+            create_time,
+            modify_time,
+            create_username,
+            white_list_display_id,
+            create_user_department,
+            create_user_id,
+            white_list_audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+        )
+        select
+            white_list_id,
+            white_list_name,
+            effective_time,expire_time,
+            white_list_system_name,
+            white_list_ip,
+            white_list_url,
+            white_list_port,
+            white_list_audit_status,
+            white_list_protocol,
+            create_time,
+            modify_time,
+            create_username,
+            white_list_display_id,
+            create_user_department,
+            create_user_id,
+            white_list_audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+        from t_white_list
+        where white_list_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </insert>
 
     <delete id="deleteWhiteListObjects">
         delete from t_white_list
@@ -137,6 +231,20 @@
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </update>
+    <update id="updateStatusLogExpireTime">
+        update t_white_list_status_log
+        set expire_time = NOW()
+        where white_list_id = #{id} and expire_time is null
+    </update>
+    <update id="updateStatusLogExpireTimeBatch">
+        update t_white_list_status_log
+        set expire_time = NOW()
+        where white_list_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and expire_time is null
     </update>
 
     <select id="existWhiteListObject" resultType="java.lang.String">

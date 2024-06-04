@@ -25,7 +25,8 @@
                 #{object.auditStatus},
                 #{object.staticRuleDisplayId},#{object.eventType})
     </insert>
-    <insert id="newStaticRules">
+    <insert id="newStaticRules" useGeneratedKeys="true" keyProperty="staticRuleId"
+            keyColumn="static_rule_id"  parameterType="com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject">
         insert into t_static_rule(static_rule_name, static_rule_create_time,
                                   static_rule_create_username, static_rule_create_depart,
                                   static_rule_create_user_id, static_rule_sip, static_rule_msip,
@@ -37,7 +38,7 @@
                                   static_rule_display_id,event_type
                                   )
         values
-        <foreach collection="staticRuleBatch" item="object" separator=",">
+        <foreach collection="list" item="object" separator=",">
             (#{object.staticRuleName}, NOW(), #{object.staticRuleCreateUsername},
             #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
             INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
@@ -47,6 +48,143 @@
             #{object.staticRuleFrequency}, 0,
             #{object.staticRuleDisplayId},#{object.eventType}
             )
+        </foreach>
+    </insert>
+    <insert id="insertStaticRuleStatusLog">
+        insert into t_static_rule_status_log(
+        static_rule_id,
+        static_rule_name,
+        effective_time,expire_time,
+        static_rule_create_time,
+        static_rule_create_username,
+        static_rule_audit_status,
+        static_rule_create_depart,
+        static_rule_create_user_id,
+        audit_user_name,
+        audit_user_id,
+        audit_user_depart,
+        static_rule_used_task_id,
+        static_rule_sip,
+        static_rule_msip,
+        static_rule_sport,
+        static_rule_msport,
+        static_rule_dip,
+        static_rule_mdip,
+        static_rule_dport,
+        static_rule_mdport,
+        static_rule_protocol,
+        static_rule_mprotocol,
+        static_rule_dns,
+        static_rule_url,
+        static_rule_priority,
+        static_rule_frequency,
+        static_rule_modify_time,
+        static_rule_display_id,
+        static_rule_audit_info,
+        event_type
+        )
+       select
+           static_rule_id,
+           static_rule_name,
+           NOW(),NULL,
+           static_rule_create_time,
+           static_rule_create_username,
+           static_rule_audit_status,
+           static_rule_create_depart,
+           static_rule_create_user_id,
+           audit_user_name,
+           audit_user_id,
+           audit_user_depart,
+           static_rule_used_task_id,
+           static_rule_sip,
+           static_rule_msip,
+           static_rule_sport,
+           static_rule_msport,
+           static_rule_dip,
+           static_rule_mdip,
+           static_rule_dport,
+           static_rule_mdport,
+           static_rule_protocol,
+           static_rule_mprotocol,
+           static_rule_dns,
+           static_rule_url,
+           static_rule_priority,
+           static_rule_frequency,
+           static_rule_modify_time,
+           static_rule_display_id,
+           static_rule_audit_info,
+           event_type
+         from t_static_rule
+            where static_rule_id = #{id}
+    </insert>
+    <insert id="insertStaticRuleStatusLogBatch">
+        insert into t_static_rule_status_log(
+            static_rule_id,
+            static_rule_name,
+            effective_time,expire_time,
+            static_rule_create_time,
+            static_rule_create_username,
+            static_rule_audit_status,
+            static_rule_create_depart,
+            static_rule_create_user_id,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart,
+            static_rule_used_task_id,
+            static_rule_sip,
+            static_rule_msip,
+            static_rule_sport,
+            static_rule_msport,
+            static_rule_dip,
+            static_rule_mdip,
+            static_rule_dport,
+            static_rule_mdport,
+            static_rule_protocol,
+            static_rule_mprotocol,
+            static_rule_dns,
+            static_rule_url,
+            static_rule_priority,
+            static_rule_frequency,
+            static_rule_modify_time,
+            static_rule_display_id,
+            static_rule_audit_info,
+            event_type
+        )
+        select
+            static_rule_id,
+            static_rule_name,
+            NOW(),NULL,
+            static_rule_create_time,
+            static_rule_create_username,
+            static_rule_audit_status,
+            static_rule_create_depart,
+            static_rule_create_user_id,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart,
+            static_rule_used_task_id,
+            static_rule_sip,
+            static_rule_msip,
+            static_rule_sport,
+            static_rule_msport,
+            static_rule_dip,
+            static_rule_mdip,
+            static_rule_dport,
+            static_rule_mdport,
+            static_rule_protocol,
+            static_rule_mprotocol,
+            static_rule_dns,
+            static_rule_url,
+            static_rule_priority,
+            static_rule_frequency,
+            static_rule_modify_time,
+            static_rule_display_id,
+            static_rule_audit_info,
+            event_type
+        from t_static_rule
+        where static_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </insert>
 
@@ -137,6 +275,20 @@
         <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </update>
+    <update id="updateStaticRuleStatusLogExpireTime">
+        update t_static_rule_status_log
+        set expire_time = NOW()
+        where static_rule_id = #{id} AND expire_time IS NULL
+    </update>
+    <update id="updateStaticRuleStatusLogExpireTimeBatch">
+        update t_static_rule_status_log
+        set expire_time = NOW()
+        where static_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND expire_time IS NULL
     </update>
 
     <delete id="deleteStaticRules">

@@ -5,6 +5,7 @@ import com.realtime.protection.configuration.response.ResponseResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,4 +61,12 @@ public interface ProtectObjectMapper {
     Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
 
     String queryProtectObjectAuditInfo(Integer id);
+
+    void insertStaticRuleStatusLog(Integer id);
+
+    void updateStaticRuleStatusLogExpireTime(Integer id);
+
+    void insertStaticRuleStatusLogBatch(List<Integer> ids);
+
+    void updateStaticRuleStatusLogExpireTimeBatch(List<Integer> ids);
 }

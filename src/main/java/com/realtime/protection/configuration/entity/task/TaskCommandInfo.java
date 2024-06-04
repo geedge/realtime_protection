@@ -115,6 +115,9 @@ public class TaskCommandInfo {
     @Schema(description = "指令所属任务的运行状态", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer taskStatus;
 
+    @Schema(description = "指令展示id", accessMode = Schema.AccessMode.READ_ONLY)
+    private String displayId;
+
     // 复制构造函数
     public void copyTaskCommandInfo(TaskCommandInfo original) {
         this.UUID = original.UUID;

@@ -21,6 +21,135 @@
                    #{template.description}, #{template.templateDisplayId},
             #{template.eventType}, #{template.protectLevel})
     </insert>
+    <insert id="insertStatusLog">
+        INSERT INTO t_strategy_template_new_status_log
+            (
+            strategy_template_id,
+            strategy_template_name,
+            effective_time,expire_time,
+            event_type,
+            protect_level,
+            strategy_template_description,
+            strategy_template_source_system,
+            strategy_template_create_username,
+            strategy_template_create_depart,
+            strategy_template_create_user_id,
+            has_protect_object_ip,
+            has_protect_object_port,
+            has_protocol,
+            has_url,
+            has_peer_ip,
+            has_peer_port,
+            has_dns,
+            is_protect_object_dst,
+            is_protect_object_src,
+            create_time,
+            modify_time,
+            audit_status,
+            strategy_template_display_id,
+            audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+        )
+        select
+            strategy_template_id,
+            strategy_template_name,
+            NOW(),NULL,
+            event_type,
+            protect_level,
+            strategy_template_description,
+            strategy_template_source_system,
+            strategy_template_create_username,
+            strategy_template_create_depart,
+            strategy_template_create_user_id,
+            has_protect_object_ip,
+            has_protect_object_port,
+            has_protocol,
+            has_url,
+            has_peer_ip,
+            has_peer_port,
+            has_dns,
+            is_protect_object_dst,
+            is_protect_object_src,
+            create_time,
+            modify_time,
+            audit_status,
+            strategy_template_display_id,
+            audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+            )
+        from t_strategy_template_new
+        where strategy_template_id = #{id}
+    </insert>
+    <insert id="insertStatusLogBatch">
+        INSERT INTO t_strategy_template_new_status_log
+        (
+            strategy_template_id,
+            strategy_template_name,
+            effective_time,expire_time,
+            event_type,
+            protect_level,
+            strategy_template_description,
+            strategy_template_source_system,
+            strategy_template_create_username,
+            strategy_template_create_depart,
+            strategy_template_create_user_id,
+            has_protect_object_ip,
+            has_protect_object_port,
+            has_protocol,
+            has_url,
+            has_peer_ip,
+            has_peer_port,
+            has_dns,
+            is_protect_object_dst,
+            is_protect_object_src,
+            create_time,
+            modify_time,
+            audit_status,
+            strategy_template_display_id,
+            audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+        )
+        select
+            strategy_template_id,
+            strategy_template_name,
+            NOW(),NULL,
+            event_type,
+            protect_level,
+            strategy_template_description,
+            strategy_template_source_system,
+            strategy_template_create_username,
+            strategy_template_create_depart,
+            strategy_template_create_user_id,
+            has_protect_object_ip,
+            has_protect_object_port,
+            has_protocol,
+            has_url,
+            has_peer_ip,
+            has_peer_port,
+            has_dns,
+            is_protect_object_dst,
+            is_protect_object_src,
+            create_time,
+            modify_time,
+            audit_status,
+            strategy_template_display_id,
+            audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart
+            )
+        from t_strategy_template_new
+        where strategy_template_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </insert>
 
     <update id="updateTemplateInformation">
         UPDATE t_strategy_template_new
@@ -73,6 +202,21 @@
             #{id}
         </foreach>
     </update>
+    <update id="updateStatusLogExpireTime">
+        update t_strategy_template_new_status_log
+        set expire_time = NOW()
+        where strategy_template_id = #{templateId} and expire_time is null
+    </update>
+    <update id="updateStatusLogExpireTimeBatch">
+        update t_strategy_template_new_status_log
+        set expire_time = NOW()
+        where strategy_template_id in
+        <foreach collection="templateIds" item="templateId" open="(" separator="," close=")">
+            #{templateId}
+        </foreach>
+        and expire_time is null
+    </update>
+
 
     <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.TemplateNew">
         <id column="strategy_template_id" property="templateId"/>

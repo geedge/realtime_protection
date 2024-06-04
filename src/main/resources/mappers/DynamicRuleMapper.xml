@@ -41,7 +41,97 @@
             )
         </foreach>
     </insert>
-
+    <insert id="insertStatusLog">
+        insert into t_dynamic_rule_status_log
+        (
+         dynamic_rule_id,
+        effective_time,expire_time,
+        dynamic_rule_used_task_id,
+        dynamic_rule_name,
+        create_time,
+        modify_time,
+        dynamic_rule_create_username,
+        dynamic_rule_create_depart,
+        dynamic_rule_create_user_id,
+        audit_status,
+        dynamic_rule_display_id,
+        dynamic_rule_audit_info,
+        audit_user_name,
+        audit_user_id,
+        audit_user_depart,
+        bw_sql,
+        description,
+        source_system
+        )
+        select
+            dynamic_rule_id,
+            NOW(), NULL,
+            dynamic_rule_used_task_id,
+            dynamic_rule_name,
+            create_time,
+            modify_time,
+            dynamic_rule_create_username,
+            dynamic_rule_create_depart,
+            dynamic_rule_create_user_id,
+            audit_status,
+            dynamic_rule_display_id,
+            dynamic_rule_audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart,
+            bw_sql,
+            description,
+            source_system
+        from t_dynamic_rule
+        where dynamic_rule_id = #{id}
+    </insert>
+    <insert id="insertStatusLogBatch">
+        insert into t_dynamic_rule_status_log
+        (
+            dynamic_rule_id,
+            effective_time,expire_time,
+            dynamic_rule_used_task_id,
+            dynamic_rule_name,
+            create_time,
+            modify_time,
+            dynamic_rule_create_username,
+            dynamic_rule_create_depart,
+            dynamic_rule_create_user_id,
+            audit_status,
+            dynamic_rule_display_id,
+            dynamic_rule_audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart,
+            bw_sql,
+            description,
+            source_system
+        )
+        select
+            dynamic_rule_id,
+            NOW() NULL,
+            dynamic_rule_used_task_id,
+            dynamic_rule_name,
+            create_time,
+            modify_time,
+            dynamic_rule_create_username,
+            dynamic_rule_create_depart,
+            dynamic_rule_create_user_id,
+            audit_status,
+            dynamic_rule_display_id,
+            dynamic_rule_audit_info,
+            audit_user_name,
+            audit_user_id,
+            audit_user_depart,
+            bw_sql,
+            description,
+            source_system
+        from t_dynamic_rule
+        where dynamic_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </insert>
 
 
     <!--    join删除-->
@@ -128,6 +218,20 @@
         <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </update>
+    <update id="updateStatusLogExpireTime">
+        update t_dynamic_rule_status_log
+        set expire_time = NOW()
+        where dynamic_rule_id = #{id} and expire_time is null
+    </update>
+    <update id="updateStatusLogExpireTimeBatch">
+        update t_dynamic_rule_status_log
+        set expire_time = NOW()
+        where dynamic_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and expire_time is null
     </update>
 
 

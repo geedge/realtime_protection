@@ -55,7 +55,7 @@ public class AlertMessage {
     @JsonProperty("c_priority")
     private Integer c_priority;
     @JsonProperty("c_time")
-    private LocalDateTime c_time;
+    private Long c_time;
     @JsonProperty("c_flowid")
     private String c_flowid;
     @JsonProperty("c_src_ipv4")
@@ -80,8 +80,8 @@ public class AlertMessage {
     private Integer c_d_tunnel_port;
     @JsonProperty("c_proto_type")
     private Integer c_proto_type;
-    @JsonProperty("c_return_info")
-    private String c_return_info;
+
+
     @JsonProperty("c_s_boundary")
     private Long c_s_boundary;
     @JsonProperty("c_s_region")
@@ -108,8 +108,8 @@ public class AlertMessage {
     private String c_d_owner;
     @JsonProperty("c_ret_file_type")
     private Integer c_ret_file_type;
-    @JsonProperty("c_ret_filename")
-    private String c_ret_filename;
+    @JsonProperty("c_ret_file_name")
+    private String c_ret_file_name;
     @JsonProperty("c_ret_file")
     private String c_ret_file;
     @JsonProperty("c_url")
@@ -134,6 +134,15 @@ public class AlertMessage {
     private Long c_d_mark4;
     @JsonProperty("c_d_mark5")
     private Long c_d_mark5;
+
+    @JsonProperty("display_id")
+    private String display_id;
+
+    @JsonProperty("c_return_info")
+    private String c_return_info;
+
+
+
 //                "c_priority": 0,
 //                "c_time": 1714528212,
 //                "c_flowid": "ca0c192021",

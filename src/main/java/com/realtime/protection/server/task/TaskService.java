@@ -101,7 +101,7 @@ public class TaskService {
 
             }
         }
-
+        insertTaskStatusLog(task.getTaskId());
         return task.getTaskId();
     }
 
@@ -316,7 +316,7 @@ public class TaskService {
         if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))
             taskMapper.changeTaskAuditStatusWithAudior(taskId, taskAuditStatus, auditUserName,  auditUserId,  auditUserDepart);
         else return false;
-
+        insertTaskStatusLog(taskId);
         return true;
     }
     @Transactional
@@ -329,6 +329,7 @@ public class TaskService {
         if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))
             taskMapper.changeTaskAuditStatus(taskId, taskAuditStatus);
         else return false;
+        insertTaskStatusLog(taskId);
 
         return true;
     }
@@ -427,10 +428,13 @@ public class TaskService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        //记录状态日志
+                        insertTaskStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertTaskStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -506,5 +510,17 @@ public class TaskService {
 
     public String queryAuditInfo(Integer id) {
         return taskMapper.queryAuditInfo(id);
+    }
+
+    public void insertTaskStatusLog(Long taskId) {
+        taskMapper.updateTaskStatusLogExpireTime(taskId);
+        taskMapper.insertTaskStatusLog(taskId);
+    }
+    public void insertTaskStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> taskIds = new ArrayList<>(keys);
+
+        taskMapper.updateTaskStatusLogExpireTimeBatch(taskIds);
+        taskMapper.insertTaskStatusLogBatch(taskIds);
     }
 }

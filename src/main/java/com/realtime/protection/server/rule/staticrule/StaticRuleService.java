@@ -99,6 +99,8 @@ public class StaticRuleService {
 
         staticRuleMapper.newStaticRuleObject(object);
 
+        insertStaticRuleStatusLog(object.getStaticRuleId());
+
         return object.getStaticRuleId();
     }
 
@@ -210,10 +212,13 @@ public class StaticRuleService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.newStaticRules(StaticRuleBatch);
+                        //todo: 批量插入静态规则，mybatis未返回主键id，待解决
+//                        insertStaticRuleStatusLog(StaticRuleBatch);
                         StaticRuleBatch.clear();
                     }
                     if (!StaticRuleBatch.isEmpty()) {
                         mapper.newStaticRules(StaticRuleBatch);
+//                        insertStaticRuleStatusLog(StaticRuleBatch);
                     }
                     return true;
                 };
@@ -237,7 +242,8 @@ public class StaticRuleService {
             throw new IllegalArgumentException("invalid audit status");
         }
         Boolean success = staticRuleMapper.updateAuditStatusById(id, auditStatus, auditUserName, auditUserId, auditUserDepart);
-
+        //记录状态历史
+        insertStaticRuleStatusLog(id);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
         resultMap.put("audit_status", auditStatus);
@@ -309,11 +315,13 @@ public class StaticRuleService {
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch,
                                 auditUserName, auditUserId, auditUserDepart);
+                        insertStaticRuleStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch,
                                 auditUserName, auditUserId, auditUserDepart);
+                        insertStaticRuleStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -358,10 +366,12 @@ public class StaticRuleService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStaticRuleStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStaticRuleStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -387,5 +397,27 @@ public class StaticRuleService {
 
     public String queryAuditInfo(Integer id) {
         return staticRuleMapper.queryAuditInfo(id);
+    }
+
+    public void insertStaticRuleStatusLog(Integer id) {
+        staticRuleMapper.updateStaticRuleStatusLogExpireTime(id);
+        staticRuleMapper.insertStaticRuleStatusLog(id);
+    }
+    public void insertStaticRuleStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        ArrayList<Integer> ids = new ArrayList<>(keys);
+
+        staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
+        staticRuleMapper.insertStaticRuleStatusLogBatch(ids);
+    }
+
+    public void insertStaticRuleStatusLog(List<StaticRuleObject> objects) {
+        List<Integer> ids = new ArrayList<>();
+        for (StaticRuleObject staticRuleObject : objects) {
+            ids.add(staticRuleObject.getStaticRuleId());
+        }
+
+        staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
+        staticRuleMapper.insertStaticRuleStatusLogBatch(ids);
     }
 }

@@ -52,6 +52,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
             object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));
             object.setStaticRuleCreateDepart(user.getOrgName());
         }
+
         //调用service新增
         staticRuleService.newStaticRuleObject(object);
         return ResponseResult.ok()

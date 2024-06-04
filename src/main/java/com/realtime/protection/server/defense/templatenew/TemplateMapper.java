@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,4 +62,11 @@ public interface TemplateMapper {
 
     String queryAuditInfo(Integer id);
 
+    void updateStatusLogExpireTime(Integer id);
+
+    void insertStatusLog(Integer id);
+
+    void updateStatusLogExpireTimeBatch(List<Integer> ids);
+
+    void insertStatusLogBatch(List<Integer> ids);
 }

@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -50,6 +47,7 @@ public class WhiteListService {
         );
 
         whiteListMapper.newWhiteListObject(object);
+        insertStatusLog(object.getWhiteListId());
 
         return object.getWhiteListId();
     }
@@ -200,7 +198,7 @@ public class WhiteListService {
         }
 
         Boolean success = whiteListMapper.updateWhiteListObjectAuditStatus(id, auditStatus);
-
+        insertStatusLog(id);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
         resultMap.put("audit_status", auditStatus);
@@ -253,10 +251,12 @@ public class WhiteListService {
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStatusLog(idWithAuditStatusBatch);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
                         mapper.updateAuditStatusByIdBatch(idWithAuditStatusBatch);
+                        insertStatusLog(idWithAuditStatusBatch);
                     }
                     return true;
                 };
@@ -271,5 +271,27 @@ public class WhiteListService {
 
     public String queryAuditInfo(Integer id) {
         return whiteListMapper.queryWhiteListObjectAuditInfo(id);
+    }
+
+    public void insertStatusLog(Integer id) {
+        whiteListMapper.updateStatusLogExpireTime(id);
+        whiteListMapper.insertStatusLog(id);
+    }
+    public void insertStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
+        Set<Integer> keys = idWithAuditStatusBatch.keySet();
+        List<Integer> ids = new ArrayList<>(keys);
+
+        whiteListMapper.updateStatusLogExpireTimeBatch(ids);
+        whiteListMapper.insertStatusLogBatch(ids);
+    }
+
+    public void insertStatusLog(List<StaticRuleObject> objects) {
+        List<Integer> ids = new ArrayList<>();
+        for (StaticRuleObject staticRuleObject : objects) {
+            ids.add(staticRuleObject.getStaticRuleId());
+        }
+
+        whiteListMapper.updateStatusLogExpireTimeBatch(ids);
+        whiteListMapper.insertStatusLogBatch(ids);
     }
 }
