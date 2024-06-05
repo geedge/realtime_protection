@@ -2,25 +2,33 @@ package com.realtime.protection.configuration.response;
 
 import com.realtime.protection.ProtectionApplication;
 import com.realtime.protection.configuration.entity.user.User;
+import com.realtime.protection.configuration.entity.user.UserFull;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
+/**
+ * 修改人： Fulian Li
+ * 功能：执行日志审计
+ **/
 
 @RestControllerAdvice(basePackageClasses = {ProtectionApplication.class})
 @Slf4j
+@ControllerAdvice
 public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     private final WebClient webClient = WebClient
@@ -31,8 +39,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     @Data
     @AllArgsConstructor
     private static class AuditData {
-        private Long userId;
-        private Long deptId;
+        private String userId;
+        private String deptId;
         private String userName;
         private String deptName;
         private String menu;
@@ -43,21 +51,16 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return false;
+//        return false;
+        return true;
     }
 
     @Override
+
     public ResponseResult beforeBodyWrite(ResponseResult body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        User user = getUserData(request);
 
-        AuditData auditData = new AuditData(
-                user.getUserId(), user.getDeptId(), user.getUsername(), user.getUserDepart(),
-                "",
-                Objects.requireNonNull(returnType.getMethod()).getName(),
-                success(body),
-                body.getMessage()
-        );
-
+        AuditData auditData = getAuditData(body, request);
+//        System.out.println("auditData-----------:"+auditData);
 
         Mono<String> mono = webClient
                 .post()
@@ -67,7 +70,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
                         return res.bodyToMono(String.class);
                     }
-
+//                    log.info("发送审计日志成功：{}",res);
                     return null;
                 })
                 .doOnError(WebClientRequestException.class, err ->
@@ -78,12 +81,29 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         return body;
     }
 
-    private User getUserData(ServerHttpRequest request) {
-        return new User(1L, 1L, "xxx", "", "xxx");
-    }
-
-    private String success(ResponseResult body) {
-        return Boolean.toString(body.getCode() == 200);
+    @NotNull
+    private static AuditData getAuditData(ResponseResult body, ServerHttpRequest request) {
+        HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
+        AuditData auditData;
+        if(session!=null || session.getAttribute("user")==null){
+            auditData = new AuditData(
+                    "xxx","xxx","xxx","xxx",
+                    request.getURI().getPath(),
+                    request.getMethod().toString(),
+                    body.getCode()==200?"成功":"失败",
+                    body.getMessage()
+            );
+        }else {
+            UserFull user = (UserFull) session.getAttribute("user");
+            auditData = new AuditData(
+                    user.uid, user.getOrgCode(),user.name,  user.getOrgName(),
+                    request.getURI().getPath(),
+                    request.getMethod().toString(),
+                    body.getCode()==200?"成功":"失败",
+                    body.getMessage()
+            );
+        }
+        return auditData;
     }
 
     private static void handleMono(String result) {
