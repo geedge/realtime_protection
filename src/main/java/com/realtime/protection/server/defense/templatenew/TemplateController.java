@@ -1,10 +1,14 @@
 package com.realtime.protection.server.defense.templatenew;
 
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,15 +27,16 @@ public class TemplateController implements TemplateNewCpntrollerApi{
 
     @Override
     @PostMapping("/new")
-    public ResponseResult newTemplate(@RequestBody @Valid TemplateNew template) {
+    public ResponseResult newTemplate(@RequestBody @Valid TemplateNew template,
+                                      @Autowired HttpServletRequest request) {
         //从http首部session字段获取用户信息
-//        HttpSession session = request.getSession();
-//        UserFull user = (UserFull) session.getAttribute("user");
-//        if (user != null) {
-//            object.setStaticRuleCreateUsername(user.name);
-//            object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));
-//            object.setStaticRuleCreateDepart(user.getOrgName());
-//        }
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        if (user != null) {
+            template.setCreateUsername(user.name);
+            template.setCreateUserId(Integer.valueOf(user.uid));
+            template.setCreateDepart(user.getOrgName());
+        }
         Integer templateId = templateService.newTemplate(template);
 
         if (templateId > 0) {
@@ -161,14 +166,28 @@ public class TemplateController implements TemplateNewCpntrollerApi{
      */
     @Override
     @GetMapping("/{id}/audit/{auditStatus}")
-    public ResponseResult updateTemplateAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus) {
+    public ResponseResult updateTemplateAuditStatus(@PathVariable Integer id,
+                                                    @PathVariable Integer auditStatus,
+                                                    @Autowired HttpServletRequest request) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("template_id", id)
                     .setData("success", false);
         }
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
         return ResponseResult.ok()
-                .addDataMap(templateService.updateAuditStatus(id, auditStatus))
+                .addDataMap(templateService.updateAuditStatus(id, auditStatus,
+                        auditUserName, auditUserId, auditUserDepart))
                 .setData("template_id", id);
     }
 
@@ -178,7 +197,8 @@ public class TemplateController implements TemplateNewCpntrollerApi{
      */
     @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                          @Autowired HttpServletRequest request) {
         List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
@@ -192,9 +212,20 @@ public class TemplateController implements TemplateNewCpntrollerApi{
                     .setData("id", errorIds)
                     .setData("success", false);
         }
-
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
         return ResponseResult.ok()
-                .setData("success", templateService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", templateService.updateAuditStatusBatch(idsWithAuditStatusMap,
+                        auditUserName, auditUserId, auditUserDepart));
     }
 
     /*

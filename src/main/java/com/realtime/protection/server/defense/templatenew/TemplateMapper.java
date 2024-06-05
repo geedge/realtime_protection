@@ -52,7 +52,10 @@ public interface TemplateMapper {
 
     Integer queryAuditStatusById(Integer id);
 
-    Boolean updateAuditStatusById(Integer id, Integer auditStatus);
+    Boolean updateAuditStatusById(Integer id, Integer auditStatus,
+                                  String auditUserName,
+                                  Integer auditUserId,
+                                  String auditUserDepart);
 
     List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
 
@@ -71,4 +74,9 @@ public interface TemplateMapper {
     void insertStatusLogBatch(List<Integer> ids);
 
     List<TemplateNew> queryHistory(Integer id, Integer page, Integer pageSize);
+
+    void updateAuditStatusByIdBatchWithUser(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch,
+                                            @Param("auditUserName")String auditUserName,
+                                            @Param("auditUserId")Integer auditUserId,
+                                            @Param("auditUserDepart")String auditUserDepart);
 }

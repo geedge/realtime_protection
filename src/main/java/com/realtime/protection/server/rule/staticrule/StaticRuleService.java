@@ -63,13 +63,12 @@ public class StaticRuleService {
     新建静态规则
      */
     @SneakyThrows
+    @Transactional
     public Integer newStaticRuleObject(StaticRuleObject object)  {
 
         object.setStaticRuleCreateTime(LocalDateTime.now());
         object.setAuditStatus(0);
-        /*
-        待开发：设置静态规则对象的创建用户、用户所属部门等属性
-         */
+
         if (!isIpMaskValid(object.getStaticRuleSip(),object.getStaticRuleMsip()) ||
                 !isIpMaskValid(object.getStaticRuleDip(),object.getStaticRuleMdip())
             ){
@@ -78,6 +77,10 @@ public class StaticRuleService {
         if (!RuleEnum.checkValidate(object)) {
             throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
         }
+
+//        if(!staticRuleMapper.queryStaticRuleRepeat(object)){
+//            throw new IllegalArgumentException("静态规则重复");
+//        }
         /*
         新建静态规则，过一下白名单审核
          */
@@ -103,7 +106,7 @@ public class StaticRuleService {
 
         return object.getStaticRuleId();
     }
-
+    @Transactional
     public Object deleteStaticRules(List<Integer> staticRuleIds) {
         //判断当前静态规则是否能够删除---是否存在任务选择的静态规则？？
 
@@ -144,8 +147,8 @@ public class StaticRuleService {
             throw new IllegalArgumentException("未知的静态规则ID");
         }
 
-        if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
-            throw new IllegalStateException("无法修改该静态规则，因为其审核状态未处于" + AuditStatusEnum.AUDITED);
+        if (staticRuleObject.getAuditStatus().equals(AuditStatusEnum.USING.getNum())) {
+            throw new IllegalStateException("无法修改该静态规则，因为其状态处于" + AuditStatusEnum.USING);
         }
 
         if (!RuleEnum.checkValidate(object)) {
@@ -241,7 +244,7 @@ public class StaticRuleService {
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
             throw new IllegalArgumentException("invalid audit status");
         }
-        Boolean success = staticRuleMapper.updateAuditStatusById(id, auditStatus, auditUserName, auditUserId, auditUserDepart);
+        Boolean success = staticRuleMapper.updateAuditStatusByIdWithUser(id, auditStatus, auditUserName, auditUserId, auditUserDepart);
         //记录状态历史
         insertStaticRuleStatusLog(id);
         Map<String, Object> resultMap = new HashMap<>();

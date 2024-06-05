@@ -201,7 +201,7 @@
         SELECT protect_object_id,
                protect_object_name,
                protect_object_system_name,
-               INET_NTOA(protect_object_ip),
+               INET_NTOA(protect_object_ip) as protect_object_ip,
                protect_object_port,
                protect_object_url,
                protect_object_protocol,
@@ -363,5 +363,31 @@
             #{id}
         </foreach>
         AND expire_time IS NULL
+    </update>
+    <update id="changeProtectObjectAuditStatusWithUser">
+        UPDATE t_protect_object
+        SET protect_object_audit_status = #{proobj_audit_status},
+            audit_user_name = #{auditUserName},
+            audit_user_id = #{auditUserId},
+            audit_user_deaprt = #{auditUserDepart},
+            modify_time = NOW()
+        WHERE protect_object_id = #{proobj_id}
+    </update>
+    <update id="updateAuditStatusByIdBatchWithUser">
+        update t_protect_object
+        set
+        modify_time = NOW(),
+        audit_user_id =  #{auditUserId},
+        audit_user_name = #{auditUserName},
+        audit_user_depart = #{auditUserDepart},
+            protect_object_audit_status = CASE protect_object_id
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        END
+        WHERE protect_object_id IN
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 </mapper>

@@ -164,6 +164,7 @@ public class StaticRuleObject {
     private String auditUserDepart;
 
     @JsonProperty("event_type")
+    @ExcelProperty("事件类型")
     @Schema(description = "事件类型", example = "DDos")
     private String eventType;
 

@@ -2,12 +2,16 @@ package com.realtime.protection.server.defense.object;
 
 import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
                                                                             import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +34,16 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
 
     @Override
     @PostMapping("/new")
-    public ResponseResult newProtectObject(@RequestBody @Valid ProtectObject protectObject) {
+    public ResponseResult newProtectObject(@RequestBody @Valid ProtectObject protectObject,
+                                           @Autowired HttpServletRequest request) {
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        if (user != null) {
+            protectObject.setProtectObjectCreateUsername(user.name);
+            protectObject.setProtectObjectCreateUserId(Integer.valueOf(user.uid));
+            protectObject.setProtectObjectCreateDepart(user.getOrgName());
+        }
         Integer protectObjectId = protectObjectService.newProtectObject(protectObject);
         if (protectObjectId == 0) {
             return ResponseResult.error().setMessage("failed to create a protect object")
@@ -48,10 +61,13 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     @Override
     @PostMapping("/upload")
     public ResponseResult uploadFile(
-            @NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile
+            @NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile,
+            @Autowired HttpServletRequest request
     ) throws IOException {
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
         EasyExcel.read(uploadFile.getInputStream(), ProtectObject.class,
-                new ProjectObjectDataListener(protectObjectService)).sheet().doRead();
+                new ProjectObjectDataListener(protectObjectService, user)).sheet().doRead();
         return ResponseResult.ok();
     }
 
@@ -158,9 +174,22 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     @Override
     @GetMapping("/{protectObjectId}/audit/{auditStatus}")
     public ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
-                                                         @PathVariable Integer auditStatus) {
+                                                         @PathVariable Integer auditStatus,
+                                                         @Autowired HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
+
         return ResponseResult.ok()
-                .addDataMap(protectObjectService.changeProtectObjectAuditStatus(protectObjectId, auditStatus))
+                .addDataMap(protectObjectService.changeProtectObjectAuditStatus(
+                        protectObjectId, auditStatus, auditUserName, auditUserId, auditUserDepart))
                 .setData("proobj_id", protectObjectId);
     }
 
@@ -191,7 +220,9 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
      */
     @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateWhiteListAuditStatusBatch(
+            @RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+            @Autowired HttpServletRequest request) {
         List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
@@ -205,9 +236,20 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
                     .setData("id", errorIds)
                     .setData("success", false);
         }
-
+          //  从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
         return ResponseResult.ok()
-                .setData("success", protectObjectService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", protectObjectService.updateAuditStatusBatch(
+                        idsWithAuditStatusMap, auditUserName, auditUserId, auditUserDepart));
     }
 
     @Override

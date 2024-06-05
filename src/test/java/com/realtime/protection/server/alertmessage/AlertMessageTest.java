@@ -1,5 +1,6 @@
 package com.realtime.protection.server.alertmessage;
 
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.github.xiaoymin.knife4j.annotations.Ignore;
 import com.realtime.protection.configuration.entity.alert.AlertMessage;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
@@ -45,6 +46,7 @@ public class AlertMessageTest {
 
     @Ignore
     @Test
+    @DSTransactional
     void testReceiveAlertMessage() throws DorisStartException {
 
         for(int n = 10;n < 20;n++) {

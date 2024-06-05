@@ -186,7 +186,10 @@ public class WhiteListService {
     }
 
     @Transactional
-    public Map<String, Object> updateWhiteListObjectAuditStatus(Integer id, Integer auditStatus) {
+    public Map<String, Object> updateWhiteListObjectAuditStatus(Integer id, Integer auditStatus,
+                                                                String auditUserName,
+                                                                Integer auditUserId,
+                                                                String auditUserDepart) {
         //查询目前curStatus
         Integer originalAuditStatus = whiteListMapper.queryWhiteListObjectAuditStuatusById(id);
         if (originalAuditStatus == null){
@@ -197,7 +200,8 @@ public class WhiteListService {
             throw new IllegalArgumentException("审核状态修改违规");
         }
 
-        Boolean success = whiteListMapper.updateWhiteListObjectAuditStatus(id, auditStatus);
+        Boolean success = whiteListMapper.updateWhiteListObjectAuditStatusWithUser(id, auditStatus,
+                auditUserName, auditUserId, auditUserDepart);
         insertStatusLog(id);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
@@ -216,7 +220,61 @@ public class WhiteListService {
         return whiteListMapper.queryAuditWhiteListTotalNum(auditStatus);
     }
 
-    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap,
+                                          String auditUserName, Integer auditUserId, String auditUserDepart ) {
+
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = whiteListMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("白名单id部分不存在");
+        }
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            throw new IllegalArgumentException("白名单id无法修改为对应审核状态, 错误id: " + errorIds);
+        }
+
+        Function<WhiteListMapper, Function<Map<Integer, Integer>, Boolean>> updateWhiteListAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusByIdBatchWithUser(idWithAuditStatusBatch,
+                                auditUserName, auditUserId, auditUserDepart);
+                        insertStatusLog(idWithAuditStatusBatch);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusByIdBatchWithUser(idWithAuditStatusBatch,
+                                auditUserName, auditUserId, auditUserDepart);
+                        insertStatusLog(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(WhiteListMapper.class, updateWhiteListAuditStatusFunction, idsWithAuditStatusMap);
+
+    }
+
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap ) {
+
         //校验id和status是否合法
         List<Integer> originalAuditStatusList = whiteListMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
         if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {

@@ -14,7 +14,7 @@
                                   static_rule_protocol, static_rule_mprotocol, static_rule_dns,
                                   static_rule_url, static_rule_priority,
                                   static_rule_frequency, static_rule_audit_status,
-                                  static_rule_display_id,event_type)
+                                  static_rule_display_id,event_type,static_rule_modify_time)
         values (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
                 #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
                 INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
@@ -23,7 +23,7 @@
                 #{object.staticRuleDns}, #{object.staticRuleURL}, #{object.staticRulePriority},
                 #{object.staticRuleFrequency},
                 #{object.auditStatus},
-                #{object.staticRuleDisplayId},#{object.eventType})
+                #{object.staticRuleDisplayId},#{object.eventType},NOW())
     </insert>
     <insert id="newStaticRules" useGeneratedKeys="true" keyProperty="staticRuleId"
             keyColumn="static_rule_id"  parameterType="com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject">
@@ -216,8 +216,9 @@
             </if>
 
             <if test="object.eventType != null and object.eventType != ''">
-                event_type = #{eventType},
+                event_type = #{object.eventType},
             </if>
+            static_rule_audit_status = #{object.auditStatus},
 
             static_rule_modify_time = NOW()
 
@@ -225,7 +226,7 @@
         where static_rule_id = #{id}
     </update>
 
-    <update id="updateAuditStatusById">
+    <update id="updateAuditStatusByIdWithUser">
         update t_static_rule
         set static_rule_modify_time = NOW(),
             static_rule_audit_status = #{auditStatus},
@@ -294,6 +295,12 @@
         update t_static_rule
         set static_rule_used_task_id = NULL
         where static_rule_used_task_id = #{taskId}
+    </update>
+    <update id="updateAuditStatusById">
+        update t_static_rule
+        set static_rule_modify_time = NOW(),
+            static_rule_audit_status = #{auditStatus}
+        where static_rule_id = #{id}
     </update>
 
     <delete id="deleteStaticRules">
@@ -399,7 +406,11 @@
     </select>
 
     <select id="queryStaticRuleById" resultMap="staticRuleMap">
-        SELECT *
+        SELECT *,
+               INET_NTOA(static_rule_sip) as static_rule_sip_d,
+               INET_NTOA(static_rule_msip) as static_rule_msip_d,
+               INET_NTOA(static_rule_dip) as static_rule_dip_d,
+               INET_NTOA(static_rule_mdip) as static_rule_mdip_d
         FROM t_static_rule
         left join t_task on t_static_rule.static_rule_used_task_id = t_task.task_id
         WHERE static_rule_id = #{id}
@@ -508,5 +519,35 @@
         ORDER BY effective_time DESC
             LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
+<!--    <select id="queryStaticRuleRepeat" resultType="java.lang.Boolean">-->
+<!--        SELECT COUNT(*)-->
+<!--        FROM t_static_rule-->
+<!--        WHERE-->
+<!--            <if test="sip != null and sip != ''">-->
+<!--            static_rule_sip = INET_ATON(#{sip})-->
+<!--            </if>-->
+<!--            <if test="dip != null and dip != ''">-->
+<!--                AND static_rule_dip = INET_ATON(#{dip})-->
+<!--            </if>-->
+<!--            <if test="sport != null">-->
+<!--                AND static_rule_sport = #{sport}-->
+<!--            </if>-->
+<!--            <if test="dport != null">-->
+<!--                AND static_rule_dport = #{dport}-->
+<!--            </if>-->
+<!--            <if test="protocol != null">-->
+<!--                AND static_rule_protocol = #{protocol}-->
+<!--            </if>-->
+<!--            <if test="dns != null and dns != ''">-->
+<!--                AND static_rule_dns = #{dns}-->
+<!--            </if>-->
+<!--            <if test="url != null and url != ''">-->
+<!--                AND static_rule_url = #{url}    -->
+<!--            </if>-->
+<!--            <if test="eventType != null">-->
+<!--                AND event_type = #{eventType}-->
+<!--            </if>-->
+<!--        -->
+<!--    </select>-->
 
 </mapper>

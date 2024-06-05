@@ -9,10 +9,12 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +60,8 @@ public interface ProtectObjectControllerApi {
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "防护对象信息")
     )
-    ResponseResult newProtectObject(@RequestBody @Valid ProtectObject protectObject);
+    ResponseResult newProtectObject(@RequestBody @Valid ProtectObject protectObject,
+                                    @Autowired HttpServletRequest request);
 
     @PostMapping("/upload")
     @Operation(
@@ -76,7 +79,8 @@ public interface ProtectObjectControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "上传文件")
     )
     ResponseResult uploadFile(
-            @NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile
+            @NotNull(message = "uploadFile字段不能为空") MultipartFile uploadFile,
+            @Autowired HttpServletRequest request
     ) throws IOException;
 
     @GetMapping("/download")
@@ -427,7 +431,8 @@ public interface ProtectObjectControllerApi {
             }
     )
     ResponseResult changeProtectObjectAuditStatus(@PathVariable Integer protectObjectId,
-                                                  @PathVariable Integer auditStatus);
+                                                  @PathVariable Integer auditStatus,
+                                                  @Autowired HttpServletRequest request);
 
     /*
         防护对象数据统计
@@ -488,7 +493,9 @@ public interface ProtectObjectControllerApi {
             )
     )
     @PostMapping("/auditbatch")
-    ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+    ResponseResult updateWhiteListAuditStatusBatch(
+            @RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+            @Autowired HttpServletRequest request);
 
     @Operation(
             summary = "更新审批意见",

@@ -36,6 +36,8 @@ public interface WhiteListMapper {
 
     Integer queryWhiteListObjectAuditStuatusById(Integer id);
 
+    Boolean updateWhiteListObjectAuditStatusWithUser(Integer id, Integer status, String auditUserName, Integer auditUserId, String auditUserDepart);
+
     Boolean updateWhiteListObjectAuditStatus(Integer id, Integer status);
 
     void newWhiteListObjects(@Param("whiteListObjects") List<WhiteListObject> whiteListBatch);
@@ -45,7 +47,7 @@ public interface WhiteListMapper {
     List<WhiteListObject> whiteListCommandCheck(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
 
     Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId
-                                    , String systemName, Integer auditStatus, String creator);
+            , String systemName, Integer auditStatus, String creator);
 
     List<WhiteListObject> whiteListCommandsCheck(List<TaskCommandInfo> taskCommandInfos);
 
@@ -57,7 +59,7 @@ public interface WhiteListMapper {
 
     List<Integer> queryAuditStatusByIds(@Param("idsWithAuditStatusMap") Map<Integer, Integer> idsWithAuditStatusMap);
 
-    Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
+    Boolean updateAuditInfo(@Param("ids") List<Integer> ids, @Param("auditInfo") String auditInfo);
 
     String queryWhiteListObjectAuditInfo(Integer id);
 
@@ -70,4 +72,12 @@ public interface WhiteListMapper {
     void insertStatusLogBatch(List<Integer> ids);
 
     List<WhiteListObject> queryHistory(Integer id, Integer page, Integer pageSize);
+
+
+    void createCommandWhiteListConnect(@Param("command_id") String commandId, @Param("whiteLists") List<WhiteListObject> whiteListsHit);
+
+    void updateAuditStatusByIdBatchWithUser(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch,
+                                            @Param("auditUserName") String auditUserName,
+                                            @Param("auditUserId") Integer auditUserId,
+                                            @Param("auditUserDepart") String auditUserDepart);
 }

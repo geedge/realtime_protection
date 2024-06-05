@@ -1,6 +1,9 @@
 package com.realtime.protection.server.command;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,4 +41,20 @@ public interface CommandMapper {
                                  @Param("src_port") String sourcePort,
                                  @Param("dst_ip") String destinationIP,
                                  @Param("dst_port") String destinationPort);
+
+    void createCommandInWhiteListHit(@Param("info") TaskCommandInfo commandInfo);
+
+
+    void updateCommandHistoryExpireTime(@Param("command_id") String commandUUID);
+
+    void insertCommandHistory(@Param("command_id") String commandUUID);
+
+    void updateCommandHistoryExpireTimeBatch(@Param("commandIds")List<String> commandIds);
+
+    void insertCommandHistoryBatch(@Param("commandIds")List<String> commandIds);
+
+    @DS("mysql")
+    List<WhiteListObject> whiteListCommandCheck(@Param("command") FiveTupleWithMask fiveTupleWithMask);
+    @DS("mysql")
+    void createCommandWhiteListConnect(@Param("command_id") String uuid, @Param("whiteLists") List<WhiteListObject> whiteListsHit);
 }

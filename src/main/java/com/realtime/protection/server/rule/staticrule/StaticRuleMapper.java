@@ -40,7 +40,7 @@ public interface StaticRuleMapper {
 
     Integer queryAuditStatusById(Integer id);
 
-    Boolean updateAuditStatusById(Integer id, Integer auditStatus,
+    Boolean updateAuditStatusByIdWithUser(Integer id, Integer auditStatus,
                                   String auditUserName,
                                   Integer auditUserId,
                                   String auditUserDepart);
@@ -80,4 +80,6 @@ public interface StaticRuleMapper {
     List<StaticRuleObject> queryHistory(Integer id, Integer page, Integer pageSize);
 
     void removeUsedTaskId(Long taskId);
+
+//    boolean queryStaticRuleRepeat(StaticRuleObject object);
 }

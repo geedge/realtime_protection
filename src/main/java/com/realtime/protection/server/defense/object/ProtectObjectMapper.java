@@ -24,8 +24,7 @@ public interface ProtectObjectMapper {
 
     void deleteProtectObjects(@Param("proobj_ids") List<Integer> protectObjectIds);
 
-    Boolean changeProtectObjectAuditStatus(@Param("proobj_id") Integer protectObjectId,
-                                           @Param("proobj_audit_status") Integer protectObjectAuditStatus);
+
 
 
     Integer queryProtectObjectsTotalNum(@Param("proobj_name") String protectObjectName,
@@ -73,4 +72,19 @@ public interface ProtectObjectMapper {
     List<ProtectObject> queryHistory(Integer id, Integer page, Integer pageSize);
 
     List<ProtectObject> queryProtectObjectByIds(List<Integer> protectObjectIds);
+
+    Boolean changeProtectObjectAuditStatus(@Param("proobj_id") Integer protectObjectId,
+                                           @Param("proobj_audit_status") Integer auditStatus
+                                           );
+
+    Boolean changeProtectObjectAuditStatusWithUser(@Param("proobj_id") Integer protectObjectId,
+                                           @Param("proobj_audit_status") Integer protectObjectAuditStatus,
+                                           @Param("auditUserName")String auditUserName,
+                                           @Param("auditUserId")Integer auditUserId,
+                                           @Param("auditUserDepart")String auditUserDepart);
+
+    void updateAuditStatusByIdBatchWithUser(@Param("idWithAuditStatusBatch")Map<Integer, Integer> idWithAuditStatusBatch,
+                                            @Param("auditUserName") String auditUserName,
+                                            @Param("auditUserId")Integer auditUserId,
+                                            @Param("auditUserDepart")String auditUserDepart);
 }

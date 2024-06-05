@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,7 +49,8 @@ public interface WhiteListControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "白名单信息")
     )
-    ResponseResult newWhitelistObject(@RequestBody WhiteListObject object);
+    ResponseResult newWhitelistObject(@RequestBody WhiteListObject object,
+                                      @Autowired HttpServletRequest request);
 
     @Operation(
             summary = "批量导入白名单",
@@ -64,7 +67,8 @@ public interface WhiteListControllerApi {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Excel文件")
     )
-    ResponseResult uploadFile(MultipartFile uploadFile) throws IOException;
+    ResponseResult uploadFile(MultipartFile uploadFile,
+                              @Autowired HttpServletRequest request) throws IOException;
 
     @Operation(
             summary = "下载白名单模板",
@@ -211,7 +215,8 @@ public interface WhiteListControllerApi {
             }
     )
     ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
-                                                    @PathVariable Integer auditStatus);
+                                                    @PathVariable Integer auditStatus,
+                                                    @Autowired HttpServletRequest request);
 
 
     /*
@@ -318,7 +323,8 @@ public interface WhiteListControllerApi {
             )
     )
     @PostMapping("/auditbatch")
-    ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+    ResponseResult updateWhiteListAuditStatusBatch(@Autowired HttpServletRequest request,
+                                                   @RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
     @Operation(
             summary = "更新审批意见",
             description = "批量更新审批意见，接收多个id",

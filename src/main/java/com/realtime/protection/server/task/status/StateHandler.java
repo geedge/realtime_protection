@@ -63,7 +63,12 @@ public class StateHandler {
     protected Boolean handleStop(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
         taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        // 要删去规则的used_task_id,因为在新建时检查了是否有重复使用的规则
+        taskService.removeDynamicRuleUsedTaskIdInTask(taskId);
+
         taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.removeStaticRuleUsedTaskIdInTask(taskId);
+
         return true;
     }
 
@@ -84,7 +89,10 @@ public class StateHandler {
     protected Boolean handleFailed(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
         taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        // 要删去规则的used_task_id,因为在新建时检查了是否有重复使用的规则
+        taskService.removeDynamicRuleUsedTaskIdInTask(taskId);
         taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.removeStaticRuleUsedTaskIdInTask(taskId);
         return true;
     }
 
@@ -95,7 +103,11 @@ public class StateHandler {
     }
 
     private Boolean handleDynamicTaskStart(TaskService taskService, Task task) {
+        // 将所有关联的动态规则审批状态修改为“已使用”
+        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+
         return sendFilters(taskService, task);
+//        return true;
     }
 
     private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Task task) {
@@ -124,8 +136,8 @@ public class StateHandler {
             dynamicTaskInfo.parseSql();
         });
 
-        // 将所有关联的动态规则审批状态修改为“已使用”
-        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+//        // 将所有关联的动态规则审批状态修改为“已使用”
+//        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 
         AtomicReference<Boolean> success = new AtomicReference<>(false);
 

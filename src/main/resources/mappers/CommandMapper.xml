@@ -52,6 +52,259 @@
             )
         </foreach>
     </insert>
+    <insert id="createCommandInWhiteListHit">
+        insert into t_command_whitelist_hit(COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,
+                              ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,
+                              MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
+                              INVALID_TIME, IS_VALID, IS_JUDGED,
+                              SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
+                              TASKTYPE, RULE_ID, display_id)
+        values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
+                #{info.frequency},
+                DEFAULT,
+                #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},
+                #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},
+                #{info.fiveTupleWithMask.protocolNum},
+                #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},
+                #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},
+                #{info.fiveTupleWithMask.maskProtocol},
+                #{info.startTime}, #{info.endTime}, #{info.isValid},
+                #{info.isJudged},
+                0, 0,
+                NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId}
+               )
+    </insert>
+
+    <insert id="insertCommandHistory">
+        insert into t_command_log(
+                                  effective_time,
+                                expire_time,
+                                TASK_ID,
+                                RULE_ID,
+                                COMMAND_ID,
+                                TASKTYPE,
+                                ADDR_TYPE,
+                                SRC_IP,
+                                SRC_PORT,
+                                DST_IP,
+                                DST_PORT,
+                                PROTOCOL,
+                                MASK_SRC_IP,
+                                MASK_SRC_PORT,
+                                MASK_DST_IP,
+                                MASK_DST_PORT,
+                                MASK_PROTOCOL,
+                                TASK_ACT,
+                                EVENTTYPE,
+                                TASKNAME,
+                                DISTRIBUTEPOINT,
+                                DEPARTMENT,
+                                FREQUENCY,
+                                VALID_TIME,
+                                INVALID_TIME,
+                                IS_VALID,
+                                IS_JUDGED,
+                                SEND_TIMES,
+                                SUCCESS_TIMES,
+                                FIRST_SEND_TIME,
+                                LAST_SEND_TIME,
+                                CREATE_TIME,
+                                LAST_UPDATE,
+                                IS_DELETED,
+                                RULE_NAME,
+                                RCP_HIT_COUNT,
+                                TOTAL_PACKET_NUM,
+                                TOTAL_BYTE_NUM,
+                                EFFECTIVE_EQUIPMENT_NUM,
+                                AVERAGE_LATENCY,
+                                MAX_LATENCY,
+                                MIN_LATENCY,
+                                c2s_pkt_num,
+                                s2c_pkt_num,
+                                c2s_byte_num,
+                                s2c_byte_num,
+                                display_id,
+                                session_num,
+                                first_effect_time,
+                                last_rcp_query_time,
+                                last_traffic_query_time
+                    )
+        select
+            NOW(),
+            NULL,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time
+        from t_command
+        where COMMAND_ID = #{command_id}
+    </insert>
+    <insert id="insertCommandHistoryBatch">
+        insert into t_command_log(
+            effective_time,
+            expire_time,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time
+        )
+        select
+            NOW(),
+            NULL,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time
+        from t_command
+        where COMMAND_ID IN
+        <foreach collection="commandIds" item="command_id" separator="," open="(" close=")">
+            #{command_id}
+        </foreach>
+    </insert>
+
+    <insert id="createCommandWhiteListConnect">
+        insert into t_white_list_command_conn(command_id, white_list_id)
+        values
+        <foreach collection="whiteLists" item="whiteList" separator=",">
+            (#{command_id}, #{whiteList.whiteListId})
+        </foreach>
+    </insert>
+
 
     <resultMap id="commandStatMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
         <id column="COMMAND_ID" property="UUID"/>
@@ -151,6 +404,21 @@
         WHERE COMMAND_ID = #{command_id}
           AND IS_DELETED = FALSE
     </update>
+    <update id="updateCommandHistoryExpireTime">
+        update t_command_log
+        set expire_time = NOW()
+        where COMMAND_ID = #{command_id}
+            and expire_time = NULL
+    </update>
+    <update id="updateCommandHistoryExpireTimeBatch">
+        update t_command_log
+        set expire_time = NOW()
+        where COMMAND_ID in
+        <foreach collection="commandIds" item="command_id" separator="," open="(" close=")">
+            #{command_id}
+        </foreach>
+            and expire_time = NULL
+    </update>
 
     <select id="queryCommandInfo" resultType="java.lang.String">
         SELECT COMMAND_ID FROM t_command
@@ -203,6 +471,74 @@
             <if test="dst_ip != null">AND DST_IP = #{dst_ip}</if>
             <if test="src_port != null">AND SRC_PORT = #{src_port}</if>
             <if test="dst_port != null">AND DST_PORT = #{dst_port}</if>
+        </where>
+    </select>
+
+
+
+
+    <resultMap id="whiteListMap" type="com.realtime.protection.configuration.entity.whitelist.WhiteListObject">
+        <id column="white_list_id" property="whiteListId"/>
+        <result column="white_list_name" property="whiteListName"/>
+        <result column="white_list_system_name" property="whiteListSystemName"/>
+        <result column="white_list_ip_d" property="whiteListIP"/>
+        <result column="white_list_port" property="whiteListPort"/>
+        <result column="white_list_url" property="whiteListUrl"/>
+        <result column="white_list_protocol" property="whiteListProtocol"/>
+        <result column="white_list_audit_status" property="whiteListAuditStatus"/>
+        <result column="white_list_display_id" property="whiteListDisplayId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="create_username" property="createUserName"/>
+        <result column="create_user_department" property="createUserDepartment"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_depart" property="auditUserDepart"/>
+
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
+    </resultMap>
+
+    <select id="whiteListCommandCheck" resultMap="whiteListMap">
+        select *,INET_NTOA(white_list_ip) as white_list_ip_d
+
+        from t_white_list
+        <where>
+
+            <if test="command.sourceIP != null and command.maskSourceIP == null">
+                (white_list_ip = INET_ATON(#{command.sourceIP})
+                <if test="command.sourcePort != null">
+                    and white_list_port = CAST(#{command.sourcePort} AS UNSIGNED)
+                </if>
+
+                )
+            </if>
+            <if test="command.sourceIP != null and command.maskSourceIP != null">
+                (( white_list_ip &amp; INET_ATON(#{command.maskSourceIP})) =
+                (INET_ATON(#{command.sourceIP}) &amp; INET_ATON(#{command.maskSourceIP}))
+                <if test="command.sourcePort != null">
+                    and white_list_port = CAST(#{command.sourcePort} AS UNSIGNED)
+                </if>
+                <if test="command.protocol != null">
+                    and white_list_protocol = #{command.protocol}
+                </if>
+                )
+            </if>
+            <if test="command.destinationIP != null and command.maskDestinationIP == null">
+                or (white_list_ip = INET_ATON(#{command.destinationIP})
+                <if test="command.destinationPort != null">
+                    and white_list_port = CAST(#{command.destinationPort} AS UNSIGNED)
+                </if>)
+            </if>
+            <if test="command.destinationIP != null and command.maskDestinationIP != null">
+                or ((white_list_ip &amp; INET_ATON(#{command.maskDestinationIP})) =
+                (INET_ATON(#{command.destinationIP}) &amp; INET_ATON(#{command.maskDestinationIP}))
+                <if test="command.destinationPort != null">
+                    and white_list_port = CAST(#{command.destinationPort} AS UNSIGNED)
+                </if>)
+            </if>
+
         </where>
     </select>
 </mapper>

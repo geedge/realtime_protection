@@ -5,6 +5,7 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -93,7 +94,10 @@ public class TemplateService {
         return templateMapper.queryAuditTemplateTotalNum(auditState);
     }
 
-    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus) {
+    public Map<String, Object> updateAuditStatus(Integer id, Integer auditStatus,
+                                                 String auditUserName,
+                                                 Integer auditUserId,
+                                                 String auditUserDepart) {
         Integer originalAuditStatus = templateMapper.queryAuditStatusById(id);
         if (originalAuditStatus == null) {
             throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
@@ -101,7 +105,8 @@ public class TemplateService {
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
             throw new IllegalArgumentException("invalid audit status");
         }
-        Boolean success = templateMapper.updateAuditStatusById(id, auditStatus);
+        Boolean success = templateMapper.updateAuditStatusById(id, auditStatus,
+                auditUserName, auditUserId, auditUserDepart);
         insertStatusLog(id);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", success);
@@ -158,6 +163,57 @@ public class TemplateService {
 
     }
 
+    public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap,
+                                          String auditUserName,
+                                          Integer auditUserId,
+                                          String auditUserDepart) {
+        //校验id和status是否合法
+        List<Integer> originalAuditStatusList = templateMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
+        if (originalAuditStatusList == null || originalAuditStatusList.size() != idsWithAuditStatusMap.size()) {
+            throw new IllegalArgumentException("策略模板部分不存在");
+        }
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+            Integer id = entry.getKey();
+            Integer auditStatus = entry.getValue();
+            Integer originalAuditStatus = originalAuditStatusList.get(index);
+            index++;
+            if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
+                errorIds.add(id);
+            }
+        }
+        if (!errorIds.isEmpty()){
+            throw new IllegalArgumentException("策略模板无法修改为对应审核状态, 错误id: " + errorIds);
+        }
+
+        Function<TemplateMapper, Function<Map<Integer, Integer>, Boolean>> updateTemplateAuditStatusFunction =
+                mapper -> map -> {
+                    if (map == null || map.isEmpty()) {
+                        return false;
+                    }
+
+                    Map<Integer, Integer> idWithAuditStatusBatch = new HashMap<>();
+                    for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+                        idWithAuditStatusBatch.put(item.getKey(), item.getValue());
+                        if (idWithAuditStatusBatch.size() < 100) {
+                            continue;
+                        }
+                        //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
+                        mapper.updateAuditStatusByIdBatchWithUser(idWithAuditStatusBatch, auditUserName, auditUserId, auditUserDepart);
+                        insertStatusLog(idWithAuditStatusBatch);
+                        idWithAuditStatusBatch.clear();
+                    }
+                    if (!idWithAuditStatusBatch.isEmpty()) {
+                        mapper.updateAuditStatusByIdBatchWithUser(idWithAuditStatusBatch, auditUserName, auditUserId, auditUserDepart);
+                        insertStatusLog(idWithAuditStatusBatch);
+                    }
+                    return true;
+                };
+        //实现事务操作
+        return sqlSessionWrapper.startBatchSession(TemplateMapper.class, updateTemplateAuditStatusFunction, idsWithAuditStatusMap);
+
+    }
 
     public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
         return templateMapper.updateAuditInfo(ids, auditInfo);

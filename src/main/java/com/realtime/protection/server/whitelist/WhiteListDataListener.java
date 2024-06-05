@@ -3,6 +3,7 @@ package com.realtime.protection.server.whitelist;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,14 +16,22 @@ public class WhiteListDataListener implements ReadListener<WhiteListObject> {
     private final List<WhiteListObject> cachedDataList = ListUtils.newArrayListWithExpectedSize(batchCount);
 
     private final WhiteListService whiteListService;
+    private UserFull user;
 
-    public WhiteListDataListener(WhiteListService whiteListService) {
+    public WhiteListDataListener(WhiteListService whiteListService, UserFull user) {
         this.whiteListService = whiteListService;
+        this.user = user;
+
     }
 
     @Override
     public void invoke(WhiteListObject object, AnalysisContext analysisContext) {
         log.info("解析到一条数据:{}", object.toString());
+        if (user != null) {
+            object.setCreateUserName(user.name);
+            object.setCreateUserId(user.uid);
+            object.setCreateUserDepartment(user.getOrgName());
+        }
         cachedDataList.add(object);
         if (cachedDataList.size() > batchCount) {
             saveData();

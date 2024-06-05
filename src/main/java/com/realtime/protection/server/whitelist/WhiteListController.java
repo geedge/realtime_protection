@@ -1,11 +1,15 @@
 package com.realtime.protection.server.whitelist;
 
 import com.alibaba.excel.EasyExcel;
+import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +32,17 @@ public class WhiteListController implements WhiteListControllerApi {
 
     @Override
     @PostMapping("/new")
-    public ResponseResult newWhitelistObject(@RequestBody @Valid WhiteListObject object) {
+    public ResponseResult newWhitelistObject(@RequestBody @Valid WhiteListObject object,
+                                             @Autowired HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        if (user != null) {
+            object.setCreateUserName(user.name);
+            object.setAuditUserId(user.uid);
+            object.setCreateUserDepartment(user.getOrgName());
+        }
+
         Integer whiteListObjectId = whiteListService.newWhiteListObject(object);
 
         return ResponseResult.ok()
@@ -41,9 +55,12 @@ public class WhiteListController implements WhiteListControllerApi {
     //post
     @Override
     @PostMapping("/upload")
-    public ResponseResult uploadFile(MultipartFile uploadFile) throws IOException {
+    public ResponseResult uploadFile(MultipartFile uploadFile,
+                                     @Autowired HttpServletRequest request) throws IOException {
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
         EasyExcel.read(uploadFile.getInputStream(), WhiteListObject.class,
-                new WhiteListDataListener(whiteListService)).sheet().doRead();
+                new WhiteListDataListener(whiteListService, user)).sheet().doRead();
         return ResponseResult.ok();
     }
 
@@ -164,14 +181,27 @@ public class WhiteListController implements WhiteListControllerApi {
     //修改审核状态
     @GetMapping("/{id}/audit/{auditStatus}")
     public ResponseResult updateWhiteListObjectAuditStatus(@PathVariable Integer id,
-                                                           @PathVariable Integer auditStatus) {
+                                                           @PathVariable Integer auditStatus,
+                                                           @Autowired HttpServletRequest request) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
             return new ResponseResult(400, "id or status is invalid")
                     .setData("whiteobj_id", id)
                     .setData("success", false);
         }
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
+
         return ResponseResult.ok()
-                .addDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus))
+                .addDataMap(whiteListService.updateWhiteListObjectAuditStatus(id, auditStatus,
+                        auditUserName, auditUserId, auditUserDepart))
                 .setData("whiteobj_id", id);
 
     }
@@ -223,7 +253,8 @@ public class WhiteListController implements WhiteListControllerApi {
      */
     @Override
     @PostMapping("/auditbatch")
-    public ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
+    public ResponseResult updateWhiteListAuditStatusBatch(@Autowired HttpServletRequest request,
+            @RequestBody Map<Integer, Integer> idsWithAuditStatusMap) {
         List<Integer> errorIds = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
@@ -237,9 +268,21 @@ public class WhiteListController implements WhiteListControllerApi {
                     .setData("id", errorIds)
                     .setData("success", false);
         }
+        //从http首部session字段获取用户信息
+        HttpSession session = request.getSession();
+        UserFull user = (UserFull) session.getAttribute("user");
+        String auditUserName = null;
+        Integer auditUserId = null;
+        String auditUserDepart = null;
+        if (user != null) {
+            auditUserName= user.name;
+            auditUserId = Integer.valueOf(user.uid);
+            auditUserDepart = user.getOrgName();
+        }
 
         return ResponseResult.ok()
-                .setData("success", whiteListService.updateAuditStatusBatch(idsWithAuditStatusMap));
+                .setData("success", whiteListService.updateAuditStatusBatch(idsWithAuditStatusMap,
+                        auditUserName, auditUserId, auditUserDepart));
     }
 
     @Override

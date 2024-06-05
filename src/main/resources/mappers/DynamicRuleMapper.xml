@@ -109,7 +109,7 @@
         )
         select
             dynamic_rule_id,
-            NOW() NULL,
+            NOW() ,NULL,
             dynamic_rule_used_task_id,
             dynamic_rule_name,
             create_time,

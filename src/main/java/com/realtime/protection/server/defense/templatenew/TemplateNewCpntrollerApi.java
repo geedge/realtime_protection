@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,7 +61,8 @@ public interface TemplateNewCpntrollerApi {
                     description = "防御策略模板信息")
 
     )
-    ResponseResult newTemplate(@RequestBody @Valid TemplateNew template);
+    ResponseResult newTemplate(@RequestBody @Valid TemplateNew template,
+                               @Autowired HttpServletRequest request);
 
     @GetMapping("/query")
     @Operation(
@@ -274,7 +277,8 @@ public interface TemplateNewCpntrollerApi {
             }
     )
     @GetMapping("/{id}/audit/{auditStatus}")
-    ResponseResult updateTemplateAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus);
+    ResponseResult updateTemplateAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus,
+                                             @Autowired HttpServletRequest request);
     @Operation(
             summary = "批量更新审批状态",
             description = "批量更新审批状态，0未审核、1审核不通过、2审核通过",
@@ -297,7 +301,8 @@ public interface TemplateNewCpntrollerApi {
             )
     )
     @PostMapping("/auditbatch")
-    ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap);
+    ResponseResult updateWhiteListAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
+                                                   @Autowired HttpServletRequest request);
 
     /*
         修改审批信息

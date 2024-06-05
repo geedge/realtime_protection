@@ -177,7 +177,12 @@
     </update>
     <update id="updateAuditStatusById">
         UPDATE t_strategy_template_new
-        SET audit_status = #{auditStatus}
+        SET
+            modify_time = NOW(),
+            audit_status = #{auditStatus},
+            audit_user_name = #{auditUserName},
+            audit_user_depart = #{auditUserDepart}
+            audit_user_id = #{auditUserId}
         WHERE strategy_template_id = #{id}
     </update>
 
@@ -216,6 +221,22 @@
         </foreach>
         and expire_time is null
     </update>
+    <update id="updateAuditStatusByIdBatchWithUser">
+        update t_strategy_template_new
+        set
+            modify_time = NOW(),
+            audit_user_name = #{auditUserName},
+            audit_user_depart = #{auditUserDepart},
+            audit_user_id = #{auditUserId}
+        <foreach collection="idWithAuditStatusBatch" index="id" item="auditStatus" separator=" ">
+            WHEN #{id} THEN #{auditStatus}
+        </foreach>
+        END
+        where strategy_template_id in
+        <foreach collection="idWithAuditStatusBatch" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
 
     <resultMap id="templateMap" type="com.realtime.protection.configuration.entity.defense.template.TemplateNew">
@@ -251,13 +272,23 @@
         <result column="is_protect_object_dst" property="isProtectObjectDst"/>
         <result column="is_protect_object_src" property="isProtectObjectSrc"/>
 
+        <result column="strategy_template_display_id" property="templateDisplayId"/>
+
         <result column="effective_time" property="effeciveTime"/>
         <result column="expire_time" property="expireTime"/>
 
     </resultMap>
 
     <select id="queryTemplates" resultMap="templateMap">
-        SELECT * FROM t_strategy_template_new
+        SELECT * ,
+               (SELECT COUNT(DISTINCT task_id) FROM t_task
+                                               WHERE t_task.template_id = strategy_template_id
+                                               AND t_task.task_status = 2)
+                   AS strategy_template_running_tasks,
+                (SELECT COUNT(DISTINCT task_id) FROM t_task
+                        WHERE template_id = strategy_template_id)
+                   AS strategy_template_used_times
+        FROM t_strategy_template_new
         <where>
             <if test="source_system != null and source_system != '' ">
                 AND strategy_template_source_system = #{source_system}
@@ -286,7 +317,15 @@
     </select>
 
     <select id="queryTemplate" resultMap="templateMap">
-        SELECT * FROM t_strategy_template_new
+        SELECT *,
+            (SELECT COUNT(DISTINCT task_id) FROM t_task
+            WHERE t_task.template_id = #{template_id}
+            AND t_task.task_status = 2)
+            AS strategy_template_running_tasks,
+            (SELECT COUNT(DISTINCT task_id) FROM t_task
+            WHERE template_id = #{template_id})
+            AS strategy_template_used_times
+        FROM t_strategy_template_new
         <where>
             strategy_template_id = #{template_id}
         </where>
