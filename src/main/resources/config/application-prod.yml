@@ -33,7 +33,7 @@ spring:
       strict: true
       grace-destroy: true
   jackson:
-    default-property-inclusion: non_null
+#    default-property-inclusion: non_null
   kafka:
     # kafka集群信息，多个用逗号间隔
     bootstrap-servers: ${KAFKA_SERVERS}

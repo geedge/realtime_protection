@@ -32,7 +32,7 @@ spring:
       strict: true
       grace-destroy: true
   jackson:
-    default-property-inclusion: non_null
+#    default-property-inclusion: non_null
   data:
     redis:
       host: 192.168.107.89

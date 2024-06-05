@@ -329,7 +329,9 @@
                 (white_list_ip = INET_ATON(#{command.sourceIP})
                 <if test="command.sourcePort != null">
                     and white_list_port = CAST(#{command.sourcePort} AS UNSIGNED)
-                </if>)
+                </if>
+
+             )
             </if>
             <if test="command.sourceIP != null and command.maskSourceIP != null">
                 (( white_list_ip &amp; INET_ATON(#{command.maskSourceIP})) =
@@ -422,7 +424,6 @@
         from t_white_list
         <where>
             <foreach collection="staticRuleObjects" item="staticRule" open="(" separator=" or " close=")">
-                    ()
                 <if test="staticRule.staticRuleSip != null and staticRule.staticRuleMsip == null">
                     (white_list_ip = INET_ATON(#{staticRule.staticRuleSip})
                     <if test="staticRule.staticRuleSport != null">
