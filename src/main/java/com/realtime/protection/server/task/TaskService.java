@@ -14,6 +14,7 @@ import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
+import com.realtime.protection.server.command.CommandMapper;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +41,15 @@ public class TaskService {
     private static final int BATCH_SIZE = 100;
     private final DynamicRuleMapper dynamicRuleMapper;
     private final Counter counter;
+    private final CommandMapper commandMapper;
 
-    public TaskService(TaskMapper taskMapper, StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, DynamicRuleMapper dynamicRuleMapper, Counter counter) {
+    public TaskService(TaskMapper taskMapper, StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, DynamicRuleMapper dynamicRuleMapper, Counter counter, CommandMapper commandMapper) {
         this.taskMapper = taskMapper;
         this.staticRuleMapper = staticRuleMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.dynamicRuleMapper = dynamicRuleMapper;
         this.counter = counter;
+        this.commandMapper = commandMapper;
     }
 
     @Transactional
@@ -350,6 +353,9 @@ public class TaskService {
         updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
         taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
+
+        commandMapper.removeCommandsByTaskId(taskId);
+
         return taskMapper.deleteTask(taskId);
     }
 

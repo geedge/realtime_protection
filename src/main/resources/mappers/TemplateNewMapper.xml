@@ -251,6 +251,9 @@
         <result column="is_protect_object_dst" property="isProtectObjectDst"/>
         <result column="is_protect_object_src" property="isProtectObjectSrc"/>
 
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
+
     </resultMap>
 
     <select id="queryTemplates" resultMap="templateMap">

@@ -57,7 +57,7 @@
         select
             white_list_id,
             white_list_name,
-            effective_time,expire_time,
+            NOW(),null,
             white_list_system_name,
             white_list_ip,
             white_list_url,
@@ -81,7 +81,7 @@
         insert into t_white_list_status_log(
             white_list_id,
             white_list_name,
-            effective_time,expire_time,
+        effective_time,expire_time,
             white_list_system_name,
             white_list_ip,
             white_list_url,
@@ -102,7 +102,7 @@
         select
             white_list_id,
             white_list_name,
-            effective_time,expire_time,
+            NOW(),null,
             white_list_system_name,
             white_list_ip,
             white_list_url,
@@ -155,6 +155,8 @@
         <result column="audit_user_id" property="auditUserId"/>
         <result column="audit_user_depart" property="auditUserDepart"/>
 
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
     </resultMap>
 
     <select id="queryWhiteListObject" resultMap="whiteListMap">
@@ -334,7 +336,11 @@
                 (INET_ATON(#{command.sourceIP}) &amp; INET_ATON(#{command.maskSourceIP}))
                 <if test="command.sourcePort != null">
                     and white_list_port = CAST(#{command.sourcePort} AS UNSIGNED)
-                </if>)
+                </if>
+                <if test="command.protocol != null">
+                    and white_list_protocol = #{command.protocol}
+                </if>
+                )
             </if>
             <if test="command.destinationIP != null and command.maskDestinationIP == null">
                 or (white_list_ip = INET_ATON(#{command.destinationIP})
@@ -416,33 +422,52 @@
         from t_white_list
         <where>
             <foreach collection="staticRuleObjects" item="staticRule" open="(" separator=" or " close=")">
-
+                    ()
                 <if test="staticRule.staticRuleSip != null and staticRule.staticRuleMsip == null">
                     (white_list_ip = INET_ATON(#{staticRule.staticRuleSip})
                     <if test="staticRule.staticRuleSport != null">
                         and white_list_port = #{staticRule.staticRuleSport}
-                    </if>)
+                    </if>
+                    <if test="staticRule.staticRuleProtocol != null">
+                        and white_list_protocol = #{staticRule.staticRuleProtocol}
+                    </if>
+                    )
                 </if>
                 <if test="staticRule.staticRuleSip != null and staticRule.staticRuleMsip != null">
                     (( white_list_ip &amp; INET_ATON(#{staticRule.staticRuleSip})) =
                     (INET_ATON(#{staticRule.staticRuleSip}) &amp; INET_ATON(#{staticRule.staticRuleMsip}))
                     <if test="staticRule.staticRuleSport != null">
                         and white_list_port = #{staticRule.staticRuleSport}
-                    </if>)
+                    </if>
+                    <if test="staticRule.staticRuleProtocol != null">
+                        and white_list_protocol = #{staticRule.staticRuleProtocol}
+                    </if>
+                    )
                 </if>
                 <if test="staticRule.staticRuleDip != null and staticRule.staticRuleMdip == null">
-                    or (white_list_ip = INET_ATON(#{staticRule.staticRuleDip})
+                    or (
+                    (white_list_ip = INET_ATON(#{staticRule.staticRuleDip})
                     <if test="staticRule.staticRuleDport != null">
                         and white_list_port = #{staticRule.staticRuleDport}
-                    </if>)
+                    </if>
+                    <if test="staticRule.staticRuleProtocol != null">
+                        and white_list_protocol = #{staticRule.staticRuleProtocol}
+                    </if>
+                    )
                 </if>
                 <if test="staticRule.staticRuleDip != null and staticRule.staticRuleMdip != null">
-                    or ((white_list_ip &amp; INET_ATON(#{staticRule.staticRuleDip})) =
+                    or (
+                    (white_list_ip &amp; INET_ATON(#{staticRule.staticRuleDip})) =
                     (INET_ATON(#{staticRule.staticRuleDip}) &amp; INET_ATON(#{staticRule.staticRuleMdip}))
                     <if test="staticRule.staticRuleDport != null">
                         and white_list_port = #{staticRule.staticRuleDport}
-                    </if>)
+                    </if>
+                    <if test="staticRule.staticRuleProtocol != null">
+                        and white_list_protocol = #{staticRule.staticRuleProtocol}
+                    </if>
+                    )
                 </if>
+
             </foreach>
         </where>
     </select>

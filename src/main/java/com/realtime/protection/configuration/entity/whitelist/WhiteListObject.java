@@ -33,15 +33,15 @@ public class WhiteListObject {
 
     @NotNull
     @JsonProperty("whiteobj_ip_address")
-    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "Invalid IPv4 Address")
+    @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "错误 IPv4 地址")
     @ExcelProperty("IP地址")
     @Schema(description = "白名单对象IPv4地址", example = "1.1.1.1", requiredMode = Schema.RequiredMode.REQUIRED)
     private String whiteListIP;
 
     @NotNull
     @JsonProperty("whiteobj_port")
-    @Max(value = 65535, message = "port should not be more than 65535")
-    @Min(value = 1, message = "port should not be less than 1")
+    @Max(value = 65535, message = "端口不应大于 65535")
+    @Min(value = 1, message = "端口不应小于 1")
     @ExcelProperty("端口")
     @Schema(description = "白名单对象端口", maximum = "65535", minimum = "1", example = "8080", requiredMode = Schema.RequiredMode.REQUIRED)
     private int whiteListPort;

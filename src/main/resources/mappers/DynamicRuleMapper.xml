@@ -297,6 +297,8 @@
         <result column="dynamic_rule_used_task_id" property="dynamicRuleUsedTaskId"/>
         <result column="used_task_name" property="usedTaskName"/>
 
+        <result column="effective_time" property="effeciveTime"/>
+        <result column="expire_time" property="expireTime"/>
     </resultMap>
 
     <select id="queryDynamicRuleById" resultMap="dynamicRuleMap">
