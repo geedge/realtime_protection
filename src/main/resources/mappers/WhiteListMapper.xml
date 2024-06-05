@@ -446,7 +446,7 @@
                     )
                 </if>
                 <if test="staticRule.staticRuleDip != null and staticRule.staticRuleMdip == null">
-                    or (
+                    or
                     (white_list_ip = INET_ATON(#{staticRule.staticRuleDip})
                     <if test="staticRule.staticRuleDport != null">
                         and white_list_port = #{staticRule.staticRuleDport}
