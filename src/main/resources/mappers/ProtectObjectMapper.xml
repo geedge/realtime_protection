@@ -280,6 +280,15 @@
         ORDER BY effective_time DESC
             LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
+    <select id="queryProtectObjectByIds"
+            resultMap="protectObjectMap">
+        SELECT *
+            FROM  t_protect_object
+            WHERE protect_object_id IN
+            <foreach collection="protectObjectIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </select>
 
     <update id="updateProtectObject">
         UPDATE t_protect_object

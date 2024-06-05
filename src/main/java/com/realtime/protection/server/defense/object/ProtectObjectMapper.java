@@ -71,4 +71,6 @@ public interface ProtectObjectMapper {
     void updateStaticRuleStatusLogExpireTimeBatch(List<Integer> ids);
 
     List<ProtectObject> queryHistory(Integer id, Integer page, Integer pageSize);
+
+    List<ProtectObject> queryProtectObjectByIds(List<Integer> protectObjectIds);
 }

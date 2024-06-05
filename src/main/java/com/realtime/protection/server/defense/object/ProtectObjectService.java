@@ -250,4 +250,8 @@ public class ProtectObjectService {
     public List<ProtectObject> queryHistory(Integer id, Integer page, Integer pageSize) {
         return protectObjectMapper.queryHistory(id, page, pageSize);
     }
+
+    public List<ProtectObject> queryProtectObjectByIds(List<Integer> protectObjectIds) {
+        return protectObjectMapper.queryProtectObjectByIds(protectObjectIds);
+    }
 }

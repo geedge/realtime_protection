@@ -119,6 +119,17 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     }
 
     @Override
+    @GetMapping("/{protectObjectIds}/querybatch")
+    public ResponseResult queryProtectObject(@PathVariable List<Integer> protectObjectIds) {
+        List<ProtectObject> protectObjects = protectObjectService.queryProtectObjectByIds(protectObjectIds);
+        if (protectObjects == null) {
+            return ResponseResult.invalid()
+                    .setMessage("无效的防护对象ID，也许该ID指定的防护对象不存在？");
+        }
+        return ResponseResult.ok().setData("protect_object", protectObjects);
+    }
+
+    @Override
     @PostMapping("/{protectObjectId}/update")
     public ResponseResult updateProtectObject(@PathVariable Integer protectObjectId,
                                               @RequestBody @Valid ProtectObject protectObject) {

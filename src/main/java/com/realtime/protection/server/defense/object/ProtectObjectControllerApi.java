@@ -251,6 +251,25 @@ public interface ProtectObjectControllerApi {
     )
     ResponseResult queryProtectObject(@PathVariable Integer protectObjectId) throws IllegalAccessException;
 
+    @Operation(
+            summary = "批量查询多个防护对象",
+            description = "查询多个防护对象，接收多个id",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "ids", description = "查询的多个ID", example = "2, 3"),
+            }
+    )
+    @GetMapping("/{protectObjectIds}/query")
+    ResponseResult queryProtectObject(@PathVariable List<Integer> protectObjectIds);
+
     @PostMapping("/{protectObjectId}/update")
     @Operation(
             summary = "更新防护对象",
@@ -526,7 +545,23 @@ public interface ProtectObjectControllerApi {
     )
     @GetMapping("/auditInfo/{id}")
     ResponseResult queryAuditInfo(@PathVariable Integer id);
-
+    @Operation(
+            summary = "查询历史变化",
+            description = "查询历史变化，只接收一个id",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "page", description = "页数", example = "2"),
+                    @Parameter(name = "page_size", description = "每页个数", example = "10"),
+            }
+    )
     @GetMapping("/{id}/history")
     ResponseResult queryHistory(@PathVariable Integer id,
                                 @RequestParam(value = "page", required = true) Integer page,
