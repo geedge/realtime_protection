@@ -1,5 +1,6 @@
 package com.realtime.protection.server.defense.templatenew;
 
+import com.realtime.protection.configuration.entity.defense.template.Template;
 import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -68,5 +70,14 @@ public class NewTemplateServiceTest {
                 assertTrue(templateId > 0);
             });
         }
+
+
+    }
+    @Test
+    void testUpdateTemplateAuditStatus(){
+        List<TemplateNew> templates = templateService.queryTemplates(
+                null, null, null, null, null,null, null,1,3);
+        TemplateNew testTemplate = templates.get(0);
+        templateService.updateAuditStatus(testTemplate.getTemplateId(), 2, null,null,null);
     }
 }

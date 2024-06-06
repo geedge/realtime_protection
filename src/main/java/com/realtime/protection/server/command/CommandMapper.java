@@ -17,6 +17,7 @@ public interface CommandMapper {
 
     Boolean stopCommandsByTaskId(@Param("task_id") Long taskId);
 
+    @DS("doris")
     Boolean removeCommandsByTaskId(@Param("task_id") Long taskId);
 
     Boolean startCommandsByTaskId(@Param("task_id") Long taskId);

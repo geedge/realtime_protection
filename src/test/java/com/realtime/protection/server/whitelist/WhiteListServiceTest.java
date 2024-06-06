@@ -86,7 +86,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testUpdateWhiteListAuditStatus() {
-       //whiteListService.updateWhiteListObjectAuditStatus(7, 1);
+       whiteListService.updateWhiteListObjectAuditStatus(7222, 2, "mh", 1, "mmeess");
     }
 
     @Test
@@ -144,7 +144,7 @@ class WhiteListServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testUpdateAuditStatusByIdBatch() {
-        Map<Integer, Integer> idsWithAuditStatusMap = Map.of(7189, 2, 7192, 2);
+        Map<Integer, Integer> idsWithAuditStatusMap = Map.of(7220, 2, 7222, 2);
 
         whiteListService.updateAuditStatusBatch(idsWithAuditStatusMap);
     }

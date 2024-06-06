@@ -60,7 +60,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     public ResponseResult beforeBodyWrite(ResponseResult body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
 
         AuditData auditData = getAuditData(body, request);
-//        System.out.println("auditData-----------:"+auditData);
+        log.info("auditData-----------:"+auditData);
 
         Mono<String> mono = webClient
                 .post()
@@ -68,9 +68,10 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                 .bodyValue(auditData)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
+                        log.info("发送审计日志成功：{}",res.statusCode());
                         return res.bodyToMono(String.class);
                     }
-//                    log.info("发送审计日志成功：{}",res);
+                    log.info("发送审计日志失败：{}",res.statusCode());
                     return null;
                 })
                 .doOnError(WebClientRequestException.class, err ->

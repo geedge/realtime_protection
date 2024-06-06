@@ -33,7 +33,7 @@
             #{object.whiteListUrl}, #{object.whiteListProtocol},
             0, NOW(), #{object.whiteListDisplayId},
              #{object.createUserName}, #{object.createUserDepartment},
-            #{object.createUserId}
+            #{object.createUserId})
         </foreach>
     </insert>
     <insert id="insertStatusLog">
@@ -283,6 +283,15 @@
         <foreach collection="idsWithAuditStatusMap" index="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </update>
+    <update id="updateWhiteListObjectAuditStatusWithUser">
+        update t_white_list
+        set white_list_audit_status = #{status},
+        audit_user_name = #{auditUserName},
+        audit_user_id = #{auditUserId},
+        audit_user_depart = #{auditUserDepart},
+        modify_time = NOW()
+        where white_list_id = #{id}
     </update>
 
     <select id="existWhiteListObject" resultType="java.lang.String">

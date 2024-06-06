@@ -122,6 +122,10 @@ public class WhiteListService {
     }
 
     public Integer updateWhiteListObject(Integer id, WhiteListObject object) {
+        Integer auditStatus = whiteListMapper.queryWhiteListObjectAuditStuatusById(id);
+        if (auditStatus == null) {
+            throw new IllegalArgumentException("无法找到白名单 " + id + ", 可能该白名单不存在");
+        }
         if (!whiteListMapper.queryWhiteListObjectAuditStuatusById(id).equals(AuditStatusEnum.AUDITED.getNum())) {
             throw new IllegalStateException("无法修改白名单信息，因为其并未处于" + AuditStatusEnum.AUDITED + "状态");
         }

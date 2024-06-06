@@ -3,11 +3,12 @@ package com.realtime.protection.server.rule.dynamic;
 import com.realtime.protection.ProtectionApplicationTests;
 import com.realtime.protection.configuration.entity.defense.object.ProtectObject;
 import com.realtime.protection.configuration.entity.defense.template.Template;
+import com.realtime.protection.configuration.entity.defense.template.TemplateNew;
 import com.realtime.protection.configuration.entity.rule.dynamicrule.DynamicRuleObject;
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.server.defense.object.ProtectObjectService;
-import com.realtime.protection.server.defense.template.TemplateService;
+import com.realtime.protection.server.defense.templatenew.TemplateService;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
 import com.realtime.protection.server.task.TaskService;
 import org.junit.jupiter.api.Test;
@@ -71,8 +72,8 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
                 null,
                 null,
                 1, 1);
-        List<Template> templates = templateService.queryTemplates(
-                null, null,null, null, null,1, 1);
+        List<TemplateNew> templates = templateService.queryTemplates(
+                null, null,null, null, null,null,null,1, 1);
 
         DynamicRuleObject object = new DynamicRuleObject();
         object.setDynamicRuleName("UpdateDynamicRule2");

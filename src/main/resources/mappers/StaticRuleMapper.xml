@@ -25,8 +25,7 @@
                 #{object.auditStatus},
                 #{object.staticRuleDisplayId},#{object.eventType},NOW())
     </insert>
-    <insert id="newStaticRules" useGeneratedKeys="true" keyProperty="staticRuleId"
-            keyColumn="static_rule_id"  parameterType="com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject">
+    <insert id="newStaticRules" >
         insert into t_static_rule(static_rule_name, static_rule_create_time,
                                   static_rule_create_username, static_rule_create_depart,
                                   static_rule_create_user_id, static_rule_sip, static_rule_msip,
