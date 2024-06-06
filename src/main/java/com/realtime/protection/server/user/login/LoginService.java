@@ -51,7 +51,8 @@ public class LoginService {
         String accessToken = "";
         // 获取 ACCESS_TOKEN
         ObjectMapper objectMapper = new ObjectMapper();
-//        OkHttpClient client = new OkHttpClient();
+
+ //       OkHttpClient client = new OkHttpClient();
 
         //不做证书验证的OkHttpClient
         OkHttpClient client = new OkHttpClient.Builder()
@@ -61,14 +62,17 @@ public class LoginService {
 
         Request request = new Request.Builder()
 //            .url("https://114.243.134.122:10217/passport/accessToken?grant_type=client_credentials")
-                .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
+//                .url("https://passport.iam.pub/passport/accessToken?grant_type=client_credentials")
+                .url("http://10.60.15.14:8080/passport/accessToken?grant_type=client_credentials")
 //            .header("Authorization", "Basic TlNBRERAWlguT1JHOk14a1hHZ1ltOUNROUE3TCRSOCNLRW02R1pSeEhwd1c2")
-                .header("Authorization", "Basic TlNBREQ6bkhRbE5zN3lLeVd5bzJOc2JmNk5oRmFhYmlWWUlBU1NsdWJRZ3pUaDhOU2xOUkE1V2xQUTF3PT0=")
+//                .header("Authorization", "Basic TlNBREQ6bkhRbE5zN3lLeVd5bzJOc2JmNk5oRmFhYmlWWUlBU1NsdWJRZ3pUaDhOU2xOUkE1V2xQUTF3PT0=")
+                .header("Authorization", "Basic TlNBRERAWlguT1JHOm5IUWxOczd5S3lXeW8yTnNiZjZOaEZhYWJpVllJQVNTbHViUWd6VGg4TlNsTlJBNVdsUFExdz09")
                 .post(okhttp3.internal.Util.EMPTY_REQUEST)
                 .build();
         try  {
             Response response = client.newCall(request).execute();
             String rsp = response.body().string();
+            System.out.println("rsp:" + rsp);
             try {
                 AccessTokenResponse atr = objectMapper.readValue(rsp, AccessTokenResponse.class);
                 accessToken = atr.getAccess_token();
@@ -87,8 +91,9 @@ public class LoginService {
             .addFormDataPart("sessionData", sessionData).build();
         request = new Request.Builder()
 //            .url("https://passport.zx.com:10217/passport/accessApplication")
-            .url("https://114.243.134.122:10217/passport/accessApplication")
+//            .url("https://114.243.134.122:10217/passport/accessApplication")
 //            .url("https://passport.iam.pub/passport/accessApplication")
+            .url("http://10.60.15.14:8080/passport/accessApplication")
             .header("Authorization", "Bearer " + accessToken)
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(body)

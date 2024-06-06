@@ -78,6 +78,6 @@ public class NewTemplateServiceTest {
         List<TemplateNew> templates = templateService.queryTemplates(
                 null, null, null, null, null,null, null,1,3);
         TemplateNew testTemplate = templates.get(0);
-        templateService.updateAuditStatus(testTemplate.getTemplateId(), 2, null,null,null);
+        templateService.updateAuditStatus(testTemplate.getTemplateId(), 2, "sss",1111,"depart");
     }
 }

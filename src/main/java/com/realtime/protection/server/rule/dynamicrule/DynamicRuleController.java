@@ -37,10 +37,11 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
         HttpSession session = request.getSession();
         UserFull user = (UserFull) session.getAttribute("user");
         if (user != null) {
-            dynamicRuleObject.setAuditUserName(user.name);
-            dynamicRuleObject.setAuditUserId(user.uid);
-            dynamicRuleObject.setAuditUserDepart(user.getOrgName());
+            dynamicRuleObject.setDynamicRuleCreateUsername(user.name);
+            dynamicRuleObject.setDynamicRuleCreateUserId(Integer.valueOf(user.uid));
+            dynamicRuleObject.setDynamicRuleCreateDepart(user.getOrgName());
         }
+
         //调用service新增
         Integer dynamicRuleObjectId = dynamicRuleService.newDynamicRuleObject(dynamicRuleObject);
         return ResponseResult.ok().

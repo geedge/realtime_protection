@@ -66,7 +66,7 @@ public class StaticRuleService {
     @Transactional
     public Integer newStaticRuleObject(StaticRuleObject object)  {
 
-        object.setStaticRuleCreateTime(LocalDateTime.now());
+//        object.setStaticRuleCreateTime(LocalDateTime.now());
         object.setAuditStatus(0);
 
         if (!isIpMaskValid(object.getStaticRuleSip(),object.getStaticRuleMsip()) ||

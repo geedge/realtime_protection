@@ -15,7 +15,7 @@
                                   static_rule_url, static_rule_priority,
                                   static_rule_frequency, static_rule_audit_status,
                                   static_rule_display_id,event_type,static_rule_modify_time)
-        values (#{object.staticRuleName}, #{object.staticRuleCreateTime}, #{object.staticRuleCreateUsername},
+        values (#{object.staticRuleName}, NOW(), #{object.staticRuleCreateUsername},
                 #{object.staticRuleCreateDepart}, #{object.staticRuleCreateUserId}, INET_ATON(#{object.staticRuleSip}),
                 INET_ATON(#{object.staticRuleMsip}), #{object.staticRuleSport}, #{object.staticRuleMsport},
                 INET_ATON(#{object.staticRuleDip}), INET_ATON(#{object.staticRuleMdip}), #{object.staticRuleDport},

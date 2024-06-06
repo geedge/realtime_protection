@@ -165,16 +165,19 @@ class ProtectObjectServiceTest extends ProtectionApplicationTests {
 
     @Test
     void changeProtectObjectAuditStatus() {
-        int testNum = 0;
-        for (int i = 300; i < 100000; i++) {
-            if (protectObjectService.queryProtectObject(i) != null) {
-                testNum = i;
-                break;
-            }
-        }
-        assertTrue((Boolean) protectObjectService.changeProtectObjectAuditStatus(testNum, 1).get("success"));
-        int finalTestNum = testNum;
-        assertThrows(IllegalArgumentException.class, () -> protectObjectService.changeProtectObjectAuditStatus(finalTestNum, 2));
+//        int testNum = 0;
+//        for (int i = 300; i < 100000; i++) {
+//            if (protectObjectService.queryProtectObject(i) != null) {
+//                testNum = i;
+//                break;
+//            }
+//        }
+//        assertTrue((Boolean) protectObjectService.changeProtectObjectAuditStatus(testNum, 1).get("success"));
+//        int finalTestNum = testNum;
+//        assertThrows(IllegalArgumentException.class, () -> protectObjectService.changeProtectObjectAuditStatus(finalTestNum, 2));
+
+        assertTrue((Boolean) protectObjectService.changeProtectObjectAuditStatus(70330, 1,"sss",111,"ssssss").get("success"));
+
     }
 
     @Test

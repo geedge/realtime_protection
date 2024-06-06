@@ -39,7 +39,7 @@ public class WhiteListController implements WhiteListControllerApi {
         UserFull user = (UserFull) session.getAttribute("user");
         if (user != null) {
             object.setCreateUserName(user.name);
-            object.setAuditUserId(user.uid);
+            object.setCreateUserId(user.uid);
             object.setCreateUserDepartment(user.getOrgName());
         }
 
@@ -184,7 +184,7 @@ public class WhiteListController implements WhiteListControllerApi {
                                                            @PathVariable Integer auditStatus,
                                                            @Autowired HttpServletRequest request) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
-            return new ResponseResult(400, "id or status is invalid")
+            return new ResponseResult(400, "id或状态无效")
                     .setData("whiteobj_id", id)
                     .setData("success", false);
         }

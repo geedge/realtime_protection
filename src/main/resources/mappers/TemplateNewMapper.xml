@@ -143,7 +143,7 @@
             audit_user_name,
             audit_user_id,
             audit_user_depart
-            )
+
         from t_strategy_template_new
         where strategy_template_id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">

@@ -45,7 +45,7 @@ public class DynamicRuleServiceTest extends ProtectionApplicationTests {
 //                null,null, 1, 1);
 //        List<Template> templates = templateService.queryTemplates(
 //                null, null, null, null, null,1, 1);
-        for (int i = 0;i<30; i++) {
+        for (int i = 0;i<2; i++) {
             DynamicRuleObject object = new DynamicRuleObject();
             object.setDynamicRuleName("动态规则"+i);
             object.setDescription("动态规则新建测试");

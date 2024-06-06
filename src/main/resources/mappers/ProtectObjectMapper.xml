@@ -143,10 +143,10 @@
 
         <result column="protect_object_create_username" property="protectObjectCreateUsername"/>
         <result column="protect_object_create_user_id" property="protectObjectCreateUserId"/>
-        <result column="protect_object_create_user_depart" property="protectObjectCreateDepart"/>
+        <result column="protect_object_create_depart" property="protectObjectCreateDepart"/>
         <result column="audit_user_name" property="auditUserName"/>
         <result column="audit_user_id" property="auditUserId"/>
-        <result column="audit_user_depart" property="auditUserDepart"/>
+        <result column="audit_user_deaprt" property="auditUserDepart"/>
         <result column="create_time" property="createTime"/>
         <result column="modify_time" property="modifyTime"/>
 
@@ -157,10 +157,9 @@
 
     <select id="queryProtectObjects" resultMap="protectObjectMap">
         SELECT
-        protect_object_id, protect_object_name, protect_object_system_name,
-        INET_NTOA(protect_object_ip) as protect_object_ip,
-        protect_object_port, protect_object_url, protect_object_protocol, protect_object_audit_status
-               ,protect_object_display_id
+         *,
+        INET_NTOA(protect_object_ip) as protect_object_ip
+
         FROM t_protect_object
         <where>
             <if test="proobj_name != null and proobj_name != '' ">AND protect_object_name LIKE CONCAT('%', #{proobj_name}, '%')</if>
