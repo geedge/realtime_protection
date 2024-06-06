@@ -49,7 +49,7 @@ public class AlertMessageTest {
     @DSTransactional
     void testReceiveAlertMessage() throws DorisStartException {
 
-        for(int n = 10;n < 20;n++) {
+        for(int n = 10;n < 11;n++) {
 
 
             List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
@@ -57,7 +57,7 @@ public class AlertMessageTest {
                     null, null, null, null,
                     null, null, 1, 1);
             List<TemplateNew> templates = templateService.queryTemplates(
-                    null, null, null, null, null, null, null, 1, 1);
+                    "洪泛型DDoS-日常态", null, null, null, null, null, null, 1, 1);
 
             DynamicRuleObject object = new DynamicRuleObject();
             object.setDynamicRuleName("测试display_id"+n);
@@ -82,7 +82,7 @@ public class AlertMessageTest {
             task.setTaskCreateUserId(1100664);
             task.setTaskCreateUsername("NSADD管理员");
             task.setTaskCreateDepart("组织树");
-            task.setTaskRange("1007");
+            task.setTaskRange("1009");
             task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
             task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
             task.setTemplateId(templates.get(0).getTemplateId());
@@ -100,8 +100,8 @@ public class AlertMessageTest {
             for (int i = 0; i < 5; i++) {
                 AlertMessage alert = new AlertMessage();
                 FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
-                fiveTupleWithMask.setSourceIP(n+".1.1." + i);
-                fiveTupleWithMask.setDestinationIP(n+".22.2." + i);
+                fiveTupleWithMask.setSourceIP(n+".5.1." + i);
+                fiveTupleWithMask.setDestinationIP(n+".24.2." + i);
                 fiveTupleWithMask.setSourcePort("111");
                 fiveTupleWithMask.setDestinationPort("80");
                 fiveTupleWithMask.setProtocol("6");

@@ -240,8 +240,8 @@ public class AlertMessageService {
         command1.setDestinationPort(protectObject.getPort());
         command1.setMaskDestinationPort(protectObject.getMaskPort());
         if (templateProtectLevel.getHasProtocol()){
-            command1.setProtocol(fiveTupleWithMask.getProtocol());
-            command1.setProtocol(fiveTupleWithMask.getMaskProtocol());
+            command1.setProtocolNum(Integer.valueOf(fiveTupleWithMask.getProtocol()));
+            command1.setMaskProtocol(fiveTupleWithMask.getMaskProtocol());
         }
 //        newFiveTupleWithMask.add(command1);
         //生成指令command2：防护对象为源的五元组
@@ -258,7 +258,7 @@ public class AlertMessageService {
         command2.setMaskDestinationPort(peer.getMaskPort());
         if (templateProtectLevel.getHasProtocol()){
             command2.setProtocol(fiveTupleWithMask.getProtocol());
-            command2.setProtocol(fiveTupleWithMask.getMaskProtocol());
+            command2.setMaskProtocol(fiveTupleWithMask.getMaskProtocol());
         }
 /*
         //若需要处置全方向流量，防护对象为源和目的的五元组都生成指令下发
@@ -279,7 +279,7 @@ public class AlertMessageService {
         //若需要处置全方向流量，防护对象为源和目的的五元组都生成指令下发
 
             // 判断防护对象为源还是目的，生成指令
-        if(templateProtectLevel.getIsProtectObjectIPSrc()){
+        if(templateProtectLevel.getIsProtectObjectSrc()){
             newFiveTupleWithMask.add(command2);
         }
         if (templateProtectLevel.getIsProtectObjectDst()){
