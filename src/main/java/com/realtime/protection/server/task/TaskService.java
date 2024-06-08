@@ -281,6 +281,7 @@ public class TaskService {
 
     @Transactional
     public Boolean updateTask(Task task) {
+        //未审核不能修改
         if (!Objects.equals(taskMapper.queryTaskAuditStatus(task.getTaskId()), AuditStatusEnum.AUDITED.getNum())) {
             return false;
         }
@@ -368,7 +369,8 @@ public class TaskService {
         List<TaskCommandInfo> staticCommandInfos = taskMapper.getStaticCommandInfos(taskId);
 
         staticCommandInfos.forEach(taskCommandInfo -> {
-            taskCommandInfo.setProtocolNum();
+//            taskCommandInfo.setProtocolNum();
+            taskCommandInfo.getFiveTupleWithMask().setProtocolNum(Integer.valueOf(taskCommandInfo.getFiveTupleWithMask().getProtocol()));
 //            taskCommandInfo.setMask();
         });
 
