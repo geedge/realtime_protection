@@ -101,7 +101,7 @@ public class StateChangeService {
     /**
      * 将任务切换为结束状态
      */
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     @Async
     protected void finishTasks() {
         List<Long> finishedTaskIds = taskService.getFinishedTasks();
@@ -117,4 +117,25 @@ public class StateChangeService {
 
         }
     }
+
+//    /**
+//     * 将任务切换为开始状态
+//     */
+//    @Scheduled(cron = "0/10 * * * * ?")
+//    @Async
+//    protected void startTasks() {
+//        List<Long> startedTaskIds = taskService.getFinishedTasks();
+//        log.debug("成功扫描出所有需要变为开始状态的任务：{}", startedTaskIds);
+//
+//        for (Long taskId : startedTaskIds) {
+//            try {
+//                changeState(StateEnum.RUNNING.getStateNum(), taskId, true);
+//            } catch (Exception e) {
+//                log.warn(String.format("任务%d从%s状态变为运行中RUNNING状态遭遇异常：%s",
+//                        taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
+//            }
+//
+//        }
+//    }
+
 }

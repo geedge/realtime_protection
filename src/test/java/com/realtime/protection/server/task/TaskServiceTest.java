@@ -236,58 +236,49 @@ class TaskServiceTest extends ProtectionApplicationTests {
     @Test
     void testStartStaticTask() throws DorisStartException {
 
-        for (int n = 10; n < 20; n++) {
-            List<Integer> staticRuleIds = new ArrayList<>();
-            for (int i = 10; i < 15; i++) {
-                StaticRuleObject staticRuleTest = new StaticRuleObject();
-                staticRuleTest.setStaticRuleName(n+"test_staticrule" + i);
-                staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
-                staticRuleTest.setStaticRuleCreateDepart("组织树");
-                staticRuleTest.setStaticRuleCreateUserId(22222222);
-                staticRuleTest.setAuditStatus(0);
 
-                staticRuleTest.setStaticRuleSip("32.2.3." + i);
-                staticRuleTest.setStaticRuleDip(n + ".2.3.2");
-                staticRuleService.newStaticRuleObject(staticRuleTest);
-                staticRuleIds.add(staticRuleTest.getStaticRuleId());
-                staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "xxx管理员", 1111111, "组织树");
+        StaticRuleObject staticRuleTest = new StaticRuleObject();
+        staticRuleTest.setStaticRuleName("test_staticrule");
+        staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
+        staticRuleTest.setStaticRuleCreateDepart("组织树");
+        staticRuleTest.setStaticRuleCreateUserId(22222222);
+        staticRuleTest.setAuditStatus(0);
 
-            }
+        staticRuleTest.setStaticRuleSip("32.2.3.1");
+        staticRuleTest.setStaticRuleDip("2.2.3.2");
+        staticRuleService.newStaticRuleObject(staticRuleTest);
+//        staticRuleIds.add(staticRuleTest.getStaticRuleId());
+        staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "xxx管理员", 1111111, "组织树");
 
 
-            Task task = new Task();
-            task.setTaskName("静态task测试"+n);
-
-            LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
-            LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
-
-            task.setTaskStartTime(taskStartTime);
-            task.setTaskEndTime(taskEndTime);
-            task.setTaskAct("23");
-            task.setTaskType(1);
-            task.setTaskRange("1007");
-
-            task.setTaskCreateUserId(111111);
-            task.setTaskCreateUsername("xxx管理员");
-            task.setTaskCreateDepart("xxx");
-
-            task.setStaticRuleIds(staticRuleIds);
-
-            List<ProtectObject> protectObject = protectObjectService.queryProtectObjects(
-                    null, null, null, null,
-                    null, null, null, null,
-                    null, null, 1, 1);
 
 
-            Long taskId = taskService.newTask(task);
+        Task task = new Task();
+        task.setTaskName("静态task测试s");
 
-//
-            taskService.changeTaskAuditStatus(taskId, 2);
+        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(1);
 
-            stateChangeService.changeState(2, taskId, false);
+        task.setTaskStartTime(taskStartTime);
+        task.setTaskEndTime(taskEndTime);
+        task.setTaskAct("23");
+        task.setTaskType(1);
+        task.setTaskRange("1007");
+
+        task.setTaskCreateUserId(111111);
+        task.setTaskCreateUsername("xxx管理员");
+        task.setTaskCreateDepart("xxx");
+
+        task.setStaticRuleIds(List.of(staticRuleTest.getStaticRuleId()));
+
+        Long taskId = taskService.newTask(task);
+
+        taskService.changeTaskAuditStatus(taskId, 2);
+
+        stateChangeService.changeState(2, taskId, false);
 
 //            System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
-        }
+
     }
 
     @Test

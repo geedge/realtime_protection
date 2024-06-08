@@ -51,8 +51,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-//        return false;
-        return true;
+        return false;
+//        return true;
     }
 
     @Override

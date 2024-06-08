@@ -8,20 +8,30 @@ import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
 public class StateHandler {
 
 
     private final WebClient client = WebClient.builder()
             .baseUrl("http://192.168.107.49:8088")
+//            .baseUrl("http://10.58.72.151:8088")
+            .build();
+
+    //http://10.26.22.123:17011/rule
+    private final WebClient client_commandDistribute = WebClient.builder()
+            .baseUrl("http://10.26.22.123:17011")
 //            .baseUrl("http://10.58.72.151:8088")
             .build();
 
@@ -121,10 +131,48 @@ public class StateHandler {
         taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 //        taskService.changeTaskAuditStatus(task.getTaskId(), AuditStatusEnum.USING.getNum());
 
-        commandService.createCommands(staticTaskCommandInfos);
+        List<String> commandUUIDs= commandService.createCommands(staticTaskCommandInfos);
+        // 将command新建信号发送到c3下发程序
+        sendCommandDistributeSignal(commandUUIDs);
         return true;
     }
+    private Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {
 
+        List<Map<String, String>> commandIDMaps = new ArrayList<>();
+        for (String commandUUID : commandUUIDs) {
+            commandIDMaps.add(Map.of("COMMAND_ID", commandUUID));
+        }
+
+        AtomicReference<Boolean> success = new AtomicReference<>(false);
+
+
+        Mono<Map> mono = client_commandDistribute.post()
+                .uri("/rule")
+                .bodyValue(commandIDMaps)
+                .exchangeToMono(res -> {
+                    if (res.statusCode().equals(HttpStatus.OK)) {
+                        return res.bodyToMono(Map.class);
+                    }
+                    return res.createError();
+                })
+                .doOnError(WebClientResponseException.class, res -> success.set(false));
+
+
+        Map<String, String> response = mono.block(Duration.ofSeconds(5));
+
+        if (response == null) {
+            return false;
+        }
+        response.forEach((commandUUID, responseCode) -> {
+            if (!responseCode.equals("0")) {
+                log.error("指令首次下发失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+            }
+        });
+
+        success.set(true);
+
+        return success.get();
+    }
     private Boolean sendFilters(TaskService taskService, Task task) {
         List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(task.getTaskId());
 

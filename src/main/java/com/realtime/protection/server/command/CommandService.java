@@ -66,12 +66,23 @@ public class CommandService {
         return commandInfo.getUUID();
     }
 
-    public void createCommands(List<TaskCommandInfo> taskCommandInfos) {
+    public List<String> createCommands(List<TaskCommandInfo> taskCommandInfos) {
+
+        List<String> commandUUIDs = ListUtils.newArrayListWithExpectedSize(taskCommandInfos.size());
+
         Function<CommandMapper, Function<List<TaskCommandInfo>, Boolean>> function = mapper -> list -> {
             List<TaskCommandInfo> taskCommandInfoBatch = ListUtils.newArrayListWithExpectedSize(BatchSize);
             for (TaskCommandInfo info : list) {
                 info.setUUID(UUID.randomUUID().toString());
+                commandUUIDs.add(info.getUUID());
+                info.setDisplayId(
+                        "ZL-"
+                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                + "-"
+                                + String.format("%06d", counter.generateId("command"))
+                );
                 taskCommandInfoBatch.add(info);
+
                 if (taskCommandInfoBatch.size() < BatchSize) {
                     continue;
                 }
@@ -91,6 +102,8 @@ public class CommandService {
         };
 
         sqlSessionWrapper.startBatchSession(CommandMapper.class, function, taskCommandInfos);
+
+        return commandUUIDs;
     }
 
     public List<TaskCommandInfo> queryCommandInfos(Long taskId,
