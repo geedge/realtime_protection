@@ -10,17 +10,21 @@ import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
+@Component
 public class StateHandler {
 
 
@@ -38,6 +42,7 @@ public class StateHandler {
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {
         Task task = taskService.queryTask(taskId);
 
+
         if (task == null) {
             throw new IllegalArgumentException("无效task_id，因为无法找到对应任务");
         }
@@ -51,6 +56,16 @@ public class StateHandler {
         // 如果审核状态不为已通过审核，则报错
         if (!taskAuditStatus.equals(AuditStatusEnum.AUDITED.getNum())) {
             throw new IllegalArgumentException("无效的task_id，因为未通过审核");
+        }
+        /*
+       什么时候会调用这个函数呢，
+         1是周期函数判断出来当前时间超过了任务开始时间，且运行状态处于PENDING，审批状态为AUDITED
+         2是走http接口调用，这时候有可能是任务开始时间已经过了，也有可能是任务开始时间还没到
+            任务开始时间已经过了，周期性函数已经执行转变为RUNNNING状态了，前端再请求启动。 会报错
+            所以只能是任务开始时间还没到，这时候“提前启动”就要设置任务开始时间为当前时间
+         */
+        if (task.getTaskStartTime().isAfter(LocalDateTime.now())) {
+            taskService.updateTaskStartTime(taskId);
         }
 
         return switch (TaskTypeEnum.getTaskTypeByNum(task.getTaskType())) {
@@ -115,8 +130,12 @@ public class StateHandler {
     private Boolean handleDynamicTaskStart(TaskService taskService, Task task) {
         // 将所有关联的动态规则审批状态修改为“已使用”
         taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
-
-        return sendFilters(taskService, task);
+        try{
+            return sendFilters(taskService, task);
+        } catch (Exception e) {
+            log.error("动态任务筛选条件发送出错", e);
+            return true;
+        }
 //        return true;
     }
 
@@ -136,7 +155,7 @@ public class StateHandler {
         sendCommandDistributeSignal(commandUUIDs);
         return true;
     }
-    private Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {
+    public Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {
 
         List<Map<String, String>> commandIDMaps = new ArrayList<>();
         for (String commandUUID : commandUUIDs) {
@@ -149,6 +168,7 @@ public class StateHandler {
         Mono<Map> mono = client_commandDistribute.post()
                 .uri("/rule")
                 .bodyValue(commandIDMaps)
+                .accept(MediaType.APPLICATION_JSON)  // 设置Accept头为application/json
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
                         return res.bodyToMono(Map.class);

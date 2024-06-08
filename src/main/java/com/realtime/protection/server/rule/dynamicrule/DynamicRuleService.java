@@ -135,6 +135,21 @@ public class DynamicRuleService {
     }
     //    批量删除
     public Boolean deleteDynamicRuleObjects(List<Integer> dynamicRuleIds) {
+
+        //根据是否处于已使用 审核状态 判断能否删除
+        List<Integer> taskStatus = dynamicRuleMapper.queryAuditStatusByIdList(dynamicRuleIds);
+        int index = 0;
+        List<Integer> errorIds = new ArrayList<>();
+        for(Integer status: taskStatus) {
+            if (status == 3) {
+                errorIds.add(dynamicRuleIds.get(index));
+            }
+            index++;
+        }
+        if (!errorIds.isEmpty()){
+            throw  new IllegalArgumentException("动态规则使用中, 错误id:" + errorIds);
+        }
+
         Function<DynamicRuleMapper, Function<List<Integer>, Boolean>> deleteDynamicRuleFunction =
                 mapper -> list -> {
                     if (list == null || list.isEmpty()) {
@@ -196,7 +211,7 @@ public class DynamicRuleService {
                                                  String auditUserName, Integer auditUserId, String auditUserDepart) {
         Integer originalAuditStatus = dynamicRuleMapper.queryAuditStatusById(id);
         if (originalAuditStatus == null) {
-            throw new IllegalArgumentException("cannot find audit status of static rule " + id + ", maybe static rule doesn't exist?");
+            throw new IllegalArgumentException("不能找到静态规则" + id );
         }
         if (!AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(auditStatus)) {
             throw new IllegalArgumentException("invalid audit status");

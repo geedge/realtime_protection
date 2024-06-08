@@ -77,4 +77,7 @@ public interface DynamicRuleMapper {
     List<DynamicRuleObject> queryHistory(Integer id, Integer page, Integer pageSize);
 
     void removeUsedTaskId(Long taskId);
+
+
+    List<Integer> queryAuditStatusByIdList(@Param("ids") List<Integer> ids);
 }

@@ -13,7 +13,7 @@ public class PendingState extends StateHandler implements State {
             case FAILED -> handleFailed(commandService, taskService, taskId);
             case RUNNING -> handleStart(taskService, commandService, taskId);
             case FINISHED -> handleFinish(commandService, taskService, taskId);
-            default -> throw new IllegalStateException(taskId + " meets unexpected value: "
+            default -> throw new IllegalStateException("错误的状态: "
                     + StateEnum.getStateEnumByState(newState));
         };
     }

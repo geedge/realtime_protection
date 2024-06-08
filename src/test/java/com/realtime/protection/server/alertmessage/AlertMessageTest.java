@@ -57,12 +57,12 @@ public class AlertMessageTest {
                     null, null, null, null,
                     null, null, 1, 1);
             List<TemplateNew> templates = templateService.queryTemplates(
-                    "洪泛型DDoS-日常态", null, null, null, null, null, null, 1, 1);
+                    null, null, null, null, null, null, null, 1, 1);
 
             DynamicRuleObject object = new DynamicRuleObject();
-            object.setDynamicRuleName("测试display_id"+n);
-            object.setDescription("动态规则新建测试");
-            object.setDynamicRuleSourceSystem("BW");
+            object.setDynamicRuleName("内部-动态任务测试-"+LocalDateTime.now().toString());
+            object.setDescription("内部-动态任务测试");
+            object.setDynamicRuleSourceSystem("BW监测系统");
             object.setBwSql("select * from test where event_id = 1");
             object.setDynamicRuleCreateDepart("组织树");
             object.setDynamicRuleCreateUserId(1100664);
@@ -72,7 +72,7 @@ public class AlertMessageTest {
 
 
             Task task = new Task();
-            task.setTaskName("生产告警信息测试"+n);
+            task.setTaskName("内部-动态任务测试"+LocalDateTime.now().toString());
             LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
             LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
             task.setTaskStartTime(taskStartTime);
@@ -83,6 +83,8 @@ public class AlertMessageTest {
             task.setTaskCreateUsername("NSADD管理员");
             task.setTaskCreateDepart("组织树");
             task.setTaskRange("1009");
+
+
             task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
             task.setProtectObjectIds(List.of(new Integer[]{protectObject.get(0).getProtectObjectId()}));
             task.setTemplateId(templates.get(0).getTemplateId());

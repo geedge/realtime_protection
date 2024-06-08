@@ -7,6 +7,7 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -114,4 +115,11 @@ public interface TaskMapper {
     void updateTaskStatusLogExpireTimeBatch(List<Integer> taskIds);
 
     List<Task> queryHistory(Long id, Integer page, Integer pageSize);
+
+    @Select("SELECT task_id FROM t_task WHERE task_start_time >= NOW() " +
+            "AND task_status = #{stateNum} AND task_audit_status = #{AuditNum}")
+    List<Long> queryRunnableTasks(Integer stateNum, Integer AuditNum);
+
+    @Update("UPDATE t_task SET task_start_time = NOW() WHERE task_id = #{taskId}")
+    void updateTaskStartTime(Long taskId);
 }

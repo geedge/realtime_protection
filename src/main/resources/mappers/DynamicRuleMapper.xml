@@ -474,5 +474,14 @@
         ORDER BY effective_time DESC
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
+    <select id="queryAuditStatusByIdList" resultType="java.lang.Integer">
+        select audit_status
+        from t_dynamic_rule
+        where dynamic_rule_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 
 </mapper>

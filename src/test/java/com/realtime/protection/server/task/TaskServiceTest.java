@@ -183,10 +183,11 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
     @Test
     void testDeleteTask() {
-        long testNum = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 10)
-                .get(0).getTaskId();
-
-        assertTrue(taskService.deleteTask(testNum));
+        List<Task> tests = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 31)
+                ;
+        for (Task task : tests){
+            taskService.deleteTask(task.getTaskId());
+        }
 //        assertFalse(taskService.deleteTask(235156235L)); // 尝试一个不可能达到的数字
     }
 

@@ -9,6 +9,7 @@ import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
+import com.realtime.protection.server.task.status.StateHandler;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,14 @@ public class AlertMessageService {
     private final CommandService commandService;
     private final AlertMessageMapper alertMessageMapper;
     private  final Counter counter;
+    private final StateHandler stateHandler;
 
     public AlertMessageService(
-            CommandService commandService, AlertMessageMapper alertMessageMapper, Counter counter) {
+            CommandService commandService, AlertMessageMapper alertMessageMapper, Counter counter, StateHandler stateHandler) {
         this.commandService = commandService;
         this.alertMessageMapper = alertMessageMapper;
         this.counter = counter;
+        this.stateHandler = stateHandler;
     }
 
     @DSTransactional
@@ -117,6 +120,8 @@ public class AlertMessageService {
                                               Boolean isValid,
                                               Boolean isJudged,
                                               AlertMessage alertMessage){
+        List<String> commandUUIDs = new ArrayList<>();
+
         for (TaskCommandInfo dynamicTaskCommandInfo : dynamicTaskCommandInfoList ){
             //command入库
             dynamicTaskCommandInfo.setIsValid(isValid);
@@ -127,6 +132,7 @@ public class AlertMessageService {
 
             alertMessage.setCommandUUID(commandUUID);
             String alertMessageUUID = UUID.randomUUID().toString();
+            commandUUIDs.add(commandUUID);
             alertMessage.setAlertMessageUUID(alertMessageUUID);
             alertMessage.setDisplay_id(
                     "GJ-"
@@ -137,6 +143,8 @@ public class AlertMessageService {
             );
             alertMessageMapper.insertAlertMessage(alertMessage);
             }
+        //发送指令新建信号
+        stateHandler.sendCommandDistributeSignal(commandUUIDs);
 
     }
     private String insertAlertMessageOnly(AlertMessage alertMessage){

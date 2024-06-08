@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
     @Order(3)
     @ExceptionHandler(value = {Exception.class})
     public ResponseResult handleGlobalException(Exception e) {
+        e.printStackTrace();
         log.error("遭遇全局异常：{}", e.getMessage());
         return ResponseResult.error().setMessage(e.getMessage());
     }
@@ -55,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = DuplicateKeyException.class)
     public ResponseResult handleDuplicateKeyException(DuplicateKeyException e) {
         return ResponseResult.invalid().setMessage(
-                "插入/更新失败，请检查当前插入字段和数据库中是否存在相同数据"
+                "插入/更新失败，请检查当前插入字段和数据库中是否存在相同数据 "+e.getMessage()
         );
     }
 

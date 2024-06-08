@@ -6,6 +6,7 @@ import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,8 +35,11 @@ public class TemplateService {
                         + "-"
                         + String.format("%06d", counter.generateId("strategy_template"))
         );
-
-        templateMapper.newTemplate(template);
+        try {
+            templateMapper.newTemplate(template);
+        }catch (DuplicateKeyException e){
+            throw new IllegalArgumentException("策略模板模板名称重复");
+        }
 
         if (template.getTemplateId() == null) {
             return 0;

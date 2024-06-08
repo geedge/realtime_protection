@@ -134,7 +134,7 @@
         <result column="protect_object_name" property="protectObjectName"/>
         <result column="protect_object_system_name" property="protectObjectSystemName"/>
 
-        <result column="protect_object_ip" property="protectObjectIPAddress"/>
+        <result column="protect_object_ip_d" property="protectObjectIPAddress"/>
         <result column="protect_object_port" property="protectObjectPort"/>
         <result column="protect_object_url" property="protectObjectURL"/>
         <result column="protect_object_protocol" property="protectObjectProtocol"/>
@@ -158,7 +158,7 @@
     <select id="queryProtectObjects" resultMap="protectObjectMap">
         SELECT
          *,
-        INET_NTOA(protect_object_ip) as protect_object_ip
+        INET_NTOA(protect_object_ip) as protect_object_ip_d
 
         FROM t_protect_object
         <where>

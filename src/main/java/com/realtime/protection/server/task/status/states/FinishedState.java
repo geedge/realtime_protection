@@ -10,7 +10,7 @@ public class FinishedState extends StateHandler implements State {
     public Boolean handle(State newState, CommandService commandService, TaskService taskService, Long taskId) {
         return switch (StateEnum.getStateEnumByState(newState)) {
             case PENDING, FINISHED -> true;
-            default -> throw new IllegalStateException("Unexpected value: " + StateEnum.getStateEnumByState(newState));
+            default -> throw new IllegalStateException("错误的状态: " + StateEnum.getStateEnumByState(newState));
         };
     }
 }

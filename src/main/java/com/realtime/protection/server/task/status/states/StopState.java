@@ -14,7 +14,7 @@ public class StopState extends StateHandler implements State {
             case RUNNING -> handleStart(taskService, commandService, taskId);
             case FAILED -> handleFailed(commandService, taskService, taskId);
             case FINISHED -> handleFinish(commandService, taskService, taskId);
-            default -> throw new IllegalStateException("Unexpected value: " + StateEnum.getStateEnumByState(newState));
+            default -> throw new IllegalStateException("错误的状态: " + StateEnum.getStateEnumByState(newState));
         };
     }
 }

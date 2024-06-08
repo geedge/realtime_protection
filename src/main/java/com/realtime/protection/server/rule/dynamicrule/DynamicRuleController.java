@@ -64,7 +64,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     @Override
     @DeleteMapping("/{id}/delete")
     public ResponseResult deleteDynamicRuleObject(@PathVariable Integer id) {
-        log.info("删除动态规则: {}", id);
+//        log.info("删除动态规则: {}", id);
         //调用service删除
         dynamicRuleService.deleteDynamicRuleObject(id);
 

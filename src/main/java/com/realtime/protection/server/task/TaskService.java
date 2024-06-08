@@ -577,4 +577,12 @@ public class TaskService {
         dynamicRuleMapper.insertStatusLogBatch(ids);
 
     }
+
+    public List<Long> getRunnableTasks() {
+        return taskMapper.queryRunnableTasks(StateEnum.PENDING.getStateNum(),AuditStatusEnum.AUDITED.getNum());
+    }
+
+    public void updateTaskStartTime(Long taskId) {
+        taskMapper.updateTaskStartTime(taskId);
+    }
 }
