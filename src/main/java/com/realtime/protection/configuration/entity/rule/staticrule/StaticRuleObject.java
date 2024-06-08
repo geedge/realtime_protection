@@ -3,6 +3,7 @@ package com.realtime.protection.configuration.entity.rule.staticrule;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.realtime.protection.configuration.utils.EmptyStringToNullDeserializer;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,10 +79,12 @@ public class StaticRuleObject {
     @JsonProperty("static_rule_sip")
     @ExcelProperty("源IP地址")
     @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "错误 IPv4 地址")
+    @JsonDeserialize(using = EmptyStringToNullDeserializer.class)
     @Schema(description = "源IP地址", example = "1.1.1.1")
     private String staticRuleSip;
     @JsonProperty("static_rule_msip")
     @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "I错误 IPv4 地址")
+    @JsonDeserialize(using = EmptyStringToNullDeserializer.class)
     @ExcelProperty("源IP地址掩码")
     @Schema(description = "源IP地址掩码", example = "255.255.255.0")
     private String staticRuleMsip;
@@ -98,10 +103,12 @@ public class StaticRuleObject {
     @JsonProperty("static_rule_dip")
     @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "错误 IPv4 地址")
     @ExcelProperty("目的IP地址")
+    @JsonDeserialize(using = EmptyStringToNullDeserializer.class)
     @Schema(description = "目的IP地址", example = "2.2.2.2")
     private String staticRuleDip;
     @JsonProperty("static_rule_mdip")
     @ExcelProperty("目的IP地址掩码")
+    @JsonDeserialize(using = EmptyStringToNullDeserializer.class)
     @Pattern(regexp = "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", message = "错误 IPv4 地址")
     @Schema(description = "目的IP地址掩码", example = "255.255.255.0")
     private String staticRuleMdip;

@@ -116,7 +116,7 @@ public interface TaskMapper {
 
     List<Task> queryHistory(Long id, Integer page, Integer pageSize);
 
-    @Select("SELECT task_id FROM t_task WHERE task_start_time >= NOW() " +
+    @Select("SELECT task_id FROM t_task WHERE task_start_time <= NOW() " +
             "AND task_status = #{stateNum} AND task_audit_status = #{AuditNum}")
     List<Long> queryRunnableTasks(Integer stateNum, Integer AuditNum);
 

@@ -243,13 +243,14 @@ class TaskServiceTest extends ProtectionApplicationTests {
         staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
         staticRuleTest.setStaticRuleCreateDepart("组织树");
         staticRuleTest.setStaticRuleCreateUserId(22222222);
-        staticRuleTest.setAuditStatus(0);
 
         staticRuleTest.setStaticRuleSip("32.2.3.1");
         staticRuleTest.setStaticRuleDip("2.2.3.2");
+        staticRuleTest.setStaticRuleSport(80);
+        staticRuleTest.setStaticRuleProtocol("6");
         staticRuleService.newStaticRuleObject(staticRuleTest);
 //        staticRuleIds.add(staticRuleTest.getStaticRuleId());
-        staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "xxx管理员", 1111111, "组织树");
+        staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "NSADD管理员", 1111111, "组织树");
 
 
 
@@ -274,7 +275,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 
         Long taskId = taskService.newTask(task);
 
-        taskService.changeTaskAuditStatus(taskId, 2);
+        taskService.changeTaskAuditStatus(taskId, 2, "NSADD管理员", "1111111", "组织树");
 
         stateChangeService.changeState(2, taskId, false);
 
