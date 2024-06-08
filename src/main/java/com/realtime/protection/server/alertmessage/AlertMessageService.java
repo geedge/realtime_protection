@@ -11,6 +11,7 @@ import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
 import com.realtime.protection.server.task.status.StateHandler;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 // AlertMessage的UUID在mapper插入数据库时生成了，这里提前生成好像美神恶魔用
 @Service
+@Slf4j
 public class AlertMessageService {
     private final CommandService commandService;
     private final AlertMessageMapper alertMessageMapper;
@@ -144,7 +146,13 @@ public class AlertMessageService {
             alertMessageMapper.insertAlertMessage(alertMessage);
             }
         //发送指令新建信号
-        stateHandler.sendCommandDistributeSignal(commandUUIDs);
+        try {
+            stateHandler.sendCommandDistributeSignal(commandUUIDs);
+        }catch (Exception e) {
+            log.info(String.format("动态任务首次指令下发c3出错，任务id: %d,commandUUIDs: %s",
+                    dynamicTaskCommandInfoList.get(0).getTaskId(),
+                    commandUUIDs));
+        }
 
     }
     private String insertAlertMessageOnly(AlertMessage alertMessage){
