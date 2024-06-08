@@ -18,5 +18,6 @@ docker build -t protection_springboot -f realtime_protection/docker-springboot/D
 echo "============built backend servers============"
 
 # 使用privileged模式，在中心部署时不会遭遇Java内存异常错误
-docker run --privileged -itd --name springboot_backend -p 8081:8081 protection_springboot
+#增加-v /etc/localtime:/etc/localtime -v /etc/timezone:/etc/timezone，使容器时间与宿主机时间一致
+docker run  -v /etc/localtime:/etc/localtime -v /etc/timezone:/etc/timezone --privileged -itd --name springboot_backend -p 8081:8081 protection_springboot
 echo "============started backend servers============"
