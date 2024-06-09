@@ -22,7 +22,7 @@
         <result column="template_id" property="templateId"/>
 
         <result column="task_range" property="distributePoint"/>
-        <result column="strategy_template_name" property="eventType"/>
+        <result column="event_type" property="eventType"/>
 
         <result column="dynamic_rule_protect_level" property="protectLevel"/>
         <result column="task_status" property="taskStatus"/>
@@ -238,14 +238,14 @@
             t_task.task_range,
             t_task.protect_level,
             t_task.task_status,
-
-            t_tmplate.strategy_template_name
+            t_task.event_type
+--             t_tmplate.strategy_template_name
 
             from t_task
             left join realtime_protection.t_dynamic_rule t_dr on
                 (t_task.task_id = t_dr.dynamic_rule_used_task_id and t_dr.dynamic_rule_id = #{dynamicRuleId})
-            left join realtime_protection.t_strategy_template_new t_tmplate on
-                ( t_task.template_id = t_tmplate.strategy_template_id )
+--             left join realtime_protection.t_strategy_template_new t_tmplate on
+--                 ( t_task.template_id = t_tmplate.strategy_template_id )
             where
                 t_task.task_id = #{taskId}
     </select>

@@ -4,6 +4,7 @@ import com.realtime.protection.configuration.entity.defense.template.TemplateNew
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -49,7 +50,7 @@ public class TemplateService {
     }
 
     public List<TemplateNew> queryTemplates(String templateName, String sourceSystem, String createUserName,
-                                         Integer templateId, Integer auditStatus,
+                                            String templateId, Integer auditStatus,
                                         String eventType, Integer protectLevel,
                                          Integer page, Integer pageSize) {
         return templateMapper.queryTemplates(templateName, sourceSystem, createUserName,
@@ -58,6 +59,7 @@ public class TemplateService {
 
     public Boolean updateTemplate(Integer templateId, TemplateNew template) {
         template.setTemplateId(templateId);
+        template.setAuditStatus(String.valueOf(AuditStatusEnum.PENDING.getNum()));
 
         return templateMapper.updateTemplateInformation(template);
     }
@@ -74,7 +76,7 @@ public class TemplateService {
 
     public Integer queryTemplateTotalNum(
             String templateName, String sourceSystem, String createUserName,
-            Integer templateId, Integer auditStatus,
+            String templateId, Integer auditStatus,
             String eventType, Integer protectLevel) {
         return templateMapper.queryTemplateTotalNum(templateName, sourceSystem, createUserName,
                 templateId,auditStatus,eventType, protectLevel );

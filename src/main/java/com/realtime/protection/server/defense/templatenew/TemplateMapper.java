@@ -16,7 +16,7 @@ public interface TemplateMapper {
     List<TemplateNew> queryTemplates(@Param("template_name") String templateName,
                                   @Param("source_system") String sourceSystem,
                                   @Param("create_username") String createUsername,
-                                  @Param("template_id")Integer templateId,
+                                  @Param("template_id")String templateId,
                                   @Param("audit_status")Integer auditStatus,
                                      @Param("event_type")String eventType,
                                      @Param("protect_level")Integer protectLevel,
@@ -34,7 +34,7 @@ public interface TemplateMapper {
     Integer queryTemplateTotalNum(@Param("template_name") String templateName,
                                   @Param("source_system") String sourceSystem,
                                   @Param("create_username") String createUsername,
-                                  @Param("template_id")Integer templateId,
+                                  @Param("template_id")String templateId,
                                   @Param("audit_status")Integer auditStatus,
                                   @Param("event_type")String eventType,
                                   @Param("protect_level")Integer protectLevel

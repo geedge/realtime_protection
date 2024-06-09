@@ -220,7 +220,7 @@ public interface StaticRuleControllerApi {
             }
     )
     ResponseResult queryStaticRule(@RequestParam(required = false) String static_rule_name,
-                                   @RequestParam(required = false) Integer static_rule_id,
+                                   @RequestParam(required = false) String static_rule_id,
                                    @RequestParam(required = false) String static_rule_creator,
                                    @RequestParam(required = false) String static_rule_sip,
                                    @RequestParam(required = false) Integer static_rule_sport,

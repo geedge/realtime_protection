@@ -112,7 +112,7 @@ public interface WhiteListControllerApi {
             }
     )
     ResponseResult queryWhiteListObject(@RequestParam(value = "whiteobj_name", required = false) String whiteListName,
-                                        @RequestParam(value = "whiteobj_id", required = false) Integer whiteListId,
+                                        @RequestParam(value = "whiteobj_id", required = false) String whiteListId,
                                         @RequestParam(value = "system_name", required = false) String systemName,
                                         @RequestParam(value = "audit_status", required = false) Integer auditStatus,
                                         @RequestParam(value = "creator", required = false) String creator,

@@ -177,8 +177,8 @@
             <if test="whiteListName != null and whiteListName != '' ">
                 white_list_name like concat('%', #{whiteListName}, '%')
             </if>
-            <if test="whiteListId != null">
-                and white_list_id = #{whiteListId}
+            <if test="whiteListId != null and whiteListId != ''">
+                and hite_list_display_id like concat('%', #{whiteListId}, '%')
             </if>
             <if test="systemName != null and systemName != '' ">
                 and white_list_system_name like concat('%', #{systemName}, '%')
@@ -404,8 +404,8 @@
             <if test="whiteListName != null and whiteListName != '' ">
                 white_list_name like concat('%', #{whiteListName}, '%')
             </if>
-            <if test="whiteListId != null">
-                and white_list_id = #{whiteListId}
+            <if test="whiteListId != null and whiteListId != ''">
+                and hite_list_display_id like concat('%', #{whiteListId}, '%')
             </if>
             <if test="systemName != null and systemName != '' ">
                 and white_list_system_name like concat('%', #{systemName}, '%')

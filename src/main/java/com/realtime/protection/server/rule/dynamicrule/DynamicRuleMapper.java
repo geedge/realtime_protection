@@ -27,7 +27,7 @@ public interface DynamicRuleMapper {
 
     void deleteDynamicRules(List<Integer> dynamicRuleIds);
 
-    List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
+    List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, String dynamicRuleId,
                                                    String sourceSystem, String creator, Integer auditStatus,
                                                    String eventType, Integer protectLevel, String templateName,
                                                    String auditUserName, String createDate,
@@ -35,7 +35,7 @@ public interface DynamicRuleMapper {
 
     boolean queryProtectObjectById(Integer protectObjectId);
 
-    Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
+    Integer queryDynamicRuleTotalNum(String dynamicRuleName, String dynamicRuleId,
                                      String sourceSystem, String creator, Integer auditStatus
                                     , String eventType, Integer protectLevel, String templateName,
                                      String auditUserName, String createDate);

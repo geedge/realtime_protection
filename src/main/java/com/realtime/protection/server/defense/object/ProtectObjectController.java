@@ -90,8 +90,7 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
     public ResponseResult queryProtectObjects(@RequestParam(value = "proobj_name", required = false)
                                               String protectObjectName,
                                               @RequestParam(value = "proobj_id", required = false)
-                                              @Min(value = 1, message = "ID值不可小于1")
-                                              Integer protectObjectId,
+                                              String protectObjectId,
                                               @RequestParam(value = "proobj_systemm_name", required = false)
                                               String protectObjectSystemName,
                                               @RequestParam(value = "proobj_ip_address", required = false)

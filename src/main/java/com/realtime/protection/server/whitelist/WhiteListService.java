@@ -126,16 +126,16 @@ public class WhiteListService {
         if (auditStatus == null) {
             throw new IllegalArgumentException("无法找到白名单 " + id + ", 可能该白名单不存在");
         }
-        if (!whiteListMapper.queryWhiteListObjectAuditStuatusById(id).equals(AuditStatusEnum.AUDITED.getNum())) {
-            throw new IllegalStateException("无法修改白名单信息，因为其并未处于" + AuditStatusEnum.AUDITED + "状态");
-        }
+//        if (!whiteListMapper.queryWhiteListObjectAuditStuatusById(id).equals(AuditStatusEnum.AUDITED.getNum())) {
+//            throw new IllegalStateException("无法修改白名单信息，因为其并未处于" + AuditStatusEnum.AUDITED + "状态");
+//        }
 
         object.setWhiteListAuditStatus(AuditStatusEnum.PENDING.getNum());
 
         return whiteListMapper.updateWhiteListObject(id, object);
     }
 
-    public List<WhiteListObject> queryWhiteListObject(String whiteListName, Integer whiteListId,
+    public List<WhiteListObject> queryWhiteListObject(String whiteListName, String whiteListId,
                                                       String systemName, Integer auditStatus, String creator,
                                                       Integer page, Integer pageSize) {
         return whiteListMapper.queryWhiteListObject(whiteListName, whiteListId, systemName, auditStatus, creator, page, pageSize);
@@ -214,7 +214,7 @@ public class WhiteListService {
         return resultMap;
     }
 
-    public Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId
+    public Integer queryWhiteListTotalNum(String whiteListName, String whiteListId
             , String systemName, Integer auditStatus, String creator){
         return whiteListMapper.queryWhiteListTotalNum(whiteListName, whiteListId, systemName, auditStatus, creator);
     }

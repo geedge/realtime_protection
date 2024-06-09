@@ -23,7 +23,7 @@
 
     <update id="newTaskStaticRuleConcat">
         UPDATE t_static_rule
-        SET static_rule_used_task_id = #{task_id}
+        SET static_rule_used_task_id = #{task_id},
             static_rule_audit_status = #{status}
         WHERE
         <if test="rule_ids != null and rule_ids.size() > 0">
@@ -36,7 +36,7 @@
 
     <update id="newTaskDynamicRuleConcat">
         UPDATE t_dynamic_rule
-        SET dynamic_rule_used_task_id = #{task_id}
+        SET dynamic_rule_used_task_id = #{task_id},
             audit_status = #{status}
         WHERE
         <if test="rule_ids != null and rule_ids.size() > 0">
@@ -128,7 +128,7 @@
                 AND event_type LIKE CONCAT('%', #{event_type}, '%')
             </if>
             <if test="create_date != null and create_date != '' ">
-                AND task_crate_time LIKE CONCAT('%', #{create_date}, '%')
+                AND task_create_time LIKE CONCAT('%', #{create_date}, '%')
             </if>
             <if test="start_date != null and start_date != '' ">
                 AND task_start_time LIKE CONCAT('%', #{start_date}, '%')
@@ -515,7 +515,7 @@
         FROM t_task
                  LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
         WHERE task_id = #{task_id}
-          AND tsr.static_rule_audit_status = 2
+--           AND tsr.static_rule_audit_status = 2
     </select>
 
     <resultMap id="dynamicTaskInfoMap" type="com.realtime.protection.configuration.entity.task.DynamicTaskInfo">
@@ -602,7 +602,7 @@
                 AND event_type LIKE CONCAT('%', #{event_type}, '%')
             </if>
             <if test="create_date != null and create_date != '' ">
-                AND task_crate_time LIKE CONCAT('%', #{create_date}, '%')
+                AND task_create_time LIKE CONCAT('%', #{create_date}, '%')
             </if>
             <if test="start_date != null and start_date != '' ">
                 AND task_start_time LIKE CONCAT('%', #{start_date}, '%')

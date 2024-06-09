@@ -27,7 +27,7 @@ public interface StaticRuleMapper {
     StaticRuleObject queryStaticRuleById(Integer id);
 
     //多页查询静态规则
-    List<StaticRuleObject> queryStaticRule(String static_rule_name, Integer static_rule_id,
+    List<StaticRuleObject> queryStaticRule(String static_rule_name, String static_rule_id,
                                            String static_rule_create_username, String sip,
                                            Integer sport, String dip, Integer dport,
                                            Integer auditStatus, String auditUserName, String createDate,
@@ -46,7 +46,7 @@ public interface StaticRuleMapper {
                                   String auditUserDepart);
     Boolean updateAuditStatusById(Integer id, Integer auditStatus);
 
-    Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
+    Integer queryStaticRuleTotalNum(String static_rule_name, String static_rule_id,
                                     String static_rule_create_username,
                                     String sip, Integer sport,
                                     String dip, Integer dport,

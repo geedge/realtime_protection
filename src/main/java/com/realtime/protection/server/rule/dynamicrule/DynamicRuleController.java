@@ -120,7 +120,7 @@ public class DynamicRuleController implements DynamicRuleControllerApi {
     @Override
     @GetMapping("/query")
     public ResponseResult queryDynamicRuleObject(@RequestParam(value = "name", required = false) String dynamicRuleName,
-                                                 @RequestParam(value = "id", required = false) Integer dynamicRuleId,
+                                                 @RequestParam(value = "id", required = false) String dynamicRuleId,
                                                  @RequestParam(value = "source_system", required = false) String protectObjectSourceSystem,
                                                  @RequestParam(value = "creator", required = false) String creator,
                                                  @RequestParam(value = "audit_status", required = false) Integer auditStatus,

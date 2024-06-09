@@ -94,7 +94,7 @@ public interface TemplateNewCpntrollerApi {
     ResponseResult queryTemplates(@RequestParam(value = "template_name", required = false) String templateName,
                                   @RequestParam(value = "source_system", required = false) String sourceSystem,
                                   @RequestParam(value = "create_user_name", required = false) String createUserName,
-                                  @RequestParam(value = "template_id", required = false) Integer templateId,
+                                  @RequestParam(value = "template_id", required = false) String templateId,
                                   @RequestParam(value = "audit_status", required = false) Integer auditStatus,
                                   @RequestParam(value = "event_type", required = false) String eventType,
                                   @RequestParam(value = "protect_level", required = false) Integer protectLevel,

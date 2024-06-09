@@ -182,7 +182,7 @@ public class StaticRuleService {
     分页查询
      */
     public List<StaticRuleObject> queryStaticRule(
-            String static_rule_name, Integer static_rule_id,
+            String static_rule_name, String static_rule_id,
             String creator,
             String static_rule_sip, Integer static_rule_sport,
             String static_rule_dip, Integer static_rule_dport,
@@ -267,7 +267,7 @@ public class StaticRuleService {
         staticRuleMapper.deleteStaticRuleById(id);
     }
 
-    public Integer queryStaticRuleTotalNum(String static_rule_name, Integer static_rule_id,
+    public Integer queryStaticRuleTotalNum(String static_rule_name, String static_rule_id,
                                            String static_rule_creator,
                                            String static_rule_sip, Integer static_rule_sport,
                                            String static_rule_dip, Integer static_rule_dport,

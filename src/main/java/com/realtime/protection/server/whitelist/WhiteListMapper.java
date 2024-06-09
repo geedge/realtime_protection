@@ -19,7 +19,7 @@ public interface WhiteListMapper {
     void newWhiteListObject(@Param("object") WhiteListObject object);
 
     //分页查询
-    List<WhiteListObject> queryWhiteListObject(String whiteListName, Integer whiteListId,
+    List<WhiteListObject> queryWhiteListObject(String whiteListName, String whiteListId,
                                                String systemName, Integer auditStatus, String creator,
                                                Integer page, Integer pageSize);
 
@@ -46,7 +46,7 @@ public interface WhiteListMapper {
 
     List<WhiteListObject> whiteListCommandCheck(@Param("command") FiveTupleWithMask fiveTupleWithMaskInCommand);
 
-    Integer queryWhiteListTotalNum(String whiteListName, Integer whiteListId
+    Integer queryWhiteListTotalNum(String whiteListName, String whiteListId
             , String systemName, Integer auditStatus, String creator);
 
     List<WhiteListObject> whiteListCommandsCheck(List<TaskCommandInfo> taskCommandInfos);

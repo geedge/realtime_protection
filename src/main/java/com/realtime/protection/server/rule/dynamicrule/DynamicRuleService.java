@@ -6,6 +6,7 @@ import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleOb
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
+import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,7 +116,7 @@ public class DynamicRuleService {
         //更新DynamicRule
 
 //        dynamicRuleMapper
-
+        dynamicRuleObject.setAuditStatus(AuditStatusEnum.PENDING.getNum());
         Boolean idValid = dynamicRuleMapper.updateDynamicRuleObject(dynamicRuleId, dynamicRuleObject);
         if (!idValid) {
             throw new IllegalArgumentException("动态规则id无效");
@@ -129,6 +130,7 @@ public class DynamicRuleService {
         if (!ProtectObjIdValid) {
             throw new IllegalArgumentException("防护对象id无效");
         }
+
 */
         return idValid;
 
@@ -178,7 +180,7 @@ public class DynamicRuleService {
 
 
     //分页查询基础的动态规则，暂时不返回关联的保护对象 
-    public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, Integer dynamicRuleId,
+    public List<DynamicRuleObject> queryDynamicRuleObject(String dynamicRuleName, String dynamicRuleId,
                                                           String templateSourceSystem,String creator,Integer auditStatus,
                                                           String eventType, Integer protectLevel, String templateName,
                                                           String auditUserName, String createDate,
@@ -187,7 +189,7 @@ public class DynamicRuleService {
                 templateSourceSystem, creator, auditStatus, eventType, protectLevel, templateName, auditUserName, createDate, page, pageSize);
     }
 
-    public Integer queryDynamicRuleTotalNum(String dynamicRuleName, Integer dynamicRuleId,
+    public Integer queryDynamicRuleTotalNum(String dynamicRuleName, String dynamicRuleId,
                                             String protectObjectSourceSystem, String creator,
                                             Integer auditStatus, String eventType, Integer protectLevel,
                                             String templateName,String auditUserName, String createDate) {

@@ -28,7 +28,7 @@ public interface ProtectObjectMapper {
 
 
     Integer queryProtectObjectsTotalNum(@Param("proobj_name") String protectObjectName,
-                                        @Param("proobj_id") Integer protectObjectId,
+                                        @Param("proobj_id") String protectObjectId,
                                         @Param("proobj_system_name") String protectObjectSystemName,
                                         @Param("proobj_ip") String protectObjectIPAddress,
                                         @Param("proobj_port_min") Integer protectObjectPortMin,
@@ -39,7 +39,7 @@ public interface ProtectObjectMapper {
                                         @Param("proobj_audit_status") Integer protectObjectAuditStatus);
 
     List<ProtectObject> queryProtectObjects(@Param("proobj_name") String protectObjectName,
-                                            @Param("proobj_id") Integer protectObjectId,
+                                            @Param("proobj_id") String protectObjectId,
                                             @Param("proobj_system_name") String protectObjectSystemName,
                                             @Param("proobj_ip") String protectObjectIPAddress,
                                             @Param("proobj_port_min") Integer protectObjectPortMin,

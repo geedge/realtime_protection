@@ -361,8 +361,8 @@
             <if test="static_rule_name != null and static_rule_name != ''">
                 static_rule_name like concat('%', #{static_rule_name}, '%')
             </if>
-            <if test="static_rule_id != null">
-                AND static_rule_id = #{static_rule_id}
+            <if test="static_rule_id != null and static_rule_id != ''">
+                AND static_rule_display_id like concat('%', #{static_rule_id}, '%')
             </if>
             <if test="static_rule_create_username != null and static_rule_create_username != ''">
                 AND static_rule_create_username like concat('%', #{static_rule_create_username}, '%')
@@ -426,8 +426,8 @@
             <if test="static_rule_name != null and static_rule_name != ''">
                 static_rule_name like concat('%', #{static_rule_name}, '%')
             </if>
-            <if test="static_rule_id != null">
-                AND static_rule_id = #{static_rule_id}
+            <if test="static_rule_id != null and static_rule_id != ''">
+                AND static_rule_display_id like concat('%', #{static_rule_id}, '%')
             </if>
             <if test="static_rule_create_username != null and static_rule_create_username != ''">
                 AND static_rule_create_username like concat('%', #{static_rule_create_username}, '%')

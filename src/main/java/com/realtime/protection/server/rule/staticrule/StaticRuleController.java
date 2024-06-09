@@ -152,7 +152,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     @Override
     @GetMapping("/query")
     public ResponseResult queryStaticRule(@RequestParam(name = "name", required = false) String static_rule_name,
-                                          @RequestParam(name = "id", required = false) Integer static_rule_id,
+                                          @RequestParam(name = "id", required = false) String static_rule_id,
                                           @RequestParam(name = "creator", required = false) String static_rule_creator,
                                           @RequestParam(name = "sip", required = false) String static_rule_sip,
                                           @RequestParam(name = "sport", required = false) Integer static_rule_sport,

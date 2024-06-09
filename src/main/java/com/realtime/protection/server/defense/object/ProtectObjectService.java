@@ -76,7 +76,7 @@ public class ProtectObjectService {
         return sqlSessionWrapper.startBatchSession(ProtectObjectMapper.class, newProtectObjectFunction, protectObjectList);
     }
 
-    public List<ProtectObject> queryProtectObjects(String protectObjectName, Integer protectObjectId,
+    public List<ProtectObject> queryProtectObjects(String protectObjectName, String protectObjectId,
                                                    String protectObjectSystemName, String protectObjectIPAddress,
                                                    Integer protectObjectPortMin, Integer protectObjectPortMax,
                                                    String protectObjectURL, String protectObjectProtocol,
@@ -94,11 +94,11 @@ public class ProtectObjectService {
     }
 
     public Boolean updateProtectObject(ProtectObject protectObject) {
-        if (!protectObjectMapper.queryProtectObject(protectObject.getProtectObjectId())
-                .getProtectObjectAuditStatus()
-                .equals(AuditStatusEnum.AUDITED.getNum())) {
-            return false;
-        }
+//        if (!protectObjectMapper.queryProtectObject(protectObject.getProtectObjectId())
+//                .getProtectObjectAuditStatus()
+//                .equals(AuditStatusEnum.AUDITED.getNum())) {
+//            return false;
+//        }
 
         protectObject.setProtectObjectAuditStatus(AuditStatusEnum.PENDING.getNum());
 
@@ -174,7 +174,7 @@ public class ProtectObjectService {
         return resultMap;
     }
 
-    public Integer queryProtectObjectsTotalNum(String protectObjectName, Integer protectObjectId,
+    public Integer queryProtectObjectsTotalNum(String protectObjectName, String protectObjectId,
                                                String protectObjectSystemName, String protectObjectIPAddress,
                                                Integer protectObjectPortMin, Integer protectObjectPortMax,
                                                String protectObjectURL, String protectObjectProtocol,

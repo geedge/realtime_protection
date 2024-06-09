@@ -169,6 +169,7 @@
             <if test="template.isProtectObjectDst != null">is_protect_object_dst = #{template.isProtectObjectDst},</if>
             <if test="template.isProtectObjectSrc != null">is_protect_object_src = #{template.isProtectObjectSrc},</if>
 
+            audit_status = #{template.auditStatus},
             modify_time = NOW()
         </set>
         <where>
@@ -299,8 +300,8 @@
             <if test="template_name != null and template_name != '' ">
                 AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
-            <if test="template_id != null">
-                AND strategy_template_id = #{template_id}
+            <if test="template_id != null and template_id != ''">
+                AND strategy_template_display_id LIKE CONCAT('%', #{template_id}, '%')
             </if>
             <if test="audit_status != null">
                 AND audit_status = #{audit_status}
@@ -343,8 +344,8 @@
             <if test="template_name != null and template_name != '' ">
                 AND strategy_template_name LIKE CONCAT('%', #{template_name}, '%')
             </if>
-            <if test="template_id != null">
-                AND strategy_template_id = #{template_id}
+            <if test="template_id != null and template_id != ''">
+                AND strategy_template_display_id LIKE CONCAT('%', #{template_id}, '%')
             </if>
             <if test="audit_status != null">
                 AND audit_status = #{audit_status}
