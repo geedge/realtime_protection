@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 
 @Data
@@ -55,7 +55,7 @@ public class AlertMessage {
     @JsonProperty("c_priority")
     private Integer c_priority;
     @JsonProperty("c_time")
-    private Long c_time;
+    private Timestamp c_time;
     @JsonProperty("c_flowid")
     private String c_flowid;
     @JsonProperty("c_src_ipv4")
