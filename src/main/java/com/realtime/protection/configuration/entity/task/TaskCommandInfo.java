@@ -56,7 +56,7 @@ public class TaskCommandInfo {
     @JsonProperty("distribute_point")
     private String distributePoint;
 
-    @Schema(description = "事件类型（策略模板名称）", example = "DDOS")
+    @Schema(description = "事件类型", example = "DDOS")
     @JsonProperty("event_type")
     private String eventType;
 
