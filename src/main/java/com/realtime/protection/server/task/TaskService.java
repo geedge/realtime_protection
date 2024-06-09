@@ -76,7 +76,7 @@ public class TaskService {
                     throw new IllegalArgumentException("部分静态规则已被其他任务使用");
                 }
             });
-            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
         }
 
         if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
@@ -89,7 +89,7 @@ public class TaskService {
                     throw new IllegalArgumentException("部分动态规则已被其他任务使用");
                 }
             });
-            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(), AuditStatusEnum.USING.getNum());
         }
         if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()) {
             if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
@@ -300,17 +300,16 @@ public class TaskService {
         //更新task
         taskMapper.updateTask(task);
         //重新关联task和protectObjects
-
         taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
 
-        taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
-        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
+        taskMapper.clearTaskConnectedStaticRule(task.getTaskId(), AuditStatusEnum.AUDITED.getNum());
+        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId(), AuditStatusEnum.AUDITED.getNum());
 
         if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty())
-            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds());
+            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
 
         if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty())
-            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds());
+            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(),AuditStatusEnum.USING.getNum());
 
         return true;
     }
@@ -349,11 +348,12 @@ public class TaskService {
         if (task == null) {
             return true;
         }
-
+//有的规则被任务选择了，但任务还没有启动，此时规则的状态不是已使用，但used_task_id已经被设置
+        //所以应该选择任务的时候就
         updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
-        taskMapper.clearTaskConnectedStaticRule(task.getTaskId());
-        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId());
+        taskMapper.clearTaskConnectedStaticRule(task.getTaskId(), AuditStatusEnum.AUDITED.getNum());
+        taskMapper.clearTaskConnectedDynamicRule(task.getTaskId(), AuditStatusEnum.AUDITED.getNum());
 
         commandMapper.removeCommandsByTaskId(taskId);
 

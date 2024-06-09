@@ -24,6 +24,7 @@
     <update id="newTaskStaticRuleConcat">
         UPDATE t_static_rule
         SET static_rule_used_task_id = #{task_id}
+            static_rule_audit_status = #{status}
         WHERE
         <if test="rule_ids != null and rule_ids.size() > 0">
             static_rule_id IN
@@ -36,6 +37,7 @@
     <update id="newTaskDynamicRuleConcat">
         UPDATE t_dynamic_rule
         SET dynamic_rule_used_task_id = #{task_id}
+            audit_status = #{status}
         WHERE
         <if test="rule_ids != null and rule_ids.size() > 0">
             dynamic_rule_id IN
@@ -329,6 +331,7 @@
         <result column="static_rule_frequency" property="frequency"/>
         <result column="task_start_time" property="startTime"/>
         <result column="task_end_time" property="endTime"/>
+        <result column="event_type" property="eventType"/>
 
         <association property="fiveTupleWithMask">
             <result column="addr_type" property="addrType"/>
@@ -497,6 +500,7 @@
 
                t_task.task_start_time,
                t_task.task_end_time,
+               t_task.event_type,
 
                INET_NTOA(tsr.static_rule_sip)  as static_rule_sip,
                tsr.static_rule_sport,

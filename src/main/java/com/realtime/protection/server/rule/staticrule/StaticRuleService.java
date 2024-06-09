@@ -109,11 +109,12 @@ public class StaticRuleService {
     @Transactional
     public Object deleteStaticRules(List<Integer> staticRuleIds) {
         //判断当前静态规则是否能够删除---是否存在任务选择的静态规则？？
-
-        //删除静态规则
-//        for (Integer id : staticRuleIds) {
-//            staticRuleMapper.deleteStaticRule(id);
-//        }
+        List<StaticRuleObject> staticRuleObjects = staticRuleMapper.queryStaticRuleByIds(staticRuleIds);
+        for (StaticRuleObject staticRuleObject : staticRuleObjects) {
+            if (Objects.equals(staticRuleObject.getAuditStatus(), AuditStatusEnum.USING.getNum())) {
+                throw new IllegalArgumentException("当前静态规则正在使用，无法删除");
+            }
+        }
         Function<StaticRuleMapper, Function<List<Integer>, Boolean>> deleteStaticRulesFunction =
                 mapper -> list -> {
                     if (list == null || list.isEmpty()) {

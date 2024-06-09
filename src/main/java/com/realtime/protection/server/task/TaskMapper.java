@@ -18,10 +18,12 @@ public interface TaskMapper {
     void newTask(@Param("task") Task task);
 
     void newTaskStaticRuleConcat(@Param("task_id") Long taskId,
-                                 @Param("rule_ids") List<Integer> staticRuleIds);
+                                 @Param("rule_ids") List<Integer> staticRuleIds,
+                                 @Param("status") Integer usingStatusNum);
 
     void newTaskDynamicRuleConcat(@Param("task_id") Long taskId,
-                                  @Param("rule_ids") List<Integer> dynamicRuleIds);
+                                  @Param("rule_ids") List<Integer> dynamicRuleIds,
+                                  @Param("status") Integer usingStatusNum);
 
     void newTaskUsingCommandInfo(@Param("info") TaskCommandInfo taskCommandInfo);
 
@@ -40,9 +42,9 @@ public interface TaskMapper {
 
     void updateTask(@Param("task") Task task);
 
-    void clearTaskConnectedStaticRule(@Param("task_id") Long taskId);
+    void clearTaskConnectedStaticRule(@Param("task_id") Long taskId, @Param("status")Integer num);
 
-    void clearTaskConnectedDynamicRule(@Param("task_id") Long taskId);
+    void clearTaskConnectedDynamicRule(@Param("task_id") Long taskId, @Param("status")Integer num);
 
     void changeTaskAuditStatusWithAudior(@Param("task_id") Long taskId, @Param("audit_status") Integer auditStatus,
                                @Param("auditUserName")String auditUserName,
