@@ -7,12 +7,14 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.server.task.status.StateHandler;
 import com.realtime.protection.server.whitelist.WhiteListMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -27,12 +29,14 @@ public class CommandService {
     private final Counter counter;
     private final WhiteListMapper whiteListMapper;
     private static final int BatchSize = 100;
+    private final StateHandler stateHandler;
 
-    public CommandService(CommandMapper commandMapper, SqlSessionWrapper sqlSessionWrapper, Counter counter, WhiteListMapper whiteListMapper) {
+    public CommandService(CommandMapper commandMapper, SqlSessionWrapper sqlSessionWrapper, Counter counter, WhiteListMapper whiteListMapper, StateHandler stateHandler) {
         this.commandMapper = commandMapper;
         this.sqlSessionWrapper = sqlSessionWrapper;
         this.counter = counter;
         this.whiteListMapper = whiteListMapper;
+        this.stateHandler = stateHandler;
     }
 
     @DSTransactional
@@ -132,8 +136,23 @@ public class CommandService {
         return commandMapper.removeCommandsByTaskId(taskId);
     }
 
-    public Boolean setCommandJudged(String commandId, Boolean isValid) {
-        return commandMapper.setCommandJudged(commandId, isValid);
+    public Boolean setCommandJudged(String commandId, Boolean isJudged) {
+        //设置指令是否已经研判
+        Boolean success = commandMapper.setCommandJudged(commandId, isJudged);
+
+        //isJudged为true时，发送指令首次 下发信号
+        try {
+            List<String> commandUUIDs = Collections.singletonList(commandId);
+            if (isJudged){
+                stateHandler.sendCommandDistributeSignal(commandUUIDs);
+            }
+        }catch (Exception e) {
+            log.info(String.format("动态任务研判后任务首次指令下发c3出错，任务id: %d,commandUUIDs: %s",
+                    queryCommandInfoByUUID(commandId).getTaskId(),
+                    commandId));
+        }
+
+        return success;
     }
 
     public Integer queryCommandTotalNum(Long taskId, String sourceIP, String sourcePort,

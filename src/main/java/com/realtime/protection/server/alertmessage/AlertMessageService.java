@@ -145,9 +145,11 @@ public class AlertMessageService {
             );
             alertMessageMapper.insertAlertMessage(alertMessage);
             }
-        //发送指令新建信号
+        //发送指令新建信号...实时任务 isJudged=1 才首次立刻下发
         try {
-            stateHandler.sendCommandDistributeSignal(commandUUIDs);
+            if (isJudged){
+                stateHandler.sendCommandDistributeSignal(commandUUIDs);
+            }
         }catch (Exception e) {
             log.info(String.format("动态任务首次指令下发c3出错，任务id: %d,commandUUIDs: %s",
                     dynamicTaskCommandInfoList.get(0).getTaskId(),
@@ -257,6 +259,7 @@ public class AlertMessageService {
         command1.setMaskDestinationPort(protectObject.getMaskPort());
         if (templateProtectLevel.getHasProtocol()){
             command1.setProtocolNum(Integer.valueOf(fiveTupleWithMask.getProtocol()));
+            command1.setProtocol(fiveTupleWithMask.getProtocol());
             command1.setMaskProtocol(fiveTupleWithMask.getMaskProtocol());
         }
 //        newFiveTupleWithMask.add(command1);
@@ -273,6 +276,7 @@ public class AlertMessageService {
         command2.setDestinationPort(peer.getPort());
         command2.setMaskDestinationPort(peer.getMaskPort());
         if (templateProtectLevel.getHasProtocol()){
+            command2.setProtocol(fiveTupleWithMask.getProtocol());
             command2.setProtocol(fiveTupleWithMask.getProtocol());
             command2.setMaskProtocol(fiveTupleWithMask.getMaskProtocol());
         }
