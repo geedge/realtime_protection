@@ -428,4 +428,8 @@ public class StaticRuleService {
     public List<StaticRuleObject> queryHistory(Integer id, Integer page, Integer pageSize) {
         return staticRuleMapper.queryHistory(id, page, pageSize);
     }
+
+    public Integer queryDuplicateStaticRule(StaticRuleObject object) {
+        return staticRuleMapper.queryDuplicateStaticRule(object);
+    }
 }

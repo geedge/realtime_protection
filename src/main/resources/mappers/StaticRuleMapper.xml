@@ -518,35 +518,50 @@
         ORDER BY effective_time DESC
             LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
-<!--    <select id="queryStaticRuleRepeat" resultType="java.lang.Boolean">-->
-<!--        SELECT COUNT(*)-->
-<!--        FROM t_static_rule-->
-<!--        WHERE-->
-<!--            <if test="sip != null and sip != ''">-->
-<!--            static_rule_sip = INET_ATON(#{sip})-->
-<!--            </if>-->
-<!--            <if test="dip != null and dip != ''">-->
-<!--                AND static_rule_dip = INET_ATON(#{dip})-->
-<!--            </if>-->
-<!--            <if test="sport != null">-->
-<!--                AND static_rule_sport = #{sport}-->
-<!--            </if>-->
-<!--            <if test="dport != null">-->
-<!--                AND static_rule_dport = #{dport}-->
-<!--            </if>-->
-<!--            <if test="protocol != null">-->
-<!--                AND static_rule_protocol = #{protocol}-->
-<!--            </if>-->
-<!--            <if test="dns != null and dns != ''">-->
-<!--                AND static_rule_dns = #{dns}-->
-<!--            </if>-->
-<!--            <if test="url != null and url != ''">-->
-<!--                AND static_rule_url = #{url}    -->
-<!--            </if>-->
-<!--            <if test="eventType != null">-->
-<!--                AND event_type = #{eventType}-->
-<!--            </if>-->
-<!--        -->
-<!--    </select>-->
+    <select id="queryDuplicateStaticRule" resultType="java.lang.Integer">
+
+        SELECT COUNT(*)
+        FROM t_static_rule
+        WHERE
+            <if test="staticRuleSip != null and staticRuleSip != ''">
+            static_rule_sip = INET_ATON(#{staticRuleSip})
+            </if>
+            <if test="staticRuleDip != null and staticRuleDip != ''">
+                AND static_rule_dip = INET_ATON(#{staticRuleDip})
+            </if>
+            <if test="staticRuleSport != null and staticRuleSport != ''">
+                AND static_rule_sport = #{staticRuleSport}
+            </if>
+            <if test="staticRuleDport != null and staticRuleDport != ''">
+                AND static_rule_dport = #{staticRuleDport}
+            </if>
+            <if test="staticRuleProtocol != null and staticRuleProtocol != ''">
+                AND static_rule_protocol = #{staticRuleProtocol}
+            </if>
+            <if test="staticRuleDns != null and staticRuleDns != ''">
+                AND static_rule_dns = #{staticRuleDns}
+            </if>
+            <if test="staticRuleURL != null and staticRuleURL != ''">
+                AND static_rule_url = #{staticRuleURL}
+            </if>
+        <if test="staticRuleMsip != null and staticRuleMsip != ''">
+            AND static_rule_msip = INET_ATON(#{staticRuleMsip})
+        </if>
+        <if test="staticRuleMdip != null and staticRuleMdip != ''">
+            AND static_rule_mdip = INET_ATON(#{staticRuleMdip})
+        </if>
+        <if test="staticRuleMsport != null and staticRuleMsport != '' ">
+            AND static_rule_msport = #{staticRuleMsport}
+        </if>
+        <if test="staticRuleMdport != null and staticRuleMdport != ''">
+            AND static_rule_mdport = #{staticRuleMdport}
+        </if>
+        <if test="staticRuleMprotocol != null and staticRuleMprotocol != ''">
+            AND static_rule_mprotocol = #{staticRuleMprotocol}
+        </if>
+    </select>
+
+
+
 
 </mapper>

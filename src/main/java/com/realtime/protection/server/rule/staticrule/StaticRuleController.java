@@ -52,6 +52,10 @@ public class StaticRuleController implements StaticRuleControllerApi {
             object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));
             object.setStaticRuleCreateDepart(user.getOrgName());
         }
+        Integer duplicateRuleNum = staticRuleService.queryDuplicateStaticRule(object);
+        if (duplicateRuleNum > 0) {
+            return ResponseResult.invalid().setMessage("规则重复");
+        }
 
         //调用service新增
         staticRuleService.newStaticRuleObject(object);
@@ -126,7 +130,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
         //调用service修改
         Boolean updateValid = staticRuleService.updateStaticRule(id, object);
         if (!updateValid) {
-            return ResponseResult.invalid().setMessage("id is invalid");
+            return ResponseResult.invalid().setMessage("无效的规则");
         }
         return ResponseResult.ok().setData("success",updateValid);
     }
@@ -141,7 +145,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
         log.info("根据id查询静态规则:{}", id);
         StaticRuleObject object = staticRuleService.queryStaticRuleById(id);
         if (object == null) {
-            return ResponseResult.invalid().setMessage("id is invalid");
+            return ResponseResult.invalid().setMessage("无效的规则");
         }
         return ResponseResult.ok().setData("static_rule", object);
     }
@@ -199,7 +203,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult updateStaticRuleAuditStatus(@PathVariable Integer id, @PathVariable Integer auditStatus,
                                                     @Autowired HttpServletRequest request) {
         if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
-            return new ResponseResult(400, "id or status is invalid")
+            return new ResponseResult(400, "规则或状态无效")
                     .setData("staticRule_id", id)
                     .setData("success", false);
         }
@@ -238,7 +242,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
             }
         }
         if (!errorIds.isEmpty()){
-            return new ResponseResult(400, "id or status is invalid")
+            return new ResponseResult(400, "规则或状态无效")
                     .setData("staticRule_id", errorIds)
                     .setData("success", false);
         }

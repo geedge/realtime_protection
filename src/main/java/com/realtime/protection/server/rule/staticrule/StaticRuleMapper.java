@@ -81,5 +81,7 @@ public interface StaticRuleMapper {
 
     void removeUsedTaskId(Long taskId);
 
+    Integer queryDuplicateStaticRule(StaticRuleObject object);
+
 //    boolean queryStaticRuleRepeat(StaticRuleObject object);
 }
