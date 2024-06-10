@@ -19,6 +19,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -122,4 +123,16 @@ public class GlobalExceptionHandler {
         log.warn("Redis连接失败，具体原因：{}", e.getCause().getMessage());
         return ResponseResult.error().setMessage("Redis连接失败");
     }
+
+    // 处理 SQLSyntaxErrorException 异常
+    @Order(2)
+    @ExceptionHandler(SQLSyntaxErrorException.class)
+    public ResponseResult handleSQLSyntaxErrorException(SQLSyntaxErrorException ex) {
+        // 打印异常日志
+//        ex.printStackTrace();
+        log.error("遭遇 SQL 语法错误：{}", ex.getMessage());
+
+        return ResponseResult.error().setMessage("数据库错误，错误的查询语法");
+    }
+
 }
