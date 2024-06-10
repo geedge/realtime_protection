@@ -203,7 +203,7 @@
         SELECT protect_object_id,
                protect_object_name,
                protect_object_system_name,
-               INET_NTOA(protect_object_ip) as protect_object_ip,
+               INET_NTOA(protect_object_ip) as protect_object_ip_d,
                protect_object_port,
                protect_object_url,
                protect_object_protocol,
@@ -278,7 +278,8 @@
         WHERE protect_object_id = #{proobj_id}
     </select>
     <select id="queryHistory" resultMap="protectObjectMap">
-        SELECT *
+        SELECT *,
+               INET_NTOA(protect_object_ip) as protect_object_ip_d
         FROM t_protect_object_status_log
         WHERE protect_object_id = #{id}
         ORDER BY effective_time DESC
@@ -286,7 +287,8 @@
     </select>
     <select id="queryProtectObjectByIds"
             resultMap="protectObjectMap">
-        SELECT *
+        SELECT *,
+        INET_NTOA(protect_object_ip) as protect_object_ip_d
             FROM  t_protect_object
             WHERE protect_object_id IN
             <foreach collection="protectObjectIds" item="id" open="(" separator="," close=")">

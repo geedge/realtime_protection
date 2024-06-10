@@ -9,7 +9,7 @@
                               MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
                               INVALID_TIME, IS_VALID, IS_JUDGED,
                               SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID, display_id)
+                              TASKTYPE, RULE_ID, display_id,RULE_NAME)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
                 #{info.frequency},
                 DEFAULT,
@@ -22,7 +22,8 @@
                 #{info.startTime}, #{info.endTime}, #{info.isValid},
                 #{info.isJudged},
                 0, 0,
-                NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId}
+                NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
+                #{info.ruleName}
                 )
     </insert>
 
@@ -33,7 +34,7 @@
         MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
         IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID, display_id)
+                              TASKTYPE, RULE_ID, display_id,RULE_NAME)
         values
         <foreach collection="command_infos" item="info" separator=",">
             (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
@@ -48,7 +49,8 @@
             #{info.startTime}, #{info.endTime}, #{info.isValid},
             #{info.isJudged},
             0, 0,
-            NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId}
+            NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
+            #{info.ruleName}
             )
         </foreach>
     </insert>

@@ -34,6 +34,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     private final WebClient webClient = WebClient
             .builder()
             .baseUrl("http://39.105.210.156:8090/chanct-log/audit-xgs")
+//            .baseUrl("http://10.58.44.241:1888/api/chanct-log/audit-xgs")
             .build();
 
     @Data

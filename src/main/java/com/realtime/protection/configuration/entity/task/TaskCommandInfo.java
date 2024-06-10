@@ -118,6 +118,9 @@ public class TaskCommandInfo {
     @Schema(description = "指令展示id", accessMode = Schema.AccessMode.READ_ONLY)
     private String displayId;
 
+    @Schema(description = "规则名称", accessMode = Schema.AccessMode.READ_ONLY)
+    private String ruleName;
+
     // 复制构造函数
     public void copyTaskCommandInfo(TaskCommandInfo original) {
         this.UUID = original.UUID;
@@ -144,6 +147,7 @@ public class TaskCommandInfo {
         this.templateId = original.templateId;
         this.protectLevel = original.protectLevel;
         this.taskStatus = original.taskStatus;
+        this.ruleName = original.ruleName;
     }
 
     public void setProtocolNum() {

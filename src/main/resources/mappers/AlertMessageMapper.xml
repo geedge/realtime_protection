@@ -26,6 +26,8 @@
 
         <result column="dynamic_rule_protect_level" property="protectLevel"/>
         <result column="task_status" property="taskStatus"/>
+        <result column="dynamic_rule_name" property="ruleName"/>
+
     </resultMap>
     <resultMap id="protectLevelMap" type="com.realtime.protection.configuration.entity.defense.template.ProtectLevel">
 <!--        <id column="protect_level_id" property="protectLevelId"/>-->
@@ -238,8 +240,9 @@
             t_task.task_range,
             t_task.protect_level,
             t_task.task_status,
-            t_task.event_type
+            t_task.event_type,
 --             t_tmplate.strategy_template_name
+            t_dr.dynamic_rule_name
 
             from t_task
             left join realtime_protection.t_dynamic_rule t_dr on

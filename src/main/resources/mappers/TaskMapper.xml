@@ -332,6 +332,7 @@
         <result column="task_start_time" property="startTime"/>
         <result column="task_end_time" property="endTime"/>
         <result column="event_type" property="eventType"/>
+        <result column="static_rule_name" property="ruleName"/>
 
         <association property="fiveTupleWithMask">
             <result column="addr_type" property="addrType"/>
@@ -511,7 +512,8 @@
                tsr.static_rule_msport,
                INET_NTOA(tsr.static_rule_mdip) as static_rule_mdip,
                tsr.static_rule_mdport,
-               tsr.static_rule_mprotocol
+               tsr.static_rule_mprotocol,
+               tsr.static_rule_name
         FROM t_task
                  LEFT JOIN realtime_protection.t_static_rule tsr on t_task.task_id = tsr.static_rule_used_task_id
         WHERE task_id = #{task_id}
