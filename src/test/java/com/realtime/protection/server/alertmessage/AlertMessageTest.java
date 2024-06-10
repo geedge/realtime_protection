@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class AlertMessageTest {
                     null, null, null, null,
                     null, null, 1, 1);
             List<TemplateNew> templates = templateService.queryTemplates(
-                    null, null, null, null, null, null, null, 1, 1);
+                    null, null, null, null, null, "洪泛型DDoS", null, 1, 1);
 
             DynamicRuleObject object = new DynamicRuleObject();
             object.setDynamicRuleName("内部-动态任务测试-"+LocalDateTime.now().toString());
@@ -78,7 +79,7 @@ public class AlertMessageTest {
             task.setTaskStartTime(taskStartTime);
             task.setTaskEndTime(taskEndTime);
             task.setTaskAct("23");
-            task.setTaskType(2);
+            task.setTaskType(3);
             task.setTaskCreateUserId(1100664);
             task.setTaskCreateUsername("NSADD管理员");
             task.setTaskCreateDepart("组织树");
@@ -113,6 +114,8 @@ public class AlertMessageTest {
                 alert.setFiveTupleWithMask(fiveTupleWithMask);
                 alert.setContent("testcontent");
                 alert.setProtectIsSrcOrDst(1);
+                alert.setC_time(1718015296L);
+                System.out.println(alert.getC_time());
                 alertMessageService.processAlertMessage(alert);
             }
 

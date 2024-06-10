@@ -14,7 +14,9 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,11 @@ public class AlertMessageService {
 
     @DSTransactional
     public void processAlertMessage(AlertMessage alertMessage) {
+        //将告警信息中的c_time转换为LocalDateTime，并写入ctime
+        Instant instant = Instant.ofEpochSecond(alertMessage.getC_time());
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        alertMessage.setCtime(localDateTime);
+
         //根据告警信息——>生成指令
         List<TaskCommandInfo> dynamicTaskCommandInfoList = generateDynamicCommand(alertMessage);
         //可能isProtectSrcOrDst和isProtectSrcOrDst都为FALSE，说明没有生成指令

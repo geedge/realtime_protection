@@ -147,7 +147,7 @@
                 #{c_provid},
                 #{c_event_id},
                 #{c_priority},
-                #{c_time},
+                #{ctime},
                 #{c_flowid},
                 #{c_src_ipv6},
                 #{c_s_tunnel_ip},
