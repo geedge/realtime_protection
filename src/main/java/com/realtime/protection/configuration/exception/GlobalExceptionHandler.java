@@ -12,6 +12,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -126,8 +127,8 @@ public class GlobalExceptionHandler {
 
     // 处理 SQLSyntaxErrorException 异常
     @Order(2)
-    @ExceptionHandler(SQLSyntaxErrorException.class)
-    public ResponseResult handleSQLSyntaxErrorException(SQLSyntaxErrorException ex) {
+    @ExceptionHandler(value = BadSqlGrammarException.class)
+    public ResponseResult handleSQLSyntaxErrorException(BadSqlGrammarException ex) {
         // 打印异常日志
 //        ex.printStackTrace();
         log.error("遭遇 SQL 语法错误：{}", ex.getMessage());
