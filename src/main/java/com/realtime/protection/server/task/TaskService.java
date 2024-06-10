@@ -370,7 +370,9 @@ public class TaskService {
 
         staticCommandInfos.forEach(taskCommandInfo -> {
 //            taskCommandInfo.setProtocolNum();
-            taskCommandInfo.getFiveTupleWithMask().setProtocolNum(Integer.valueOf(taskCommandInfo.getFiveTupleWithMask().getProtocol()));
+            if (taskCommandInfo.getFiveTupleWithMask().getProtocol() != null) {
+                taskCommandInfo.getFiveTupleWithMask().setProtocolNum(Integer.valueOf(taskCommandInfo.getFiveTupleWithMask().getProtocol()));
+            }
 //            taskCommandInfo.setMask();
         });
 

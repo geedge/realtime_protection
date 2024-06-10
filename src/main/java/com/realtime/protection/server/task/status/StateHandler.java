@@ -30,14 +30,18 @@ public class StateHandler {
 
 
     private final WebClient client = WebClient.builder()
-            .baseUrl("http://192.168.107.49:8088")
-//            .baseUrl("http://10.58.72.151:8088")
+//            .baseUrl("http://192.168.107.49:8088")
+            .baseUrl("http://10.58.72.146:8088")
             .build();
 
     //http://10.26.22.123:17011/rule
     private final WebClient client_commandDistribute = WebClient.builder()
-            .baseUrl("http://10.26.22.123:17011")
-//            .baseUrl("http://10.58.72.151:8088")
+//            .baseUrl("http://10.26.22.123:17011")
+            .baseUrl("http://10.58.72.151:17011")
+            .build();
+
+    private final WebClient client_RCPquery = WebClient.builder()
+            .baseUrl("http://10.58.72.140:8088")
             .build();
 
     protected Boolean handleStart(TaskService taskService, CommandService commandService, Long taskId) {
@@ -125,15 +129,16 @@ public class StateHandler {
     // 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
     // 筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
     private Boolean handleJudgedTaskStart(TaskService taskService, Task task) {
-        return sendFilters(taskService, task);
+//        return sendFilters(taskService, task);
+        return true;
     }
 
     private Boolean handleDynamicTaskStart(TaskService taskService, Task task) {
         // 将所有关联的动态规则审批状态修改为“已使用”
         taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
-        return sendFilters(taskService, task);
+//        return sendFilters(taskService, task);
 
-//        return true;
+        return true;
     }
 
     private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Task task) {
@@ -151,12 +156,18 @@ public class StateHandler {
         // 将command新建信号发送到c3下发程序
         try {
             sendCommandDistributeSignal(commandUUIDs);
-            return true;
         } catch (Exception e) {
             log.error(String.format("静态任务%d 首次指令下发c3出错",task.getTaskId()));
             return true;
         }
-
+        // 将command查询RCP信号发送到RCP查询程序
+        try {
+            sendCommandRcpQuerySignal(commandUUIDs);
+        } catch (Exception e) {
+            log.error(String.format("静态任务%d 首次指令查询RCP出错",task.getTaskId()));
+            return true;
+        }
+        return true;
     }
     public Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {
 
@@ -197,6 +208,49 @@ public class StateHandler {
 
         return success.get();
     }
+
+
+    public Boolean sendCommandRcpQuerySignal(List<String> commandUUIDs) {
+
+        List<Map<String, String>> commandIDMaps = new ArrayList<>();
+        for (String commandUUID : commandUUIDs) {
+            commandIDMaps.add(Map.of("COMMAND_ID", commandUUID));
+        }
+
+        AtomicReference<Boolean> success = new AtomicReference<>(false);
+
+
+        Mono<Map> mono = client_RCPquery.post()
+                .uri("/command")
+                .bodyValue(commandIDMaps)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchangeToMono(res -> {
+                    if (res.statusCode().equals(HttpStatus.OK)) {
+                        return res.bodyToMono(Map.class);
+                    }
+                    return res.createError();
+                })
+                .doOnError(WebClientResponseException.class, res -> success.set(false));
+
+
+        Map<String, Integer> response = mono.block(Duration.ofSeconds(5));
+
+        if (response == null) {
+            log.info("指令首次查询RCP返回为null");
+            return false;
+        }
+        response.forEach((commandUUID, responseCode) -> {
+            log.info("指令首次查询RCP成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+            if (responseCode != 0) {
+                log.warn("指令首次查询RCP失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+            }
+        });
+
+        success.set(true);
+
+        return success.get();
+    }
+
     private Boolean sendFilters(TaskService taskService, Task task) {
         List<DynamicTaskInfo> dynamicTaskInfos = taskService.getDynamicTaskInfos(task.getTaskId());
 

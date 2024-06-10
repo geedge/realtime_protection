@@ -140,18 +140,30 @@ public class CommandService {
         //设置指令是否已经研判
         Boolean success = commandMapper.setCommandJudged(commandId, isJudged);
 
-        //isJudged为true时，发送指令首次 下发信号
         try {
             List<String> commandUUIDs = Collections.singletonList(commandId);
-            if (isJudged){
-                stateHandler.sendCommandDistributeSignal(commandUUIDs);
+            if (!isJudged) {
+                return success;
             }
-        }catch (Exception e) {
-            log.info(String.format("动态任务研判后任务首次指令下发c3出错，任务id: %d,commandUUIDs: %s",
-                    queryCommandInfoByUUID(commandId).getTaskId(),
-                    commandId));
+            //指令首次下发
+            try {
+                stateHandler.sendCommandDistributeSignal(commandUUIDs);
+            } catch (Exception e) {
+                log.info(String.format("动态任务研判后任务首次指令下发c3出错，任务id: %d,commandUUIDs: %s",
+                        queryCommandInfoByUUID(commandId).getTaskId(),
+                        commandId));
+            }
+            //指令首次查询RCP
+            try {
+                stateHandler.sendCommandRcpQuerySignal(commandUUIDs);
+            } catch (Exception e) {
+                log.info(String.format("动态任务研判后任务首次查询RCP出错，任务id: %d,commandUUIDs: %s",
+                        queryCommandInfoByUUID(commandId).getTaskId(),
+                        commandId));
+            }
+        }catch (Exception e){
+            throw new IllegalArgumentException("指令研判状态修改失败,无效的指令");
         }
-
         return success;
     }
 

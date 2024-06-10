@@ -165,7 +165,7 @@
         <if test="object.description != null">description = #{object.description},</if>
         <if test="object.dynamicRuleSourceSystem != null">source_system = #{object.dynamicRuleSourceSystem},</if>
         <if test="object.bwSql != null">bw_sql = #{object.bwSql},</if>
-        modify_time = NOW()
+        modify_time = NOW(),
         audit_status = #{object.auditStatus}
         where
         dynamic_rule_id = #{dynamicRuleId}

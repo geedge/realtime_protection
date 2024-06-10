@@ -155,7 +155,16 @@ public class AlertMessageService {
                     dynamicTaskCommandInfoList.get(0).getTaskId(),
                     commandUUIDs));
         }
-
+        //发送RCP查询信号
+        try {
+            if (isJudged){
+                stateHandler.sendCommandRcpQuerySignal(commandUUIDs);
+            }
+        }catch (Exception e) {
+            log.info(String.format("动态任务首次指令查询RCP出错，任务id: %d,commandUUIDs: %s",
+                    dynamicTaskCommandInfoList.get(0).getTaskId(),
+                    commandUUIDs));
+        }
     }
     private String insertAlertMessageOnly(AlertMessage alertMessage){
         //alertmessage入库
