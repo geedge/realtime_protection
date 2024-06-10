@@ -639,7 +639,7 @@
         <id column="protect_object_id" property="protectObjectId"/>
         <result column="protect_object_name" property="protectObjectName"/>
         <result column="protect_object_system_name" property="protectObjectSystemName"/>
-        <result column="protect_object_ip" property="protectObjectIPAddress"/>
+        <result column="protect_object_ip_d" property="protectObjectIPAddress"/>
         <result column="protect_object_port" property="protectObjectPort"/>
         <result column="protect_object_url" property="protectObjectURL"/>
         <result column="protect_object_protocol" property="protectObjectProtocol"/>
@@ -648,7 +648,8 @@
 
     <select id="queryProtectObjectsByTaskId"
             resultMap="protectObjectMap">
-        select t_protect_object.*
+        select t_protect_object.*,
+               INET_NTOA(protect_object_ip) as protect_object_ip_d
         from t_protect_object
                  inner join t_task_protectobject_conn
                             on t_protect_object.protect_object_id = t_task_protectobject_conn.protect_object_id
