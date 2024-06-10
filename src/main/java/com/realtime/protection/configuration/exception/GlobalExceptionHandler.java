@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -135,5 +136,18 @@ public class GlobalExceptionHandler {
 
         return ResponseResult.error().setMessage("数据库错误，错误的查询语法");
     }
+
+
+    @Order(2)
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    public ResponseResult handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        // 打印异常日志
+//        ex.printStackTrace();
+        log.error("遭遇 SQL 语法错误：{}", ex.getMessage());
+
+        return ResponseResult.error().setMessage("预删除对象正在被任务使用中，无法删除");
+    }
+
+
 
 }
