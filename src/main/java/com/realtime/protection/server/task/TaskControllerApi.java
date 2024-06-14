@@ -544,7 +544,7 @@ public interface TaskControllerApi {
             )
     )
     @GetMapping("/{commandId}/valid/{isJudged}")
-    ResponseResult setCommandJudged(@PathVariable Boolean isJudged,
+    ResponseResult setCommandJudged(@PathVariable Integer isJudged,
                                     @PathVariable String commandId);
 
     @Operation(
@@ -693,4 +693,21 @@ public interface TaskControllerApi {
     ResponseResult queryHistory(@PathVariable Long id,
                                 @RequestParam(value = "page", required = true) Integer page,
                                 @RequestParam(value = "page_size", required = true) Integer pageSize);
+    @Operation(
+            summary = "查询规则、任务、配置的未审核数量",
+            description = "查询规则、任务、配置的未审核数量",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+            }
+    )
+    @GetMapping("/unaudit/statistics")
+    ResponseResult queryUnauditStatistics();
 }

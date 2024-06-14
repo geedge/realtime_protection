@@ -8,7 +8,12 @@ import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
+import com.realtime.protection.server.defense.object.ProtectObjectService;
+import com.realtime.protection.server.defense.templatenew.TemplateService;
+import com.realtime.protection.server.rule.dynamicrule.DynamicRuleService;
+import com.realtime.protection.server.rule.staticrule.StaticRuleService;
 import com.realtime.protection.server.task.status.StateChangeService;
+import com.realtime.protection.server.whitelist.WhiteListService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -28,11 +33,22 @@ import java.util.Map;
 public class TaskController implements TaskControllerApi {
 
     private final TaskService taskService;
+    private final StaticRuleService staticRuleService;
+    private final DynamicRuleService dynamicRuleService;
+    private final ProtectObjectService protectObjectService;
+    private final WhiteListService whiteListService;
+    private final TemplateService templateService;
+
     private final CommandService commandService;
     private final StateChangeService stateChangeService;
 
-    public TaskController(TaskService taskService, CommandService commandService, StateChangeService stateChangeService) {
+    public TaskController(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, ProtectObjectService protectObjectService, WhiteListService whiteListService,  TemplateService templateService, CommandService commandService, StateChangeService stateChangeService) {
         this.taskService = taskService;
+        this.staticRuleService = staticRuleService;
+        this.dynamicRuleService = dynamicRuleService;
+        this.protectObjectService = protectObjectService;
+        this.whiteListService = whiteListService;
+        this.templateService = templateService;
         this.commandService = commandService;
         this.stateChangeService = stateChangeService;
     }
@@ -204,7 +220,7 @@ public class TaskController implements TaskControllerApi {
     }
 
     @GetMapping("/{commandId}/valid/{isJudged}")
-    public ResponseResult setCommandJudged(@PathVariable Boolean isJudged,
+    public ResponseResult setCommandJudged(@PathVariable Integer isJudged,
                                            @PathVariable String commandId) {
         return ResponseResult.ok()
                 .setData("success", commandService.setCommandJudged(commandId, isJudged))
@@ -295,6 +311,21 @@ public class TaskController implements TaskControllerApi {
 
         return ResponseResult.ok()
                 .setData("history", taskService.queryHistory(id, page, pageSize));
+    }
+
+    @Override
+    @GetMapping("/unaudit/statistics")
+    public ResponseResult queryUnauditStatistics() {
+        return ResponseResult.ok()
+                .setData("task", taskService.queryAuditTaskTotalNum(AuditStatusEnum.PENDING.getNum()))
+                .setData("static_rule", staticRuleService.queryAuditStaticRuleTotalNum(AuditStatusEnum.PENDING.getNum()))
+                .setData("dynamic_rule", dynamicRuleService.queryAuditDynamicRuleTotalNum(AuditStatusEnum.PENDING.getNum()))
+                .setData("proobj_undit_num", protectObjectService.queryProtectObjectsTotalNum(null, null, null, null,
+                        null, null, null, null, null,
+                        AuditStatusEnum.getNumByState(AuditStatusEnum.PENDING.getState())))
+                .setData("white_list", whiteListService.queryAuditWhiteListTotalNum(AuditStatusEnum.PENDING.getNum()))
+                .setData("strategy_template", templateService.queryAuditTemplateTotalNum(AuditStatusEnum.PENDING.getNum()))
+                ;
     }
 
 

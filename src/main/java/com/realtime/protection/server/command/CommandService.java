@@ -136,13 +136,13 @@ public class CommandService {
         return commandMapper.removeCommandsByTaskId(taskId);
     }
 
-    public Boolean setCommandJudged(String commandId, Boolean isJudged) {
+    public Boolean setCommandJudged(String commandId, Integer isJudged) {
         //设置指令是否已经研判
         Boolean success = commandMapper.setCommandJudged(commandId, isJudged);
 
         try {
             List<String> commandUUIDs = Collections.singletonList(commandId);
-            if (!isJudged) {
+            if (isJudged != 1) {
                 return success;
             }
             //指令首次下发

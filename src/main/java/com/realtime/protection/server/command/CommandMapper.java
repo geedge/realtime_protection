@@ -23,7 +23,7 @@ public interface CommandMapper {
     Boolean startCommandsByTaskId(@Param("task_id") Long taskId);
 
     Boolean setCommandJudged(@Param("command_id") String commandId,
-                             @Param("is_judged") Boolean isJudged);
+                             @Param("is_judged") Integer isJudged);
 
     List<TaskCommandInfo> queryCommandInfos(@Param("task_id") Long taskId,
                                             @Param("src_ip") String sourceIP,

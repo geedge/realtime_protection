@@ -31,12 +31,16 @@ public class AlertMessageService {
     private  final Counter counter;
     private final StateHandler stateHandler;
 
-    public AlertMessageService(
-            CommandService commandService, AlertMessageMapper alertMessageMapper, Counter counter, StateHandler stateHandler) {
+    public AlertMessageService(CommandService commandService, AlertMessageMapper alertMessageMapper,
+                               Counter counter, StateHandler stateHandler) {
         this.commandService = commandService;
         this.alertMessageMapper = alertMessageMapper;
         this.counter = counter;
         this.stateHandler = stateHandler;
+    }
+
+    public Boolean updateAuditInfo(String id, String auditInfo) {
+        return alertMessageMapper.updateAuditInfo(id, auditInfo);
     }
 
     @DSTransactional

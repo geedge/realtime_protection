@@ -177,8 +177,13 @@
                 )
 
     </insert>
+    <update id="updateAuditInfo">
+        UPDATE t_alertmessage
+        SET audit_info = #{auditInfo}
+        WHERE ALERT_MESSAGE_ID = #{id}
+    </update>
 
-<!--    <select id="queryTemplateProtectLevel" resultMap="protectLevelMap">-->
+    <!--    <select id="queryTemplateProtectLevel" resultMap="protectLevelMap">-->
 <!--        SELECT-->
 <!--            t_protect_level.protect_level_id,-->
 <!--            t_protect_level.has_protect_object_ip,-->

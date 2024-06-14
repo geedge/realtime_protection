@@ -21,4 +21,6 @@ public interface AlertMessageMapper {
     void insertAlertMessage(AlertMessage alertMessage);
     @DS("doris")
     List<AlertMessage> queryAlermsByCommandId(String commandId);
+    @DS("doris")
+    Boolean updateAuditInfo(String id, String auditInfo);
 }
