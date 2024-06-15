@@ -158,8 +158,17 @@ public class StateHandler {
             sendCommandDistributeSignal(commandUUIDs);
         } catch (Exception e) {
             log.error(String.format("静态任务%d 首次指令下发c3出错",task.getTaskId()));
-            return true;
+            e.printStackTrace();
+            // 将command查询RCP信号发送到RCP查询程序
+            try {
+                sendCommandRcpQuerySignal(commandUUIDs);
+            } catch (Exception e2) {
+                log.error(String.format("静态任务%d 首次指令查询RCP出错",task.getTaskId()));
+                e.printStackTrace();
+                return true;
+            }
         }
+
         // 将command查询RCP信号发送到RCP查询程序
         try {
             sendCommandRcpQuerySignal(commandUUIDs);
@@ -233,18 +242,32 @@ public class StateHandler {
                 .doOnError(WebClientResponseException.class, res -> success.set(false));
 
 
-        Map<String, Integer> response = mono.block(Duration.ofSeconds(5));
+//        Map<String, Integer> response = mono.block(Duration.ofSeconds(5));
 
-        if (response == null) {
-            log.info("指令首次查询RCP返回为null");
-            return false;
-        }
-        response.forEach((commandUUID, responseCode) -> {
-            log.info("指令首次查询RCP成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
-            if (responseCode != 0) {
-                log.warn("指令首次查询RCP失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
-            }
-        });
+        // 异步处理响应
+        mono.subscribe(
+                response -> {
+                    // 成功响应处理
+                    System.out.println("响应: " + response);
+                    success.set(true);
+                },
+                error -> {
+                    // 错误响应处理
+                    System.err.println("错误: " + error.getMessage());
+                    success.set(false);
+                }
+        );
+
+//        if (response == null) {
+//            log.info("指令首次查询RCP返回为null");
+//            return false;
+//        }
+//        response.forEach((commandUUID, responseCode) -> {
+//            log.info("指令首次查询RCP成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+//            if (responseCode != 0) {
+//                log.warn("指令首次查询RCP失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+//            }
+//        });
 
         success.set(true);
 
