@@ -70,6 +70,61 @@ public class CommandService {
         return commandInfo.getUUID();
     }
 
+    @DSTransactional
+    public String createCommand2(TaskCommandInfo commandInfo, Integer isJudged) {
+        String uuid = commandMapper.queryCommandInfo(commandInfo);
+        if (uuid != null) {
+            if (isJudged == 0){
+                //研判后任务，将本次忽略的指令设置为待研判
+                commandMapper.updateCommandIsJudgedIfIgnoreThisTime(uuid);
+            }
+            return uuid;
+        }
+        commandInfo.setDisplayId(
+                "ZL-"
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-"
+                        + String.format("%06d", counter.generateId("command"))
+        );
+
+        //指令：白名单检查
+        List<WhiteListObject> whiteListsHit = commandMapper.whiteListCommandCheck(commandInfo.getFiveTupleWithMask());
+        if (!whiteListsHit.isEmpty()) {
+            commandInfo.setUUID(UUID.randomUUID().toString());
+            commandMapper.createCommandInWhiteListHit(commandInfo);
+            commandMapper.createCommandWhiteListConnect(commandInfo.getUUID(), whiteListsHit);
+            //写入历史表
+            insertCommandHistory(commandInfo.getUUID());
+            return commandInfo.getUUID();
+        }
+
+        commandInfo.setUUID(UUID.randomUUID().toString());
+        commandMapper.createCommand(commandInfo);
+        //写入历史表
+        insertCommandHistory(commandInfo.getUUID());
+
+        //发送指令新建信号...实时任务 isJudged=1 才首次立刻下发
+        try {
+            if (isJudged == 1){
+                stateHandler.sendCommandDistributeSignal(Collections.singletonList(commandInfo.getUUID()));
+            }
+        }catch (Exception e) {
+            log.info(String.format("实时任务首次指令下发c3出错，commandUUIDs: %s",
+                    commandInfo.getUUID()));
+        }
+        //发送RCP查询信号
+        try {
+            if (isJudged == 1){
+                stateHandler.sendCommandRcpQuerySignal(Collections.singletonList(commandInfo.getUUID()));
+            }
+        }catch (Exception e) {
+            log.info(String.format("实时任务首次指令查询RCP出错，commandUUIDs: %s",
+                    commandInfo.getUUID()));
+        }
+
+        return commandInfo.getUUID();
+    }
+
     public List<String> createCommands(List<TaskCommandInfo> taskCommandInfos) {
 
         List<String> commandUUIDs = ListUtils.newArrayListWithExpectedSize(taskCommandInfos.size());
@@ -137,6 +192,8 @@ public class CommandService {
     }
 
     public Boolean setCommandJudged(String commandId, Integer isJudged) {
+        //查詢指令当前is_judged状态,如果为0才可以被修改
+
         //设置指令是否已经研判
         Boolean success = commandMapper.setCommandJudged(commandId, isJudged);
 
@@ -145,6 +202,7 @@ public class CommandService {
             if (isJudged != 1) {
                 return success;
             }
+            //如果isJudged=1,则发送指令首次下发信号和RCP首次查询信号
             //指令首次下发
             try {
                 stateHandler.sendCommandDistributeSignal(commandUUIDs);

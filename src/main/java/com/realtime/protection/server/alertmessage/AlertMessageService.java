@@ -65,10 +65,10 @@ public class AlertMessageService {
         if (taskType == TaskTypeEnum.DYNAMIC.getTaskType())//实时
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, true, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 1, alertMessage);
                     break;
                 case PAUSED:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, true, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, 1, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
@@ -79,10 +79,10 @@ public class AlertMessageService {
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
                 case RUNNING:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
                     break;
                 case PAUSED:
-                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, false, alertMessage);
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, 0, alertMessage);
                     break;
                 default://主要是stop
                     //command不入库
@@ -131,7 +131,7 @@ public class AlertMessageService {
     @DSTransactional
     private void insertCommandAndAlertMessage(List<TaskCommandInfo> dynamicTaskCommandInfoList,
                                               Boolean isValid,
-                                              Boolean isJudged,
+                                              Integer isJudged,
                                               AlertMessage alertMessage){
         List<String> commandUUIDs = new ArrayList<>();
 
@@ -139,7 +139,7 @@ public class AlertMessageService {
             //command入库
             dynamicTaskCommandInfo.setIsValid(isValid);
             dynamicTaskCommandInfo.setIsJudged(isJudged);
-            String commandUUID = commandService.createCommand(dynamicTaskCommandInfo);
+            String commandUUID = commandService.createCommand2(dynamicTaskCommandInfo, isJudged);
 
             //alertmessage入库
 
@@ -156,26 +156,7 @@ public class AlertMessageService {
             );
             alertMessageMapper.insertAlertMessage(alertMessage);
             }
-        //发送指令新建信号...实时任务 isJudged=1 才首次立刻下发
-        try {
-            if (isJudged){
-                stateHandler.sendCommandDistributeSignal(commandUUIDs);
-            }
-        }catch (Exception e) {
-            log.info(String.format("动态任务首次指令下发c3出错，任务id: %d,commandUUIDs: %s",
-                    dynamicTaskCommandInfoList.get(0).getTaskId(),
-                    commandUUIDs));
-        }
-        //发送RCP查询信号
-        try {
-            if (isJudged){
-                stateHandler.sendCommandRcpQuerySignal(commandUUIDs);
-            }
-        }catch (Exception e) {
-            log.info(String.format("动态任务首次指令查询RCP出错，任务id: %d,commandUUIDs: %s",
-                    dynamicTaskCommandInfoList.get(0).getTaskId(),
-                    commandUUIDs));
-        }
+
     }
     private String insertAlertMessageOnly(AlertMessage alertMessage){
         //alertmessage入库

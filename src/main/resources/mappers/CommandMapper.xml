@@ -421,6 +421,12 @@
         </foreach>
             and expire_time = NULL
     </update>
+    <update id="updateCommandIsJudgedIfIgnoreThisTime">
+        update t_command
+        set IS_JUDGED = 0
+        where COMMAND_ID = #{command_id}
+          and IS_JUDGED = 2
+    </update>
 
     <select id="queryCommandInfo" resultType="java.lang.String">
         SELECT COMMAND_ID FROM t_command

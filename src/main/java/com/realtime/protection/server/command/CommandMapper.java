@@ -58,4 +58,6 @@ public interface CommandMapper {
     List<WhiteListObject> whiteListCommandCheck(@Param("command") FiveTupleWithMask fiveTupleWithMask);
     @DS("mysql")
     void createCommandWhiteListConnect(@Param("command_id") String uuid, @Param("whiteLists") List<WhiteListObject> whiteListsHit);
+
+    void updateCommandIsJudgedIfIgnoreThisTime(@Param("command_id") String commandUUID);
 }

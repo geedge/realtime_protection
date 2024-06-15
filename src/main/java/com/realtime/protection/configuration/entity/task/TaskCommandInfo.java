@@ -79,9 +79,9 @@ public class TaskCommandInfo {
     @JsonProperty("is_valid")
     private Boolean isValid = true;
 
-    @Schema(description = "指令是否已研判", example = "true")
+    @Schema(description = "指令是否已研判,0待研判，1下发，2本次忽略，3永久忽略", example = "true")
     @JsonProperty("is_judged")
-    private Boolean isJudged = true;
+    private Integer isJudged = 1;
 
     @Schema(description = "五元组信息")
     @NotNull(message = "五元组信息不能为空。")
