@@ -312,6 +312,15 @@ public class WhiteListController implements WhiteListControllerApi {
         return ResponseResult.ok()
                 .setData("history", whiteListService.queryHistory(id, page, pageSize));
     }
+    @Override
+    @GetMapping("/push")
+    public ResponseResult pushWhiteList() {
+
+        return ResponseResult.ok()
+                .setData("whiteobj_list", whiteListService.queryWhiteListObject(null, null, null, null, null, 1, 50))
+                .setData("total_num", whiteListService.queryWhiteListTotalNum(null, null, null, null, null));
+    }
+
 
 
 }

@@ -522,8 +522,8 @@
 
         SELECT COUNT(*)
         FROM t_static_rule
-        WHERE
-            <if test="staticRuleSip != null and staticRuleSip != ''">
+        <where>
+        <if test="staticRuleSip != null and staticRuleSip != ''">
             static_rule_sip = INET_ATON(#{staticRuleSip})
             </if>
             <if test="staticRuleDip != null and staticRuleDip != ''">
@@ -559,6 +559,8 @@
         <if test="staticRuleMprotocol != null and staticRuleMprotocol != ''">
             AND static_rule_mprotocol = #{staticRuleMprotocol}
         </if>
+        </where>
+
     </select>
 
 

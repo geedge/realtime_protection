@@ -60,4 +60,6 @@ public interface CommandMapper {
     void createCommandWhiteListConnect(@Param("command_id") String uuid, @Param("whiteLists") List<WhiteListObject> whiteListsHit);
 
     void updateCommandIsJudgedIfIgnoreThisTime(@Param("command_id") String commandUUID);
+
+    Integer queryCommandIsJudged(String uuid);
 }

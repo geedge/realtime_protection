@@ -39,6 +39,11 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     @Data
     @AllArgsConstructor
+    private static class AuditRes{
+        private AuditData auditBase;
+    }
+    @Data
+    @AllArgsConstructor
     private static class AuditData {
         private String userId;
         private String deptId;
@@ -48,6 +53,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         private String action;
         private String res;
         private String content;
+
+        private String userIp;
     }
 
     @Override
@@ -57,16 +64,21 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     }
 
     @Override
-
     public ResponseResult beforeBodyWrite(ResponseResult body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
 
+        if (request.getURI().getPath().contains("query")){
+            return body;
+        }
+
         AuditData auditData = getAuditData(body, request);
+
+        AuditRes auditRes = new AuditRes(auditData);
         log.info("auditData-----------:"+auditData);
 
         Mono<String> mono = webClient
                 .post()
                 .uri("/save")
-                .bodyValue(auditData)
+                .bodyValue(auditRes)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
                         log.info("发送审计日志成功：{}",res.statusCode());
@@ -87,13 +99,14 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     private static AuditData getAuditData(ResponseResult body, ServerHttpRequest request) {
         HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
         AuditData auditData;
-        if(session!=null || session.getAttribute("user")==null){
+        if(session==null || session.getAttribute("user")==null){
             auditData = new AuditData(
-                    "xxx","xxx","xxx","xxx",
+                    "0000000","0000000","not-login","not-login",
                     request.getURI().getPath(),
                     request.getMethod().toString(),
                     body.getCode()==200?"成功":"失败",
-                    body.getMessage()
+                    body.getData().toString(),
+                    "172.16.1.202"
             );
         }else {
             UserFull user = (UserFull) session.getAttribute("user");
@@ -102,14 +115,15 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                     request.getURI().getPath(),
                     request.getMethod().toString(),
                     body.getCode()==200?"成功":"失败",
-                    body.getMessage()
+                    body.getData().toString(),
+                    "172.16.1.202"
             );
         }
         return auditData;
     }
 
     private static void handleMono(String result) {
-        log.debug("审计服务器返回结果：" + result);
+        log.info("审计服务器返回结果：" + result);
     }
 }
 

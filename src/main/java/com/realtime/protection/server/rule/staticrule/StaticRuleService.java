@@ -68,15 +68,17 @@ public class StaticRuleService {
 
 //        object.setStaticRuleCreateTime(LocalDateTime.now());
         object.setAuditStatus(0);
+        if (object.getStaticRuleDns() == null && object.getStaticRuleURL() == null) {
 
-        if (!isIpMaskValid(object.getStaticRuleSip(),object.getStaticRuleMsip()) ||
-                !isIpMaskValid(object.getStaticRuleDip(),object.getStaticRuleMdip())
-            ){
-            throw new IllegalArgumentException("IP和IP掩码不匹配");
-        }
-        if (!RuleEnum.checkValidate(object)) {
-            throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
-        }
+            if (!isIpMaskValid(object.getStaticRuleSip(), object.getStaticRuleMsip()) ||
+                    !isIpMaskValid(object.getStaticRuleDip(), object.getStaticRuleMdip())
+            ) {
+                throw new IllegalArgumentException("IP和IP掩码不匹配");
+            }
+            if (!RuleEnum.checkValidate(object)) {
+                throw new IllegalArgumentException("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则");
+            }
+
 
 //        if(!staticRuleMapper.queryStaticRuleRepeat(object)){
 //            throw new IllegalArgumentException("静态规则重复");
@@ -84,15 +86,15 @@ public class StaticRuleService {
         /*
         新建静态规则，过一下白名单审核
          */
-        List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
-        staticRuleObjects.add(object);
-        List<WhiteListObject> whiteListsHit = whiteListService.whiteListStaticRulesObjectCheck(staticRuleObjects);
-        if (!whiteListsHit.isEmpty()) {
-            StringBuilder result = new StringBuilder();
-            whiteListsHit.forEach(item -> result.append(item.getWhiteListName()).append(" "));
-            throw new IllegalArgumentException("静态规则与白名单规则冲突，冲突白名单名称:"+result.toString().trim());
+            List<StaticRuleObject> staticRuleObjects = new ArrayList<>();
+            staticRuleObjects.add(object);
+            List<WhiteListObject> whiteListsHit = whiteListService.whiteListStaticRulesObjectCheck(staticRuleObjects);
+            if (!whiteListsHit.isEmpty()) {
+                StringBuilder result = new StringBuilder();
+                whiteListsHit.forEach(item -> result.append(item.getWhiteListName()).append(" "));
+                throw new IllegalArgumentException("静态规则与白名单规则冲突，冲突白名单名称:" + result.toString().trim());
+            }
         }
-
         object.setStaticRuleDisplayId(
                 "JTGZ-"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))

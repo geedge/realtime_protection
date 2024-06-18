@@ -46,12 +46,27 @@ public class AlertMessageController
     //告警信息审计接口
     @PostMapping("/auditInfo/{id}")
     public ResponseResult updateAuditInfo(@PathVariable String id,
-                                          @RequestBody Map<String, String> auditInfo) {
-        if (auditInfo.get("auditInfo") == null || auditInfo.get("auditInfo").isEmpty()) {
+                                              @RequestBody Map<String, Object> auditInfo) {
+        if (auditInfo.get("auditInfo") == null ) {
             return ResponseResult.ok();
         }
         return ResponseResult.ok()
-                .setData("success", alertMessageService.updateAuditInfo(id, auditInfo.get("auditInfo")));
+                .setData("success",
+                        alertMessageService.updateAuditInfo(
+                                id, auditInfo.get("auditInfo").toString()));
+    }
+
+    //告警信息审计接口
+    @PostMapping("/auditInfo2/{id}")
+    public ResponseResult updateAuditInfo2(@PathVariable String id,
+                                          @RequestBody Map<String, List<String>> auditInfo) {
+        if (auditInfo.get("auditInfo").get(0) == null ||
+                auditInfo.get("auditInfo").get(0) .isEmpty()) {
+            return ResponseResult.ok();
+        }
+        return ResponseResult.ok()
+                .setData("success",
+                        alertMessageService.updateAuditInfo(id, auditInfo.get("auditInfo").get(0)));
     }
 
 

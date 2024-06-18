@@ -129,13 +129,29 @@ public class StateHandler {
     // 如果是实时任务或者研判后处置任务，那么就需要在任务启动之后，立刻向动态规则中指定的系统发送日志筛选请求。
     // 筛选完成后，系统返回日志，需要由接收端点提取字段，并且合成一条静态规则，再按照任务开始时间、结束时间和任务类型进行指令创建
     private Boolean handleJudgedTaskStart(TaskService taskService, Task task) {
-//        return sendFilters(taskService, task);
-        return true;
+        // 将所有关联的动态规则审批状态修改为“已使用”
+        taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+        try {
+            sendFilters(taskService, task);
+        } catch (Exception e) {
+            log.error(String.format("研判后任务%d 发送筛选条件出错",task.getTaskId()));
+            log.error(e.getMessage());
+            return true;
+        }
+        return sendFilters(taskService, task);
+//        return true;
     }
 
     private Boolean handleDynamicTaskStart(TaskService taskService, Task task) {
         // 将所有关联的动态规则审批状态修改为“已使用”
         taskService.updateDynamicRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+        try {
+            sendFilters(taskService, task);
+        } catch (Exception e) {
+            log.error(String.format("动态任务%d 发送筛选条件出错",task.getTaskId()));
+            log.error(e.getMessage());
+            return true;
+        }
 //        return sendFilters(taskService, task);
 
         return true;
@@ -149,11 +165,12 @@ public class StateHandler {
         }
 
         // 将所有关联的静态规则全部设置为已使用状态
-        taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
+//        taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 //        taskService.changeTaskAuditStatus(task.getTaskId(), AuditStatusEnum.USING.getNum());
 
         List<String> commandUUIDs= commandService.createCommands(staticTaskCommandInfos);
-        // 将command新建信号发送到c3下发程序
+
+/*        // 将command新建信号发送到c3下发程序
         try {
             sendCommandDistributeSignal(commandUUIDs);
         } catch (Exception e) {
@@ -176,6 +193,8 @@ public class StateHandler {
             log.error(String.format("静态任务%d 首次指令查询RCP出错",task.getTaskId()));
             return true;
         }
+
+ */
         return true;
     }
     public Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {

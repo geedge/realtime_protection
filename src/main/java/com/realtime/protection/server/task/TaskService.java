@@ -156,12 +156,12 @@ public class TaskService {
                         }
 
                         mapper.updateAuditStatusByIdBatch(batchMap);
-                        insertStaticRuleStatusLog(batchMap);
+//                        insertStaticRuleStatusLog(batchMap);
                         batchMap.clear();
                     }
 
                     mapper.updateAuditStatusByIdBatch(batchMap);
-                    insertStaticRuleStatusLog(batchMap);
+//                    insertStaticRuleStatusLog(batchMap);
                     batchMap.clear();
 
                     return null;
@@ -570,7 +570,7 @@ public class TaskService {
         Set<Integer> keys = idWithAuditStatusBatch.keySet();
         ArrayList<Integer> ids = new ArrayList<>(keys);
 
-        staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
+//        staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
         staticRuleMapper.insertStaticRuleStatusLogBatch(ids);
     }
     public void insertDynamicRuleStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {

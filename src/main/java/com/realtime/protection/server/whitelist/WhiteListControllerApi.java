@@ -402,5 +402,24 @@ public interface WhiteListControllerApi {
     ResponseResult queryHistory(@PathVariable Integer id,
                                 @RequestParam(value = "page", required = true) Integer page,
                                 @RequestParam(value = "page_size", required = true) Integer pageSize);
+
+
+
+    @Operation(
+            summary = "同步白名单接口",
+            description = "按页和搜索内容同步推送白名单相关信息",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回需要同步的所有白名单",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(title = "ResponseResult和WhiteListObject的属性",
+                                            anyOf = {ResponseResult.class, WhiteListObject.class})
+                            )
+                    )
+            }
+    )
+    @GetMapping("/push")
+    ResponseResult pushWhiteList();
 }
 

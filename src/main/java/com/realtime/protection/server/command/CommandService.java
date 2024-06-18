@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 @Service
@@ -59,24 +60,29 @@ public class CommandService {
             commandMapper.createCommandInWhiteListHit(commandInfo);
             commandMapper.createCommandWhiteListConnect(commandInfo.getUUID(), whiteListsHit);
             //写入历史表
-            insertCommandHistory(commandInfo.getUUID());
+            //insertCommandHistory(commandInfo.getUUID());
             return commandInfo.getUUID();
         }
 
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
         //写入历史表
-        insertCommandHistory(commandInfo.getUUID());
+        //insertCommandHistory(commandInfo.getUUID());
         return commandInfo.getUUID();
     }
 
     @DSTransactional
     public String createCommand2(TaskCommandInfo commandInfo, Integer isJudged) {
         String uuid = commandMapper.queryCommandInfo(commandInfo);
+        //如果指令已经存在，除了研判状态为2,时需要改为0，其他情况都直接返回uuid
         if (uuid != null) {
             if (isJudged == 0){
-                //研判后任务，将本次忽略的指令设置为待研判
-                commandMapper.updateCommandIsJudgedIfIgnoreThisTime(uuid);
+                //研判后任务，查询指令当前研判状态
+                Integer originalIsJudged = commandMapper.queryCommandIsJudged(uuid);
+                //如果研判状态为2，表示之前设置了本次忽略，那这次生成指令后，将其研判状态改为0，需要再次研判
+                if (originalIsJudged == 2){
+                    commandMapper.updateCommandIsJudgedIfIgnoreThisTime(uuid);
+                }
             }
             return uuid;
         }
@@ -94,14 +100,14 @@ public class CommandService {
             commandMapper.createCommandInWhiteListHit(commandInfo);
             commandMapper.createCommandWhiteListConnect(commandInfo.getUUID(), whiteListsHit);
             //写入历史表
-            insertCommandHistory(commandInfo.getUUID());
+            //insertCommandHistory(commandInfo.getUUID());
             return commandInfo.getUUID();
         }
 
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
-        //写入历史表
-        insertCommandHistory(commandInfo.getUUID());
+        //写入历史表,避免t_command_log表并发update冲突，这里先不写入历史表
+        //insertCommandHistory(commandInfo.getUUID());
 
         //发送指令新建信号...实时任务 isJudged=1 才首次立刻下发
         try {
@@ -128,7 +134,7 @@ public class CommandService {
     public List<String> createCommands(List<TaskCommandInfo> taskCommandInfos) {
 
         List<String> commandUUIDs = ListUtils.newArrayListWithExpectedSize(taskCommandInfos.size());
-
+        AtomicInteger i = new AtomicInteger();
         Function<CommandMapper, Function<List<TaskCommandInfo>, Boolean>> function = mapper -> list -> {
             List<TaskCommandInfo> taskCommandInfoBatch = ListUtils.newArrayListWithExpectedSize(BatchSize);
             for (TaskCommandInfo info : list) {
@@ -145,15 +151,16 @@ public class CommandService {
                 if (taskCommandInfoBatch.size() < BatchSize) {
                     continue;
                 }
+                System.out.println("batch insert " + i.getAndIncrement());
                 //因为createCommands只用于静态规则生成command，静态规则已经检查了白名单，所以不检查了
                 commandMapper.createCommands(taskCommandInfoBatch);
-                insertCommandHistoryBatch(taskCommandInfoBatch);
+                //insertCommandHistoryBatch(taskCommandInfoBatch);
                 taskCommandInfoBatch.clear();
             }
 
             if (!taskCommandInfoBatch.isEmpty()) {
                 commandMapper.createCommands(taskCommandInfoBatch);
-                insertCommandHistoryBatch(taskCommandInfoBatch);
+                //insertCommandHistoryBatch(taskCommandInfoBatch);
                 taskCommandInfoBatch.clear();
             }
 

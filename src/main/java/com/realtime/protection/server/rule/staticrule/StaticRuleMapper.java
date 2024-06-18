@@ -75,7 +75,7 @@ public interface StaticRuleMapper {
 
     void insertStaticRuleStatusLogBatch(List<Integer> ids);
 
-    void updateStaticRuleStatusLogExpireTimeBatch(List<Integer> ids);
+    void updateStaticRuleStatusLogExpireTimeBatch(@Param("ids") List<Integer> ids);
 
     List<StaticRuleObject> queryHistory(Integer id, Integer page, Integer pageSize);
 

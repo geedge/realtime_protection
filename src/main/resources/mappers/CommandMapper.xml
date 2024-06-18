@@ -425,7 +425,6 @@
         update t_command
         set IS_JUDGED = 0
         where COMMAND_ID = #{command_id}
-          and IS_JUDGED = 2
     </update>
 
     <select id="queryCommandInfo" resultType="java.lang.String">
@@ -557,5 +556,10 @@
             </if>
 
         </where>
+    </select>
+    <select id="queryCommandIsJudged" resultType="java.lang.Integer">
+        SELECT IS_JUDGED
+        FROM t_command
+        WHERE COMMAND_ID = #{uuid}
     </select>
 </mapper>
