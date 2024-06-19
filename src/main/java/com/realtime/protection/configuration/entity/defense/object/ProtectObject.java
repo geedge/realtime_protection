@@ -82,28 +82,35 @@ public class ProtectObject {
     private Integer protectObjectCreateUserId;
 
     @JsonProperty("audit_user_name")
+    @ExcelIgnore
     @Schema(description = "审核用户名称", example = "user11", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserName;
     @JsonProperty("audit_user_id")
+    @ExcelIgnore
     @Schema(description = "审核用户id", example = "11111", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserId;
     @JsonProperty("audit_user_depart")
+    @ExcelIgnore
     @Schema(description = "审核用户部门", example = "部门1", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditUserDepart;
 
     @JsonProperty("create_time")
+    @ExcelIgnore
     @Schema(description = "创建时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createTime;
 
     @JsonProperty("modify_time")
+    @ExcelIgnore
     @Schema(description = "修改时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime modifyTime;
 
     @JsonProperty("effecive_time")
+    @ExcelIgnore
     @Schema(description = "日志表中有效开始时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime effeciveTime;
 
     @JsonProperty("expire_time")
+    @ExcelIgnore
     @Schema(description = "日志表中有效结束时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime expireTime;
 }
