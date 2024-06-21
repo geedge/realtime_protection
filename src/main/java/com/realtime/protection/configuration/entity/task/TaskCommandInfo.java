@@ -121,6 +121,8 @@ public class TaskCommandInfo {
     @Schema(description = "规则名称", accessMode = Schema.AccessMode.READ_ONLY)
     private String ruleName;
 
+    private String hashValue;
+
     // 复制构造函数
     public void copyTaskCommandInfo(TaskCommandInfo original) {
         this.UUID = original.UUID;

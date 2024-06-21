@@ -21,7 +21,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -97,7 +100,8 @@ public class TaskController implements TaskControllerApi {
 
         return ResponseResult.ok()
                 .setData("taskId", taskId)
-                .setData("success", true);
+                .setData("success", true)
+                .setData("command_hash",taskCommandInfo.hashCode());
     }
 
     @Override
@@ -328,5 +332,38 @@ public class TaskController implements TaskControllerApi {
                 ;
     }
 
+    @Override
+    @PostMapping("/send-pcap")
+    public ResponseEntity<String> uploadPcap( MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("文件为空");
+        }
+
+        //            // Ensure the upload directory exists
+//            File uploadDir = new File("C:\\");
+//            if (!uploadDir.exists()) {
+//                uploadDir.mkdirs();
+//            }
+//
+//            // Save the file locally
+//            Path path = Paths.get("C:\\" + file.getOriginalFilename());
+//            Files.write(path, file.getBytes());
+
+        // Here you can add logic to send the file to a server or process it as needed
+
+        return ResponseEntity.status(HttpStatus.OK).body("文件发送处置服务器成功: " + file.getOriginalFilename());
+    }
+
+
+    @Override
+    @GetMapping("/result/push")
+    public ResponseResult pushWhiteList() {
+        List<TaskCommandInfo> taskCommandInfos = commandService.queryCommandInfos(
+                null, null, null, null, null, 1, 20);
+
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("commands", taskCommandInfos);
+    }
 
 }

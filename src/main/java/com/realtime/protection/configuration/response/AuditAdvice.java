@@ -101,7 +101,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         AuditData auditData;
         if(session==null || session.getAttribute("user")==null){
             auditData = new AuditData(
-                    "0000000","0000000","not-login","not-login",
+                    "0000000","0000000","NSADD管理员","组织树",
                     request.getURI().getPath(),
                     request.getMethod().toString(),
                     body.getCode()==200?"成功":"失败",

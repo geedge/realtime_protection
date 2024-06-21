@@ -17,7 +17,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -710,4 +712,114 @@ public interface TaskControllerApi {
     )
     @GetMapping("/unaudit/statistics")
     ResponseResult queryUnauditStatistics();
+
+
+    @Operation(
+            summary = "上传pcap文件",
+            description = "上传pcap文件",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            name = "response",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "文件上传处置服务器成功",
+                                                      "data": "success"
+                                                    }
+                                                    """
+                                    ),
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Excel文件")
+    )
+    @PostMapping("/send-pcap")
+    ResponseEntity<String> uploadPcap(MultipartFile file);
+    @Operation(
+            summary = "处置任务结果推送接口",
+            description = "处置任务结果推送接口，根据接口规范，供外部系统调用",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            name = "response",
+                                            value = """
+                                                    {
+                                                      "code": 200,
+                                                      "message": "request succeed",
+                                                      "data": {
+                                                        "success": true,
+                                                        "commands": [
+                                                          {
+                                                            "uuid": "3b42ca64-282f-4040-bd8f-8f895fa82d23",
+                                                            
+                                                            "task_act": "篡改",
+                                                            "is_valid": true,
+                                                            "five_tuple_with_mask": {
+                                                              "sourceIP": "1.1.2.3",
+                                                              "sourcePort": "80"
+                                                              "protocol": "6"
+                                                            },
+                                                            "command_send_times": "1",
+                                                            "command_success_times": "1",
+                                                            "first_send_time": "2024-06-19 23:27:19",
+                                                            "last_send_time": "2024-06-19 23:27:19",
+                                                            "rcp_hit_count":36,
+                                                            "TOTAL_PACKET_NUM":36,
+                                                            "TOTAL_BYTE_NUM":991,
+                                                            "session_num":36,
+                                                            "first_effect_time": "2024-06-19 23:27:19"
+                                                            
+                                                            }  \s
+                                                        ]
+                                                      }
+                                                    }
+                                                    """,
+                                            description = """
+                                                    "task_act": 任务行为
+                                                    
+                                                    "is_valid": 指令是否生效
+                                                    
+                                                    "five_tuple_with_mask": 指令五元组信息
+                                                    
+                                                    "command_send_times": 指令下发次数
+                                                    
+                                                    "command_success_times": 指令下发成功次数
+                                                    
+                                                    "uuid": 指令UUID
+                                                    
+                                                    "first_send_time": 首次下发时间
+                                                    
+                                                    "last_send_time": 最新下发时间
+                                                    
+                                                    "rcp_hit_count":专设命中包数
+                                                    
+                                                    "TOTAL_PACKET_NUM":处置总包数
+                                                    
+                                                    "TOTAL_BYTE_NUM":处置总字节数
+                                                    
+                                                    "session_num":处置总会话数
+                                                    
+                                                    "first_effect_time": 首次生效时间
+                                                    """
+                                    ),
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Excel文件")
+    )
+    @GetMapping("/push")
+    ResponseResult pushWhiteList();
 }
