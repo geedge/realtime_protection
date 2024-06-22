@@ -21,6 +21,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import reactor.core.publisher.Mono;
+
+import java.util.Enumeration;
+
 /**
  * 修改人： Fulian Li
  * 功能：执行日志审计
@@ -59,17 +62,16 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return false;
-//        return true;
+//        return false;
+        return true;
     }
 
     @Override
     public ResponseResult beforeBodyWrite(ResponseResult body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-
+// 可以不发送query的请求，数据量太大
         if (request.getURI().getPath().contains("query")){
             return body;
         }
-
         AuditData auditData = getAuditData(body, request);
 
         AuditRes auditRes = new AuditRes(auditData);
@@ -94,7 +96,15 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
         return body;
     }
-
+    // 解析 X-Forwarded-For 头中的第一个 IP 地址
+    private static String extractFirstIpAddress(String xForwardedForHeader) {
+        if (xForwardedForHeader != null) {
+            // 根据逗号分隔获取第一个 IP 地址
+            String[] ips = xForwardedForHeader.trim().split("\\s*,\\s*");
+            return ips[0];
+        }
+        return null;
+    }
     @NotNull
     private static AuditData getAuditData(ResponseResult body, ServerHttpRequest request) {
         HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
@@ -106,7 +116,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                     request.getMethod().toString(),
                     body.getCode()==200?"成功":"失败",
                     body.getData().toString(),
-                    "172.16.1.202"
+                    extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
             );
         }else {
             UserFull user = (UserFull) session.getAttribute("user");
@@ -116,7 +126,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                     request.getMethod().toString(),
                     body.getCode()==200?"成功":"失败",
                     body.getData().toString(),
-                    "172.16.1.202"
+                    extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
             );
         }
         return auditData;

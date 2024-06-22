@@ -103,6 +103,10 @@ public class Task {
     @Schema(description = "审核用户部门", example = "部门1")
     private String auditUserDepart;
 
+    @JsonProperty("audit_user_depart_code")
+    @Schema(description = "审核用户部门代码", example = "000010")
+    private String auditUserDepartCode;
+
 
     /*
     策略模板（事件类型、防护等级）都移动到任务表中

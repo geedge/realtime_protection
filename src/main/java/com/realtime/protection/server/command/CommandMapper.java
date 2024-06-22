@@ -15,6 +15,11 @@ public interface CommandMapper {
 
     void createCommands(@Param("command_infos") List<TaskCommandInfo> taskCommandInfos);
 
+    void createCommandsTest(@Param("command_infos") List<TaskCommandInfo> taskCommandInfos,
+                            @Param("session_num") Integer sessionNum,
+                            @Param("byte_num") Integer byteNum);
+
+
     Boolean stopCommandsByTaskId(@Param("task_id") Long taskId);
 
     @DS("doris")

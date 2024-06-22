@@ -124,4 +124,8 @@ public interface TaskMapper {
 
     @Update("UPDATE t_task SET task_start_time = NOW() WHERE task_id = #{taskId}")
     void updateTaskStartTime(Long taskId);
+
+    String queryEventTypeDepartment(String eventType);
+
+    String queryEventTypeAct(String eventType);
 }

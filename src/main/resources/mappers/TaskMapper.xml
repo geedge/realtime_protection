@@ -664,4 +664,18 @@
         ORDER BY effective_time DESC
         LIMIT ${(page - 1) * pageSize}, #{pageSize}
     </select>
+    <select id="queryEventTypeDepartment" resultType="java.lang.String">
+        SELECT department
+        FROM t_dict_data
+        WHERE
+            dict_type = 'event_type'
+        AND dict_value = #{eventType}
+    </select>
+    <select id="queryEventTypeAct" resultType="java.lang.String">
+        SELECT remark
+        FROM t_dict_data
+        WHERE
+            dict_type = 'event_type'
+        AND dict_value = #{eventType}
+    </select>
 </mapper>

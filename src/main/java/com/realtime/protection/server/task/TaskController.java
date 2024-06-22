@@ -68,7 +68,11 @@ public class TaskController implements TaskControllerApi {
             task.setTaskCreateUsername(user.name);
             task.setTaskCreateUserId(Integer.valueOf(user.uid));
             task.setTaskCreateDepart(user.getOrgName());
+            task.setAuditUserDepartCode(user.getOrgCode());
         }
+        //事件类型的用户权限校验、动作逻辑性校验
+        taskService.eventTypeValid(task);
+
 
         Long taskId = taskService.newTask(task);
 

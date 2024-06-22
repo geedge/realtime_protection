@@ -589,4 +589,36 @@ public class TaskService {
     public void updateTaskStartTime(Long taskId) {
         taskMapper.updateTaskStartTime(taskId);
     }
+
+    public void eventTypeValid(Task task) {
+        if (task.getAuditUserDepartCode() != null) {
+
+            String departments = taskMapper.queryEventTypeDepartment(task.getEventType());
+            Boolean isOrgCodeValid = false;
+            String[] departmentArray = departments.split(",");
+            for (String department : departmentArray) {
+                if (department.equals(task.getAuditUserDepartCode())) {
+                    isOrgCodeValid = true;
+                    break;
+                }
+            }
+            if (!isOrgCodeValid) {
+                throw new IllegalArgumentException("该用户所属部门不允许新建该事件类型的任务");
+            }
+        }
+        Boolean isActValid = false;
+        String acts = taskMapper.queryEventTypeAct(task.getEventType());
+        String[] actArray = acts.split(",");
+        for (String act : actArray) {
+            if (act.equals(task.getTaskAct())) {
+                isActValid = true;
+                break;
+            }
+        }
+        if (!isActValid) {
+            throw new IllegalArgumentException("该事件类型不允许该处置动作");
+        }
+
+
+    }
 }
