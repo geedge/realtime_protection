@@ -622,7 +622,16 @@ public class TaskService {
 
     }
 
+    @Transactional
     public List<Task> auditInfoNotification(String userId) {
-        return taskMapper.queryAuditInfoNotification(userId,AuditStatusEnum.RETURNED.getNum());
+        List<Task> tasksNotification = taskMapper.queryAuditInfoNotification(userId,AuditStatusEnum.RETURNED.getNum());
+        if (tasksNotification.isEmpty()){
+            return tasksNotification;
+        }
+        List<Long> taskIdList = tasksNotification.stream().map(Task::getTaskId).toList();
+        taskMapper.updateNotificationByTaskId(taskIdList);
+
+        return tasksNotification;
+
     }
 }

@@ -130,4 +130,6 @@ public interface TaskMapper {
     String queryEventTypeAct(String eventType);
 
     List<Task> queryAuditInfoNotification(String userId , Integer auditStatus);
+
+    void updateNotificationByTaskId(@Param("taskIds") List<Long> taskIdList);
 }

@@ -304,6 +304,14 @@
         </foreach>
         AND expire_time IS NULL
     </update>
+    <update id="updateNotificationByTaskId">
+        UPDATE t_task
+        SET is_need_notification = 0
+        WHERE task_id IN
+        <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </update>
 
     <delete id="deleteTask">
         DELETE
