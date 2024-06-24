@@ -256,7 +256,9 @@
     </update>
     <update id="updateAuditInfo">
         UPDATE t_task
-        SET task_audit_info = #{auditInfo}
+        SET
+            task_audit_info = #{auditInfo},
+            is_need_notification = 1
         WHERE task_id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
@@ -677,5 +679,41 @@
         WHERE
             dict_type = 'event_type'
         AND dict_value = #{eventType}
+    </select>
+
+    <resultMap id="taskAuditMap" type="com.realtime.protection.configuration.entity.task.Task">
+        <id column="task_id" property="taskId"/>
+        <result column="task_name" property="taskName"/>
+        <result column="task_type" property="taskType"/>
+        <result column="task_act" property="taskAct"/>
+        <result column="task_range" property="taskRange"/>
+
+        <result column="task_status" property="taskStatus"/>
+        <result column="task_audit_status" property="taskAuditStatus"/>
+
+        <result column="task_start_time" property="taskStartTime"/>
+        <result column="task_end_time" property="taskEndTime"/>
+
+        <result column="task_create_username" property="taskCreateUsername"/>
+        <result column="task_create_depart" property="taskCreateDepart"/>
+        <result column="task_create_userid" property="taskCreateUserId"/>
+        <result column="task_audit_username" property="auditUserName"/>
+        <result column="task_audit_userid" property="auditUserId"/>
+        <result column="task_audit_depart" property="auditUserDepart"/>
+
+
+        <result column="task_display_id" property="taskDisplayId"/>
+
+        <result column="task_audit_info" property="auditInfo" />
+    </resultMap>
+
+
+
+    <select id="queryAuditInfoNotification" resultMap="taskAuditMap">
+        SELECT * from t_task
+        WHERE
+            task_create_userid = #{userId}
+        AND task_audit_status = #{auditStatus}
+        AND is_need_notification = 1
     </select>
 </mapper>

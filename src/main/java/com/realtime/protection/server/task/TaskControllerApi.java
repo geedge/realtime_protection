@@ -650,7 +650,7 @@ public interface TaskControllerApi {
             }
     )
     @PostMapping("/auditInfo/{ids}")
-    ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
+    ResponseResult updateAuditInfo(@PathVariable List<Long> ids,
                                    @RequestBody Map<String, String> auditInfo);
 
 
@@ -822,4 +822,24 @@ public interface TaskControllerApi {
     )
     @GetMapping("/push")
     ResponseResult pushWhiteList();
+
+
+    @Operation(
+            summary = "查询用户下未通知的任务数量",
+            description = "接收用户id，返回所有该用户下审核退回且wei通知的任务数量",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "用户id", description = "用户的id", example = "0000148"),
+            }
+    )
+    @GetMapping("/auditinfo/alert/{userid}")
+    ResponseResult auditInfoNotification(@PathVariable String userId);
 }

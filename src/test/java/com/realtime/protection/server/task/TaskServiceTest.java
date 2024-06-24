@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ class TaskServiceTest extends ProtectionApplicationTests {
 //
         List<Task> tasks = taskService.queryTasks(null, null, null, null, null, null, null, null, null,null,null,null,null,1, 10);
         tasks.forEach(task -> System.out.println(task));
-        Integer tasksnum = taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", "上述",null,null,null,null);
+        Integer tasksnum = taskService.queryTaskTotalNum(null, null, "", "", null, "", "", "", "上述",null, String.valueOf(LocalDate.now()),null,null);
         System.out.println(tasksnum);
 //
 //        tasks = taskService.queryTasks(0, null, null, null, null,null, null, null, null, 1, 10);
@@ -237,47 +238,51 @@ class TaskServiceTest extends ProtectionApplicationTests {
     @Test
     void testStartStaticTask() throws DorisStartException {
 
+        for (int j = 0; j < 1; j++) {
+            List<Integer> staticRuleIds = new ArrayList<>();
+            for (int i = 0; i < 10000; i++) {
+                StaticRuleObject staticRuleTest = new StaticRuleObject();
+                staticRuleTest.setStaticRuleName("test_st3aticrule" + i);
+                staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
+                staticRuleTest.setStaticRuleCreateDepart("组织树");
+                staticRuleTest.setStaticRuleCreateUserId(22222222);
 
-        StaticRuleObject staticRuleTest = new StaticRuleObject();
-        staticRuleTest.setStaticRuleName("test_staticrule");
-        staticRuleTest.setStaticRuleCreateUsername("NSADD管理员");
-        staticRuleTest.setStaticRuleCreateDepart("组织树");
-        staticRuleTest.setStaticRuleCreateUserId(22222222);
+                staticRuleTest.setStaticRuleSip("32.33.3.1");
+                staticRuleTest.setStaticRuleDip("2.2.3.2");
+                staticRuleTest.setStaticRuleSport(i);
+                staticRuleTest.setStaticRuleProtocol("6");
+                staticRuleService.newStaticRuleObject(staticRuleTest);
+                staticRuleIds.add(staticRuleTest.getStaticRuleId());
+                staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "NSADD管理员", 1111111, "组织树");
+            }
 
-        staticRuleTest.setStaticRuleSip("32.2.3.1");
-        staticRuleTest.setStaticRuleDip("2.2.3.2");
-        staticRuleTest.setStaticRuleSport(80);
-        staticRuleTest.setStaticRuleProtocol("6");
-        staticRuleService.newStaticRuleObject(staticRuleTest);
-//        staticRuleIds.add(staticRuleTest.getStaticRuleId());
-        staticRuleService.updateAuditStatus(staticRuleTest.getStaticRuleId(), 2, "NSADD管理员", 1111111, "组织树");
+            Task task = new Task();
+            task.setTaskName("静态task测试-10000指令"+j);
+
+            LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+            LocalDateTime taskEndTime = LocalDateTime.now().plusYears(1);
+
+            task.setTaskStartTime(taskStartTime);
+            task.setTaskEndTime(taskEndTime);
+            task.setTaskAct("23");
+            task.setTaskType(1);
+            task.setTaskRange("1009");
+            task.setEventType("泛洪型DDOS");
+
+            task.setTaskCreateUserId(111111);
+            task.setTaskCreateUsername("xxx管理员");
+            task.setTaskCreateDepart("xxx");
+
+            task.setStaticRuleIds(staticRuleIds);
+
+            Long taskId = taskService.newTask(task);
+            taskService.changeTaskAuditStatus(taskId, 2, "NSADD管理员", "1111111", "组织树");
+
+            stateChangeService.changeState(2, taskId, false);
+
+        }
 
 
-
-
-        Task task = new Task();
-        task.setTaskName("静态task测试s");
-
-        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(1);
-
-        task.setTaskStartTime(taskStartTime);
-        task.setTaskEndTime(taskEndTime);
-        task.setTaskAct("23");
-        task.setTaskType(1);
-        task.setTaskRange("1007");
-
-        task.setTaskCreateUserId(111111);
-        task.setTaskCreateUsername("xxx管理员");
-        task.setTaskCreateDepart("xxx");
-
-        task.setStaticRuleIds(List.of(staticRuleTest.getStaticRuleId()));
-
-        Long taskId = taskService.newTask(task);
-
-        taskService.changeTaskAuditStatus(taskId, 2, "NSADD管理员", "1111111", "组织树");
-
-        stateChangeService.changeState(2, taskId, false);
 
 //            System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
 
@@ -384,5 +389,105 @@ class TaskServiceTest extends ProtectionApplicationTests {
         taskService.updateStaticRuleAuditStatusInTask(44126L, AuditStatusEnum.AUDITED);
 
     }
+
+    @Test
+    void testQueryTask() throws DorisStartException {
+//        task/44279/running/2
+        stateChangeService.changeState(2, 44279L, false);
+    }
+
+
+
+    @DSTransactional
+    @Test
+    void testStartStaticTask_command() throws DorisStartException {
+
+        for (int j = 0; j < 1; j++) {
+            List<Integer> staticRuleIds = new ArrayList<>();
+            staticRuleService.queryStaticRule(
+                    null, null, null, null, null,null, null, 2,null,null,1, 39999)
+                    .forEach(staticRuleObject -> staticRuleIds.add(staticRuleObject.getStaticRuleId()));
+            HashMap<Integer, Integer> map = new HashMap<>();
+//            for (Integer staticRuleId : staticRuleIds) {
+//                map.put(staticRuleId, 2);
+//            }
+//            staticRuleService.updateAuditStatusBatch(map);
+            Task task = new Task();
+            task.setTaskName("指令生成性能测试任务-2w-0619");
+
+            LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+            LocalDateTime taskEndTime = LocalDateTime.now().plusYears(1);
+
+            task.setTaskStartTime(taskStartTime);
+            task.setTaskEndTime(taskEndTime);
+            task.setTaskAct("23");
+            task.setTaskType(1);
+            task.setTaskRange("1009");
+            task.setEventType("网络后门");
+
+            task.setTaskCreateUserId(111111);
+            task.setTaskCreateUsername("NSADD管理员");
+            task.setTaskCreateDepart("一室");
+
+            task.setStaticRuleIds(staticRuleIds);
+
+            Long taskId = taskService.newTask(task);
+            System.out.println(staticRuleIds.size());
+            System.out.println(taskId);
+            taskService.changeTaskAuditStatus(taskId, 2, "NSADD管理员", "1111111", "组织树");
+
+            stateChangeService.changeState(2, taskId, false);
+
+        }
+
+
+
+//            System.out.println(commandService.queryCommandInfos(taskId, null, null, null, null, 1, 5));
+
+    }
+
+    @Test
+    void testNotificate(){
+
+
+        List<Integer> staticRuleIds = new ArrayList<>();
+        staticRuleService.queryStaticRule(
+                        null, null, null, null, null,null, null, 2,null,null,1, 1)
+                .forEach(staticRuleObject -> staticRuleIds.add(staticRuleObject.getStaticRuleId()));
+        HashMap<Integer, Integer> map = new HashMap<>();
+//            for (Integer staticRuleId : staticRuleIds) {
+//                map.put(staticRuleId, 2);
+//            }
+//            staticRuleService.updateAuditStatusBatch(map);
+        Task task = new Task();
+        task.setTaskName("测试用户审核退回提醒");
+
+        LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime taskEndTime = LocalDateTime.now().plusYears(1);
+
+        task.setTaskStartTime(taskStartTime);
+        task.setTaskEndTime(taskEndTime);
+        task.setTaskAct("23");
+        task.setTaskType(1);
+        task.setTaskRange("1009");
+        task.setEventType("网络后门");
+
+        task.setTaskCreateUserId(12345);
+        task.setTaskCreateUsername("NSADD管理员");
+        task.setTaskCreateDepart("一室");
+
+        task.setStaticRuleIds(staticRuleIds);
+
+        Long taskId = taskService.newTask(task);
+        System.out.println(staticRuleIds.size());
+        System.out.println(taskId);
+        taskService.changeTaskAuditStatus(taskId, 1, "NSADD管理员", "123", "组织树");
+        taskService.updateAuditInfo(List.of(taskId),"审核不通过，拒绝");
+
+        List<Task> tasks =  taskService.auditInfoNotification("12345");
+        System.out.println(tasks);
+        assert !tasks.isEmpty();
+    }
+
 
 }

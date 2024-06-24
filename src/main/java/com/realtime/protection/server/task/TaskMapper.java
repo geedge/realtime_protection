@@ -92,7 +92,7 @@ public interface TaskMapper {
 
     List<Integer> queryAuditStatusByIds(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idsWithAuditStatusMap);
 
-    Boolean updateAuditInfo(@Param("ids")List<Integer> ids, @Param("auditInfo")String auditInfo);
+    Boolean updateAuditInfo(@Param("ids")List<Long> ids, @Param("auditInfo")String auditInfo);
 
     String queryAuditInfo(Integer id);
 
@@ -128,4 +128,6 @@ public interface TaskMapper {
     String queryEventTypeDepartment(String eventType);
 
     String queryEventTypeAct(String eventType);
+
+    List<Task> queryAuditInfoNotification(String userId , Integer auditStatus);
 }

@@ -520,7 +520,7 @@ public class TaskService {
         return taskMapper.queryAuditStatusByIds(idsWithAuditStatusMap);
     }
 
-    public Boolean updateAuditInfo(List<Integer> ids, String auditInfo) {
+    public Boolean updateAuditInfo(List<Long> ids, String auditInfo) {
         return taskMapper.updateAuditInfo(ids, auditInfo);
     }
 
@@ -620,5 +620,9 @@ public class TaskService {
         }
 
 
+    }
+
+    public List<Task> auditInfoNotification(String userId) {
+        return taskMapper.queryAuditInfoNotification(userId,AuditStatusEnum.RETURNED.getNum());
     }
 }

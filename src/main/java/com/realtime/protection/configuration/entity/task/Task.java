@@ -148,5 +148,9 @@ public class Task {
     @Schema(description = "日志表中到期时间", example = "", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime expireTime;
 
+    @JsonProperty("audit_info")
+    @Schema(description = "审核意见", example = "审核不同意", accessMode = Schema.AccessMode.READ_ONLY)
+    private String auditInfo;
+
 
 }

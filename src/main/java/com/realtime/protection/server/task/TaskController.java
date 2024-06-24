@@ -295,7 +295,7 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @PostMapping("/auditInfo/{ids}")
-    public ResponseResult updateAuditInfo(@PathVariable List<Integer> ids,
+    public ResponseResult updateAuditInfo(@PathVariable List<Long> ids,
                                           @RequestBody Map<String, String> auditInfo) {
         if (auditInfo.get("auditInfo") == null || auditInfo.get("auditInfo").isEmpty()) {
             return ResponseResult.ok();
@@ -368,6 +368,15 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok()
                 .setData("success", true)
                 .setData("commands", taskCommandInfos);
+    }
+
+    @Override
+    @GetMapping("/auditinfo/alert/{userid}")
+    public ResponseResult auditInfoNotification(@PathVariable String userId){
+
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("alert", taskService.auditInfoNotification(userId));
     }
 
 }
