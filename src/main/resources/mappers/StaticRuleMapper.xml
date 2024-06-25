@@ -560,6 +560,42 @@
             AND static_rule_mprotocol = #{staticRuleMprotocol}
         </if>
         </where>
+        <if test="staticRuleSip == null or staticRuleSip == ''">
+            AND static_rule_sip IS NULL
+        </if>
+        <if test="staticRuleDip == null or staticRuleDip == ''">
+            AND static_rule_dip IS NULL
+        </if>
+        <if test="staticRuleSport == null or staticRuleSport == ''">
+            AND static_rule_sport IS NULL
+        </if>
+        <if test="staticRuleDport == null or staticRuleDport == ''">
+            AND static_rule_dport IS NULL
+        </if>
+        <if test="staticRuleProtocol == null or staticRuleProtocol == ''">
+            AND static_rule_protocol IS NULL
+        </if>
+        <if test="staticRuleDns == null or staticRuleDns == ''">
+            AND static_rule_dns IS NULL
+        </if>
+        <if test="staticRuleURL == null or staticRuleURL == ''">
+            AND static_rule_url IS NULL
+        </if>
+        <if test="staticRuleMsip == null or staticRuleMsip == ''">
+            AND static_rule_msip IS NULL
+        </if>
+        <if test="staticRuleMdip == null or staticRuleMdip == ''">
+            AND static_rule_mdip IS NULL
+        </if>
+        <if test="staticRuleMsport == null or staticRuleMsport == ''">
+            AND static_rule_msport IS NULL
+        </if>
+        <if test="staticRuleMdport == null or staticRuleMdport == ''">
+            AND static_rule_mdport IS NULL
+        </if>
+        <if test="staticRuleMprotocol == null or staticRuleMprotocol == ''">
+            AND static_rule_mprotocol IS NULL
+        </if>
 
     </select>
 

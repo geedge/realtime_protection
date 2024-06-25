@@ -170,7 +170,7 @@ public class StateHandler {
 
         List<String> commandUUIDs= commandService.createCommands(staticTaskCommandInfos);
 
-/*        // 将command新建信号发送到c3下发程序
+        // 将command新建信号发送到c3下发程序
         try {
             sendCommandDistributeSignal(commandUUIDs);
         } catch (Exception e) {
@@ -194,7 +194,7 @@ public class StateHandler {
             return true;
         }
 
- */
+
         return true;
     }
     public Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {
