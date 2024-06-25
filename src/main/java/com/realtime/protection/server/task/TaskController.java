@@ -371,7 +371,7 @@ public class TaskController implements TaskControllerApi {
     }
 
     @Override
-    @GetMapping("/auditinfo/alert/{userid}")
+    @GetMapping("/auditinfo/alert/{userId}")
     public ResponseResult auditInfoNotification(@PathVariable String userId){
 
         return ResponseResult.ok()

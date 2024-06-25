@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -135,6 +136,15 @@ public class GlobalExceptionHandler {
         log.error("遭遇 SQL 语法错误：{}", ex.getMessage());
 
         return ResponseResult.error().setMessage("数据库错误，错误的查询语法");
+    }
+
+    @Order(2)
+    @ExceptionHandler(value = UncategorizedSQLException.class)
+    public ResponseResult handleUncategorizedSQLException(UncategorizedSQLException ex) {
+        // 打印异常日志
+//        ex.printStackTrace();
+        log.error("遭遇未知 SQL 错误，可能遇到doris concurrent_update ：{}", ex.getMessage());
+        return ResponseResult.error().setMessage("操作失败，请重试");
     }
 
 

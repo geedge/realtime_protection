@@ -75,6 +75,7 @@ public class LoginController {
                 .setData("userName", userFull.name)
                 .setData("userRole", userFull.getRoleKey())
                 .setData("UserDepartment", userFull.getOrgName())
+                .setData("userdepartment", userFull.getOrgCode())
                 ;
         } catch (Exception e) {
             return ResponseResult.error(e.getMessage());
