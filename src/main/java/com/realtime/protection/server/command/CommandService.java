@@ -238,15 +238,23 @@ public class CommandService {
     }
 
     public void insertCommandHistory(String commandUUID) {
-        commandMapper.updateCommandHistoryExpireTime(commandUUID);
-        commandMapper.insertCommandHistory(commandUUID);
+        //todo: 不update， insert加入uuid
+//        commandMapper.updateCommandHistoryExpireTime(commandUUID);
+        String logId = UUID.randomUUID().toString();
+        commandMapper.insertCommandHistory(commandUUID, logId);
     }
 
     public void insertCommandHistoryBatch(List<TaskCommandInfo> commandIdList) {
         List<String> commandIds = ListUtils.newArrayListWithExpectedSize(commandIdList.size());
         commandIdList.forEach(item -> commandIds.add(item.getUUID()));
-
-        commandMapper.updateCommandHistoryExpireTimeBatch(commandIds);
+        //todo: 不update， insert加入uuid
+//        commandMapper.updateCommandHistoryExpireTimeBatch(commandIds);
+//        List<String> logIds;
+//        logIds = ListUtils.newArrayListWithExpectedSize(commandIds.size());
+//        for (int i = 0; i < commandIds.size(); i++) {
+//            logIds.add(UUID.randomUUID().toString());
+//        }
+        //新建的loguuid拿commannd_id来定顶一会吧
         commandMapper.insertCommandHistoryBatch(commandIds);
     }
 }

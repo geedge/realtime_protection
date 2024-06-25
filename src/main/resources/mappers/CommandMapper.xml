@@ -165,7 +165,8 @@
                                 session_num,
                                 first_effect_time,
                                 last_rcp_query_time,
-                                last_traffic_query_time
+                                last_traffic_query_time,
+                                log_uuid
                     )
         select
             NOW(),
@@ -218,7 +219,8 @@
             session_num,
             first_effect_time,
             last_rcp_query_time,
-            last_traffic_query_time
+            last_traffic_query_time,
+            #{log_id}
         from t_command
         where COMMAND_ID = #{command_id}
     </insert>
@@ -274,7 +276,8 @@
             session_num,
             first_effect_time,
             last_rcp_query_time,
-            last_traffic_query_time
+            last_traffic_query_time,
+            log_uuid
         )
         select
             NOW(),
@@ -327,7 +330,8 @@
             session_num,
             first_effect_time,
             last_rcp_query_time,
-            last_traffic_query_time
+            last_traffic_query_time,
+            COMMAND_ID
         from t_command
         where COMMAND_ID IN
         <foreach collection="commandIds" item="command_id" separator="," open="(" close=")">

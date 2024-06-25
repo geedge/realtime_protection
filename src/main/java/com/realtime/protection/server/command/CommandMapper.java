@@ -53,7 +53,7 @@ public interface CommandMapper {
 
     void updateCommandHistoryExpireTime(@Param("command_id") String commandUUID);
 
-    void insertCommandHistory(@Param("command_id") String commandUUID);
+    void insertCommandHistory(@Param("command_id") String commandUUID, @Param("log_id") String logUUID);
 
     void updateCommandHistoryExpireTimeBatch(@Param("commandIds")List<String> commandIds);
 
