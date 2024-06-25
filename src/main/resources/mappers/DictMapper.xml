@@ -9,10 +9,11 @@
         <result column="dict_value" property="dictValue"/>
         <result column="dict_label" property="dictLabel"/>
         <result column="remark" property="dictRemark"/>
+        <result column="department" property="department"/>
     </resultMap>
 
     <select id="selectDictDataByType" resultMap="DictMap">
-        select dict_type, dict_value, dict_label, remark
+        select dict_type, dict_value, dict_label, remark, department
         from t_dict_data
         where dict_type = #{dictType} and status = 0
     </select>

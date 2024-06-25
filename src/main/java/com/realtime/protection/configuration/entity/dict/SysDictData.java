@@ -23,4 +23,10 @@ public class SysDictData {
     @JsonProperty("dict_remark")
     @Schema(description = "字典备注")
     private String dictRemark;
+
+    @JsonProperty("department")
+    @Schema(description = "字典数据对应可查看部门")
+    private String department;
+
+
 }
