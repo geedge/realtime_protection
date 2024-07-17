@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -102,9 +104,11 @@ public interface TaskControllerApi {
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务推送信息")
     )
-    ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo) throws DorisStartException;
+    ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo,
+                                                                           @Autowired HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException ;
 
-    @GetMapping("/query")
+
+        @GetMapping("/query")
     @Operation(
             summary = "查询任务",
             description = "按页和搜索内容查询任务相关信息",
@@ -715,8 +719,8 @@ public interface TaskControllerApi {
 
 
     @Operation(
-            summary = "上传pcap文件",
-            description = "上传pcap文件",
+            summary = "报文接收",
+            description = "报文接收",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             description = "返回是否成功",
@@ -727,8 +731,8 @@ public interface TaskControllerApi {
                                             value = """
                                                     {
                                                       "code": 200,
-                                                      "message": "文件上传处置服务器成功",
-                                                      "data": "success"
+                                                      "message": "报文接收成功",
+                                                      "data": "false"
                                                     }
                                                     """
                                     ),
@@ -738,7 +742,7 @@ public interface TaskControllerApi {
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Excel文件")
+                    description = "PCAP文件")
     )
     @PostMapping("/send-pcap")
     ResponseEntity<String> uploadPcap(MultipartFile file);
@@ -842,4 +846,47 @@ public interface TaskControllerApi {
     )
     @GetMapping("/auditinfo/alert/{userid}")
     ResponseResult auditInfoNotification(@PathVariable String userId);
+
+
+
+    @Operation(
+            summary = "接收外部业务系统处置结果",
+            description = "接收外部业务系统处置结果，根据规范设计字段接收处置结果",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回是否接收认证成功",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "字典，key是处置结果字段，value是字段对应值",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class),
+                            examples = @ExampleObject(
+                                    name = "example",
+                                    value = """
+                                    {
+                                         "task_id": "44315",
+                                         "task_name":"静态task测试s",
+                                         "is_effective":true,
+                                         "effective_time":"2024-06-17 23:11:29",
+                                         "other":""
+
+                                       }
+                                    """
+                            )
+
+                    )
+            ),
+            parameters = {
+                    @Parameter(name = "systemName", description = "系统名称", example = "DDoS检测系统、有害信息监测系统"),
+            }
+    )
+    @PostMapping("/result/{systemName}")
+    ResponseResult receiveOtherSystemResult(@PathVariable String systemName,
+                                            @RequestBody Map<String, String> auditInfo);
 }

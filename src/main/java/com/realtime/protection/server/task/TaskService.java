@@ -59,6 +59,8 @@ public class TaskService {
 //        task.setTaskCreateUsername("xxx");
 //        task.setTaskCreateDepart("xxx");
 
+//        eventTypeValid(task);
+
 
         task.setTaskDisplayId(
                 "RW-"
@@ -632,6 +634,18 @@ public class TaskService {
         taskMapper.updateNotificationByTaskId(taskIdList);
 
         return tasksNotification;
+
+    }
+
+    public void chongtuValid(Task task) {
+        if (task.getTaskAct().equals("23") &&
+            task.getEventType().equals("APT") &&
+            task.getTaskType()==1
+        ){
+            throw new IllegalArgumentException("任务冲突，任务类型：静态。任务动作：阻断+23（丢弃重定向）" +
+                    "事件类型：APT攻击 ，开始时间"+task.getTaskStartTime()+"结束时间："+task.getTaskEndTime());
+        }
+
 
     }
 }

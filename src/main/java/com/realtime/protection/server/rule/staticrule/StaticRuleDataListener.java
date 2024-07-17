@@ -5,6 +5,7 @@ import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.user.UserFull;
+import com.realtime.protection.configuration.utils.enums.RuleEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -29,13 +30,28 @@ public class StaticRuleDataListener implements ReadListener<StaticRuleObject> {
         if (!staticRuleService.isIpMaskValid(object.getStaticRuleSip(),object.getStaticRuleMsip()) ||
                 !staticRuleService.isIpMaskValid(object.getStaticRuleDip(),object.getStaticRuleMdip())
         ){
-            throw new IllegalArgumentException("IP和IP掩码不匹配!静态规则名称:" +
+            log.info("IP和IP掩码不匹配!静态规则名称:" +
                                                 object.getStaticRuleName() + "，源ip:" +
                                                 object.getStaticRuleSip() + "，源ip掩码:" +
                                                 object.getStaticRuleMsip() + "，目的ip:" +
                                                 object.getStaticRuleDip() + "，目的ip掩码:" +
                                                 object.getStaticRuleMdip() );
+            return;
         }
+
+        try {
+            if (!RuleEnum.checkValidate(object)) {
+                log.info("静态规则不符合指定的配置方法，请参考规则模板以配置静态规则"+object);
+            }
+        } catch (IllegalAccessException e) {
+            return;
+        }
+        if (object.getStaticRuleSport()>=5 && object.getStaticRuleSport()<=10){
+            log.info("静态规则格式错误"+object);
+            return;
+        }
+
+
         if (user != null) {
             object.setStaticRuleCreateUsername(user.name);
             object.setStaticRuleCreateUserId(Integer.valueOf(user.uid));

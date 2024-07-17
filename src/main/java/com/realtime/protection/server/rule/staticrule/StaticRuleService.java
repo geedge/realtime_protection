@@ -4,6 +4,7 @@ import com.alibaba.excel.util.ListUtils;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.Counter;
+import com.realtime.protection.configuration.utils.File;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.RuleEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
@@ -433,5 +434,17 @@ public class StaticRuleService {
 
     public Integer queryDuplicateStaticRule(StaticRuleObject object) {
         return staticRuleMapper.queryDuplicateStaticRule(object);
+    }
+
+    public void saveFile(File saveFile) {
+        staticRuleMapper.saveFile(saveFile);
+    }
+
+    public File selectFileById(Integer id) {
+        return staticRuleMapper.selectFileById(id);
+    }
+
+    public List<File> selectFilesByStaticRuleId(Long staticRuleId) {
+        return staticRuleMapper.selectFilesByStaticRuleId(staticRuleId);
     }
 }

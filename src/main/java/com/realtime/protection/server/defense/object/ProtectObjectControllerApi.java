@@ -572,4 +572,21 @@ public interface ProtectObjectControllerApi {
     ResponseResult queryHistory(@PathVariable Integer id,
                                 @RequestParam(value = "page", required = true) Integer page,
                                 @RequestParam(value = "page_size", required = true) Integer pageSize);
+
+
+    @Operation(
+            summary = "同步防护对象接口",
+            description = "请求防护对象同步接口，调用外部系统的API，获取全量防护对象信息，并增量入库",
+            responses = {
+                    @ApiResponse(
+                            description = "返回是否同步成功，同步防护对象数量",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/synchronize")
+    ResponseResult synchronizeProtectObject();
 }

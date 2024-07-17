@@ -3,13 +3,38 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.realtime.protection.server.command.CommandMapper">
+    <!--    <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">-->
+    <!--        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,-->
+    <!--                              ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,-->
+    <!--                              MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,-->
+    <!--                              INVALID_TIME, IS_VALID, IS_JUDGED,-->
+    <!--                              SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,-->
+    <!--                              TASKTYPE, RULE_ID, display_id,RULE_NAME)-->
+    <!--        values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},-->
+    <!--                #{info.frequency},-->
+    <!--                DEFAULT,-->
+    <!--                #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},-->
+    <!--                #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},-->
+    <!--                #{info.fiveTupleWithMask.protocol},-->
+    <!--                #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},-->
+    <!--                #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},-->
+    <!--                #{info.fiveTupleWithMask.maskProtocol},-->
+    <!--                #{info.startTime}, #{info.endTime}, #{info.isValid},-->
+    <!--                #{info.isJudged},-->
+    <!--                0, 0,-->
+    <!--                NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},-->
+    <!--                #{info.ruleName}-->
+    <!--                )-->
+    <!--    </insert>-->
+
     <insert id="createCommand" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
-        insert into t_command(COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,
-                              ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,
-                              MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
-                              INVALID_TIME, IS_VALID, IS_JUDGED,
-                              SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID, display_id,RULE_NAME)
+        insert into t_command_status(COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,
+                                     ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,
+                                     MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
+                                     INVALID_TIME, IS_VALID, IS_JUDGED,
+                                     CREATE_TIME, LAST_UPDATE, IS_DELETED,
+                                     TASKTYPE, RULE_ID, display_id,RULE_NAME,
+                                     sip_int, dip_int)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
                 #{info.frequency},
                 DEFAULT,
@@ -21,20 +46,63 @@
                 #{info.fiveTupleWithMask.maskProtocol},
                 #{info.startTime}, #{info.endTime}, #{info.isValid},
                 #{info.isJudged},
-                0, 0,
                 NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
-                #{info.ruleName}
-                )
+                #{info.ruleName}, #{info.sipInt}, #{info.dipInt}
+               )
     </insert>
 
+
+
+    <!--    <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">-->
+    <!--        insert into t_command(-->
+    <!--        COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,-->
+    <!--        ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,-->
+    <!--        MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,-->
+    <!--        IS_JUDGED,-->
+    <!--        SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,-->
+    <!--                              TASKTYPE, RULE_ID, display_id,RULE_NAME)-->
+    <!--        values-->
+    <!--        <foreach collection="command_infos" item="info" separator=",">-->
+    <!--            (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},-->
+    <!--            #{info.frequency},-->
+    <!--            DEFAULT,-->
+    <!--            #{info.fiveTupleWithMask.sourceIP}, #{info.fiveTupleWithMask.sourcePort},-->
+    <!--            #{info.fiveTupleWithMask.destinationIP}, #{info.fiveTupleWithMask.destinationPort},-->
+    <!--            #{info.fiveTupleWithMask.protocol},-->
+    <!--            #{info.fiveTupleWithMask.maskSourceIP}, #{info.fiveTupleWithMask.maskSourcePort},-->
+    <!--            #{info.fiveTupleWithMask.maskDestinationIP}, #{info.fiveTupleWithMask.maskDestinationPort},-->
+    <!--            #{info.fiveTupleWithMask.maskProtocol},-->
+    <!--            #{info.startTime}, #{info.endTime}, #{info.isValid},-->
+    <!--            #{info.isJudged},-->
+    <!--            0, 0,-->
+    <!--            NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},-->
+    <!--            #{info.ruleName}-->
+    <!--            )-->
+    <!--        </foreach>-->
+    <!--    </insert>-->
+    <insert id="insertCommandDistribute" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command_distribute(COMMAND_ID,display_id,SEND_TIMES, SUCCESS_TIMES )
+        values (#{info.UUID}, #{info.displayId}, 0, 0)
+    </insert>
+
+    <insert id="insertCommandRCPQuery" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command_rcp_query(COMMAND_ID,display_id )
+        values (#{info.UUID}, #{info.displayId})
+    </insert>
+
+    <insert id="insertCommandTraffic" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command_traffic(COMMAND_ID,display_id )
+        values (#{info.UUID}, #{info.displayId})
+    </insert>
     <insert id="createCommands" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
-        insert into t_command(
+        insert into t_command_status(
         COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,
         ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,
         MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME, INVALID_TIME, IS_VALID,
         IS_JUDGED,
-        SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID, display_id,RULE_NAME)
+        CREATE_TIME, LAST_UPDATE, IS_DELETED,
+        TASKTYPE, RULE_ID, display_id,RULE_NAME,
+                                     sip_int, dip_int)
         values
         <foreach collection="command_infos" item="info" separator=",">
             (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
@@ -48,10 +116,31 @@
             #{info.fiveTupleWithMask.maskProtocol},
             #{info.startTime}, #{info.endTime}, #{info.isValid},
             #{info.isJudged},
-            0, 0,
             NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
-            #{info.ruleName}
+            #{info.ruleName}, #{info.sipInt}, #{info.dipInt}
             )
+        </foreach>
+    </insert>
+
+    <insert id="insertCommandDistributeBatch" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command_distribute(COMMAND_ID,display_id,SEND_TIMES, SUCCESS_TIMES )
+        values
+        <foreach collection="command_infos" item="info" separator=",">
+            (#{info.UUID}, #{info.displayId}, 0, 0)
+        </foreach>
+    </insert>
+    <insert id="insertCommandRCPQueryBatch" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command_rcp_query(COMMAND_ID,display_id )
+        values
+        <foreach collection="command_infos" item="info" separator=",">
+            (#{info.UUID}, #{info.displayId})
+        </foreach>
+    </insert>
+    <insert id="insertCommandTrafficBatch" parameterType="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        insert into t_command_traffic(COMMAND_ID,display_id )
+        values
+        <foreach collection="command_infos" item="info" separator=",">
+            (#{info.UUID}, #{info.displayId})
         </foreach>
     </insert>
 
@@ -64,10 +153,10 @@
         IS_JUDGED,
         SEND_TIMES, SUCCESS_TIMES,FIRST_SEND_TIME,LAST_SEND_TIME ,CREATE_TIME, LAST_UPDATE, IS_DELETED,
         TASKTYPE, RULE_ID, display_id,RULE_NAME,RCP_HIT_COUNT,TOTAL_PACKET_NUM,TOTAL_BYTE_NUM,
-                              EFFECTIVE_EQUIPMENT_NUM,
-                              AVERAGE_LATENCY,MAX_LATENCY,MIN_LATENCY,
-                              c2s_pkt_num,s2c_pkt_num,c2s_byte_num,s2c_byte_num,session_num,
-                              first_effect_time,last_rcp_query_time,last_traffic_query_time)
+        EFFECTIVE_EQUIPMENT_NUM,
+        AVERAGE_LATENCY,MAX_LATENCY,MIN_LATENCY,
+        c2s_pkt_num,s2c_pkt_num,c2s_byte_num,s2c_byte_num,session_num,
+        first_effect_time,last_rcp_query_time,last_traffic_query_time)
         values
         <foreach collection="command_infos" item="info" separator=",">
             (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
@@ -84,7 +173,7 @@
             1, 1,NOW(), NOW(),
             NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
             #{info.ruleName},#{session_num}*4,#{session_num}*4,#{byte_num},
-             1,null,null,null,#{session_num}*4,0,#{byte_num},0,#{session_num},DATE_ADD(NOW(), INTERVAL 10 SECOND),
+            1,null,null,null,#{session_num}*4,0,#{byte_num},0,#{session_num},DATE_ADD(NOW(), INTERVAL 10 SECOND),
             DATE_ADD(NOW(), INTERVAL 10 SECOND),DATE_ADD(NOW(), INTERVAL 10 SECOND)
             )
         </foreach>
@@ -92,11 +181,11 @@
 
     <insert id="createCommandInWhiteListHit">
         insert into t_command_whitelist_hit(COMMAND_ID, TASK_ID, TASK_ACT, TASKNAME, EVENTTYPE, DEPARTMENT, DISTRIBUTEPOINT, FREQUENCY,
-                              ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,
-                              MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
-                              INVALID_TIME, IS_VALID, IS_JUDGED,
-                              SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
-                              TASKTYPE, RULE_ID, display_id)
+                                            ADDR_TYPE, SRC_IP, SRC_PORT, DST_IP, DST_PORT, PROTOCOL,
+                                            MASK_SRC_IP, MASK_SRC_PORT, MASK_DST_IP, MASK_DST_PORT, MASK_PROTOCOL, VALID_TIME,
+                                            INVALID_TIME, IS_VALID, IS_JUDGED,
+                                            SEND_TIMES, SUCCESS_TIMES, CREATE_TIME, LAST_UPDATE, IS_DELETED,
+                                            TASKTYPE, RULE_ID, display_id)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
                 #{info.frequency},
                 DEFAULT,
@@ -114,117 +203,6 @@
     </insert>
 
     <insert id="insertCommandHistory">
-        insert into t_command_log(
-                                  effective_time,
-                                expire_time,
-                                TASK_ID,
-                                RULE_ID,
-                                COMMAND_ID,
-                                TASKTYPE,
-                                ADDR_TYPE,
-                                SRC_IP,
-                                SRC_PORT,
-                                DST_IP,
-                                DST_PORT,
-                                PROTOCOL,
-                                MASK_SRC_IP,
-                                MASK_SRC_PORT,
-                                MASK_DST_IP,
-                                MASK_DST_PORT,
-                                MASK_PROTOCOL,
-                                TASK_ACT,
-                                EVENTTYPE,
-                                TASKNAME,
-                                DISTRIBUTEPOINT,
-                                DEPARTMENT,
-                                FREQUENCY,
-                                VALID_TIME,
-                                INVALID_TIME,
-                                IS_VALID,
-                                IS_JUDGED,
-                                SEND_TIMES,
-                                SUCCESS_TIMES,
-                                FIRST_SEND_TIME,
-                                LAST_SEND_TIME,
-                                CREATE_TIME,
-                                LAST_UPDATE,
-                                IS_DELETED,
-                                RULE_NAME,
-                                RCP_HIT_COUNT,
-                                TOTAL_PACKET_NUM,
-                                TOTAL_BYTE_NUM,
-                                EFFECTIVE_EQUIPMENT_NUM,
-                                AVERAGE_LATENCY,
-                                MAX_LATENCY,
-                                MIN_LATENCY,
-                                c2s_pkt_num,
-                                s2c_pkt_num,
-                                c2s_byte_num,
-                                s2c_byte_num,
-                                display_id,
-                                session_num,
-                                first_effect_time,
-                                last_rcp_query_time,
-                                last_traffic_query_time,
-                                log_uuid
-                    )
-        select
-            NOW(),
-            NULL,
-            TASK_ID,
-            RULE_ID,
-            COMMAND_ID,
-            TASKTYPE,
-            ADDR_TYPE,
-            SRC_IP,
-            SRC_PORT,
-            DST_IP,
-            DST_PORT,
-            PROTOCOL,
-            MASK_SRC_IP,
-            MASK_SRC_PORT,
-            MASK_DST_IP,
-            MASK_DST_PORT,
-            MASK_PROTOCOL,
-            TASK_ACT,
-            EVENTTYPE,
-            TASKNAME,
-            DISTRIBUTEPOINT,
-            DEPARTMENT,
-            FREQUENCY,
-            VALID_TIME,
-            INVALID_TIME,
-            IS_VALID,
-            IS_JUDGED,
-            SEND_TIMES,
-            SUCCESS_TIMES,
-            FIRST_SEND_TIME,
-            LAST_SEND_TIME,
-            CREATE_TIME,
-            LAST_UPDATE,
-            IS_DELETED,
-            RULE_NAME,
-            RCP_HIT_COUNT,
-            TOTAL_PACKET_NUM,
-            TOTAL_BYTE_NUM,
-            EFFECTIVE_EQUIPMENT_NUM,
-            AVERAGE_LATENCY,
-            MAX_LATENCY,
-            MIN_LATENCY,
-            c2s_pkt_num,
-            s2c_pkt_num,
-            c2s_byte_num,
-            s2c_byte_num,
-            display_id,
-            session_num,
-            first_effect_time,
-            last_rcp_query_time,
-            last_traffic_query_time,
-            #{log_id}
-        from t_command
-        where COMMAND_ID = #{command_id}
-    </insert>
-    <insert id="insertCommandHistoryBatch">
         insert into t_command_log(
             effective_time,
             expire_time,
@@ -277,7 +255,9 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-            log_uuid
+            log_uuid,
+            sip_int,
+            dip_int
         )
         select
             NOW(),
@@ -331,7 +311,124 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-            COMMAND_ID
+            #{log_id},
+            sip_int,
+            dip_int
+        from t_command
+        where COMMAND_ID = #{command_id}
+    </insert>
+    <insert id="insertCommandHistoryBatch">
+        insert into t_command_log(
+        effective_time,
+        expire_time,
+        TASK_ID,
+        RULE_ID,
+        COMMAND_ID,
+        TASKTYPE,
+        ADDR_TYPE,
+        SRC_IP,
+        SRC_PORT,
+        DST_IP,
+        DST_PORT,
+        PROTOCOL,
+        MASK_SRC_IP,
+        MASK_SRC_PORT,
+        MASK_DST_IP,
+        MASK_DST_PORT,
+        MASK_PROTOCOL,
+        TASK_ACT,
+        EVENTTYPE,
+        TASKNAME,
+        DISTRIBUTEPOINT,
+        DEPARTMENT,
+        FREQUENCY,
+        VALID_TIME,
+        INVALID_TIME,
+        IS_VALID,
+        IS_JUDGED,
+        SEND_TIMES,
+        SUCCESS_TIMES,
+        FIRST_SEND_TIME,
+        LAST_SEND_TIME,
+        CREATE_TIME,
+        LAST_UPDATE,
+        IS_DELETED,
+        RULE_NAME,
+        RCP_HIT_COUNT,
+        TOTAL_PACKET_NUM,
+        TOTAL_BYTE_NUM,
+        EFFECTIVE_EQUIPMENT_NUM,
+        AVERAGE_LATENCY,
+        MAX_LATENCY,
+        MIN_LATENCY,
+        c2s_pkt_num,
+        s2c_pkt_num,
+        c2s_byte_num,
+        s2c_byte_num,
+        display_id,
+        session_num,
+        first_effect_time,
+        last_rcp_query_time,
+        last_traffic_query_time,
+        log_uuid,
+        sip_int,
+        dip_int
+        )
+        select
+        NOW(),
+        NULL,
+        TASK_ID,
+        RULE_ID,
+        COMMAND_ID,
+        TASKTYPE,
+        ADDR_TYPE,
+        SRC_IP,
+        SRC_PORT,
+        DST_IP,
+        DST_PORT,
+        PROTOCOL,
+        MASK_SRC_IP,
+        MASK_SRC_PORT,
+        MASK_DST_IP,
+        MASK_DST_PORT,
+        MASK_PROTOCOL,
+        TASK_ACT,
+        EVENTTYPE,
+        TASKNAME,
+        DISTRIBUTEPOINT,
+        DEPARTMENT,
+        FREQUENCY,
+        VALID_TIME,
+        INVALID_TIME,
+        IS_VALID,
+        IS_JUDGED,
+        SEND_TIMES,
+        SUCCESS_TIMES,
+        FIRST_SEND_TIME,
+        LAST_SEND_TIME,
+        CREATE_TIME,
+        LAST_UPDATE,
+        IS_DELETED,
+        RULE_NAME,
+        RCP_HIT_COUNT,
+        TOTAL_PACKET_NUM,
+        TOTAL_BYTE_NUM,
+        EFFECTIVE_EQUIPMENT_NUM,
+        AVERAGE_LATENCY,
+        MAX_LATENCY,
+        MIN_LATENCY,
+        c2s_pkt_num,
+        s2c_pkt_num,
+        c2s_byte_num,
+        s2c_byte_num,
+        display_id,
+        session_num,
+        first_effect_time,
+        last_rcp_query_time,
+        last_traffic_query_time,
+        COMMAND_ID,
+        sip_int,
+        dip_int
         from t_command
         where COMMAND_ID IN
         <foreach collection="commandIds" item="command_id" separator="," open="(" close=")">
@@ -348,6 +445,7 @@
     </insert>
 
 
+
     <resultMap id="commandStatMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
         <id column="COMMAND_ID" property="UUID"/>
         <result column="TASK_ACT" property="taskAct"/>
@@ -357,7 +455,7 @@
         <result column="LAST_SEND_TIME" property="latestSendTime"/>
         <result column="IS_VALID" property="isValid"/>
         <result column="IS_JUDGED" property="isJudged"/>
-<!--        <result column="IS_DELETED" property=""/>-->
+        <!--        <result column="IS_DELETED" property=""/>-->
 
 
         <association property="fiveTupleWithMask">
@@ -405,7 +503,7 @@
         FROM t_command
         <where>
             AND TASK_ID = #{task_id}
---             AND IS_DELETED = FALSE
+            --             AND IS_DELETED = FALSE
             <if test="src_ip != null">AND SRC_IP = #{src_ip}</if>
             <if test="dst_ip != null">AND DST_IP = #{dst_ip}</if>
             <if test="src_port != null">AND SRC_PORT = #{src_port}</if>
@@ -450,7 +548,7 @@
         update t_command_log
         set expire_time = NOW()
         where COMMAND_ID = #{command_id}
-            and expire_time = NULL
+          and expire_time = NULL
     </update>
     <update id="updateCommandHistoryExpireTimeBatch">
         update t_command_log
@@ -459,7 +557,7 @@
         <foreach collection="commandIds" item="command_id" separator="," open="(" close=")">
             #{command_id}
         </foreach>
-            and expire_time = NULL
+        and expire_time = NULL
     </update>
     <update id="updateCommandIsJudgedIfIgnoreThisTime">
         update t_command

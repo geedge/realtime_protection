@@ -14,10 +14,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,6 +61,102 @@ public interface StaticRuleControllerApi {
                     description = "静态规则信息")
     )
     ResponseResult newStaticRuleObject(@RequestBody @Valid StaticRuleObject object, HttpServletRequest request);
+
+    @Operation(
+            summary = "查询静态规则的附件信息",
+            description = "查询静态规则的所有附件信息",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回静态规则的所有附件信息",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "查询静态规则的附件信息",
+                                            value = """
+                                                    {
+                                                      {
+                                                           "code": 200,
+                                                           "message": "请求成功",
+                                                           "data": {
+                                                               "files": [
+                                                                   {
+                                                                       "id": 3,
+                                                                       "fileName": "系统角色.docx",
+                                                                       "filePath": null,
+                                                                       "fileSize": 10915,
+                                                                       "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                                       "staticRuleId": 1819
+                                                                   },
+                                                                   {
+                                                                       "id": 4,
+                                                                       "fileName": "权限.txt",
+                                                                       "filePath": null,
+                                                                       "fileSize": 100,
+                                                                       "fileType": "text/plain",
+                                                                       "staticRuleId": 1819
+                                                                   }
+                                                               ]
+                                                           },
+                                                           "another": null
+                                                       }
+                                                    }""",
+                                            description = "static_rule_id:静态规则id" +
+                                                    "id:文件id" + "fileName:文件名" + "filePath:文件路径" +
+                                                    "fileSize:文件大小" + "fileType:文件类型" + "staticRuleId:静态规则id"
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "static_rule_id", description = "静态规则id")
+            }
+    )
+    @GetMapping("/queryAttachment")
+    ResponseResult queryAttachment(@RequestParam("static_rule_id") Long staticRuleId);
+
+    //上传附件
+    @Operation(
+            summary = "上传附件",
+            description = "以文件方式上传附件",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回上传结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "static_rule_id", description = "静态规则id"),
+            }
+
+    )
+    @PostMapping("/uploadAttachment")
+    ResponseResult uploadAttachment(@RequestParam("static_rule_id") Long staticRuleId,
+                                    MultipartFile file) throws IOException;
+
+    //文件下载
+    @Operation(
+            summary = "下载附件",
+            description = "下载附件",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回下载结果",
+                            content = @Content(
+                                    mediaType = "application/octet-stream",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "id", description = "文件")
+            }
+    )
+    @GetMapping("downAttachment")
+    ResponseEntity<Resource> downFile(@RequestParam Integer id) throws MalformedURLException, UnsupportedEncodingException;
 
     @Operation(
             summary = "批量导入静态规则",

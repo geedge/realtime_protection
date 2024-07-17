@@ -5,6 +5,7 @@ import com.alibaba.excel.EasyExcel;
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
 import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.File;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,12 +14,21 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +73,71 @@ public class StaticRuleController implements StaticRuleControllerApi {
                 .setData("static_rule_id", object.getStaticRuleId())
                 .setData("static_rule_name", object.getStaticRuleName());
     }
+
+    @GetMapping("/queryAttachment")
+    @Override
+    public ResponseResult queryAttachment(@RequestParam("static_rule_id") Long staticRuleId)  {
+        List<File> files = staticRuleService.selectFilesByStaticRuleId(staticRuleId);
+
+        return ResponseResult.ok()
+                .setData("files", files);
+    }
+
+    //上传附件
+    @PostMapping("/uploadAttachment")
+    @Override
+    public ResponseResult uploadAttachment(@RequestParam("static_rule_id") Long staticRuleId,
+                                               MultipartFile file) throws IOException {
+
+        String uploadPath = "d:\\";
+        //获取文件上传名称
+        String fileName=file.getOriginalFilename();
+        //获取文件保存全路径
+        String savePath=uploadPath+"/"+fileName;
+        //获取文件大小
+        Long fileSize=file.getSize();
+        //获取文件类型
+        String fileType=file.getContentType();
+        java.io.File newFile=new java.io.File(savePath);
+        //TODO 注意要将文件保存到本地路径中
+        file.transferTo(newFile);
+        File saveFile=new File();
+        saveFile.setFileName(fileName);
+        saveFile.setFileSize(fileSize);
+        saveFile.setFileType(fileType);
+        saveFile.setFilePath(savePath);
+        saveFile.setStaticRuleId(staticRuleId);
+        staticRuleService.saveFile(saveFile);
+
+        return ResponseResult.ok();
+    }
+
+
+
+    //文件下载
+    @GetMapping("downAttachment")
+    @Override
+    public ResponseEntity<Resource> downFile(@RequestParam Integer id) throws MalformedURLException, UnsupportedEncodingException {
+        //首先根据id，从数据库获取文件信息
+        File downFile=staticRuleService.selectFileById(id);
+        if (downFile!=null){
+            String path= downFile.getFilePath();
+            //本地路径地址转为url编码路径
+            URI urlPath= Paths.get(path).toUri();
+            Resource resource=new UrlResource(urlPath);
+            if (resource.exists()){
+                HttpHeaders headers=new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM+"");
+                headers.add(HttpHeaders.CONTENT_LENGTH,downFile.getFileSize()+"");
+                //注意文件名处要改为URL编码
+                headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" +
+                        URLEncoder.encode(downFile.getFileName(), "utf-8") + "\"");
+                return ResponseEntity.ok().headers(headers).body(resource);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 
     //以Excel方式批量导入静态规则
     @PostMapping("/upload")

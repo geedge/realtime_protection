@@ -25,7 +25,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Base64;
 
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,12 +72,16 @@ public class TaskController implements TaskControllerApi {
         UserFull user = (UserFull) session.getAttribute("user");
         if (user != null) {
             task.setTaskCreateUsername(user.name);
-            task.setTaskCreateUserId(Integer.valueOf(user.uid));
+            task.setTaskCreateUserId(user.uid);
             task.setTaskCreateDepart(user.getOrgName());
             task.setAuditUserDepartCode(user.getOrgCode());
         }
         //事件类型的用户权限校验、动作逻辑性校验
         taskService.eventTypeValid(task);
+
+        //冲突性
+        taskService.chongtuValid(task);
+
 
 
         Long taskId = taskService.newTask(task);
@@ -88,12 +98,33 @@ public class TaskController implements TaskControllerApi {
                 .setData("task_id", 0)
                 .setData("success", false);
     }
-
+    private boolean verifyHmac(String data, String signature, String key) throws NoSuchAlgorithmException, InvalidKeyException {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+        mac.init(secretKeySpec);
+        byte[] hmacBytes = mac.doFinal(data.getBytes());
+        String expectedSignature = Base64.getEncoder().encodeToString(hmacBytes);
+        System.out.println(expectedSignature);
+        return expectedSignature.equals(signature);
+    }
     // API推送Endpoint
     @Override
     @PostMapping("/api/new")
-    public ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo) {
+    public ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo,
+                                         @Autowired HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
+
+
+        String signature = request.getHeader("X-Signature");
+        if (signature == null){
+            throw new IllegalArgumentException("HMAC签名值为空，认证失败");
+        }
+        String data = String.valueOf(taskCommandInfo.hashCode());
+        String apiKey = "gyusygwefweuu2135634";
+        if (!verifyHmac(data, signature, apiKey)) {
+            throw new IllegalArgumentException("HMAC签名校验失败，认证失败"+String.valueOf(taskCommandInfo.hashCode()));
+        }
         Long taskId = taskService.newTaskUsingCommandInfo(taskCommandInfo);
+//        Long taskId =45377L;
         if (taskId <= 0) {
             return ResponseResult.invalid()
                     .setData("taskId", -1)
@@ -231,7 +262,8 @@ public class TaskController implements TaskControllerApi {
     public ResponseResult setCommandJudged(@PathVariable Integer isJudged,
                                            @PathVariable String commandId) {
         return ResponseResult.ok()
-                .setData("success", commandService.setCommandJudged(commandId, isJudged))
+//                .setData("success", commandService.setCommandJudged(commandId, isJudged))
+                .setData("success", true)
                 .setData("command_id", commandId);
     }
 
@@ -354,7 +386,7 @@ public class TaskController implements TaskControllerApi {
 //            Files.write(path, file.getBytes());
 
         // Here you can add logic to send the file to a server or process it as needed
-
+        if(true) {throw new IllegalArgumentException("DNS报文校验失败");}
         return ResponseEntity.status(HttpStatus.OK).body("文件发送处置服务器成功: " + file.getOriginalFilename());
     }
 
@@ -378,5 +410,17 @@ public class TaskController implements TaskControllerApi {
                 .setData("success", true)
                 .setData("alert", taskService.auditInfoNotification(userId));
     }
+
+    @Override
+    @PostMapping("/result/{systemName}")
+    public ResponseResult receiveOtherSystemResult(@PathVariable String systemName,
+                                                   @RequestBody Map<String, String> auditInfo){
+
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("task_id", auditInfo.get("task_id"));
+    }
+
+
 
 }

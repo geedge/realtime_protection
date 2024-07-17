@@ -70,7 +70,7 @@ public class Task {
     @JsonProperty("task_create_userid")
 //    @Schema(description = "任务创建人ID", accessMode = Schema.AccessMode.READ_ONLY)
     @Schema(description = "任务创建人ID")
-    private Integer taskCreateUserId;
+    private String taskCreateUserId;
 
     @JsonProperty("static_rule_ids")
     @Schema(description = "静态规则ID列表，动态和静态至少存在1个规则", example = "[10, 12]")

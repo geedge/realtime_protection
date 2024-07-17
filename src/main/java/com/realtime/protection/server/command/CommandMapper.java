@@ -67,4 +67,16 @@ public interface CommandMapper {
     void updateCommandIsJudgedIfIgnoreThisTime(@Param("command_id") String commandUUID);
 
     Integer queryCommandIsJudged(String uuid);
+
+    void insertCommandDistribute(@Param("info") TaskCommandInfo commandInfo);
+
+    void insertCommandRCPQuery(@Param("info") TaskCommandInfo commandInfo);
+
+    void insertCommandTraffic(@Param("info") TaskCommandInfo commandInfo);
+
+    void insertCommandDistributeBatch(@Param("command_infos")List<TaskCommandInfo> taskCommandInfoBatch);
+
+    void insertCommandRCPQueryBatch(@Param("command_infos")List<TaskCommandInfo> taskCommandInfoBatch);
+
+    void insertCommandTrafficBatch(@Param("command_infos")List<TaskCommandInfo> taskCommandInfoBatch);
 }

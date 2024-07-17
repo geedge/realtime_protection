@@ -121,7 +121,14 @@ public class TaskCommandInfo {
     @Schema(description = "规则名称", accessMode = Schema.AccessMode.READ_ONLY)
     private String ruleName;
 
-    private String hashValue;
+    @Schema(description = "源ip整数形式", accessMode = Schema.AccessMode.READ_ONLY)
+    private Long sipInt;
+
+    @Schema(description = "目的ip整数形式", accessMode = Schema.AccessMode.READ_ONLY)
+    private Long dipInt;
+
+
+//    private String hashValue;
 
     // 复制构造函数
     public void copyTaskCommandInfo(TaskCommandInfo original) {
@@ -150,6 +157,9 @@ public class TaskCommandInfo {
         this.protectLevel = original.protectLevel;
         this.taskStatus = original.taskStatus;
         this.ruleName = original.ruleName;
+        this.displayId = original.displayId;
+        this.sipInt = original.sipInt;
+        this.dipInt = original.dipInt;
     }
 
     public void setProtocolNum() {

@@ -1,6 +1,7 @@
 package com.realtime.protection.server.rule.staticrule;
 
 import com.realtime.protection.configuration.entity.rule.staticrule.StaticRuleObject;
+import com.realtime.protection.configuration.utils.File;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -82,6 +83,12 @@ public interface StaticRuleMapper {
     void removeUsedTaskId(Long taskId);
 
     Integer queryDuplicateStaticRule(StaticRuleObject object);
+
+    void saveFile(File saveFile);
+
+    File selectFileById(Integer id);
+
+    List<File> selectFilesByStaticRuleId(Long staticRuleId);
 
 //    boolean queryStaticRuleRepeat(StaticRuleObject object);
 }

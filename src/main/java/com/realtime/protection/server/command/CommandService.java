@@ -40,6 +40,19 @@ public class CommandService {
         this.stateHandler = stateHandler;
     }
 
+    public static long ipToLong(String ipAddress) {
+        String[] parts = ipAddress.split("\\.");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Invalid IP address: " + ipAddress);
+        }
+        long result = 0;
+        for (int i = 0; i < 4; i++) {
+            int part = Integer.parseInt(parts[i]);
+            result |= (long)part << (24 - (i * 8));
+        }
+        return result;
+    }
+
     @DSTransactional
     public String createCommand(TaskCommandInfo commandInfo) {
         String uuid = commandMapper.queryCommandInfo(commandInfo);
@@ -52,6 +65,13 @@ public class CommandService {
                         + "-"
                         + String.format("%06d", counter.generateId("command"))
         );
+
+        if (commandInfo.getFiveTupleWithMask().getSourceIP()!= null){
+            commandInfo.setSipInt(ipToLong(commandInfo.getFiveTupleWithMask().getSourceIP()));
+        }
+        if (commandInfo.getFiveTupleWithMask().getDestinationIP()!= null){
+            commandInfo.setDipInt(ipToLong(commandInfo.getFiveTupleWithMask().getDestinationIP()));
+        }
 
         //指令：白名单检查
         List<WhiteListObject> whiteListsHit = commandMapper.whiteListCommandCheck(commandInfo.getFiveTupleWithMask());
@@ -66,8 +86,12 @@ public class CommandService {
 
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
+        commandMapper.insertCommandDistribute(commandInfo);
+        commandMapper.insertCommandRCPQuery(commandInfo);
+        commandMapper.insertCommandTraffic(commandInfo);
+
         //写入历史表
-        //insertCommandHistory(commandInfo.getUUID());
+        insertCommandHistory(commandInfo.getUUID());
         return commandInfo.getUUID();
     }
 
@@ -92,7 +116,12 @@ public class CommandService {
                         + "-"
                         + String.format("%06d", counter.generateId("command"))
         );
-
+        if (commandInfo.getFiveTupleWithMask().getSourceIP()!= null){
+            commandInfo.setSipInt(ipToLong(commandInfo.getFiveTupleWithMask().getSourceIP()));
+        }
+        if (commandInfo.getFiveTupleWithMask().getDestinationIP()!= null){
+            commandInfo.setDipInt(ipToLong(commandInfo.getFiveTupleWithMask().getDestinationIP()));
+        }
         //指令：白名单检查
         List<WhiteListObject> whiteListsHit = commandMapper.whiteListCommandCheck(commandInfo.getFiveTupleWithMask());
         if (!whiteListsHit.isEmpty()) {
@@ -106,8 +135,11 @@ public class CommandService {
 
         commandInfo.setUUID(UUID.randomUUID().toString());
         commandMapper.createCommand(commandInfo);
-        //写入历史表,避免t_command_log表并发update冲突，这里先不写入历史表
-        //insertCommandHistory(commandInfo.getUUID());
+        commandMapper.insertCommandDistribute(commandInfo);
+        commandMapper.insertCommandRCPQuery(commandInfo);
+        commandMapper.insertCommandTraffic(commandInfo);
+        //写入历史表
+        insertCommandHistory(commandInfo.getUUID());
 
         //发送指令新建信号...实时任务 isJudged=1 才首次立刻下发
         try {
@@ -146,6 +178,12 @@ public class CommandService {
                                 + "-"
                                 + String.format("%06d", counter.generateId("command"))
                 );
+                if (info.getFiveTupleWithMask().getSourceIP()!= null){
+                    info.setSipInt(ipToLong(info.getFiveTupleWithMask().getSourceIP()));
+                }
+                if (info.getFiveTupleWithMask().getDestinationIP()!= null){
+                    info.setDipInt(ipToLong(info.getFiveTupleWithMask().getDestinationIP()));
+                }
                 taskCommandInfoBatch.add(info);
 
                 if (taskCommandInfoBatch.size() < BatchSize) {
@@ -154,13 +192,19 @@ public class CommandService {
                 System.out.println("batch insert " + i.getAndIncrement());
                 //因为createCommands只用于静态规则生成command，静态规则已经检查了白名单，所以不检查了
                 commandMapper.createCommands(taskCommandInfoBatch);
-                //insertCommandHistoryBatch(taskCommandInfoBatch);
+                commandMapper.insertCommandDistributeBatch(taskCommandInfoBatch);
+                commandMapper.insertCommandRCPQueryBatch(taskCommandInfoBatch);
+                commandMapper.insertCommandTrafficBatch(taskCommandInfoBatch);
+                insertCommandHistoryBatch(taskCommandInfoBatch);
                 taskCommandInfoBatch.clear();
             }
 
             if (!taskCommandInfoBatch.isEmpty()) {
                 commandMapper.createCommands(taskCommandInfoBatch);
-                //insertCommandHistoryBatch(taskCommandInfoBatch);
+                commandMapper.insertCommandDistributeBatch(taskCommandInfoBatch);
+                commandMapper.insertCommandRCPQueryBatch(taskCommandInfoBatch);
+                commandMapper.insertCommandTrafficBatch(taskCommandInfoBatch);
+                insertCommandHistoryBatch(taskCommandInfoBatch);
                 taskCommandInfoBatch.clear();
             }
 

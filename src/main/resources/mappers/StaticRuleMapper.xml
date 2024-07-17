@@ -186,6 +186,14 @@
             #{id}
         </foreach>
     </insert>
+    <insert id="saveFile">
+        insert into t_static_rule_file(
+                file_name, file_path, file_size, file_type, static_rule_id
+        )
+        values (
+                #{fileName}, #{filePath}, #{fileSize}, #{fileType}, #{staticRuleId}
+               )
+    </insert>
 
 
     <update id="updateStaticRule">
@@ -600,6 +608,26 @@
     </select>
 
 
+    <resultMap id="staticRuleFile" type="com.realtime.protection.configuration.utils.File">
+        <id column="id" property="id"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_path" property="filePath"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="file_type" property="fileType"/>
+        <result column="static_rule_id" property="staticRuleId"/>
+
+    </resultMap>
+
+    <select id="selectFileById"  resultMap="staticRuleFile">
+        SELECT id, file_name, file_path, file_size, file_type, static_rule_id
+        FROM t_static_rule_file
+        WHERE id = #{id}
+    </select>
+    <select id="selectFilesByStaticRuleId"  resultMap="staticRuleFile">
+        SELECT id, file_name, file_size, file_type, static_rule_id
+        FROM t_static_rule_file
+        WHERE static_rule_id = #{staticRuleId}
+    </select>
 
 
 </mapper>
