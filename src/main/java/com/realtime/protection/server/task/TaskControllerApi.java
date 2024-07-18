@@ -17,10 +17,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
@@ -107,8 +111,103 @@ public interface TaskControllerApi {
     ResponseResult newTaskWithAPI(@RequestBody @Valid TaskCommandInfo taskCommandInfo,
                                                                            @Autowired HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException ;
 
+    @Operation(
+            summary = "查询任务的附件信息",
+            description = "查询任务的所有附件信息",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回任务的所有附件信息",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            implementation = ResponseResult.class),
+                                    examples = @ExampleObject(
+                                            name = "查询任务的附件信息",
+                                            value = """
+                                                    {
+                                                      {
+                                                           "code": 200,
+                                                           "message": "请求成功",
+                                                           "data": {
+                                                               "files": [
+                                                                   {
+                                                                       "id": 3,
+                                                                       "fileName": "系统角色.docx",
+                                                                       "filePath": null,
+                                                                       "fileSize": 10915,
+                                                                       "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                                       "taskId": 1819
+                                                                   },
+                                                                   {
+                                                                       "id": 4,
+                                                                       "fileName": "权限.txt",
+                                                                       "filePath": null,
+                                                                       "fileSize": 100,
+                                                                       "fileType": "text/plain",
+                                                                       "taskId": 1819
+                                                                   }
+                                                               ]
+                                                           },
+                                                           "another": null
+                                                       }
+                                                    }""",
+                                            description = "task_id:任务id" +
+                                                    "id:文件id" + "fileName:文件名" + "filePath:文件路径" +
+                                                    "fileSize:文件大小" + "fileType:文件类型" + "taskId:taskIdid"
+                                    )
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "task_id", description = "任务id")
+            }
+    )
+    @GetMapping("/queryAttachment")
+    ResponseResult queryAttachment(@RequestParam("task_id") Long taskId);
 
-        @GetMapping("/query")
+    @Operation(
+            summary = "上传附件",
+            description = "以文件方式上传附件",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回上传结果",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "task_id", description = "任务id"),
+            }
+
+    )
+    //上传附件
+    @PostMapping("/uploadAttachment")
+    ResponseResult uploadAttachment(@RequestParam("task_id") Long taskId,
+                                    MultipartFile file) throws IOException;
+
+    //文件下载
+    @Operation(
+            summary = "下载附件",
+            description = "下载附件",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回下载结果",
+                            content = @Content(
+                                    mediaType = "application/octet-stream",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    )
+            },
+            parameters = {
+                    @Parameter(name = "id", description = "文件id")
+            }
+    )
+    @GetMapping("downAttachment")
+    ResponseEntity<Resource> downFile(@RequestParam Integer id) throws MalformedURLException, UnsupportedEncodingException;
+
+    @GetMapping("/query")
     @Operation(
             summary = "查询任务",
             description = "按页和搜索内容查询任务相关信息",

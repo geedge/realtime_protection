@@ -12,4 +12,5 @@ public class File implements Serializable {
     private Long fileSize;
     private String fileType;
     private Long staticRuleId;
+    private Long taskId;
 }

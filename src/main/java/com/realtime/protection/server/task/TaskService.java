@@ -9,6 +9,7 @@ import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.Counter;
+import com.realtime.protection.configuration.utils.File;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
@@ -646,6 +647,18 @@ public class TaskService {
                     "事件类型：APT攻击 ，开始时间"+task.getTaskStartTime()+"结束时间："+task.getTaskEndTime());
         }
 
-
     }
+
+    public List<File> selectFilesByStaticRuleId(Long taskId) {
+        return taskMapper.selectFilesByStaticRuleId(taskId);
+    }
+    public void saveFile(File saveFile) {
+        taskMapper.saveFile(saveFile);
+    }
+
+    public File selectFileById(Integer id) {
+        return taskMapper.selectFileById(id);
+    }
+
+
 }

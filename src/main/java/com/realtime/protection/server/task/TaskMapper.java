@@ -4,6 +4,7 @@ import com.realtime.protection.configuration.entity.defense.object.ProtectObject
 import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
+import com.realtime.protection.configuration.utils.File;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -132,4 +133,10 @@ public interface TaskMapper {
     List<Task> queryAuditInfoNotification(String userId , Integer auditStatus);
 
     void updateNotificationByTaskId(@Param("taskIds") List<Long> taskIdList);
+
+    void saveFile(File saveFile);
+
+    File selectFileById(Integer id);
+
+    List<File> selectFilesByStaticRuleId(Long taskId);
 }

@@ -5,6 +5,7 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.configuration.utils.File;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
@@ -21,10 +22,21 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.Base64;
 
 
@@ -137,6 +149,77 @@ public class TaskController implements TaskControllerApi {
                 .setData("taskId", taskId)
                 .setData("success", true)
                 .setData("command_hash",taskCommandInfo.hashCode());
+    }
+
+    @GetMapping("/queryAttachment")
+    @Override
+    public ResponseResult queryAttachment(@RequestParam("task_id") Long taskId)  {
+        List<File> files = taskService.selectFilesByStaticRuleId(taskId);
+
+        return ResponseResult.ok()
+                .setData("files", files);
+    }
+
+    //上传附件
+    @PostMapping("/uploadAttachment")
+    @Override
+    public ResponseResult uploadAttachment(@RequestParam("task_id") Long taskId,
+                                           MultipartFile file) throws IOException {
+
+//        String uploadPath = "d:\\";
+        String uploadPath = "/task_file";
+        //获取文件上传名称
+        String fileName=file.getOriginalFilename();
+        //获取文件保存全路径
+        String savePath=uploadPath+"/"+fileName;
+        //获取文件大小
+        Long fileSize=file.getSize();
+        //获取文件类型
+        String fileType=file.getContentType();
+        java.io.File newFile=new java.io.File(savePath);
+        // 获取文件的父目录
+        java.io.File parentDir = newFile.getParentFile();
+        // 如果父目录不存在，则创建该目录
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+        //TODO 注意要将文件保存到本地路径中
+        file.transferTo(newFile);
+        File saveFile=new File();
+        saveFile.setFileName(fileName);
+        saveFile.setFileSize(fileSize);
+        saveFile.setFileType(fileType);
+        saveFile.setFilePath(savePath);
+        saveFile.setTaskId(taskId);
+        taskService.saveFile(saveFile);
+
+        return ResponseResult.ok();
+    }
+
+
+
+    //文件下载
+    @GetMapping("downAttachment")
+    @Override
+    public ResponseEntity<Resource> downFile(@RequestParam Integer id) throws MalformedURLException, UnsupportedEncodingException {
+        //首先根据id，从数据库获取文件信息
+        File downFile=taskService.selectFileById(id);
+        if (downFile!=null){
+            String path= downFile.getFilePath();
+            //本地路径地址转为url编码路径
+            URI urlPath= Paths.get(path).toUri();
+            Resource resource=new UrlResource(urlPath);
+            if (resource.exists()){
+                HttpHeaders headers=new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM+"");
+                headers.add(HttpHeaders.CONTENT_LENGTH,downFile.getFileSize()+"");
+                //注意文件名处要改为URL编码
+                headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" +
+                        URLEncoder.encode(downFile.getFileName(), "utf-8") + "\"");
+                return ResponseEntity.ok().headers(headers).body(resource);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @Override

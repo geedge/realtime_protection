@@ -89,7 +89,7 @@ public class StaticRuleController implements StaticRuleControllerApi {
     public ResponseResult uploadAttachment(@RequestParam("static_rule_id") Long staticRuleId,
                                                MultipartFile file) throws IOException {
 
-        String uploadPath = "d:\\";
+        String uploadPath = "/static_rule_file";
         //获取文件上传名称
         String fileName=file.getOriginalFilename();
         //获取文件保存全路径
@@ -99,6 +99,12 @@ public class StaticRuleController implements StaticRuleControllerApi {
         //获取文件类型
         String fileType=file.getContentType();
         java.io.File newFile=new java.io.File(savePath);
+        // 获取文件的父目录
+        java.io.File parentDir = newFile.getParentFile();
+        // 如果父目录不存在，则创建该目录
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
         //TODO 注意要将文件保存到本地路径中
         file.transferTo(newFile);
         File saveFile=new File();

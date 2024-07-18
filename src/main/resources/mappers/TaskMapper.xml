@@ -492,6 +492,14 @@
             #{taskId}
         </foreach>
     </insert>
+    <insert id="saveFile">
+        insert into t_task_file(
+            file_name, file_path, file_size, file_type, task_id
+        )
+        values (
+                   #{fileName}, #{filePath}, #{fileSize}, #{fileType}, #{taskId}
+               )
+    </insert>
 
     <select id="getStaticCommandInfos" resultMap="staticCommandMap">
         SELECT t_task.task_name,
@@ -723,5 +731,27 @@
             task_create_userid = #{userId}
         AND task_audit_status = #{auditStatus}
         AND is_need_notification = 1
+    </select>
+
+
+    <resultMap id="taskFile" type="com.realtime.protection.configuration.utils.File">
+        <id column="id" property="id"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_path" property="filePath"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="file_type" property="fileType"/>
+        <result column="task_id" property="taskId"/>
+
+    </resultMap>
+
+    <select id="selectFileById" resultMap="taskFile">
+        SELECT id, file_name, file_path, file_size, file_type, task_id
+        FROM t_task_file
+        WHERE id = #{id}
+    </select>
+    <select id="selectFilesByStaticRuleId" resultMap="taskFile">
+        SELECT id, file_name, file_size, file_type, task_id
+        FROM t_task_file
+        WHERE task_id = #{taskId}
     </select>
 </mapper>
