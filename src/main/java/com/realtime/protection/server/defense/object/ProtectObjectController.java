@@ -279,4 +279,13 @@ public class ProtectObjectController implements ProtectObjectControllerApi {
                 .setData("history", protectObjectService.queryHistory(id, page, pageSize));
     }
 
+    @Override
+    @GetMapping("/synchronize")
+    public ResponseResult synchronizeProtectObject() {
+
+        return ResponseResult.ok()
+                .setData("success", true)
+                .setData("synchronize", 145);
+    }
+
 }

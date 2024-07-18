@@ -1,5 +1,6 @@
 package com.realtime.protection.configuration.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.ProtectionApplication;
 import com.realtime.protection.configuration.entity.user.User;
 import com.realtime.protection.configuration.entity.user.UserFull;
@@ -247,28 +248,51 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     private final WebClient webClient = WebClient
             .builder()
-            .baseUrl("http://39.105.210.156:8090/chanct-log/audit-xgs")
-//            .baseUrl("http://10.58.44.241:1888/api/chanct-log/audit-xgs")
+//            .baseUrl("http://39.105.210.156:8090/chanct-log/audit-xgs")
+            .baseUrl("http://10.58.44.241:1888/api/chanct-log/audit-xgs")
+//            .baseUrl("http://10.58.44.241:1888/magic-api/audit/save")
             .build();
 
     @Data
     @AllArgsConstructor
     private static class AuditRes{
+        @JsonProperty("auditBase")
         private AuditData auditBase;
     }
     @Data
     @AllArgsConstructor
     private static class AuditData {
+        @JsonProperty("userId")
         private String userId;
+        @JsonProperty("deptId")
         private String deptId;
+        @JsonProperty("userName")
         private String userName;
+        @JsonProperty("deptName")
+        private String deptName;
+        @JsonProperty("menu")
+        private String menu;
+        @JsonProperty("action")
+        private String action;
+        @JsonProperty("res")
+        private String res;
+        @JsonProperty("content")
+        private String content;
+        @JsonProperty("userIp")
+        private String userIp;
+    }
+    @Data
+    @AllArgsConstructor
+    private static class AuditDataNew {
+        private String userName;
+        private String userIp;
+        private String sourceType;
         private String deptName;
         private String menu;
-        private String action;
-        private String res;
         private String content;
+        private String originData;
 
-        private String userIp;
+
     }
 
     @Override
@@ -280,9 +304,12 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     @Override
     public ResponseResult beforeBodyWrite(ResponseResult body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
 // 可以不发送query的请求，数据量太大
-        if (request.getURI().getPath().contains("query")){
+        if (request.getURI().getPath().contains("query")
+        || request.getURI().getPath().contains("swagger")
+        || request.getURI().getPath().contains("dict")){
             return body;
         }
+
         AuditData auditData ;
         try {
             auditData = getAuditData(body, request);
@@ -292,7 +319,7 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         }
 
         AuditRes auditRes = new AuditRes(auditData);
-        log.info("auditData-----------:"+auditData);
+        log.info("auditData-----------:"+auditRes.toString());
 
         Mono<String> mono = webClient
                 .post()
@@ -364,6 +391,13 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
                     request.getURI().getPath(),
                     extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
             );
+//            auditData = new AuditData(
+//                    "NSADD管理员",extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
+//                    "xgs","组织树",
+//                    getTag(request.getURI().getPath()),
+//                    getSummary(request.getURI().getPath()),
+//                    body.toString()+" "+request.getURI().getPath()
+//            );
         }else {
             UserFull user = (UserFull) session.getAttribute("user");
             auditData = new AuditData(
