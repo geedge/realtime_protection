@@ -2,9 +2,12 @@ package com.realtime.protection.server.user.login;
 
 import javax.security.auth.login.LoginException;
 
+import com.realtime.protection.configuration.utils.EntityUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +21,10 @@ import com.realtime.protection.configuration.response.ResponseResult;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 // Just for example, not in production environment
 @RestController
@@ -62,6 +69,19 @@ public class LoginController {
             session.setAttribute("user", userFull);
 
             String sessionId = session.getId();
+
+            Map<String, String> userRedisMap = new HashMap<>();
+            userRedisMap.put("sessionData", sessionData);
+            userRedisMap.put("userId", userFull.uid);
+            userRedisMap.put("userName", userFull.name);
+            userRedisMap.put("userRole", userFull.getRoleKey());
+            userRedisMap.put("UserDepartmentName", userFull.getOrgName());
+            userRedisMap.put("UserDepartmentCode", userFull.getOrgCode());
+
+
+            if (!loginService.storeUserFullToRedis(userRedisMap)){
+                throw new LoginException("登录失败，无法存储用户信息到Redis");
+            }
 
             // 设置JSESSIONID Cookie
             Cookie sessionCookie = new Cookie("JSESSIONID", sessionId);

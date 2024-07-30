@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 
 /**
  * @author Yixiang Zhao
  **/
+@Data
 public class UserFull {
     public String ticket;
     public List<Group> groups;
@@ -19,7 +21,10 @@ public class UserFull {
     public String uid;
     public String employeeNumber;
     public String name;
-    public List<String> resoures;
+    public Object resoures;
+
+
+
 
     public String getOrgCode() {
         if (orgs.size() > 0) {
@@ -42,7 +47,7 @@ public class UserFull {
         return "";
     }
 }
-
+@Data
 class Group {
     public int groupId;
     public int applicationId;
@@ -51,7 +56,7 @@ class Group {
     public String groupTag; // Assume it's a JSON String, otherwise it could be List<Tag> or similar
     public String groupRemark;
 }
-
+@Data
 class Role {
     public int roleId;
     public int applicationId;
@@ -60,9 +65,10 @@ class Role {
     public String roleRemark;
     public String roleTag; // Same assumption as above
     public List<String> res; // Assuming a Resource class exists
-    public List<String> resources; // Assuming a Resource class exists
+//    public List<String> resources; // Assuming a Resource class exists
+    public Object resources;
 }
-
+@Data
 class Org {
     public String orgName;
     public String orgDescription;

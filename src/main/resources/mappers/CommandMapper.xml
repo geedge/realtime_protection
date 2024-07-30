@@ -514,7 +514,7 @@
     </select>
 
     <update id="stopCommandsByTaskId">
-        UPDATE t_command
+        UPDATE t_command_status
         SET IS_VALID    = FALSE,
             LAST_UPDATE = NOW()
         WHERE TASK_ID = #{task_id}
@@ -522,7 +522,7 @@
     </update>
 
     <update id="startCommandsByTaskId">
-        UPDATE t_command
+        UPDATE t_command_status
         SET IS_VALID    = TRUE,
             LAST_UPDATE = NOW()
         WHERE TASK_ID = #{task_id}
@@ -530,7 +530,7 @@
     </update>
 
     <update id="removeCommandsByTaskId">
-        UPDATE t_command
+        UPDATE t_command_status
         SET IS_DELETED  = TRUE,
             LAST_UPDATE = NOW()
         WHERE TASK_ID = #{task_id}
@@ -538,7 +538,7 @@
     </update>
 
     <update id="setCommandJudged">
-        UPDATE t_command
+        UPDATE t_command_status
         SET IS_JUDGED   = #{is_judged},
             LAST_UPDATE = NOW()
         WHERE COMMAND_ID = #{command_id}
@@ -560,7 +560,7 @@
         and expire_time = NULL
     </update>
     <update id="updateCommandIsJudgedIfIgnoreThisTime">
-        update t_command
+        update t_command_status
         set IS_JUDGED = 0
         where COMMAND_ID = #{command_id}
     </update>

@@ -19,8 +19,13 @@ import com.realtime.protection.server.command.CommandMapper;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -325,12 +331,17 @@ public class TaskService {
             throw new IllegalArgumentException("无法找到任务ID为" + taskId + "的任务，也许任务不存在？");
         }
 
+
         if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))
             taskMapper.changeTaskAuditStatusWithAudior(taskId, taskAuditStatus, auditUserName,  auditUserId,  auditUserDepart);
         else return false;
         insertTaskStatusLog(taskId);
+
+
         return true;
     }
+
+
     @Transactional
     public Boolean changeTaskAuditStatus(Long taskId, Integer taskAuditStatus) {
         Integer originalAuditStatus = taskMapper.queryTaskAuditStatus(taskId);
@@ -342,10 +353,64 @@ public class TaskService {
             taskMapper.changeTaskAuditStatus(taskId, taskAuditStatus);
         else return false;
         insertTaskStatusLog(taskId);
-
+//        sendTaskStatusChangeToOtherSystem(taskId,taskAuditStatus);
         return true;
     }
+    public Boolean sendTaskStatusChangeToOtherSystem(Long taskId, Integer taskAuditStatus) {
+        WebClient ddos_sytem = WebClient.builder()
+                .baseUrl("http://10.58.72.140:8089")
+                .build();
 
+        AtomicReference<Boolean> success = new AtomicReference<>(false);
+
+        Map<String, String> sendBody = new HashMap<>();
+        sendBody.put("taskId", String.valueOf(taskId));
+        sendBody.put("taskAuditStatus", String.valueOf(taskAuditStatus));
+
+        Mono<Map> mono = ddos_sytem.post()
+                .uri("/task/status")
+                .bodyValue(sendBody)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchangeToMono(res -> {
+                    if (res.statusCode().equals(HttpStatus.OK)) {
+                        return res.bodyToMono(Map.class);
+                    }
+                    return res.createError();
+                })
+                .doOnError(WebClientResponseException.class, res -> success.set(false));
+
+
+//        Map<String, Integer> response = mono.block(Duration.ofSeconds(5));
+
+        // 异步处理响应
+        mono.subscribe(
+                response -> {
+                    // 成功响应处理
+                    System.out.println("响应: " + response);
+                    success.set(true);
+                },
+                error -> {
+                    // 错误响应处理
+                    System.err.println("错误: " + error.getMessage());
+                    success.set(false);
+                }
+        );
+
+//        if (response == null) {
+//            log.info("指令首次查询RCP返回为null");
+//            return false;
+//        }
+//        response.forEach((commandUUID, responseCode) -> {
+//            log.info("指令首次查询RCP成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+//            if (responseCode != 0) {
+//                log.warn("指令首次查询RCP失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+//            }
+//        });
+
+        success.set(true);
+
+        return success.get();
+    }
     public Boolean deleteTask(Long taskId) {
         Task task = taskMapper.queryTask(taskId);
         if (task == null) {

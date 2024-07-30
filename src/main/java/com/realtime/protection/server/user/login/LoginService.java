@@ -1,10 +1,13 @@
 package com.realtime.protection.server.user.login;
 
 import com.realtime.protection.configuration.utils.OkHttpUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.security.auth.login.LoginException;
 
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,15 +26,22 @@ import io.micrometer.common.util.StringUtils;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 // just for example, not for production environment
 public class LoginService {
-
+    private static final String LOGIN_USER_ID = "login_user_id::";
+    private static final long LOGIN_USER_TTL = 1200L;
     private final LoginMapper loginMapper;
+    private final StringRedisTemplate stringRedisTemplate;
 
-    public LoginService(LoginMapper loginMapper) {
+    public LoginService(LoginMapper loginMapper, StringRedisTemplate stringRedisTemplate) {
         this.loginMapper = loginMapper;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     public Integer login(User user) throws LoginException {
@@ -52,11 +62,11 @@ public class LoginService {
         // 获取 ACCESS_TOKEN
         ObjectMapper objectMapper = new ObjectMapper();
 
- //       OkHttpClient client = new OkHttpClient();
+        //       OkHttpClient client = new OkHttpClient();
 
         //不做证书验证的OkHttpClient
         OkHttpClient client = new OkHttpClient.Builder()
-                .sslSocketFactory(OkHttpUtil.getIgnoreInitedSslContext().getSocketFactory(),OkHttpUtil.IGNORE_SSL_TRUST_MANAGER_X509)
+                .sslSocketFactory(OkHttpUtil.getIgnoreInitedSslContext().getSocketFactory(), OkHttpUtil.IGNORE_SSL_TRUST_MANAGER_X509)
                 .hostnameVerifier(OkHttpUtil.getIgnoreSslHostnameVerifier())
                 .build();
 
@@ -69,7 +79,7 @@ public class LoginService {
                 .header("Authorization", "Basic TlNBRERAWlguT1JHOm5IUWxOczd5S3lXeW8yTnNiZjZOaEZhYWJpVllJQVNTbHViUWd6VGg4TlNsTlJBNVdsUFExdz09")
                 .post(okhttp3.internal.Util.EMPTY_REQUEST)
                 .build();
-        try  {
+        try {
             Response response = client.newCall(request).execute();
             String rsp = response.body().string();
             System.out.println("rsp:" + rsp);
@@ -88,16 +98,16 @@ public class LoginService {
         }
         // 校验 SESSION_DATA
         RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-            .addFormDataPart("sessionData", sessionData).build();
+                .addFormDataPart("sessionData", sessionData).build();
         request = new Request.Builder()
 //            .url("https://passport.zx.com:10217/passport/accessApplication")
 //            .url("https://114.243.134.122:10217/passport/accessApplication")
 //            .url("https://passport.iam.pub/passport/accessApplication")
-            .url("http://10.60.15.14:8080/passport/accessApplication")
-            .header("Authorization", "Bearer " + accessToken)
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .post(body)
-            .build();
+                .url("http://10.60.15.14:8080/passport/accessApplication")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .post(body)
+                .build();
         try {
             Response response = client.newCall(request).execute();
             String rsp = response.body().string();
@@ -119,5 +129,23 @@ public class LoginService {
     }
 
 
+    public boolean storeUserFullToRedis( Map<String, String> userRedisMap) {
+        try {
+            String uid = userRedisMap.get("userId");
 
+            HashOperations<String, String, String> stringObjectObjectHashOperations = stringRedisTemplate.opsForHash();
+            stringObjectObjectHashOperations.putAll(LOGIN_USER_ID +uid, userRedisMap);
+//                    设置有效时间,问题：该方式说明无论你是否操作一但过了120分钟，就会被认定为未登录，所以我们应该在拦截器中设置每次操作更新token的存活时间
+            stringRedisTemplate.expire(LOGIN_USER_ID + uid, LOGIN_USER_TTL, TimeUnit.MINUTES);
+
+            // 获取 HashMap
+            Map<String, String> storedHashMap = stringObjectObjectHashOperations.entries(LOGIN_USER_ID +uid);
+            log.info("存储用户信息到redis成功，User信息: {}", storedHashMap);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("存用户信息到redis出错 error: {}，User信息: {}", e.getMessage(), userRedisMap);
+            return false;
+        }
+    }
 }
