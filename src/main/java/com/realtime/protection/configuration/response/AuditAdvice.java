@@ -9,22 +9,33 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.reactivestreams.Publisher;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -144,6 +155,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         put("/api/v1/proobj/delete/[^/]+", "防护对象API");
         put("/api/v1/dynamicrule/[^/]+/delete", "动态规则API");
         put("/api/v1/dynamicrule/[^/]+", "动态规则API");
+        put("/api/v1/user/auth", "用户认证");
+        
     }};
 
     public static final Map<String, String> URL_SUMMARY_MAP = new HashMap<String, String>() {{
@@ -244,6 +257,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         put("/api/v1/proobj/delete/[^/]+", "批量删除防护对象");
         put("/api/v1/dynamicrule/[^/]+/delete", "删除动态规则");
         put("/api/v1/dynamicrule/[^/]+", "批量删除动态规则");
+        put("/api/v1/user/auth", "用户身份认证，登陆判断，返回用户信息");
+
     }};
 
     private final WebClient webClient = WebClient
@@ -256,30 +271,22 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     @Data
     @AllArgsConstructor
     private static class AuditRes{
-        @JsonProperty("auditBase")
         private AuditData auditBase;
     }
     @Data
     @AllArgsConstructor
     private static class AuditData {
-        @JsonProperty("userId")
         private String userId;
-        @JsonProperty("deptId")
         private String deptId;
-        @JsonProperty("userName")
         private String userName;
-        @JsonProperty("deptName")
         private String deptName;
-        @JsonProperty("menu")
-        private String menu;
-        @JsonProperty("action")
-        private String action;
-        @JsonProperty("res")
-        private String res;
-        @JsonProperty("content")
-        private String content;
-        @JsonProperty("userIp")
         private String userIp;
+
+        private String menu;
+        private String action;
+        private String res;
+        private String content;
+
     }
     @Data
     @AllArgsConstructor
@@ -297,8 +304,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return false;
-//        return true;
+//        return false;
+        return true;
     }
 
     @Override
@@ -306,7 +313,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 // 可以不发送query的请求，数据量太大
         if (request.getURI().getPath().contains("query")
         || request.getURI().getPath().contains("swagger")
-        || request.getURI().getPath().contains("dict")){
+        || request.getURI().getPath().contains("dict")
+		|| request.getURI().getPath().contains("statistics")){
             return body;
         }
 
@@ -377,19 +385,35 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         return null;
     }
 
+
+    private Map<String, List<String>> getQueryParams(ServerHttpRequest request) {
+        URI uri = request.getURI();
+        return UriComponentsBuilder.fromUri(uri).build().getQueryParams();
+    }
+
+
+
+
     @NotNull
-    private static AuditData getAuditData(ResponseResult body, ServerHttpRequest request) {
+    private static AuditData getAuditData(ResponseResult body, ServerHttpRequest request) throws IOException {
         HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
         AuditData auditData;
-        log.info(request.getURI().getPath());
+        log.info(request.getHeaders().getFirst("X-Forwarded-For"));
+
+        String requestBody = request.getBody().toString();
         if(session==null || session.getAttribute("user")==null){
             auditData = new AuditData(
                     "0000000","0000000","NSADD管理员","组织树",
+					extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
                     getTag(request.getURI().getPath()),
                     getSummary(request.getURI().getPath()),
                     body.toString(),
-                    request.getURI().getPath(),
-                    extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
+                    String.format("名称：%s, 操作：%s, 请求内容：%s, 是否成功：%s, 响应内容：%s",
+                                    getTag(request.getURI().getPath()),
+                                    getSummary(request.getURI().getPath()),
+                                    request.getURI().getPath(),
+                                    body.getCode()==200?"成功":"失败",
+                                    body.toString())
             );
 //            auditData = new AuditData(
 //                    "NSADD管理员",extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
@@ -402,11 +426,17 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
             UserFull user = (UserFull) session.getAttribute("user");
             auditData = new AuditData(
                     user.uid, user.getOrgCode(),user.name,  user.getOrgName(),
+                    extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
                     getTag(request.getURI().getPath()),
                     getSummary(request.getURI().getPath()),
-                    body.getCode()==200?"成功":"失败",
-                    body.getData().toString(),
-                    extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
+                    body.toString(),
+                    String.format("名称：%s, 操作：%s, 请求内容：%s, 是否成功：%s, 响应内容：%s",
+                                    getTag(request.getURI().getPath()),
+                                    getSummary(request.getURI().getPath()),
+                                    request.getURI().getPath(),
+                                    body.getCode()==200?"成功":"失败",
+                                    body.toString())
+                    // body.getData().toString(),
             );
         }
         return auditData;

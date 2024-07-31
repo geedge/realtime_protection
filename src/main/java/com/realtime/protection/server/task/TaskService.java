@@ -416,6 +416,9 @@ public class TaskService {
         if (task == null) {
             return true;
         }
+        if (task.getTaskStatus() == StateEnum.RUNNING.getStateNum()) {
+            throw new IllegalArgumentException("任务正在运行中，无法删除");
+        }
 //有的规则被任务选择了，但任务还没有启动，此时规则的状态不是已使用，但used_task_id已经被设置
         //所以应该选择任务的时候就
         updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
