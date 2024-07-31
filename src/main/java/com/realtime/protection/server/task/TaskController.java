@@ -345,8 +345,23 @@ public class TaskController implements TaskControllerApi {
     public ResponseResult setCommandJudged(@PathVariable Integer isJudged,
                                            @PathVariable String commandId) {
         return ResponseResult.ok()
-//                .setData("success", commandService.setCommandJudged(commandId, isJudged))
-                .setData("success", true)
+                .setData("success", commandService.setCommandJudged(commandId, isJudged))
+//                .setData("success", true)
+                .setData("command_id", commandId);
+    }
+
+    @GetMapping("/{commandId}/valid2/{isValid}")
+    public ResponseResult setCommandValid(@PathVariable Integer isValid,
+                                           @PathVariable String commandId) {
+        if (isValid < 0 || isValid > 1) {
+            return ResponseResult.invalid()
+                    .setData("success", false)
+                    .setData("command_id", commandId);
+        }
+
+        return ResponseResult.ok()
+                .setData("success", commandService.setCommandValid(commandId, isValid))
+//                .setData("success", true)
                 .setData("command_id", commandId);
     }
 
