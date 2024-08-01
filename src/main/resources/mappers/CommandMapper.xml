@@ -564,6 +564,12 @@
         set IS_JUDGED = 0
         where COMMAND_ID = #{command_id}
     </update>
+    <update id="setCommandValid">
+        UPDATE t_command_status
+        SET IS_VALID    = #{is_valid},
+            LAST_UPDATE = NOW()
+        WHERE COMMAND_ID = #{command_id}
+    </update>
 
     <select id="queryCommandInfo" resultType="java.lang.String">
         SELECT COMMAND_ID FROM t_command

@@ -79,4 +79,6 @@ public interface CommandMapper {
     void insertCommandRCPQueryBatch(@Param("command_infos")List<TaskCommandInfo> taskCommandInfoBatch);
 
     void insertCommandTrafficBatch(@Param("command_infos")List<TaskCommandInfo> taskCommandInfoBatch);
+
+    Object setCommandValid(String commandId, Integer isValid);
 }

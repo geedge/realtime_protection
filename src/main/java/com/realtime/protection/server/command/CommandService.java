@@ -301,4 +301,8 @@ public class CommandService {
         //新建的loguuid拿commannd_id来定顶一会吧
         commandMapper.insertCommandHistoryBatch(commandIds);
     }
+
+    public Object setCommandValid(String commandId, Integer isValid) {
+        return commandMapper.setCommandValid(commandId, isValid);
+    }
 }
