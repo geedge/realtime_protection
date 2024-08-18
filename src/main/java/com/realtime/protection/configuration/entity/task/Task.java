@@ -152,5 +152,7 @@ public class Task {
     @Schema(description = "审核意见", example = "审核不同意", accessMode = Schema.AccessMode.READ_ONLY)
     private String auditInfo;
 
-
+    @JsonProperty("task_ip_num")
+    @Schema(description = "任务涉及ip数量", example = "1000", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer taskIpNum;
 }

@@ -988,4 +988,43 @@ public interface TaskControllerApi {
     @PostMapping("/result/{systemName}")
     ResponseResult receiveOtherSystemResult(@PathVariable String systemName,
                                             @RequestBody Map<String, String> auditInfo);
+
+    @Operation(
+            summary = "查询任务历史状态日志",
+            description = "查询任务历史状态日志",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            description = "返回数据",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseResult.class)
+                            )
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "类比分页查询任务",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class),
+                            examples = @ExampleObject(
+                                    name = "example",
+                                    value = """
+                                    {
+                                       }
+                                    """
+                            )
+
+                    )
+            ),
+            parameters = {
+                    @Parameter(name = "id", description = "任务id", example = "44047"),
+                    @Parameter(name = "page", description = "页号", example = "1"),
+                    @Parameter(name = "page_size", description = "页大小", example = "5"),
+
+            }
+    )
+    @GetMapping("/query/log/status")
+    ResponseResult queryTaskStausLog(@RequestParam("id") @Min(1) Long id,
+                                     @RequestParam("page") @Min(1) Integer page,
+                                     @RequestParam("page_size") @Min(1) Integer pageSize);
 }

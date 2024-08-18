@@ -80,6 +80,8 @@
         <result column="source_system" property="sourceSystem"/>
         <result column="effective_time" property="effeciveTime"/>
         <result column="expire_time" property="expireTime"/>
+
+        <result column="task_ip_num" property="taskIpNum"/>
 <!--防护对象字段-->
     </resultMap>
 
@@ -311,6 +313,11 @@
         <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
             #{taskId}
         </foreach>
+    </update>
+    <update id="setIpTotalNum">
+        UPDATE t_task
+        SET task_ip_num = #{ip_total_num}
+        WHERE task_id = #{task_id}
     </update>
 
     <delete id="deleteTask">
@@ -753,5 +760,16 @@
         SELECT id, file_name, file_size, file_type, task_id
         FROM t_task_file
         WHERE task_id = #{taskId}
+    </select>
+    <select id="queryTaskStausLog" resultMap="taskMap">
+        SELECT *
+        FROM t_task_status_log
+        WHERE task_id = #{id}
+        ORDER BY effective_time DESC
+        LIMIT ${(page - 1) * pageSize}, #{pageSize}
+    </select>
+    <select id="queryTaskStausLogTotalNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_task_status_log
+        WHERE task_id = #{id}
     </select>
 </mapper>

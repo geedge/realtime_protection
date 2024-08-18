@@ -230,6 +230,11 @@ public class CommandService {
         return commandMapper.queryCommandInfoByUUID(uuid);
     }
 
+    public List<TaskCommandInfo> queryAllDistributingCommandInfo() {
+        return commandMapper.queryAllDistributingCommandInfo();
+    }
+
+
     public Boolean startCommandsByTaskId(Long taskId) {
         return commandMapper.startCommandsByTaskId(taskId);
     }
@@ -247,6 +252,8 @@ public class CommandService {
 
         //设置指令是否已经研判
         Boolean success = commandMapper.setCommandJudged(commandId, isJudged);
+        //研判状态也写入历史表
+        insertCommandHistory(commandId);
 
         try {
             List<String> commandUUIDs = Collections.singletonList(commandId);
@@ -302,7 +309,10 @@ public class CommandService {
         commandMapper.insertCommandHistoryBatch(commandIds);
     }
 
-    public Object setCommandValid(String commandId, Integer isValid) {
-        return commandMapper.setCommandValid(commandId, isValid);
+    //指令提前撤回下发
+    public Boolean setCommandValid(String commandId, Integer isValid) {
+        Boolean isture = commandMapper.setCommandValid(commandId, isValid);
+        insertCommandHistory(commandId);
+        return isture;
     }
 }

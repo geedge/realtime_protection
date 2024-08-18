@@ -127,6 +127,8 @@ public class TaskCommandInfo {
     @Schema(description = "目的ip整数形式", accessMode = Schema.AccessMode.READ_ONLY)
     private Long dipInt;
 
+    private Long rcpHitCount;
+
 
 //    private String hashValue;
 

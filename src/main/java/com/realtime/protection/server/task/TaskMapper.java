@@ -16,6 +16,10 @@ import java.util.Map;
 
 @Mapper
 public interface TaskMapper {
+
+
+    void setIpTotalNum(@Param("ip_total_num")Long ipTotalNum, @Param("task_id")Long taskId) ;
+
     void newTask(@Param("task") Task task);
 
     void newTaskStaticRuleConcat(@Param("task_id") Long taskId,
@@ -139,4 +143,8 @@ public interface TaskMapper {
     File selectFileById(Integer id);
 
     List<File> selectFilesByStaticRuleId(Long taskId);
+
+    List<Task> queryTaskStausLog(Long id, Integer page, Integer pageSize);
+
+    Integer queryTaskStausLogTotalNum(Long id);
 }

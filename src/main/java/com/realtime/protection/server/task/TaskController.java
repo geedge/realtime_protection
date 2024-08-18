@@ -92,9 +92,7 @@ public class TaskController implements TaskControllerApi {
         taskService.eventTypeValid(task);
 
         //冲突性
-        taskService.chongtuValid(task);
-
-
+//        taskService.chongtuValid(task);
 
         Long taskId = taskService.newTask(task);
 
@@ -517,6 +515,21 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok()
                 .setData("success", true)
                 .setData("task_id", auditInfo.get("task_id"));
+    }
+
+    @Override
+    @GetMapping("/query/log/status")
+    public ResponseResult queryTaskStausLog(@RequestParam("id") @Min(1) Long id ,
+                                            @RequestParam("page") @Min(1) Integer page,
+                                            @RequestParam("page_size") @Min(1) Integer pageSize) {
+        List<Task> taskLog = taskService.queryTaskStausLog(id,page,pageSize);
+
+        if (taskLog == null) {
+            return ResponseResult.invalid().setMessage("无效Task ID，也许该ID对应的任务不存在？");
+        }
+
+        return ResponseResult.ok().setData("task_log", taskLog)
+                .setData("total_num", taskService.queryTaskStausLogTotalNum(id));
     }
 
 

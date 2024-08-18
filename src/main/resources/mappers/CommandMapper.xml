@@ -456,6 +456,7 @@
         <result column="IS_VALID" property="isValid"/>
         <result column="IS_JUDGED" property="isJudged"/>
         <!--        <result column="IS_DELETED" property=""/>-->
+        <result column="RCP_HIT_COUNT" property="rcpHitCount"/>
 
 
         <association property="fiveTupleWithMask">
@@ -465,6 +466,7 @@
             <result column="DST_PORT" property="destinationPort"/>
             <result column="PROTOCOL" property="protocolNum"/>
         </association>
+
     </resultMap>
 
     <select id="queryCommandInfoByUUID" resultMap="commandStatMap">
@@ -705,5 +707,14 @@
         SELECT IS_JUDGED
         FROM t_command
         WHERE COMMAND_ID = #{uuid}
+    </select>
+    <select id="queryAllDistributingCommandInfo"
+            resultMap="commandStatMap">
+            SELECT COMMAND_ID,
+                   RCP_HIT_COUNT
+            FROM t_command
+            WHERE IS_JUDGED = 1
+              AND IS_VALID = 1
+              AND IS_DELETED = 0
     </select>
 </mapper>

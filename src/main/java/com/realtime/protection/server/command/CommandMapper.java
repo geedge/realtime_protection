@@ -80,5 +80,7 @@ public interface CommandMapper {
 
     void insertCommandTrafficBatch(@Param("command_infos")List<TaskCommandInfo> taskCommandInfoBatch);
 
-    Object setCommandValid(String commandId, Integer isValid);
+    Boolean setCommandValid(String commandId, Integer isValid);
+
+    List<TaskCommandInfo> queryAllDistributingCommandInfo();
 }

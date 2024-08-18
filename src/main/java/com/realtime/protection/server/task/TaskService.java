@@ -11,6 +11,7 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.File;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.Subnet;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
@@ -27,6 +28,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -59,15 +61,53 @@ public class TaskService {
         this.commandMapper = commandMapper;
     }
 
+
+    public static List<Subnet> mergeOverlappingSubnets(List<Subnet> subnets) throws UnknownHostException {
+        if (subnets.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        subnets.sort(Comparator.comparingLong(subnet -> subnet.startIp));
+        List<Subnet> mergedSubnets = new ArrayList<>();
+        Subnet current = subnets.get(0);
+
+        for (int i = 1; i < subnets.size(); i++) {
+            Subnet next = subnets.get(i);
+            if (current.overlapsWith(next)) {
+                current = current.mergeWith(next);
+            } else {
+                mergedSubnets.add(current);
+                current = next;
+            }
+        }
+        mergedSubnets.add(current);
+        return mergedSubnets;
+    }
+
+    public Long ipWithMaskToIpNums(List<Subnet> subnets)  {
+
+        Long totalIPs = 0L;
+        try {
+            List<Subnet> mergedSubnets = mergeOverlappingSubnets(subnets);
+            for (Subnet subnet : mergedSubnets){
+                totalIPs += Subnet.getNumberOfHosts(subnet.subnetMask);
+            }
+
+//            totalIPs = (long) mergedSubnets.stream().mapToInt(Subnet::getNumberOfHosts).sum();
+            log.info("合并后的子网涉及的总IP数量是: " + totalIPs);
+
+        } catch (UnknownHostException e) {
+
+           return null;
+        }
+        return totalIPs;
+    }
+
+
     @Transactional
     public Long newTask(Task task) {
-        // todo: 目前获取方式还不确定，以后再确定
-//        task.setTaskCreateUserId(1);
-//        task.setTaskCreateUsername("xxx");
-//        task.setTaskCreateDepart("xxx");
 
 //        eventTypeValid(task);
-
 
         task.setTaskDisplayId(
                 "RW-"
@@ -76,6 +116,8 @@ public class TaskService {
                 + String.format("%06d", counter.generateId("task")));
 
         taskMapper.newTask(task);
+
+        List<Subnet> subnetList = new ArrayList<>();
         if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
             staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
                 if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
@@ -84,10 +126,32 @@ public class TaskService {
                 if (staticRuleObject.getStaticRuleUsedTaskId() != null) {
                     throw new IllegalArgumentException("部分静态规则已被其他任务使用");
                 }
+                try {
+                    String sip = staticRuleObject.getStaticRuleSip();
+                    String msip;
+                    if (staticRuleObject.getStaticRuleMsip() != null){
+                        msip = staticRuleObject.getStaticRuleMsip();
+                    }
+                    else{
+                        msip = "255.255.255.255";
+                    }
+                    String dip = staticRuleObject.getStaticRuleDip();
+                    String mdip;
+                    if (staticRuleObject.getStaticRuleMdip() != null){
+                        mdip = staticRuleObject.getStaticRuleMdip();
+                    }
+                    else{
+                        mdip = "255.255.255.255";
+                    }
+                    if (sip != null) subnetList.add(new Subnet(sip,msip));
+                    if (dip != null) subnetList.add(new Subnet(dip,mdip));
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
             });
             taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
         }
-
+    
         if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
             dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds()).forEach(dynamicRuleObject -> {
                 if (!dynamicRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
@@ -113,6 +177,9 @@ public class TaskService {
 
             }
         }
+        Long ipTotalNum = ipWithMaskToIpNums(subnetList);
+        taskMapper.setIpTotalNum(ipTotalNum, task.getTaskId());
+        //todo 1、存到数据库  2、前端展示。详细信息
         insertTaskStatusLog(task.getTaskId());
         return task.getTaskId();
     }
@@ -729,4 +796,11 @@ public class TaskService {
     }
 
 
+    public List<Task> queryTaskStausLog(Long id, Integer page, Integer pageSize) {
+        return taskMapper.queryTaskStausLog(id,page,pageSize);
+    }
+
+    public Integer queryTaskStausLogTotalNum(Long id) {
+        return taskMapper.queryTaskStausLogTotalNum(id);
+    }
 }
