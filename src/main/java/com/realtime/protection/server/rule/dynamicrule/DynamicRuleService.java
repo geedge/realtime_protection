@@ -87,6 +87,12 @@ public class DynamicRuleService {
             switch (StateEnum.getStateEnumByNum(taskStatus)){
                 case RUNNING:
                     throw new IllegalArgumentException("使用该动态规则的任务处于运行状态");
+                case RUNNING_FAILED:
+                    throw new IllegalArgumentException("使用该动态规则的任务处于运行失败状态");
+                case RUNNING_PARTIAL_SUCCESS:
+                    throw new IllegalArgumentException("使用该动态规则的任务处于部分成功状态");
+                case RUNNING_SUCCESS:
+                    throw new IllegalArgumentException("使用该动态规则的任务处于运行成功状态");
                 case PAUSED:
                     throw new IllegalArgumentException("使用该动态规则的任务处于暂停状态");
                 default:

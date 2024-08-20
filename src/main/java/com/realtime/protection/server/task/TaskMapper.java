@@ -147,4 +147,8 @@ public interface TaskMapper {
     List<Task> queryTaskStausLog(Long id, Integer page, Integer pageSize);
 
     Integer queryTaskStausLogTotalNum(Long id);
+
+    List<Long> queryRunningTasks(Integer running, Integer allSuccess, Integer partSuccess, Integer allFail);
+
+    Integer queryIpTotalNum(Long taskId);
 }

@@ -129,6 +129,8 @@ public class TaskCommandInfo {
 
     private Long rcpHitCount;
 
+    private Long totalPacketNum;
+
 
 //    private String hashValue;
 

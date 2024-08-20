@@ -13,6 +13,9 @@ public class RunningState extends StateHandler implements State {
             case STOP -> handleStop(commandService, taskService, taskId);
             case FINISHED -> handleFinish(commandService, taskService, taskId);
             case FAILED -> handleFailed(commandService, taskService, taskId);
+            case RUNNING_SUCCESS -> handleRunningSuccess(commandService, taskService, taskId);
+            case RUNNING_PARTIAL_SUCCESS -> handleRunningPartialSuccess(commandService, taskService, taskId);
+            case RUNNING_FAILED -> handleRunningFail(commandService, taskService, taskId);
             default -> throw new IllegalStateException("错误的状态: " + StateEnum.getStateEnumByState(newState));
         };
     }

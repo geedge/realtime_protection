@@ -94,7 +94,7 @@ public class TaskService {
             }
 
 //            totalIPs = (long) mergedSubnets.stream().mapToInt(Subnet::getNumberOfHosts).sum();
-            log.info("合并后的子网涉及的总IP数量是: " + totalIPs);
+//            log.debug("合并后的子网涉及的总IP数量是: " + totalIPs);
 
         } catch (UnknownHostException e) {
 
@@ -483,7 +483,8 @@ public class TaskService {
         if (task == null) {
             return true;
         }
-        if (task.getTaskStatus() == StateEnum.RUNNING.getStateNum()) {
+        if (task.getTaskStatus() == StateEnum.RUNNING.getStateNum() || task.getTaskStatus() == StateEnum.RUNNING_FAILED.getStateNum()
+            || task.getTaskStatus() == StateEnum.RUNNING_SUCCESS.getStateNum()|| task.getTaskStatus() == StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum()){
             throw new IllegalArgumentException("任务正在运行中，无法删除");
         }
 //有的规则被任务选择了，但任务还没有启动，此时规则的状态不是已使用，但used_task_id已经被设置
@@ -802,5 +803,16 @@ public class TaskService {
 
     public Integer queryTaskStausLogTotalNum(Long id) {
         return taskMapper.queryTaskStausLogTotalNum(id);
+    }
+
+    public List<Long> getRunningTasks() {
+        return taskMapper.queryRunningTasks(StateEnum.RUNNING.getStateNum(),StateEnum.RUNNING_SUCCESS.getStateNum(),
+                StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(),StateEnum.RUNNING_FAILED.getStateNum());
+    }
+
+    public void updateTaskIpTotalNum(Long ipTotalNum, Long taskId) {
+        Integer taskIpNum  =  taskMapper.queryIpTotalNum(taskId);
+        ipTotalNum = ipTotalNum + taskIpNum;
+        taskMapper.setIpTotalNum(ipTotalNum, taskId);
     }
 }

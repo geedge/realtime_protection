@@ -16,7 +16,11 @@ public enum StateEnum {
     PAUSED(3, new PauseState()),
     STOP(4, new StopState()),
     FINISHED(5, new FinishedState()),
-    FAILED(6, new FailedState());
+    FAILED(6, new FailedState()),
+    RUNNING_SUCCESS(7, new RunningSuccessState()),
+    RUNNING_PARTIAL_SUCCESS(8, new RunningPartialSuccessState()),
+    RUNNING_FAILED(9, new RunningFailState());
+
     // ----------------------------------------------
 
     private final State state;

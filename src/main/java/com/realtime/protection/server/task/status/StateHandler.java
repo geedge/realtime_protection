@@ -4,6 +4,7 @@ import com.realtime.protection.configuration.entity.task.DynamicTaskInfo;
 import com.realtime.protection.configuration.entity.task.Task;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.response.SimpleResponse;
+import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
@@ -115,8 +116,65 @@ public class StateHandler {
 
         return true;
     }
-
     protected Boolean handleFailed(CommandService commandService, TaskService taskService, Long taskId) {
+        commandService.removeCommandsByTaskId(taskId);
+        taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        // 要删去规则的used_task_id,因为在新建时检查了是否有重复使用的规则
+        taskService.removeDynamicRuleUsedTaskIdInTask(taskId);
+        taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
+        taskService.removeStaticRuleUsedTaskIdInTask(taskId);
+        return true;
+    }
+
+    protected Boolean handleRunningFail(CommandService commandService, TaskService taskService, Long taskId) {
+        //查询任务状态
+        Integer taskStatusNum = taskService.queryTaskStatus(taskId);
+
+        if (taskStatusNum == StateEnum.RUNNING_SUCCESS.getStateNum()){
+            return true;
+        }
+        else{
+            //修改任务状态
+            taskService.changeTaskStatus(taskId, StateEnum.RUNNING_SUCCESS.getStateNum());
+            //插入历史表
+            taskService.insertTaskStatusLog(taskId);
+        }
+        return true;
+    }
+
+    protected Boolean handleRunningPartialSuccess(CommandService commandService, TaskService taskService, Long taskId) {
+        ///查询任务状态
+        Integer taskStatusNum = taskService.queryTaskStatus(taskId);
+
+        if (taskStatusNum == StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum()){
+            return true;
+        }
+        else{
+            //修改任务状态
+            taskService.changeTaskStatus(taskId, StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum());
+            //插入历史表
+            taskService.insertTaskStatusLog(taskId);
+        }
+        return true;
+    }
+
+    protected Boolean handleRunningSuccess(CommandService commandService, TaskService taskService, Long taskId) {
+        ///查询任务状态
+        Integer taskStatusNum = taskService.queryTaskStatus(taskId);
+
+        if (taskStatusNum == StateEnum.RUNNING_FAILED.getStateNum()){
+            return true;
+        }
+        else{
+            //修改任务状态
+            taskService.changeTaskStatus(taskId, StateEnum.RUNNING_FAILED.getStateNum());
+            //插入历史表
+            taskService.insertTaskStatusLog(taskId);
+        }
+        return true;
+    }
+
+    protected Boolean handleAllFail(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
         taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         // 要删去规则的used_task_id,因为在新建时检查了是否有重复使用的规则

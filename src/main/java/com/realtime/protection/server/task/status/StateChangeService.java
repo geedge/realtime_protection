@@ -1,7 +1,9 @@
 package com.realtime.protection.server.task.status;
 
 import com.baomidou.dynamic.datasource.annotation.DSTransactional;
+import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
+import com.realtime.protection.configuration.utils.enums.CommandStatusEnum;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.server.task.status.states.State;
 import com.realtime.protection.server.command.CommandService;
@@ -136,6 +138,136 @@ public class StateChangeService {
             }
 
         }
+    }
+
+    /**
+     * 更新任务状态，要么加字段（运行中加两个）、“要么改状态模式（字典表也要改）”
+     */
+    @Scheduled(cron = "0 0/5 * * * ?")
+    @Async
+    protected void updateTasksRunningStatus() {
+        //查询所有正在运行中的任务
+        List<Long> runningTaskIds = taskService.getRunningTasks();
+        log.info("更新任务运行中状态：成功扫描出所有正在运行中的任务：{}", runningTaskIds);
+
+        for (Long taskId : runningTaskIds) {
+            //查询任务下所有的正在下发的指令（isjudge = 1 ，isvalid=1， is_deleted=0）的本次是否下发成功字段（t_command加个字段）
+            List<Integer> commandStatusList = commandService.queryRunningCommandsDistributeStatusByTaskId(taskId);
+            if (commandStatusList == null){
+                continue;
+            }
+            //判断是否全为成功
+            if (commandStatusList.stream().allMatch(status -> status == null || status == 1)) {
+                //全为成功
+                try {
+                    changeState(StateEnum.RUNNING_SUCCESS.getStateNum(), taskId, true);
+                } catch (Exception e) {
+                    log.warn(String.format("任务%d从%s状态变为运行中RUNNING_SUCCESS状态遭遇异常：%s",
+                            taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
+                }
+            } else if (commandStatusList.stream().anyMatch(status -> status == null || status == 1)) {
+                //部分成功
+                try {
+                    changeState(StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(), taskId, true);
+                } catch (Exception e) {
+                    log.warn(String.format("任务%d从%s状态变为运行中RUNNING_PARTIAL_SUCCESS状态遭遇异常：%s",
+                            taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
+                }
+            }else{
+                //全失败
+                try {
+                    changeState(StateEnum.RUNNING_FAILED.getStateNum(), taskId, true);
+                } catch (Exception e) {
+                    log.warn(String.format("任务%d从%s状态变为运行中RUNNING_FAILED状态遭遇异常：%s",
+                            taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 更新指令rcp命中状态
+     */
+    @Scheduled(cron = "0 1/5 * * * ?")
+    @Async
+    protected void updateCommandRCPHitStatus() {
+        //获取所有正在下发的指令
+        List<TaskCommandInfo> commandRcpHitCountList = commandService.queryRunningCommandsRcpHitCount();
+        log.info("rcp命中状态更新：正在下发的指令数量：{}", commandRcpHitCountList.size());
+        //遍历所有指令
+        for (TaskCommandInfo taskCommandInfo : commandRcpHitCountList) {
+            //查询当前指令的rcp-hitcount字段
+            Long rcpHitCount = taskCommandInfo.getRcpHitCount();
+            //查询当前历史表中该指令上一条日志的rcp-hitcount字段
+            Integer lastRcpHitCount = commandService.queryCommandLogRcpHitCountByCommandId(taskCommandInfo.getUUID());
+            //比较是否有变化
+            if (rcpHitCount == null ) {
+                //更新log表，rcp没命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNRCPHIT.getCommandStatusNum());
+                continue;
+            }
+            if (lastRcpHitCount == null){
+                //更新log表，rcp命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.RCPHIT.getCommandStatusNum());
+                continue;
+            }
+
+            if (rcpHitCount > lastRcpHitCount) {
+                //更新log表，rcp命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.RCPHIT.getCommandStatusNum());
+            } else {
+                //更新log表，rcp没命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNRCPHIT.getCommandStatusNum());
+            }
+
+        }
+
+    }
+
+
+    /**
+     * 更新指令rcp命中状态
+     */
+    @Scheduled(cron = "0 3/5 * * * ?")
+    @Async
+    protected void updateCommandTrafficHitStatus() {
+        //查询当前历史表中该指令上一条日志的统计流量大小字段
+
+        //比较是否有变化
+
+        //更新log表，流量命中、流量未命中
+        //获取所有正在下发的指令
+        List<TaskCommandInfo> commandTotalPacketNumList = commandService.queryRunningCommandsTotalPacketNum();
+        log.info("流量命中状态：查询正在下发的指令数量：{}", commandTotalPacketNumList.size());
+        //遍历所有指令
+        for (TaskCommandInfo taskCommandInfo : commandTotalPacketNumList) {
+            //查询当前指令的统计流量大小字段
+            Long totalPacketNum = taskCommandInfo.getTotalPacketNum();
+            //查询当前历史表中该指令上一条日志的rcp-hitcount字段
+            Integer lastTotalPacketNum = commandService.queryCommandLogTotalPacketNumByCommandId(taskCommandInfo.getUUID());
+            //比较是否有变化
+            if (totalPacketNum == null ) {
+                //更新log表，rcp没命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNFLOWHIT.getCommandStatusNum());
+                continue;
+            }
+            if (lastTotalPacketNum == null){
+                //更新log表，rcp命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.FLOWHIT.getCommandStatusNum());
+                continue;
+            }
+
+            if (totalPacketNum > lastTotalPacketNum) {
+                //更新log表，rcp命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.FLOWHIT.getCommandStatusNum());
+            } else {
+                //更新log表，rcp没命中
+                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNFLOWHIT.getCommandStatusNum());
+            }
+
+        }
+
     }
 
 }

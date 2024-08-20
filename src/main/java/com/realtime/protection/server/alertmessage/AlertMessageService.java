@@ -6,14 +6,17 @@ import com.realtime.protection.configuration.entity.defense.template.ProtectLeve
 import com.realtime.protection.configuration.entity.task.FiveTupleWithMask;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.utils.Counter;
+import com.realtime.protection.configuration.utils.Subnet;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.TaskTypeEnum;
 import com.realtime.protection.server.command.CommandService;
+import com.realtime.protection.server.task.TaskService;
 import com.realtime.protection.server.task.status.StateHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,13 +31,15 @@ import java.util.UUID;
 public class AlertMessageService {
     private final CommandService commandService;
     private final AlertMessageMapper alertMessageMapper;
+    private final TaskService taskService;
     private  final Counter counter;
     private final StateHandler stateHandler;
 
-    public AlertMessageService(CommandService commandService, AlertMessageMapper alertMessageMapper,
+    public AlertMessageService(CommandService commandService, AlertMessageMapper alertMessageMapper, TaskService taskService,
                                Counter counter, StateHandler stateHandler) {
         this.commandService = commandService;
         this.alertMessageMapper = alertMessageMapper;
+        this.taskService = taskService;
         this.counter = counter;
         this.stateHandler = stateHandler;
     }
@@ -67,6 +72,15 @@ public class AlertMessageService {
                 case RUNNING:
                     insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 1, alertMessage);
                     break;
+                case RUNNING_FAILED:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
+                    break;
+                case RUNNING_PARTIAL_SUCCESS:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
+                    break;
+                case RUNNING_SUCCESS:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
+                    break;
                 case PAUSED:
                     insertCommandAndAlertMessage(dynamicTaskCommandInfoList, false, 1, alertMessage);
                     break;
@@ -78,7 +92,16 @@ public class AlertMessageService {
             }
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
             switch (StateEnum.getStateEnumByNum(taskStatus)) {
-                case RUNNING:
+                case RUNNING :
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
+                    break;
+                case RUNNING_FAILED:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
+                    break;
+                case RUNNING_PARTIAL_SUCCESS:
+                    insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
+                    break;
+                case RUNNING_SUCCESS:
                     insertCommandAndAlertMessage(dynamicTaskCommandInfoList, true, 0, alertMessage);
                     break;
                 case PAUSED:
@@ -134,6 +157,7 @@ public class AlertMessageService {
                                               Integer isJudged,
                                               AlertMessage alertMessage){
         List<String> commandUUIDs = new ArrayList<>();
+        List<Subnet> subnetList = new ArrayList<>();
 
         for (TaskCommandInfo dynamicTaskCommandInfo : dynamicTaskCommandInfoList ){
             //command入库
@@ -155,7 +179,23 @@ public class AlertMessageService {
 
             );
             alertMessageMapper.insertAlertMessage(alertMessage);
+
+            try {
+                //抽取告警生成的指令没有掩码
+                String sip = dynamicTaskCommandInfo.getFiveTupleWithMask().getSourceIP();
+                String msip = "255.255.255.255";
+                String dip = dynamicTaskCommandInfo.getFiveTupleWithMask().getDestinationIP();
+                String mdip = "255.255.255.255";
+
+                if (sip != null) subnetList.add(new Subnet(sip,msip));
+                if (dip != null) subnetList.add(new Subnet(dip,mdip));
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
             }
+            Long ipTotalNum = taskService.ipWithMaskToIpNums(subnetList);
+            taskService.updateTaskIpTotalNum(ipTotalNum, dynamicTaskCommandInfo.getTaskId());
+        }
+
 
     }
     private String insertAlertMessageOnly(AlertMessage alertMessage){

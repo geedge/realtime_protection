@@ -410,8 +410,15 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok()
                 .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null, null,
                         null, null, null, null,null,null,null,null))
-                .setData("running_num", taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null,
-                        null, null, null, null,null,null,null,null))
+                .setData("running_num",
+                        taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null,
+                        null, null, null, null,null,null,null,null)
+                                + taskService.queryTaskTotalNum(StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(), null, null, null, null,
+                                null, null, null, null,null,null,null,null)
+                                + taskService.queryTaskTotalNum(StateEnum.RUNNING_SUCCESS.getStateNum(), null, null, null, null,
+                                                null, null, null, null,null,null,null,null)
+                                + taskService.queryTaskTotalNum(StateEnum.RUNNING_FAILED.getStateNum(), null, null, null, null,
+                                                null, null, null, null,null,null,null,null))
                 .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null,
                         null, null, null, null,null,null,null,null))
                 .setData("unaudit_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.PENDING.getNum()))

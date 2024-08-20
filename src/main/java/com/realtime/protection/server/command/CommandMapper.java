@@ -57,7 +57,7 @@ public interface CommandMapper {
 
     void updateCommandHistoryExpireTimeBatch(@Param("commandIds")List<String> commandIds);
 
-    void insertCommandHistoryBatch(@Param("commandIds")List<String> commandIds);
+    void insertCommandHistoryBatch(@Param("commandIds")List<String> commandIds, @Param("command_status")Integer commandStatus);
 
     @DS("mysql")
     List<WhiteListObject> whiteListCommandCheck(@Param("command") FiveTupleWithMask fiveTupleWithMask);
@@ -83,4 +83,20 @@ public interface CommandMapper {
     Boolean setCommandValid(String commandId, Integer isValid);
 
     List<TaskCommandInfo> queryAllDistributingCommandInfo();
+
+    List<Integer> queryRunningCommandsDistributeStatusByTaskId(Long taskId);
+
+    List<TaskCommandInfo> queryRunningCommandsRcpHitCount();
+
+    Integer queryCommandLogRcpHitCountByCommandId(@Param("command_id")String commandId);
+
+    void insertCommandHistoryWithStatus(@Param("command_id")String commandUUID,
+                                        @Param("log_id")String logId,
+                                        @Param("command_status")Integer commandStatus);
+
+    List<String> queryCommandInfosByTaskId(@Param("task_id")Long taskId);
+
+    List<TaskCommandInfo> queryRunningCommandsTotalPacketNum();
+
+    Integer queryCommandLogTotalPacketNumByCommandId(@Param("command_id")String uuid);
 }

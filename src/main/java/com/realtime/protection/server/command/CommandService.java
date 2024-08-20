@@ -7,6 +7,7 @@ import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import com.realtime.protection.configuration.utils.Counter;
 import com.realtime.protection.configuration.utils.SqlSessionWrapper;
+import com.realtime.protection.configuration.utils.enums.CommandStatusEnum;
 import com.realtime.protection.server.task.status.StateHandler;
 import com.realtime.protection.server.whitelist.WhiteListMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -91,13 +92,14 @@ public class CommandService {
         commandMapper.insertCommandTraffic(commandInfo);
 
         //写入历史表
-        insertCommandHistory(commandInfo.getUUID());
+        insertCommandHistory(commandInfo.getUUID(), CommandStatusEnum.START.getCommandStatusNum());
         return commandInfo.getUUID();
     }
 
     @DSTransactional
     public String createCommand2(TaskCommandInfo commandInfo, Integer isJudged) {
         String uuid = commandMapper.queryCommandInfo(commandInfo);
+
         //如果指令已经存在，除了研判状态为2,时需要改为0，其他情况都直接返回uuid
         if (uuid != null) {
             if (isJudged == 0){
@@ -106,6 +108,8 @@ public class CommandService {
                 //如果研判状态为2，表示之前设置了本次忽略，那这次生成指令后，将其研判状态改为0，需要再次研判
                 if (originalIsJudged == 2){
                     commandMapper.updateCommandIsJudgedIfIgnoreThisTime(uuid);
+                    //写入历史表
+                    insertCommandHistory(commandInfo.getUUID(), CommandStatusEnum.START.getCommandStatusNum());
                 }
             }
             return uuid;
@@ -139,7 +143,8 @@ public class CommandService {
         commandMapper.insertCommandRCPQuery(commandInfo);
         commandMapper.insertCommandTraffic(commandInfo);
         //写入历史表
-        insertCommandHistory(commandInfo.getUUID());
+        insertCommandHistory(commandInfo.getUUID(), CommandStatusEnum.START.getCommandStatusNum());
+
 
         //发送指令新建信号...实时任务 isJudged=1 才首次立刻下发
         try {
@@ -230,9 +235,7 @@ public class CommandService {
         return commandMapper.queryCommandInfoByUUID(uuid);
     }
 
-    public List<TaskCommandInfo> queryAllDistributingCommandInfo() {
-        return commandMapper.queryAllDistributingCommandInfo();
-    }
+
 
 
     public Boolean startCommandsByTaskId(Long taskId) {
@@ -244,7 +247,14 @@ public class CommandService {
     }
 
     public Boolean removeCommandsByTaskId(Long taskId) {
-        return commandMapper.removeCommandsByTaskId(taskId);
+        Boolean ok = commandMapper.removeCommandsByTaskId(taskId);
+        //查询任务下的指令，将指令写入历史表
+        List<String> taskCommandIds = commandMapper.queryCommandInfosByTaskId(taskId);
+        for (String commandId : taskCommandIds) {
+            insertCommandHistory(commandId, CommandStatusEnum.END.getCommandStatusNum());
+        }
+        return ok;
+
     }
 
     public Boolean setCommandJudged(String commandId, Integer isJudged) {
@@ -253,7 +263,19 @@ public class CommandService {
         //设置指令是否已经研判
         Boolean success = commandMapper.setCommandJudged(commandId, isJudged);
         //研判状态也写入历史表
-        insertCommandHistory(commandId);
+        switch (isJudged){
+            case 1:
+                insertCommandHistory(commandId, CommandStatusEnum.SEND.getCommandStatusNum());
+                break;
+            case 2:
+                insertCommandHistory(commandId, CommandStatusEnum.IGNORE.getCommandStatusNum());
+                break;
+            case 3:
+                insertCommandHistory(commandId, CommandStatusEnum.WHOLEIGNORE.getCommandStatusNum());
+                break;
+            default:
+                break;
+        }
 
         try {
             List<String> commandUUIDs = Collections.singletonList(commandId);
@@ -295,6 +317,13 @@ public class CommandService {
         commandMapper.insertCommandHistory(commandUUID, logId);
     }
 
+    public void insertCommandHistory(String commandUUID,Integer commandStatus) {
+        //todo: 不update， insert加入uuid
+//        commandMapper.updateCommandHistoryExpireTime(commandUUID);
+        String logId = UUID.randomUUID().toString();
+        commandMapper.insertCommandHistoryWithStatus(commandUUID, logId, commandStatus);
+    }
+
     public void insertCommandHistoryBatch(List<TaskCommandInfo> commandIdList) {
         List<String> commandIds = ListUtils.newArrayListWithExpectedSize(commandIdList.size());
         commandIdList.forEach(item -> commandIds.add(item.getUUID()));
@@ -306,13 +335,35 @@ public class CommandService {
 //            logIds.add(UUID.randomUUID().toString());
 //        }
         //新建的loguuid拿commannd_id来定顶一会吧
-        commandMapper.insertCommandHistoryBatch(commandIds);
+        commandMapper.insertCommandHistoryBatch(commandIds, CommandStatusEnum.START.getCommandStatusNum());
     }
 
     //指令提前撤回下发
     public Boolean setCommandValid(String commandId, Integer isValid) {
         Boolean isture = commandMapper.setCommandValid(commandId, isValid);
-        insertCommandHistory(commandId);
+        insertCommandHistory(commandId, CommandStatusEnum.CANCEL.getCommandStatusNum());
         return isture;
+    }
+
+    public List<Integer> queryRunningCommandsDistributeStatusByTaskId(Long taskId) {
+        List<Integer> commandStatusList = commandMapper.queryRunningCommandsDistributeStatusByTaskId(taskId);
+        return commandStatusList;
+
+    }
+
+    public List<TaskCommandInfo> queryRunningCommandsRcpHitCount() {
+        return commandMapper.queryRunningCommandsRcpHitCount();
+    }
+
+    public Integer queryCommandLogRcpHitCountByCommandId(String commandI) {
+        return commandMapper.queryCommandLogRcpHitCountByCommandId(commandI);
+    }
+
+    public List<TaskCommandInfo> queryRunningCommandsTotalPacketNum() {
+        return commandMapper.queryRunningCommandsTotalPacketNum();
+    }
+
+    public Integer queryCommandLogTotalPacketNumByCommandId(String uuid) {
+        return commandMapper.queryCommandLogTotalPacketNumByCommandId(uuid);
     }
 }

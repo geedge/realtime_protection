@@ -772,4 +772,14 @@
         SELECT COUNT(*) FROM t_task_status_log
         WHERE task_id = #{id}
     </select>
+    <select id="queryRunningTasks" resultType="java.lang.Long">
+        SELECT task_id
+        FROM t_task
+        WHERE task_status in (#{running}, #{allSuccess},#{partSuccess},#{allFail})
+    </select>
+    <select id="queryIpTotalNum" resultType="java.lang.Integer">
+        SELECT task_ip_num
+        FROM t_task
+        WHERE task_id = #{task_id}
+    </select>
 </mapper>

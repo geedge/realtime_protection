@@ -372,7 +372,8 @@
         last_traffic_query_time,
         log_uuid,
         sip_int,
-        dip_int
+        dip_int,
+        command_status
         )
         select
         NOW(),
@@ -428,7 +429,8 @@
         last_traffic_query_time,
         COMMAND_ID,
         sip_int,
-        dip_int
+        dip_int,
+        #{command_status}
         from t_command
         where COMMAND_ID IN
         <foreach collection="commandIds" item="command_id" separator="," open="(" close=")">
@@ -443,7 +445,123 @@
             (#{command_id}, #{whiteList.whiteListId})
         </foreach>
     </insert>
-
+    <insert id="insertCommandHistoryWithStatus">
+        insert into t_command_log(
+            effective_time,
+            expire_time,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time,
+            log_uuid,
+            sip_int,
+            dip_int,
+            command_status
+        )
+        select
+            NOW(),
+            NULL,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time,
+            #{log_id},
+            sip_int,
+            dip_int,
+            #{command_status}
+        from t_command
+        where COMMAND_ID = #{command_id}
+    </insert>
 
 
     <resultMap id="commandStatMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
@@ -457,6 +575,7 @@
         <result column="IS_JUDGED" property="isJudged"/>
         <!--        <result column="IS_DELETED" property=""/>-->
         <result column="RCP_HIT_COUNT" property="rcpHitCount"/>
+        <result column="TOTAL_PACKET_NUM" property="totalPacketNum"/>
 
 
         <association property="fiveTupleWithMask">
@@ -717,4 +836,48 @@
               AND IS_VALID = 1
               AND IS_DELETED = 0
     </select>
+    <select id="queryRunningCommandsDistributeStatusByTaskId" resultType="java.lang.Integer">
+        SELECT c3_return_code
+        FROM t_command
+        WHERE TASK_ID = #{taskId}
+          AND IS_DELETED = 0
+          AND IS_VALID = 1
+          AND IS_JUDGED = 1
+    </select>
+    <select id="queryRunningCommandsRcpHitCount"
+            resultMap="commandStatMap">
+        SELECT COMMAND_ID,
+        RCP_HIT_COUNT
+        FROM t_command
+        WHERE IS_JUDGED = 1
+        AND IS_VALID = 1
+        AND IS_DELETED = 0
+    </select>
+    <select id="queryCommandLogRcpHitCountByCommandId" resultType="java.lang.Integer">
+        SELECT RCP_HIT_COUNT
+        FROM t_command_log
+        WHERE COMMAND_ID = #{command_id}
+        ORDER BY effective_time DESC LIMIT 1
+    </select>
+    <select id="queryCommandInfosByTaskId" resultType="java.lang.String">
+        SELECT COMMAND_ID
+        FROM t_command
+        WHERE TASK_ID = #{task_id}
+    </select>
+    <select id="queryRunningCommandsTotalPacketNum"
+            resultMap="commandStatMap">
+        SELECT COMMAND_ID,
+               TOTAL_PACKET_NUM
+        FROM t_command
+        WHERE IS_JUDGED = 1
+          AND IS_VALID = 1
+          AND IS_DELETED = 0
+    </select>
+    <select id="queryCommandLogTotalPacketNumByCommandId" resultType="java.lang.Integer">
+        SELECT TOTAL_PACKET_NUM
+        FROM t_command_log
+        WHERE COMMAND_ID = #{command_id}
+        ORDER BY effective_time DESC LIMIT 1
+    </select>
+
 </mapper>
