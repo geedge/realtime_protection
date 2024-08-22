@@ -131,6 +131,14 @@ public class TaskCommandInfo {
 
     private Long totalPacketNum;
 
+    private int commandStatus;
+
+    private LocalDateTime lastTrafficQueryTime;
+
+    private LocalDateTime lastRCPQueryTime;
+
+    private String logUUID;
+
 
 //    private String hashValue;
 

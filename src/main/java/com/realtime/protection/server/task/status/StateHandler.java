@@ -277,20 +277,38 @@ public class StateHandler {
                 })
                 .doOnError(WebClientResponseException.class, res -> success.set(false));
 
-
-        Map<String, Integer> response = mono.block(Duration.ofSeconds(5));
-
-        if (response == null) {
-            return false;
-        }
-        response.forEach((commandUUID, responseCode) -> {
-            log.info("指令首次下发成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
-            if (responseCode != 0) {
-                log.warn("指令首次下发失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
-            }
-        });
-
-        success.set(true);
+        // 异步处理响应
+        mono.subscribe(
+                response2 -> {
+                    Map<String, Integer> response = response2;
+                    success.set(false);
+                    response.forEach((commandUUID, responseCode) -> {
+                        log.info("指令首次下发成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+                        if (responseCode != 0) {
+                            log.warn("指令首次下发失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+                        }
+                    });
+                    success.set(true);
+                },
+                error -> {
+                    // 错误响应处理
+                    System.err.println("指令首次下发错误: " + error.getMessage());
+                    success.set(false);
+                }
+        );
+//        Map<String, Integer> response = mono.block(Duration.ofSeconds(5));
+//
+//        if (response == null) {
+//            return false;
+//        }
+//        response.forEach((commandUUID, responseCode) -> {
+//            log.info("指令首次下发成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+//            if (responseCode != 0) {
+//                log.warn("指令首次下发失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
+//            }
+//        });
+//
+//        success.set(true);
 
         return success.get();
     }
@@ -335,16 +353,6 @@ public class StateHandler {
                 }
         );
 
-//        if (response == null) {
-//            log.info("指令首次查询RCP返回为null");
-//            return false;
-//        }
-//        response.forEach((commandUUID, responseCode) -> {
-//            log.info("指令首次查询RCP成功, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
-//            if (responseCode != 0) {
-//                log.warn("指令首次查询RCP失败, 指令uuid: " + commandUUID + ", responseCode: " + responseCode);
-//            }
-//        });
 
         success.set(true);
 

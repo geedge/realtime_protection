@@ -265,7 +265,7 @@ public class CommandService {
         //研判状态也写入历史表
         switch (isJudged){
             case 1:
-                insertCommandHistory(commandId, CommandStatusEnum.SEND.getCommandStatusNum());
+                insertCommandHistory(commandId, CommandStatusEnum.JUDGED.getCommandStatusNum());
                 break;
             case 2:
                 insertCommandHistory(commandId, CommandStatusEnum.IGNORE.getCommandStatusNum());
@@ -351,8 +351,8 @@ public class CommandService {
 
     }
 
-    public List<TaskCommandInfo> queryRunningCommandsRcpHitCount() {
-        return commandMapper.queryRunningCommandsRcpHitCount();
+    public List<TaskCommandInfo> queryRunningCommands() {
+        return commandMapper.queryRunningCommands();
     }
 
     public Integer queryCommandLogRcpHitCountByCommandId(String commandI) {
@@ -365,5 +365,14 @@ public class CommandService {
 
     public Integer queryCommandLogTotalPacketNumByCommandId(String uuid) {
         return commandMapper.queryCommandLogTotalPacketNumByCommandId(uuid);
+    }
+
+    public List<TaskCommandInfo> queryCommandLogLastTwoRecord(String uuid) {
+        return commandMapper.queryCommandLogLastTwoRecord(uuid);
+    }
+
+    public void insertCommandHistoryWithTime(String commandUUID, Integer commandStatus, LocalDateTime lastTrafficQueryTime) {
+        String logId = UUID.randomUUID().toString();
+        commandMapper.insertCommandHistoryWithStatusWithTime(commandUUID, logId, commandStatus, lastTrafficQueryTime);
     }
 }

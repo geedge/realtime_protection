@@ -157,7 +157,7 @@ public class StateChangeService {
                 continue;
             }
             //判断是否全为成功
-            if (commandStatusList.stream().allMatch(status -> status == null || status == 1)) {
+            if (commandStatusList.stream().allMatch(status -> status == null || status == 0)) {
                 //全为成功
                 try {
                     changeState(StateEnum.RUNNING_SUCCESS.getStateNum(), taskId, true);
@@ -165,7 +165,7 @@ public class StateChangeService {
                     log.warn(String.format("任务%d从%s状态变为运行中RUNNING_SUCCESS状态遭遇异常：%s",
                             taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
                 }
-            } else if (commandStatusList.stream().anyMatch(status -> status == null || status == 1)) {
+            } else if (commandStatusList.stream().anyMatch(status -> status == null || status == 0)) {
                 //部分成功
                 try {
                     changeState(StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(), taskId, true);
@@ -187,87 +187,113 @@ public class StateChangeService {
 
 
     /**
-     * 更新指令rcp命中状态
+     * 更新每次指令下周内rcp\flow命中状态
      */
-    @Scheduled(cron = "0 1/5 * * * ?")
+    @Scheduled(cron = "5/20 * * * * ?")
     @Async
     protected void updateCommandRCPHitStatus() {
         //获取所有正在下发的指令
-        List<TaskCommandInfo> commandRcpHitCountList = commandService.queryRunningCommandsRcpHitCount();
-        log.info("rcp命中状态更新：正在下发的指令数量：{}", commandRcpHitCountList.size());
+        List<TaskCommandInfo> runningCommandList = commandService.queryRunningCommands();
+        log.info("rcp命中状态更新：正在下发的指令数量：{}", runningCommandList.size());
+
+
         //遍历所有指令
-        for (TaskCommandInfo taskCommandInfo : commandRcpHitCountList) {
-            //查询当前指令的rcp-hitcount字段
-            Long rcpHitCount = taskCommandInfo.getRcpHitCount();
-            //查询当前历史表中该指令上一条日志的rcp-hitcount字段
-            Integer lastRcpHitCount = commandService.queryCommandLogRcpHitCountByCommandId(taskCommandInfo.getUUID());
-            //比较是否有变化
-            if (rcpHitCount == null ) {
-                //更新log表，rcp没命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNRCPHIT.getCommandStatusNum());
+        for (TaskCommandInfo taskCommandInfo : runningCommandList) {
+            //查询状态表，查看本次下发周期内是否已经记录了命中状态。查询最近的两条日志记录
+            List<TaskCommandInfo> commandLogs = commandService.queryCommandLogLastTwoRecord(taskCommandInfo.getUUID());
+            if (commandLogs.size()<2){
                 continue;
             }
-            if (lastRcpHitCount == null){
-                //更新log表，rcp命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.RCPHIT.getCommandStatusNum());
+            TaskCommandInfo commandLogLatest = commandLogs.get(0);
+            TaskCommandInfo commandLogLatest2 = commandLogs.get(1);
+            log.info("指令历史状态：{}", commandLogs);
+
+
+            //如果日志状态为SEND、SUCCESS 或者 SEND、FAIL，则要根据当前t_command表的最新记录，和上次下发状态的命中计数相比判断是否有变化
+            if (commandLogLatest2.getCommandStatus()==CommandStatusEnum.SEND.getCommandStatusNum()
+                    && (commandLogLatest.getCommandStatus()==CommandStatusEnum.SUCCESS.getCommandStatusNum()
+                    || commandLogLatest.getCommandStatus()==CommandStatusEnum.FAIL.getCommandStatusNum()))
+            {
+                log.info("rcp命中查询：{}，{}",taskCommandInfo.getRcpHitCount(), commandLogLatest.getRcpHitCount());
+                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()==null) {
+                    //更新log表，rcp命中
+                    commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                            CommandStatusEnum.RCPHIT.getCommandStatusNum(), taskCommandInfo.getLastRCPQueryTime());
+                }
+                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()!=null) {
+                    if (taskCommandInfo.getRcpHitCount() > commandLogLatest.getRcpHitCount()) {
+                        //更新log表，rcp命中
+                        commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                                CommandStatusEnum.RCPHIT.getCommandStatusNum(), taskCommandInfo.getLastRCPQueryTime());
+                    }
+                }
+
+
+                log.info("流量命中查询：{}，{}",taskCommandInfo.getTotalPacketNum(), commandLogLatest.getTotalPacketNum());
+                if (taskCommandInfo.getTotalPacketNum()==null && commandLogLatest.getTotalPacketNum()!=null) {
+                    //更新log表，流量命中
+                    commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                            CommandStatusEnum.FLOWHIT.getCommandStatusNum(),taskCommandInfo.getLastTrafficQueryTime());
+                }
+                if (taskCommandInfo.getTotalPacketNum()!=null && commandLogLatest.getTotalPacketNum()!=null) {
+                    if (taskCommandInfo.getTotalPacketNum() > commandLogLatest.getTotalPacketNum()) {
+                        //更新log表，流量命中
+                        commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                                CommandStatusEnum.FLOWHIT.getCommandStatusNum(),taskCommandInfo.getLastTrafficQueryTime());
+                    }
+                }
+
                 continue;
             }
 
-            if (rcpHitCount > lastRcpHitCount) {
-                //更新log表，rcp命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.RCPHIT.getCommandStatusNum());
-            } else {
-                //更新log表，rcp没命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNRCPHIT.getCommandStatusNum());
-            }
 
+            //如果日志状态为SUCCESS/FAIL、RCPHIT/UNRCPHIT，则判断是否更新流量命中状态
+            if ((commandLogLatest2.getCommandStatus()==CommandStatusEnum.SUCCESS.getCommandStatusNum()
+                    || commandLogLatest2.getCommandStatus()==CommandStatusEnum.FAIL.getCommandStatusNum())
+                    && (commandLogLatest.getCommandStatus()==CommandStatusEnum.RCPHIT.getCommandStatusNum()
+                    || commandLogLatest.getCommandStatus()==CommandStatusEnum.UNRCPHIT.getCommandStatusNum()))
+            {
+
+                log.info("流量命中查询：{}，{}",taskCommandInfo.getTotalPacketNum(), commandLogLatest.getTotalPacketNum());
+                if (taskCommandInfo.getTotalPacketNum()==null && commandLogLatest.getTotalPacketNum()!=null) {
+                    //更新log表，流量命中
+                    commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                            CommandStatusEnum.FLOWHIT.getCommandStatusNum(),taskCommandInfo.getLastTrafficQueryTime());
+                }
+                if (taskCommandInfo.getTotalPacketNum()!=null && commandLogLatest.getTotalPacketNum()!=null) {
+                    if (taskCommandInfo.getTotalPacketNum() > commandLogLatest.getTotalPacketNum()) {
+                        //更新log表，流量命中
+                        commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                                CommandStatusEnum.FLOWHIT.getCommandStatusNum(),taskCommandInfo.getLastTrafficQueryTime());
+                    }
+                }
+                continue;
+            }
+            //如果日志状态为SUCCESS/FAIL、FLOWHIT/UNFLOWHIT，则判断是否更新rcp命中状态
+            if ((commandLogLatest2.getCommandStatus()==CommandStatusEnum.SUCCESS.getCommandStatusNum()
+                    || commandLogLatest2.getCommandStatus()==CommandStatusEnum.FAIL.getCommandStatusNum())
+                    && (commandLogLatest.getCommandStatus()==CommandStatusEnum.FLOWHIT.getCommandStatusNum()
+                    || commandLogLatest.getCommandStatus()==CommandStatusEnum.UNFLOWHIT.getCommandStatusNum()))
+            {
+                log.info("rcp命中查询：{}，{}",taskCommandInfo.getRcpHitCount(), commandLogLatest.getRcpHitCount());
+                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()==null) {
+                    //更新log表，rcp命中
+                    commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                            CommandStatusEnum.RCPHIT.getCommandStatusNum(), taskCommandInfo.getLastRCPQueryTime());
+                }
+                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()!=null) {
+                    if (taskCommandInfo.getRcpHitCount() > commandLogLatest.getRcpHitCount()) {
+                        //更新log表，rcp命中
+                        commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
+                                CommandStatusEnum.RCPHIT.getCommandStatusNum(), taskCommandInfo.getLastRCPQueryTime());
+                    }
+                }
+                continue;
+            }
+            //如果日志状态为RCPHIT/FLOWHIT、FLOWHIT/UNFLOWHIT，则不需要查询了
         }
 
     }
 
-
-    /**
-     * 更新指令rcp命中状态
-     */
-    @Scheduled(cron = "0 3/5 * * * ?")
-    @Async
-    protected void updateCommandTrafficHitStatus() {
-        //查询当前历史表中该指令上一条日志的统计流量大小字段
-
-        //比较是否有变化
-
-        //更新log表，流量命中、流量未命中
-        //获取所有正在下发的指令
-        List<TaskCommandInfo> commandTotalPacketNumList = commandService.queryRunningCommandsTotalPacketNum();
-        log.info("流量命中状态：查询正在下发的指令数量：{}", commandTotalPacketNumList.size());
-        //遍历所有指令
-        for (TaskCommandInfo taskCommandInfo : commandTotalPacketNumList) {
-            //查询当前指令的统计流量大小字段
-            Long totalPacketNum = taskCommandInfo.getTotalPacketNum();
-            //查询当前历史表中该指令上一条日志的rcp-hitcount字段
-            Integer lastTotalPacketNum = commandService.queryCommandLogTotalPacketNumByCommandId(taskCommandInfo.getUUID());
-            //比较是否有变化
-            if (totalPacketNum == null ) {
-                //更新log表，rcp没命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNFLOWHIT.getCommandStatusNum());
-                continue;
-            }
-            if (lastTotalPacketNum == null){
-                //更新log表，rcp命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.FLOWHIT.getCommandStatusNum());
-                continue;
-            }
-
-            if (totalPacketNum > lastTotalPacketNum) {
-                //更新log表，rcp命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.FLOWHIT.getCommandStatusNum());
-            } else {
-                //更新log表，rcp没命中
-                commandService.insertCommandHistory(taskCommandInfo.getUUID(), CommandStatusEnum.UNFLOWHIT.getCommandStatusNum());
-            }
-
-        }
-
-    }
 
 }

@@ -7,6 +7,7 @@ import com.realtime.protection.configuration.entity.whitelist.WhiteListObject;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -86,8 +87,6 @@ public interface CommandMapper {
 
     List<Integer> queryRunningCommandsDistributeStatusByTaskId(Long taskId);
 
-    List<TaskCommandInfo> queryRunningCommandsRcpHitCount();
-
     Integer queryCommandLogRcpHitCountByCommandId(@Param("command_id")String commandId);
 
     void insertCommandHistoryWithStatus(@Param("command_id")String commandUUID,
@@ -99,4 +98,13 @@ public interface CommandMapper {
     List<TaskCommandInfo> queryRunningCommandsTotalPacketNum();
 
     Integer queryCommandLogTotalPacketNumByCommandId(@Param("command_id")String uuid);
+
+    List<TaskCommandInfo> queryCommandLogLastTwoRecord(@Param("command_id")String uuid);
+
+    List<TaskCommandInfo> queryRunningCommands();
+
+    void insertCommandHistoryWithStatusWithTime(@Param("command_id")String commandUUID,
+                                                @Param("log_id")String logId,
+                                                @Param("command_status")Integer commandStatus,
+                                                @Param("effective_time")LocalDateTime lastTrafficQueryTime);
 }

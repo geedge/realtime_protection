@@ -204,6 +204,7 @@
 
     <insert id="insertCommandHistory">
         insert into t_command_log(
+            log_uuid,
             effective_time,
             expire_time,
             TASK_ID,
@@ -255,11 +256,11 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-            log_uuid,
             sip_int,
             dip_int
         )
         select
+            #{log_id},
             NOW(),
             NULL,
             TASK_ID,
@@ -311,7 +312,7 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-            #{log_id},
+
             sip_int,
             dip_int
         from t_command
@@ -319,6 +320,7 @@
     </insert>
     <insert id="insertCommandHistoryBatch">
         insert into t_command_log(
+        log_uuid,
         effective_time,
         expire_time,
         TASK_ID,
@@ -370,12 +372,12 @@
         first_effect_time,
         last_rcp_query_time,
         last_traffic_query_time,
-        log_uuid,
         sip_int,
         dip_int,
         command_status
         )
         select
+        COMMAND_ID,
         NOW(),
         NULL,
         TASK_ID,
@@ -427,7 +429,6 @@
         first_effect_time,
         last_rcp_query_time,
         last_traffic_query_time,
-        COMMAND_ID,
         sip_int,
         dip_int,
         #{command_status}
@@ -447,6 +448,7 @@
     </insert>
     <insert id="insertCommandHistoryWithStatus">
         insert into t_command_log(
+            log_uuid,
             effective_time,
             expire_time,
             TASK_ID,
@@ -498,12 +500,12 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-            log_uuid,
             sip_int,
             dip_int,
             command_status
         )
         select
+            #{log_id},
             NOW(),
             NULL,
             TASK_ID,
@@ -555,14 +557,12 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-            #{log_id},
             sip_int,
             dip_int,
             #{command_status}
         from t_command
         where COMMAND_ID = #{command_id}
     </insert>
-
 
     <resultMap id="commandStatMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
         <id column="COMMAND_ID" property="UUID"/>
@@ -576,6 +576,12 @@
         <!--        <result column="IS_DELETED" property=""/>-->
         <result column="RCP_HIT_COUNT" property="rcpHitCount"/>
         <result column="TOTAL_PACKET_NUM" property="totalPacketNum"/>
+
+        <result column="command_status" property="commandStatus"/>
+
+        <result column="last_rcp_query_time" property="lastRCPQueryTime"/>
+        <result column="last_traffic_query_time" property="lastTrafficQueryTime"/>
+
 
 
         <association property="fiveTupleWithMask">
@@ -880,4 +886,171 @@
         ORDER BY effective_time DESC LIMIT 1
     </select>
 
+
+
+
+
+
+    <insert id="insertCommandHistoryWithStatusWithTime">
+        insert into t_command_log(
+            log_uuid,
+            effective_time,
+            expire_time,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time,
+            sip_int,
+            dip_int,
+            command_status
+        )
+        select
+            #{log_id},
+            #{effective_time},
+            NULL,
+            TASK_ID,
+            RULE_ID,
+            COMMAND_ID,
+            TASKTYPE,
+            ADDR_TYPE,
+            SRC_IP,
+            SRC_PORT,
+            DST_IP,
+            DST_PORT,
+            PROTOCOL,
+            MASK_SRC_IP,
+            MASK_SRC_PORT,
+            MASK_DST_IP,
+            MASK_DST_PORT,
+            MASK_PROTOCOL,
+            TASK_ACT,
+            EVENTTYPE,
+            TASKNAME,
+            DISTRIBUTEPOINT,
+            DEPARTMENT,
+            FREQUENCY,
+            VALID_TIME,
+            INVALID_TIME,
+            IS_VALID,
+            IS_JUDGED,
+            SEND_TIMES,
+            SUCCESS_TIMES,
+            FIRST_SEND_TIME,
+            LAST_SEND_TIME,
+            CREATE_TIME,
+            LAST_UPDATE,
+            IS_DELETED,
+            RULE_NAME,
+            RCP_HIT_COUNT,
+            TOTAL_PACKET_NUM,
+            TOTAL_BYTE_NUM,
+            EFFECTIVE_EQUIPMENT_NUM,
+            AVERAGE_LATENCY,
+            MAX_LATENCY,
+            MIN_LATENCY,
+            c2s_pkt_num,
+            s2c_pkt_num,
+            c2s_byte_num,
+            s2c_byte_num,
+            display_id,
+            session_num,
+            first_effect_time,
+            last_rcp_query_time,
+            last_traffic_query_time,
+            sip_int,
+            dip_int,
+            #{command_status}
+        from t_command
+        where COMMAND_ID = #{command_id}
+    </insert>
+
+    <resultMap id="commandLogMap" type="com.realtime.protection.configuration.entity.task.TaskCommandInfo">
+        <id column="log_uuid" property="logUUID"/>
+        <result column="COMMAND_ID" property="UUID"/>
+
+        <result column="RCP_HIT_COUNT" property="rcpHitCount"/>
+        <result column="TOTAL_PACKET_NUM" property="totalPacketNum"/>
+
+        <result column="command_status" property="commandStatus"/>
+
+        <result column="last_rcp_query_time" property="lastRCPQueryTime"/>
+        <result column="last_traffic_query_time" property="lastTrafficQueryTime"/>
+
+
+    </resultMap>
+
+
+
+
+
+    <select id="queryCommandLogLastTwoRecord"
+            resultMap="commandLogMap">
+        SELECT log_uuid,
+            COMMAND_ID,
+               TOTAL_PACKET_NUM,
+                RCP_HIT_COUNT,
+                command_status
+        FROM t_command_log
+        WHERE COMMAND_ID = #{command_id}
+        ORDER BY effective_time DESC LIMIT 2
+    </select>
+
+
+    <select id="queryRunningCommands"
+            resultMap="commandStatMap">
+        SELECT COMMAND_ID,
+               RCP_HIT_COUNT,
+               TOTAL_PACKET_NUM,
+               last_rcp_query_time,
+                last_traffic_query_time
+        FROM t_command
+        WHERE IS_JUDGED = 1
+          AND IS_VALID = 1
+          AND IS_DELETED = 0
+    </select>
 </mapper>
