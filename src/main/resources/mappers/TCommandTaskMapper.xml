@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.v1.mapper.TCommandTaskMapper">
+
+    <resultMap type="com.realtime.protection.server.v1.entity.TCommandTask" id="TCommandTaskMap">
+        <result property="taskId" column="task_id" jdbcType="INTEGER"/>
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="taskName" column="task_name" jdbcType="VARCHAR"/>
+        <result property="eventType" column="event_type" jdbcType="VARCHAR"/>
+        <result property="incidence" column="incidence" jdbcType="VARCHAR"/>
+        <result property="eventLevel" column="event_level" jdbcType="VARCHAR"/>
+        <result property="disposalMeasures" column="disposal_measures" jdbcType="VARCHAR"/>
+        <result property="taskStartTime" column="task_start_time" jdbcType="VARCHAR"/>
+        <result property="taskEndTime" column="task_end_time" jdbcType="VARCHAR"/>
+        <result property="priority" column="priority" jdbcType="VARCHAR"/>
+        <result property="file" column="file" jdbcType="VARCHAR"/>
+        <result property="taskCreateTime" column="task_create_time" jdbcType="TIMESTAMP"/>
+        <result property="taskCreateUsername" column="task_create_username" jdbcType="VARCHAR"/>
+        <result property="taskCreateDepart" column="task_create_depart" jdbcType="VARCHAR"/>
+        <result property="taskDisplayId" column="task_display_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TCommandTaskMap">
+        select
+task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id
+        from t_command_task
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TCommandTaskMap">
+        select
+        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id
+        from t_command_task
+        <where>
+            <if test="tCommandTask.taskId != null">
+                and task_id = #{tCommandTask.taskId}
+            </if>
+            <if test="tCommandTask.id != null">
+                and id = #{tCommandTask.id}
+            </if>
+            <if test="tCommandTask.taskName != null and tCommandTask.taskName != ''">
+                and task_name = #{tCommandTask.taskName}
+            </if>
+            <if test="tCommandTask.eventType != null and tCommandTask.eventType != ''">
+                and event_type = #{tCommandTask.eventType}
+            </if>
+            <if test="tCommandTask.incidence != null and tCommandTask.incidence != ''">
+                and incidence = #{tCommandTask.incidence}
+            </if>
+            <if test="tCommandTask.eventLevel != null and tCommandTask.eventLevel != ''">
+                and event_level = #{tCommandTask.eventLevel}
+            </if>
+            <if test="tCommandTask.disposalMeasures != null and tCommandTask.disposalMeasures != ''">
+                and disposal_measures = #{tCommandTask.disposalMeasures}
+            </if>
+            <if test="tCommandTask.taskStartTime != null and tCommandTask.taskStartTime != ''">
+                and task_start_time = #{tCommandTask.taskStartTime}
+            </if>
+            <if test="tCommandTask.taskEndTime != null and tCommandTask.taskEndTime != ''">
+                and task_end_time = #{tCommandTask.taskEndTime}
+            </if>
+            <if test="tCommandTask.priority != null and tCommandTask.priority != ''">
+                and priority = #{tCommandTask.priority}
+            </if>
+            <if test="tCommandTask.file != null and tCommandTask.file != ''">
+                and file = #{tCommandTask.file}
+            </if>
+            <if test="tCommandTask.taskCreateTime != null">
+                and task_create_time = #{tCommandTask.taskCreateTime}
+            </if>
+            <if test="tCommandTask.taskCreateUsername != null and tCommandTask.taskCreateUsername != ''">
+                and task_create_username = #{tCommandTask.taskCreateUsername}
+            </if>
+            <if test="tCommandTask.taskCreateDepart != null and tCommandTask.taskCreateDepart != ''">
+                and task_create_depart = #{tCommandTask.taskCreateDepart}
+            </if>
+            <if test="tCommandTask.taskDisplayId != null and tCommandTask.taskDisplayId != ''">
+                and task_display_id = #{tCommandTask.taskDisplayId}
+            </if>
+        </where>
+        order by id desc
+        limit #{page}, #{pageSize}
+    </select>
+
+
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit1" resultMap="TCommandTaskMap">
+        select
+        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id
+        from t_command_task where task_id IS NULL
+            <if test="tCommandTask.taskId != null">
+                and task_id = #{tCommandTask.taskId}
+            </if>
+            <if test="tCommandTask.id != null">
+                and id = #{tCommandTask.id}
+            </if>
+            <if test="tCommandTask.taskName != null and tCommandTask.taskName != ''">
+                and task_name = #{tCommandTask.taskName}
+            </if>
+            <if test="tCommandTask.eventType != null and tCommandTask.eventType != ''">
+                and event_type = #{tCommandTask.eventType}
+            </if>
+            <if test="tCommandTask.incidence != null and tCommandTask.incidence != ''">
+                and incidence = #{tCommandTask.incidence}
+            </if>
+            <if test="tCommandTask.eventLevel != null and tCommandTask.eventLevel != ''">
+                and event_level = #{tCommandTask.eventLevel}
+            </if>
+            <if test="tCommandTask.disposalMeasures != null and tCommandTask.disposalMeasures != ''">
+                and disposal_measures = #{tCommandTask.disposalMeasures}
+            </if>
+            <if test="tCommandTask.taskStartTime != null and tCommandTask.taskStartTime != ''">
+                and task_start_time = #{tCommandTask.taskStartTime}
+            </if>
+            <if test="tCommandTask.taskEndTime != null and tCommandTask.taskEndTime != ''">
+                and task_end_time = #{tCommandTask.taskEndTime}
+            </if>
+            <if test="tCommandTask.priority != null and tCommandTask.priority != ''">
+                and priority = #{tCommandTask.priority}
+            </if>
+            <if test="tCommandTask.file != null and tCommandTask.file != ''">
+                and file = #{tCommandTask.file}
+            </if>
+            <if test="tCommandTask.taskCreateTime != null">
+                and task_create_time = #{tCommandTask.taskCreateTime}
+            </if>
+            <if test="tCommandTask.taskCreateUsername != null and tCommandTask.taskCreateUsername != ''">
+                and task_create_username = #{tCommandTask.taskCreateUsername}
+            </if>
+            <if test="tCommandTask.taskCreateDepart != null and tCommandTask.taskCreateDepart != ''">
+                and task_create_depart = #{tCommandTask.taskCreateDepart}
+            </if>
+            <if test="tCommandTask.taskDisplayId != null and tCommandTask.taskDisplayId != ''">
+                and task_display_id = #{tCommandTask.taskDisplayId}
+            </if>
+        order by id desc
+        limit #{page}, #{pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_command_task
+        <where>
+            <if test="taskId != null">
+                and task_id = #{taskId}
+            </if>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="taskName != null and taskName != ''">
+                and task_name = #{taskName}
+            </if>
+            <if test="eventType != null and eventType != ''">
+                and event_type = #{eventType}
+            </if>
+            <if test="incidence != null and incidence != ''">
+                and incidence = #{incidence}
+            </if>
+            <if test="eventLevel != null and eventLevel != ''">
+                and event_level = #{eventLevel}
+            </if>
+            <if test="disposalMeasures != null and disposalMeasures != ''">
+                and disposal_measures = #{disposalMeasures}
+            </if>
+            <if test="taskStartTime != null and taskStartTime != ''">
+                and task_start_time = #{taskStartTime}
+            </if>
+            <if test="taskEndTime != null and taskEndTime != ''">
+                and task_end_time = #{taskEndTime}
+            </if>
+            <if test="priority != null and priority != ''">
+                and priority = #{priority}
+            </if>
+            <if test="file != null and file != ''">
+                and file = #{file}
+            </if>
+            <if test="taskCreateTime != null">
+                and task_create_time = #{taskCreateTime}
+            </if>
+            <if test="taskCreateUsername != null and taskCreateUsername != ''">
+                and task_create_username = #{taskCreateUsername}
+            </if>
+            <if test="taskCreateDepart != null and taskCreateDepart != ''">
+                and task_create_depart = #{taskCreateDepart}
+            </if>
+            <if test="taskDisplayId != null and taskDisplayId != ''">
+                and task_display_id = #{taskDisplayId}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count1" resultType="java.lang.Long">
+        select count(1)
+        from t_command_task where task_id IS NULL
+        <if test="id != null">
+            and id = #{id}
+        </if>
+        <if test="taskName != null and taskName != ''">
+            and task_name = #{taskName}
+        </if>
+        <if test="eventType != null and eventType != ''">
+            and event_type = #{eventType}
+        </if>
+        <if test="incidence != null and incidence != ''">
+            and incidence = #{incidence}
+        </if>
+        <if test="eventLevel != null and eventLevel != ''">
+            and event_level = #{eventLevel}
+        </if>
+        <if test="disposalMeasures != null and disposalMeasures != ''">
+            and disposal_measures = #{disposalMeasures}
+        </if>
+        <if test="taskStartTime != null and taskStartTime != ''">
+            and task_start_time = #{taskStartTime}
+        </if>
+        <if test="taskEndTime != null and taskEndTime != ''">
+            and task_end_time = #{taskEndTime}
+        </if>
+        <if test="priority != null and priority != ''">
+            and priority = #{priority}
+        </if>
+        <if test="file != null and file != ''">
+            and file = #{file}
+        </if>
+        <if test="taskCreateTime != null">
+            and task_create_time = #{taskCreateTime}
+        </if>
+        <if test="taskCreateUsername != null and taskCreateUsername != ''">
+            and task_create_username = #{taskCreateUsername}
+        </if>
+        <if test="taskCreateDepart != null and taskCreateDepart != ''">
+            and task_create_depart = #{taskCreateDepart}
+        </if>
+        <if test="taskDisplayId != null and taskDisplayId != ''">
+            and task_display_id = #{taskDisplayId}
+        </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_command_task(task_id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id )
+        values (#{taskId},#{taskName},#{eventType},#{incidence},#{eventLevel},#{disposalMeasures},#{taskStartTime},#{taskEndTime},#{priority},#{file},#{taskCreateTime},#{taskCreateUsername},#{taskCreateDepart},#{taskDisplayId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_command_task(task_id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.taskId},#{entity.taskName},#{entity.eventType},#{entity.incidence},#{entity.eventLevel},#{entity.disposalMeasures},#{entity.taskStartTime},#{entity.taskEndTime},#{entity.priority},#{entity.file},#{entity.taskCreateTime},#{entity.taskCreateUsername},#{entity.taskCreateDepart},#{entity.taskDisplayId})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_command_task
+        <set>
+            <if test="taskId != null">
+                task_id = #{taskId},
+            </if>
+            <if test="taskName != null and taskName != ''">
+                task_name = #{taskName},
+            </if>
+            <if test="eventType != null and eventType != ''">
+                event_type = #{eventType},
+            </if>
+            <if test="incidence != null and incidence != ''">
+                incidence = #{incidence},
+            </if>
+            <if test="eventLevel != null and eventLevel != ''">
+                event_level = #{eventLevel},
+            </if>
+            <if test="disposalMeasures != null and disposalMeasures != ''">
+                disposal_measures = #{disposalMeasures},
+            </if>
+            <if test="taskStartTime != null and taskStartTime != ''">
+                task_start_time = #{taskStartTime},
+            </if>
+            <if test="taskEndTime != null and taskEndTime != ''">
+                task_end_time = #{taskEndTime},
+            </if>
+            <if test="priority != null and priority != ''">
+                priority = #{priority},
+            </if>
+            <if test="file != null and file != ''">
+                file = #{file},
+            </if>
+            <if test="taskCreateTime != null">
+                task_create_time = #{taskCreateTime},
+            </if>
+            <if test="taskCreateUsername != null and taskCreateUsername != ''">
+                task_create_username = #{taskCreateUsername},
+            </if>
+            <if test="taskCreateDepart != null and taskCreateDepart != ''">
+                task_create_depart = #{taskCreateDepart},
+            </if>
+            <if test="taskDisplayId != null and taskDisplayId != ''">
+                task_display_id = #{taskDisplayId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from t_command_task where id = #{id}
+    </delete>
+
+</mapper>
+
