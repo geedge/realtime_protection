@@ -375,4 +375,9 @@ public class CommandService {
         String logId = UUID.randomUUID().toString();
         commandMapper.insertCommandHistoryWithStatusWithTime(commandUUID, logId, commandStatus, lastTrafficQueryTime);
     }
+
+    public void insertCommandHistoryWithTimeWithTraffic(String commandUUID, Integer commandStatusNum, LocalDateTime lastRCPQueryTime, Long totalPacketNum) {
+        String logId = UUID.randomUUID().toString();
+        commandMapper.insertCommandHistoryWithStatusWithTimeWithTraffic(commandUUID, logId, commandStatusNum, lastRCPQueryTime, totalPacketNum);
+    }
 }

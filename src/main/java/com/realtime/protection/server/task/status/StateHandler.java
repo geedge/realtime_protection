@@ -126,7 +126,7 @@ public class StateHandler {
         return true;
     }
 
-    protected Boolean handleRunningFail(CommandService commandService, TaskService taskService, Long taskId) {
+    protected Boolean handleRunningSuccess(CommandService commandService, TaskService taskService, Long taskId) {
         //查询任务状态
         Integer taskStatusNum = taskService.queryTaskStatus(taskId);
 
@@ -158,7 +158,7 @@ public class StateHandler {
         return true;
     }
 
-    protected Boolean handleRunningSuccess(CommandService commandService, TaskService taskService, Long taskId) {
+    protected Boolean handleRunningFail(CommandService commandService, TaskService taskService, Long taskId) {
         ///查询任务状态
         Integer taskStatusNum = taskService.queryTaskStatus(taskId);
 

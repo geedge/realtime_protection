@@ -264,8 +264,8 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
     private final WebClient webClient = WebClient
             .builder()
 //            .baseUrl("http://39.105.210.156:8090/chanct-log/audit-xgs")
-            .baseUrl("http://10.58.44.241:1888/api/chanct-log/audit-xgs")
-//            .baseUrl("http://10.58.44.241:1888/magic-api/audit/save")
+//            .baseUrl("http://10.58.44.241:1888/api/chanct-log/audit-xgs")
+            .baseUrl("http://10.58.44.241:1888/magic-api/audit")
             .build();
 
     @Data
@@ -314,11 +314,12 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
         if (request.getURI().getPath().contains("query")
         || request.getURI().getPath().contains("swagger")
         || request.getURI().getPath().contains("dict")
-		|| request.getURI().getPath().contains("statistics")){
+		|| request.getURI().getPath().contains("statistics")
+        || request.getURI().getPath().contains("auth")){
             return body;
         }
 
-        AuditData auditData ;
+        AuditDataNew auditData ;
         try {
             auditData = getAuditData(body, request);
         } catch (Exception e) {
@@ -326,13 +327,13 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
             return body;
         }
 
-        AuditRes auditRes = new AuditRes(auditData);
-        log.info("auditData-----------:"+auditRes.toString());
+//        AuditRes auditRes = new AuditRes(auditData);
+        log.info("auditData-----------:"+auditData.toString());
 
         Mono<String> mono = webClient
                 .post()
                 .uri("/save")
-                .bodyValue(auditRes)
+                .bodyValue(auditData)
                 .exchangeToMono(res -> {
                     if (res.statusCode().equals(HttpStatus.OK)) {
                         log.info("发送审计日志成功：{}",res.statusCode());
@@ -395,41 +396,48 @@ public class AuditAdvice implements ResponseBodyAdvice<ResponseResult> {
 
 
     @NotNull
-    private static AuditData getAuditData(ResponseResult body, ServerHttpRequest request) throws IOException {
+    private static AuditDataNew getAuditData(ResponseResult body, ServerHttpRequest request) throws IOException {
         HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
-        AuditData auditData;
+        AuditDataNew auditData;
         log.info(request.getHeaders().getFirst("X-Forwarded-For"));
 
         String requestBody = request.getBody().toString();
         if(session==null || session.getAttribute("user")==null){
-            auditData = new AuditData(
-                    "0000000","0000000","NSADD管理员","组织树",
-					extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
+//            auditData = new AuditData(
+//                    "0000000","0000000","NSADD管理员","组织树",
+//					extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
+//                    getTag(request.getURI().getPath()),
+//                    getSummary(request.getURI().getPath()),
+//                    body.toString(),
+//                    String.format("名称：%s, 操作：%s, 请求内容：%s, 是否成功：%s, 响应内容：%s",
+//                                    getTag(request.getURI().getPath()),
+//                                    getSummary(request.getURI().getPath()),
+//                                    request.getURI().getPath(),
+//                                    body.getCode()==200?"成功":"失败",
+//                                    body.toString())
+//            );
+            auditData = new AuditDataNew(
+                    "NSADD管理员",extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
+                    "xgs","组织树",
                     getTag(request.getURI().getPath()),
                     getSummary(request.getURI().getPath()),
-                    body.toString(),
+//                    body.toString()+" "+request.getURI().getPath()
                     String.format("名称：%s, 操作：%s, 请求内容：%s, 是否成功：%s, 响应内容：%s",
                                     getTag(request.getURI().getPath()),
                                     getSummary(request.getURI().getPath()),
                                     request.getURI().getPath(),
                                     body.getCode()==200?"成功":"失败",
-                                    body.toString())
+                                    body.toString()
+                    )
             );
-//            auditData = new AuditData(
-//                    "NSADD管理员",extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For"))
-//                    "xgs","组织树",
-//                    getTag(request.getURI().getPath()),
-//                    getSummary(request.getURI().getPath()),
-//                    body.toString()+" "+request.getURI().getPath()
-//            );
         }else {
             UserFull user = (UserFull) session.getAttribute("user");
-            auditData = new AuditData(
-                    user.uid, user.getOrgCode(),user.name,  user.getOrgName(),
-                    extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
+            auditData = new AuditDataNew(
+                    user.name, extractFirstIpAddress(request.getHeaders().getFirst("X-Forwarded-For")),
+                    user.getOrgName(), user.getOrgCode(),
                     getTag(request.getURI().getPath()),
                     getSummary(request.getURI().getPath()),
-                    body.toString(),
+//                    body.toString(),
                     String.format("名称：%s, 操作：%s, 请求内容：%s, 是否成功：%s, 响应内容：%s",
                                     getTag(request.getURI().getPath()),
                                     getSummary(request.getURI().getPath()),

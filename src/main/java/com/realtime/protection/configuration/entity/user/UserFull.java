@@ -22,7 +22,7 @@ public class UserFull {
     public String employeeNumber;
     public String name;
     public Object resoures;
-
+    public Object orgCode;
 
 
 

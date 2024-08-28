@@ -107,4 +107,10 @@ public interface CommandMapper {
                                                 @Param("log_id")String logId,
                                                 @Param("command_status")Integer commandStatus,
                                                 @Param("effective_time")LocalDateTime lastTrafficQueryTime);
+
+    void insertCommandHistoryWithStatusWithTimeWithTraffic(@Param("command_id")String commandUUID,
+                                                           @Param("log_id")String logId,
+                                                           @Param("command_status") Integer commandStatusNum,
+                                                           @Param("effective_time")LocalDateTime lastRCPQueryTime,
+                                                           @Param("traffic_num") Long totalPacketNum);
 }
