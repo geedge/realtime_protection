@@ -155,4 +155,10 @@ public class Task {
     @JsonProperty("task_ip_num")
     @Schema(description = "任务涉及ip数量", example = "1000", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer taskIpNum;
+
+    @JsonProperty("task_source")
+    private String  taskSource;
+
+    @JsonProperty("zh_id")
+    private Long zhId;
 }

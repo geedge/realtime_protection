@@ -19,7 +19,10 @@ import com.realtime.protection.configuration.utils.enums.audit.AuditStatusValida
 import com.realtime.protection.server.command.CommandMapper;
 import com.realtime.protection.server.rule.dynamicrule.DynamicRuleMapper;
 import com.realtime.protection.server.rule.staticrule.StaticRuleMapper;
+import com.realtime.protection.server.v1.entity.TCommandTask;
+import com.realtime.protection.server.v1.mapper.TCommandTaskMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +55,9 @@ public class TaskService {
     private final DynamicRuleMapper dynamicRuleMapper;
     private final Counter counter;
     private final CommandMapper commandMapper;
+
+    @Autowired
+    private TCommandTaskMapper tCommandTaskMapper;
 
     public TaskService(TaskMapper taskMapper, StaticRuleMapper staticRuleMapper, SqlSessionWrapper sqlSessionWrapper, DynamicRuleMapper dynamicRuleMapper, Counter counter, CommandMapper commandMapper) {
         this.taskMapper = taskMapper;
@@ -84,12 +91,12 @@ public class TaskService {
         return mergedSubnets;
     }
 
-    public Long ipWithMaskToIpNums(List<Subnet> subnets)  {
+    public Long ipWithMaskToIpNums(List<Subnet> subnets) {
 
         Long totalIPs = 0L;
         try {
             List<Subnet> mergedSubnets = mergeOverlappingSubnets(subnets);
-            for (Subnet subnet : mergedSubnets){
+            for (Subnet subnet : mergedSubnets) {
                 totalIPs += Subnet.getNumberOfHosts(subnet.subnetMask);
             }
 
@@ -98,7 +105,7 @@ public class TaskService {
 
         } catch (UnknownHostException e) {
 
-           return null;
+            return null;
         }
         return totalIPs;
     }
@@ -108,85 +115,120 @@ public class TaskService {
     public Long newTask(Task task) {
 
 //        eventTypeValid(task);
-
-        task.setTaskDisplayId(
-                "RW-"
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                + "-"
-                + String.format("%06d", counter.generateId("task")));
-
-        taskMapper.newTask(task);
-
-        List<Subnet> subnetList = new ArrayList<>();
-        if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
-            staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
-                if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
-                    throw new IllegalArgumentException("部分规则审批状态错误");
+        if (task.getZhId() != null && task.getZhId() != 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            TCommandTask tCommandTask = tCommandTaskMapper.queryById(task.getZhId());
+            task.setTaskDisplayId(
+                    "RW-"
+                            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                            + "-"
+                            + String.format("%06d", counter.generateId("task")));
+            task.setTaskName(tCommandTask.getTaskName());
+            task.setTaskSource("指挥系统");
+            try {
+                if (tCommandTask.getTaskStartTime() != null) {
+                    task.setTaskStartTime(LocalDateTime.parse(tCommandTask.getTaskStartTime(), formatter));
                 }
-                if (staticRuleObject.getStaticRuleUsedTaskId() != null) {
-                    throw new IllegalArgumentException("部分静态规则已被其他任务使用");
+                if (tCommandTask.getTaskEndTime() != null) {
+                    task.setTaskEndTime(LocalDateTime.parse(tCommandTask.getTaskEndTime(), formatter));
                 }
-                try {
-                    String sip = staticRuleObject.getStaticRuleSip();
-                    String msip;
-                    if (staticRuleObject.getStaticRuleMsip() != null){
-                        msip = staticRuleObject.getStaticRuleMsip();
-                    }
-                    else{
-                        msip = "255.255.255.255";
-                    }
-                    String dip = staticRuleObject.getStaticRuleDip();
-                    String mdip;
-                    if (staticRuleObject.getStaticRuleMdip() != null){
-                        mdip = staticRuleObject.getStaticRuleMdip();
-                    }
-                    else{
-                        mdip = "255.255.255.255";
-                    }
-                    if (sip != null) subnetList.add(new Subnet(sip,msip));
-                    if (dip != null) subnetList.add(new Subnet(dip,mdip));
-                } catch (UnknownHostException e) {
-                    throw new RuntimeException(e);
+                if (tCommandTask.getTaskCreateTime() != null) {
+                    task.setTaskCreateTime(tCommandTask.getTaskCreateTime().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime());
                 }
-            });
-            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
-        }
-    
-        if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
-            dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds()).forEach(dynamicRuleObject -> {
-                if (!dynamicRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
-                    throw new IllegalArgumentException("部分规则审批状态错误");
-                }
-
-                if (dynamicRuleObject.getDynamicRuleUsedTaskId() != null) {
-                    throw new IllegalArgumentException("部分动态规则已被其他任务使用");
-                }
-            });
-            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(), AuditStatusEnum.USING.getNum());
-        }
-        if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()) {
-            if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
-                //校验防护对象是否存在
-                boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
-                        .allMatch(dynamicRuleMapper::queryProtectObjectById);
-                if (!ProtectObjIdValid) {
-                    throw new IllegalArgumentException("部分防护对象不存在");
-                }
-                //任务和防护对象多对多关联建立
-                taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
-
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            task.setEventType(tCommandTask.getEventType());
+            if ("低".equals(tCommandTask.getPriority())) {
+                task.setProtectLevel(1);
+            } else if ("中".equals(tCommandTask.getPriority())) {
+                task.setProtectLevel(2);
+            } else if ("高".equals(tCommandTask.getPriority())) {
+                task.setProtectLevel(3);
+            }
+            taskMapper.newZhTask(task);
+            tCommandTask.setTaskId(task.getTaskId());
+            tCommandTaskMapper.update(tCommandTask);
+            return task.getTaskId();
+        } else {
+            task.setTaskDisplayId(
+                    "RW-"
+                            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                            + "-"
+                            + String.format("%06d", counter.generateId("task")));
+            taskMapper.newTask(task);
+
+            List<Subnet> subnetList = new ArrayList<>();
+            if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
+                staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
+                    if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+                        throw new IllegalArgumentException("部分规则审批状态错误");
+                    }
+                    if (staticRuleObject.getStaticRuleUsedTaskId() != null) {
+                        throw new IllegalArgumentException("部分静态规则已被其他任务使用");
+                    }
+                    try {
+                        String sip = staticRuleObject.getStaticRuleSip();
+                        String msip;
+                        if (staticRuleObject.getStaticRuleMsip() != null) {
+                            msip = staticRuleObject.getStaticRuleMsip();
+                        } else {
+                            msip = "255.255.255.255";
+                        }
+                        String dip = staticRuleObject.getStaticRuleDip();
+                        String mdip;
+                        if (staticRuleObject.getStaticRuleMdip() != null) {
+                            mdip = staticRuleObject.getStaticRuleMdip();
+                        } else {
+                            mdip = "255.255.255.255";
+                        }
+                        if (sip != null) subnetList.add(new Subnet(sip, msip));
+                        if (dip != null) subnetList.add(new Subnet(dip, mdip));
+                    } catch (UnknownHostException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
+            }
+            if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
+                dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds()).forEach(dynamicRuleObject -> {
+                    if (!dynamicRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+                        throw new IllegalArgumentException("部分规则审批状态错误");
+                    }
+
+                    if (dynamicRuleObject.getDynamicRuleUsedTaskId() != null) {
+                        throw new IllegalArgumentException("部分动态规则已被其他任务使用");
+                    }
+                });
+                taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(), AuditStatusEnum.USING.getNum());
+            }
+            if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()) {
+                if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
+                    //校验防护对象是否存在
+                    boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
+                            .allMatch(dynamicRuleMapper::queryProtectObjectById);
+                    if (!ProtectObjIdValid) {
+                        throw new IllegalArgumentException("部分防护对象不存在");
+                    }
+                    //任务和防护对象多对多关联建立
+                    taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
+
+                }
+            }
+            Long ipTotalNum = ipWithMaskToIpNums(subnetList);
+            taskMapper.setIpTotalNum(ipTotalNum, task.getTaskId());
+            //todo 1、存到数据库  2、前端展示。详细信息
+            insertTaskStatusLog(task.getTaskId());
+            return task.getTaskId();
         }
-        Long ipTotalNum = ipWithMaskToIpNums(subnetList);
-        taskMapper.setIpTotalNum(ipTotalNum, task.getTaskId());
-        //todo 1、存到数据库  2、前端展示。详细信息
-        insertTaskStatusLog(task.getTaskId());
-        return task.getTaskId();
     }
 
     /**
      * 更新任务关联的静态规则审批状态，用于任务新建/停止时候，修改审批状态为已使用/已审批，不能用于其他审批状态修改
-     * @param taskId 与静态规则关联的任务ID
+     *
+     * @param taskId         与静态规则关联的任务ID
      * @param newAuditStatus 需要修改的审批状态
      */
     public void updateStaticRuleAuditStatusInTask(Long taskId, AuditStatusEnum newAuditStatus) {
@@ -249,7 +291,8 @@ public class TaskService {
 
     /**
      * 更新任务关联的动态规则审批状态，用于任务新建/停止时候，修改审批状态为已使用/已审批，不能用于其他审批状态修改
-     * @param taskId 与动态规则关联的任务ID
+     *
+     * @param taskId         与动态规则关联的任务ID
      * @param newAuditStatus 需要修改的审批状态
      */
     public void updateDynamicRuleAuditStatusInTask(Long taskId, AuditStatusEnum newAuditStatus) {
@@ -316,12 +359,12 @@ public class TaskService {
                                  Integer auditStatus,
                                  String taskAct, String taskAuditor,
                                  String taskSource, String ruleName,
-                                 String eventType,String createDateStr, String startDateStr,
+                                 String eventType, String createDateStr, String startDateStr,
                                  Integer protectLevel,
                                  Integer page, Integer pageSize) {
 
         List<Task> tasks = taskMapper.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName,eventType, createDateStr, startDateStr,protectLevel, page, pageSize);
+                taskAct, taskAuditor, taskSource, ruleName, eventType, createDateStr, startDateStr, protectLevel, page, pageSize);
         for (Task task : tasks) {
             if (task == null) {
                 continue;
@@ -385,7 +428,7 @@ public class TaskService {
             taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
 
         if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty())
-            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(),AuditStatusEnum.USING.getNum());
+            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(), AuditStatusEnum.USING.getNum());
 
         return true;
     }
@@ -400,7 +443,7 @@ public class TaskService {
 
 
         if (AuditStatusValidator.setOriginal(originalAuditStatus).checkValidate(taskAuditStatus))
-            taskMapper.changeTaskAuditStatusWithAudior(taskId, taskAuditStatus, auditUserName,  auditUserId,  auditUserDepart);
+            taskMapper.changeTaskAuditStatusWithAudior(taskId, taskAuditStatus, auditUserName, auditUserId, auditUserDepart);
         else return false;
         insertTaskStatusLog(taskId);
 
@@ -423,6 +466,7 @@ public class TaskService {
 //        sendTaskStatusChangeToOtherSystem(taskId,taskAuditStatus);
         return true;
     }
+
     public Boolean sendTaskStatusChangeToOtherSystem(Long taskId, Integer taskAuditStatus) {
         WebClient ddos_sytem = WebClient.builder()
                 .baseUrl("http://10.58.72.140:8089")
@@ -478,13 +522,14 @@ public class TaskService {
 
         return success.get();
     }
+
     public Boolean deleteTask(Long taskId) {
         Task task = taskMapper.queryTask(taskId);
         if (task == null) {
             return true;
         }
         if (task.getTaskStatus() == StateEnum.RUNNING.getStateNum() || task.getTaskStatus() == StateEnum.RUNNING_FAILED.getStateNum()
-            || task.getTaskStatus() == StateEnum.RUNNING_SUCCESS.getStateNum()|| task.getTaskStatus() == StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum()){
+                || task.getTaskStatus() == StateEnum.RUNNING_SUCCESS.getStateNum() || task.getTaskStatus() == StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum()) {
             throw new IllegalArgumentException("任务正在运行中，无法删除");
         }
 //有的规则被任务选择了，但任务还没有启动，此时规则的状态不是已使用，但used_task_id已经被设置
@@ -540,10 +585,10 @@ public class TaskService {
     }
 
     public Integer queryTaskTotalNum(Integer taskStatus, Integer taskType, String taskName, String taskCreator, Integer auditStatus
-    ,String taskAct, String taskAuditor, String taskSource, String ruleName,
-                                     String eventType, String createDate, String startDate,Integer protectLevel) {
+            , String taskAct, String taskAuditor, String taskSource, String ruleName,
+                                     String eventType, String createDate, String startDate, Integer protectLevel) {
         return taskMapper.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                taskAct, taskAuditor, taskSource, ruleName,null, eventType, createDate, startDate, protectLevel);
+                taskAct, taskAuditor, taskSource, ruleName, null, eventType, createDate, startDate, protectLevel);
     }
 
     public Boolean updateAuditStatusBatch(Map<Integer, Integer> idsWithAuditStatusMap) {
@@ -555,7 +600,7 @@ public class TaskService {
 
         int index = 0;
         List<Integer> errorIds = new ArrayList<>();
-        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
             Integer auditStatus = entry.getValue();
             Integer originalAuditStatus = originalAuditStatusList.get(index);
@@ -565,7 +610,7 @@ public class TaskService {
                 errorIds.add(id);
             }
         }
-        if (!errorIds.isEmpty()){
+        if (!errorIds.isEmpty()) {
             throw new IllegalArgumentException("动态规则id无法修改为对应审核状态, errorIds: " + errorIds);
         }
 
@@ -609,7 +654,7 @@ public class TaskService {
 
         int index = 0;
         List<Integer> errorIds = new ArrayList<>();
-        for(Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
             Integer auditStatus = entry.getValue();
             Integer originalAuditStatus = originalAuditStatusList.get(index);
@@ -619,7 +664,7 @@ public class TaskService {
                 errorIds.add(id);
             }
         }
-        if (!errorIds.isEmpty()){
+        if (!errorIds.isEmpty()) {
             throw new IllegalArgumentException("动态规则id无法修改为对应审核状态, errorIds: " + errorIds);
         }
 
@@ -636,11 +681,11 @@ public class TaskService {
                             continue;
                         }
                         //mapper指的就是外层函数输入的参数，也就是WhiteListMapper
-                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName,  auditUserId,  auditUserDepart);
+                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName, auditUserId, auditUserDepart);
                         idWithAuditStatusBatch.clear();
                     }
                     if (!idWithAuditStatusBatch.isEmpty()) {
-                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName,  auditUserId,  auditUserDepart);
+                        mapper.updateAuditStatusWithAuditorByIdBatch(idWithAuditStatusBatch, auditUserName, auditUserId, auditUserDepart);
                     }
                     return true;
                 };
@@ -671,6 +716,7 @@ public class TaskService {
         taskMapper.updateTaskStatusLogExpireTime(taskId);
         taskMapper.insertTaskStatusLog(taskId);
     }
+
     public void insertTaskStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
         Set<Integer> keys = idWithAuditStatusBatch.keySet();
         ArrayList<Integer> taskIds = new ArrayList<>(keys);
@@ -680,7 +726,7 @@ public class TaskService {
     }
 
     public List<Task> queryHistory(Long id, Integer page, Integer pageSize) {
-        List<Task> tasks =  taskMapper.queryHistory(id, page, pageSize);
+        List<Task> tasks = taskMapper.queryHistory(id, page, pageSize);
 
         for (Task task : tasks) {
             if (task == null) {
@@ -712,6 +758,7 @@ public class TaskService {
 //        staticRuleMapper.updateStaticRuleStatusLogExpireTimeBatch(ids);
         staticRuleMapper.insertStaticRuleStatusLogBatch(ids);
     }
+
     public void insertDynamicRuleStatusLog(Map<Integer, Integer> idWithAuditStatusBatch) {
         Set<Integer> keys = idWithAuditStatusBatch.keySet();
         ArrayList<Integer> ids = new ArrayList<>(keys);
@@ -722,7 +769,7 @@ public class TaskService {
     }
 
     public List<Long> getRunnableTasks() {
-        return taskMapper.queryRunnableTasks(StateEnum.PENDING.getStateNum(),AuditStatusEnum.AUDITED.getNum());
+        return taskMapper.queryRunnableTasks(StateEnum.PENDING.getStateNum(), AuditStatusEnum.AUDITED.getNum());
     }
 
     public void updateTaskStartTime(Long taskId) {
@@ -763,8 +810,8 @@ public class TaskService {
 
     @Transactional
     public List<Task> auditInfoNotification(String userId) {
-        List<Task> tasksNotification = taskMapper.queryAuditInfoNotification(userId,AuditStatusEnum.RETURNED.getNum());
-        if (tasksNotification.isEmpty()){
+        List<Task> tasksNotification = taskMapper.queryAuditInfoNotification(userId, AuditStatusEnum.RETURNED.getNum());
+        if (tasksNotification.isEmpty()) {
             return tasksNotification;
         }
         List<Long> taskIdList = tasksNotification.stream().map(Task::getTaskId).toList();
@@ -776,11 +823,11 @@ public class TaskService {
 
     public void chongtuValid(Task task) {
         if (task.getTaskAct().equals("23") &&
-            task.getEventType().equals("APT") &&
-            task.getTaskType()==1
-        ){
+                task.getEventType().equals("APT") &&
+                task.getTaskType() == 1
+        ) {
             throw new IllegalArgumentException("任务冲突，任务类型：静态。任务动作：阻断+23（丢弃重定向）" +
-                    "事件类型：APT攻击 ，开始时间"+task.getTaskStartTime()+"结束时间："+task.getTaskEndTime());
+                    "事件类型：APT攻击 ，开始时间" + task.getTaskStartTime() + "结束时间：" + task.getTaskEndTime());
         }
 
     }
@@ -788,6 +835,7 @@ public class TaskService {
     public List<File> selectFilesByStaticRuleId(Long taskId) {
         return taskMapper.selectFilesByStaticRuleId(taskId);
     }
+
     public void saveFile(File saveFile) {
         taskMapper.saveFile(saveFile);
     }
@@ -798,7 +846,7 @@ public class TaskService {
 
 
     public List<Task> queryTaskStausLog(Long id, Integer page, Integer pageSize) {
-        return taskMapper.queryTaskStausLog(id,page,pageSize);
+        return taskMapper.queryTaskStausLog(id, page, pageSize);
     }
 
     public Integer queryTaskStausLogTotalNum(Long id) {
@@ -806,12 +854,12 @@ public class TaskService {
     }
 
     public List<Long> getRunningTasks() {
-        return taskMapper.queryRunningTasks(StateEnum.RUNNING.getStateNum(),StateEnum.RUNNING_SUCCESS.getStateNum(),
-                StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(),StateEnum.RUNNING_FAILED.getStateNum());
+        return taskMapper.queryRunningTasks(StateEnum.RUNNING.getStateNum(), StateEnum.RUNNING_SUCCESS.getStateNum(),
+                StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(), StateEnum.RUNNING_FAILED.getStateNum());
     }
 
     public void updateTaskIpTotalNum(Long ipTotalNum, Long taskId) {
-        Integer taskIpNum  =  taskMapper.queryIpTotalNum(taskId);
+        Integer taskIpNum = taskMapper.queryIpTotalNum(taskId);
         ipTotalNum = ipTotalNum + taskIpNum;
         taskMapper.setIpTotalNum(ipTotalNum, taskId);
     }

@@ -18,9 +18,11 @@ import java.util.Map;
 public interface TaskMapper {
 
 
-    void setIpTotalNum(@Param("ip_total_num")Long ipTotalNum, @Param("task_id")Long taskId) ;
+    void setIpTotalNum(@Param("ip_total_num") Long ipTotalNum, @Param("task_id") Long taskId);
 
     void newTask(@Param("task") Task task);
+
+    void newZhTask(@Param("task") Task task);
 
     void newTaskStaticRuleConcat(@Param("task_id") Long taskId,
                                  @Param("rule_ids") List<Integer> staticRuleIds,
@@ -35,26 +37,26 @@ public interface TaskMapper {
     List<Task> queryTasks(@Param("task_status") Integer taskStatus, @Param("task_type") Integer task_type,
                           @Param("task_name") String taskName, @Param("task_creator") String taskCreator,
                           @Param("audit_status") Integer auditStatus,
-                          @Param("task_act")String taskAct, @Param("task_auditor")String taskAuditor,
-                          @Param("task_source")String taskSource, @Param("rule_name")String ruleName,
-                          @Param("event_type")String eventType,
+                          @Param("task_act") String taskAct, @Param("task_auditor") String taskAuditor,
+                          @Param("task_source") String taskSource, @Param("rule_name") String ruleName,
+                          @Param("event_type") String eventType,
                           @Param("create_date") String createDateStr,
-                          @Param("start_date")String startDateStr,
-                          @Param("protect_level")Integer protectLevel,
+                          @Param("start_date") String startDateStr,
+                          @Param("protect_level") Integer protectLevel,
                           @Param("page") Integer page, @Param("page_size") Integer pageSize);
 
     Task queryTask(@Param("task_id") Long taskId);
 
     void updateTask(@Param("task") Task task);
 
-    void clearTaskConnectedStaticRule(@Param("task_id") Long taskId, @Param("status")Integer num);
+    void clearTaskConnectedStaticRule(@Param("task_id") Long taskId, @Param("status") Integer num);
 
-    void clearTaskConnectedDynamicRule(@Param("task_id") Long taskId, @Param("status")Integer num);
+    void clearTaskConnectedDynamicRule(@Param("task_id") Long taskId, @Param("status") Integer num);
 
     void changeTaskAuditStatusWithAudior(@Param("task_id") Long taskId, @Param("audit_status") Integer auditStatus,
-                               @Param("auditUserName")String auditUserName,
-                               @Param("auditUserId")String auditUserId,
-                               @Param("auditUserDepart")String auditUserDepart);
+                                         @Param("auditUserName") String auditUserName,
+                                         @Param("auditUserId") String auditUserId,
+                                         @Param("auditUserDepart") String auditUserDepart);
 
     void changeTaskAuditStatus(@Param("task_id") Long taskId, @Param("audit_status") Integer auditStatus);
 
@@ -83,13 +85,13 @@ public interface TaskMapper {
     Integer queryTaskTotalNum(@Param("task_status") Integer taskStatus, @Param("task_type") Integer task_type,
                               @Param("task_name") String taskName, @Param("task_creator") String taskCreator,
                               @Param("audit_status") Integer auditStatus,
-                              @Param("task_act")String taskAct, @Param("task_auditor")String taskAuditor,
-                              @Param("task_source")String taskSource, @Param("rule_name")String ruleName,
+                              @Param("task_act") String taskAct, @Param("task_auditor") String taskAuditor,
+                              @Param("task_source") String taskSource, @Param("rule_name") String ruleName,
                               @Param("task_create_time") LocalDateTime taskCreateTime,
-                              @Param("event_type")String eventType,
-                              @Param("create_date")String createDate,
-                              @Param("start_date")String startDate,
-                              @Param("protect_level")Integer protectLevel);
+                              @Param("event_type") String eventType,
+                              @Param("create_date") String createDate,
+                              @Param("start_date") String startDate,
+                              @Param("protect_level") Integer protectLevel);
 
     void updateAuditStatusByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch);
 
@@ -97,17 +99,17 @@ public interface TaskMapper {
 
     List<Integer> queryAuditStatusByIds(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idsWithAuditStatusMap);
 
-    Boolean updateAuditInfo(@Param("ids")List<Long> ids, @Param("auditInfo")String auditInfo);
+    Boolean updateAuditInfo(@Param("ids") List<Long> ids, @Param("auditInfo") String auditInfo);
 
     String queryAuditInfo(Integer id);
 
     void updateAuditStatusWithAuditorByIdBatch(@Param("idWithAuditStatusBatch") Map<Integer, Integer> idWithAuditStatusBatch,
-                                               @Param("auditUserName")String auditUserName,
-                                               @Param("auditUserId")String auditUserId,
-                                               @Param("auditUserDepart")String auditUserDepart);
+                                               @Param("auditUserName") String auditUserName,
+                                               @Param("auditUserId") String auditUserId,
+                                               @Param("auditUserDepart") String auditUserDepart);
 
-    void newTaskProtectObjectConcat(@Param("taskId")Long taskId,
-                                    @Param("protectObjectIds")List<Integer> protectObjectIds);
+    void newTaskProtectObjectConcat(@Param("taskId") Long taskId,
+                                    @Param("protectObjectIds") List<Integer> protectObjectIds);
 
     void deleteTaskProtectObjectConcat(Long taskId);
 
@@ -134,7 +136,7 @@ public interface TaskMapper {
 
     String queryEventTypeAct(String eventType);
 
-    List<Task> queryAuditInfoNotification(String userId , Integer auditStatus);
+    List<Task> queryAuditInfoNotification(String userId, Integer auditStatus);
 
     void updateNotificationByTaskId(@Param("taskIds") List<Long> taskIdList);
 

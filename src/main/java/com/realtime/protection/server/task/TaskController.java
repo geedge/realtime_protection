@@ -88,8 +88,11 @@ public class TaskController implements TaskControllerApi {
             task.setTaskCreateDepart(user.getOrgName());
             task.setAuditUserDepartCode(user.getOrgCode());
         }
-        //事件类型的用户权限校验、动作逻辑性校验
-        taskService.eventTypeValid(task);
+        if (task.getZhId() == null || task.getZhId() == 0) {
+            //事件类型的用户权限校验、动作逻辑性校验
+            taskService.eventTypeValid(task);
+        }
+
 
         //冲突性
 //        taskService.chongtuValid(task);
