@@ -4,6 +4,7 @@ package com.realtime.protection.server.nodetree;
 import com.realtime.protection.configuration.response.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,7 @@ import java.util.List;
 
 //李福连
 
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/nodeTree")
 @Slf4j
