@@ -123,7 +123,7 @@ public class TaskService {
                             + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
                             + "-"
                             + String.format("%06d", counter.generateId("task")));
-            task.setTaskName(tCommandTask.getTaskName());
+//            task.setTaskName(tCommandTask.getTaskName());
             task.setTaskSource("指挥系统");
             try {
                 if (tCommandTask.getTaskStartTime() != null) {
@@ -151,7 +151,6 @@ public class TaskService {
             taskMapper.newZhTask(task);
             tCommandTask.setTaskId(task.getTaskId());
             tCommandTaskMapper.update(tCommandTask);
-            return task.getTaskId();
         } else {
             task.setTaskDisplayId(
                     "RW-"
@@ -159,70 +158,69 @@ public class TaskService {
                             + "-"
                             + String.format("%06d", counter.generateId("task")));
             taskMapper.newTask(task);
-
-            List<Subnet> subnetList = new ArrayList<>();
-            if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
-                staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
-                    if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
-                        throw new IllegalArgumentException("部分规则审批状态错误");
-                    }
-                    if (staticRuleObject.getStaticRuleUsedTaskId() != null) {
-                        throw new IllegalArgumentException("部分静态规则已被其他任务使用");
-                    }
-                    try {
-                        String sip = staticRuleObject.getStaticRuleSip();
-                        String msip;
-                        if (staticRuleObject.getStaticRuleMsip() != null) {
-                            msip = staticRuleObject.getStaticRuleMsip();
-                        } else {
-                            msip = "255.255.255.255";
-                        }
-                        String dip = staticRuleObject.getStaticRuleDip();
-                        String mdip;
-                        if (staticRuleObject.getStaticRuleMdip() != null) {
-                            mdip = staticRuleObject.getStaticRuleMdip();
-                        } else {
-                            mdip = "255.255.255.255";
-                        }
-                        if (sip != null) subnetList.add(new Subnet(sip, msip));
-                        if (dip != null) subnetList.add(new Subnet(dip, mdip));
-                    } catch (UnknownHostException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
-            }
-            if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
-                dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds()).forEach(dynamicRuleObject -> {
-                    if (!dynamicRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
-                        throw new IllegalArgumentException("部分规则审批状态错误");
-                    }
-
-                    if (dynamicRuleObject.getDynamicRuleUsedTaskId() != null) {
-                        throw new IllegalArgumentException("部分动态规则已被其他任务使用");
-                    }
-                });
-                taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(), AuditStatusEnum.USING.getNum());
-            }
-            if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()) {
-                if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
-                    //校验防护对象是否存在
-                    boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
-                            .allMatch(dynamicRuleMapper::queryProtectObjectById);
-                    if (!ProtectObjIdValid) {
-                        throw new IllegalArgumentException("部分防护对象不存在");
-                    }
-                    //任务和防护对象多对多关联建立
-                    taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
-
-                }
-            }
-            Long ipTotalNum = ipWithMaskToIpNums(subnetList);
-            taskMapper.setIpTotalNum(ipTotalNum, task.getTaskId());
-            //todo 1、存到数据库  2、前端展示。详细信息
-            insertTaskStatusLog(task.getTaskId());
-            return task.getTaskId();
         }
+        List<Subnet> subnetList = new ArrayList<>();
+        if (task.getStaticRuleIds() != null && !task.getStaticRuleIds().isEmpty()) {
+            staticRuleMapper.queryStaticRuleByIds(task.getStaticRuleIds()).forEach(staticRuleObject -> {
+                if (!staticRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+                    throw new IllegalArgumentException("部分规则审批状态错误");
+                }
+                if (staticRuleObject.getStaticRuleUsedTaskId() != null) {
+                    throw new IllegalArgumentException("部分静态规则已被其他任务使用");
+                }
+                try {
+                    String sip = staticRuleObject.getStaticRuleSip();
+                    String msip;
+                    if (staticRuleObject.getStaticRuleMsip() != null) {
+                        msip = staticRuleObject.getStaticRuleMsip();
+                    } else {
+                        msip = "255.255.255.255";
+                    }
+                    String dip = staticRuleObject.getStaticRuleDip();
+                    String mdip;
+                    if (staticRuleObject.getStaticRuleMdip() != null) {
+                        mdip = staticRuleObject.getStaticRuleMdip();
+                    } else {
+                        mdip = "255.255.255.255";
+                    }
+                    if (sip != null) subnetList.add(new Subnet(sip, msip));
+                    if (dip != null) subnetList.add(new Subnet(dip, mdip));
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            taskMapper.newTaskStaticRuleConcat(task.getTaskId(), task.getStaticRuleIds(), AuditStatusEnum.USING.getNum());
+        }
+        if (task.getDynamicRuleIds() != null && !task.getDynamicRuleIds().isEmpty()) {
+            dynamicRuleMapper.queryDynamicRuleByIds(task.getDynamicRuleIds()).forEach(dynamicRuleObject -> {
+                if (!dynamicRuleObject.getAuditStatus().equals(AuditStatusEnum.AUDITED.getNum())) {
+                    throw new IllegalArgumentException("部分规则审批状态错误");
+                }
+
+                if (dynamicRuleObject.getDynamicRuleUsedTaskId() != null) {
+                    throw new IllegalArgumentException("部分动态规则已被其他任务使用");
+                }
+            });
+            taskMapper.newTaskDynamicRuleConcat(task.getTaskId(), task.getDynamicRuleIds(), AuditStatusEnum.USING.getNum());
+        }
+        if (task.getTaskType() != TaskTypeEnum.STATIC.getTaskType()) {
+            if (task.getProtectObjectIds() != null && !task.getProtectObjectIds().isEmpty()) {
+                //校验防护对象是否存在
+                boolean ProtectObjIdValid = task.getProtectObjectIds().stream()
+                        .allMatch(dynamicRuleMapper::queryProtectObjectById);
+                if (!ProtectObjIdValid) {
+                    throw new IllegalArgumentException("部分防护对象不存在");
+                }
+                //任务和防护对象多对多关联建立
+                taskMapper.newTaskProtectObjectConcat(task.getTaskId(), task.getProtectObjectIds());
+
+            }
+        }
+        Long ipTotalNum = ipWithMaskToIpNums(subnetList);
+        taskMapper.setIpTotalNum(ipTotalNum, task.getTaskId());
+        //todo 1、存到数据库  2、前端展示。详细信息
+        insertTaskStatusLog(task.getTaskId());
+        return task.getTaskId();
     }
 
     /**

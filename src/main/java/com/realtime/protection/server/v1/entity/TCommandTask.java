@@ -1,5 +1,7 @@
 package com.realtime.protection.server.v1.entity;
 
+import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
 
@@ -11,67 +13,85 @@ import java.io.Serializable;
  */
 public class TCommandTask implements Serializable {
     private static final long serialVersionUID = -38138465113282389L;
-/**
+    /**
      * 任务id  关联任务表
      */
     private Long taskId;
-/**
+    /**
      * 指挥指令id
      */
     private Long id;
-/**
+    /**
      * 任务名称
      */
     private String taskName;
-/**
+    /**
      * 处置事件类型
      */
     private String eventType;
-/**
+    /**
      * 影响的范围
      */
     private String incidence;
-/**
+    /**
      * 事件等级 字典：特别重大  重大  较大 一般
      */
     private String eventLevel;
-/**
+    /**
      * 采取的处置措施
      */
     private String disposalMeasures;
-/**
+    /**
      * 处置开始时间
      */
     private String taskStartTime;
-/**
+    /**
      * 处置结束时间 空为一直生效
      */
     private String taskEndTime;
-/**
+    /**
      * 处置优先级 字典：高  中 低
      */
     private String priority;
-/**
+    /**
      * 来函附件，暂定文件路径
      */
     private String file;
-/**
+    /**
      * 入库时间
      */
     private Date taskCreateTime;
-/**
+    /**
      * 任务创建人名称
      */
     private String taskCreateUsername;
-/**
+    /**
      * 任务创建人处室
      */
     private String taskCreateDepart;
-/**
+    /**
      * 显示ID
      */
     private String taskDisplayId;
 
+
+    /**
+     * todo 处置任务ID（暂未使用）
+     */
+    private String taskUuid;
+
+    /**
+     * 处置结果
+     */
+    private String result;
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
 
     public Long getTaskId() {
         return taskId;
@@ -193,5 +213,12 @@ public class TCommandTask implements Serializable {
         this.taskDisplayId = taskDisplayId;
     }
 
+    public String getTaskUuid() {
+        return taskUuid;
+    }
+
+    public void setTaskUuid(String taskUuid) {
+        this.taskUuid = taskUuid;
+    }
 }
 

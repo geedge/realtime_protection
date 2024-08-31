@@ -36,4 +36,14 @@ public class TCommandServiceImpl implements TCommandService {
     public List<TCommandTask> queryCommandTasks1(TCommandTask tCommandTask, Integer pageNum, Integer pageSize) {
         return tCommandTaskMapper.queryAllByLimit1(tCommandTask, pageNum, pageSize);
     }
+
+    @Override
+    public Integer resultUpdate(TCommandTask tCommandTask) {
+        return tCommandTaskMapper.update(tCommandTask);
+    }
+
+    @Override
+    public Integer resultDel(Long id) {
+        return tCommandTaskMapper.updateResult(id);
+    }
 }

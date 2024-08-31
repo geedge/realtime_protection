@@ -65,6 +65,14 @@ public interface TCommandTaskMapper {
     int update(TCommandTask tCommandTask);
 
     /**
+     * 修改数据
+     *
+     * @param id 主键
+     * @return 影响行数
+     */
+    int updateResult(Long id);
+
+    /**
      * 通过主键删除数据
      *
      * @param id 主键

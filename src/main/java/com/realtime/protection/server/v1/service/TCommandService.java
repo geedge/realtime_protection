@@ -13,4 +13,8 @@ public interface TCommandService {
     Long countCommandTasks1(TCommandTask tCommandTask);
 
     List<TCommandTask> queryCommandTasks1(TCommandTask tCommandTask, Integer pageNum, Integer pageSize);
+
+    Integer resultUpdate(TCommandTask tCommandTask);
+
+    Integer resultDel(Long id);
 }
