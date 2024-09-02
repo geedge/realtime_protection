@@ -44,6 +44,9 @@ public class TCommandReportServiceImpl implements TCommandReportService {
         if (task == null) {
             return 0;
         }
+        TCommandTask tCommandTask1 = new TCommandTask();
+        tCommandTask1.setId(tCommandReport.getCommandId());
+        tCommandTask1.setResult("成功");
         tCommandReport.setTaskId(tCommandTask.getTaskId());
         tCommandReport.setTaskName(task.getTaskName());
         tCommandReport.setUserName(task.getTaskCreateUsername());
@@ -69,6 +72,7 @@ public class TCommandReportServiceImpl implements TCommandReportService {
             Date date = Date.from(instant);
             tCommandReport.setTaskEndTime(date);
         }
+        tCommandTaskMapper.update(tCommandTask1);
         return tCommandReportMapper.insert(tCommandReport);
     }
 }

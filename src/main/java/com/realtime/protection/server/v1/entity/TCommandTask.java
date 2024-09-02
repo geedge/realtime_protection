@@ -76,10 +76,22 @@ public class TCommandTask implements Serializable {
 
 
     /**
-     * 处置任务ID
+     * 任务ID
      */
     private String taskUuid;
 
+    /**
+     * 处置结果
+     */
+    private String result;
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
 
     public Long getTaskId() {
         return taskId;
