@@ -2,15 +2,14 @@ package com.realtime.protection.server.v1.controller;
 
 
 import com.realtime.protection.configuration.response.ResponseResult;
+import com.realtime.protection.server.v1.entity.TCommandReport;
 import com.realtime.protection.server.v1.entity.TCommandTask;
+import com.realtime.protection.server.v1.service.TCommandReportService;
 import com.realtime.protection.server.v1.service.TCommandService;
-import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -19,6 +18,9 @@ public class TCommandController {
 
     @Autowired
     private TCommandService tCommandService;
+
+    @Autowired
+    private TCommandReportService tCommandReportService;
 
     @GetMapping("/task_list")
     public ResponseResult commandList(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
@@ -94,28 +96,36 @@ public class TCommandController {
     }
 
     /**
-     * 更新或新增处置任务
+     * 新增处置任务
      *
      * @return
      */
-    @GetMapping("/result_update")
-    public ResponseResult resultUpdate(@RequestParam(value = "id") Long id,
-                                       @RequestParam(value = "result") String result) {
-        TCommandTask tCommandTask = new TCommandTask();
-        tCommandTask.setId(id);
-        tCommandTask.setResult(result);
-        Integer i = tCommandService.resultUpdate(tCommandTask);
+    @PostMapping("/result_add")
+    public ResponseResult resultAdd(@RequestBody TCommandReport tCommandReport) {
+        Integer i = tCommandReportService.infoAdd(tCommandReport);
         return ResponseResult.ok().setData("num", i);
     }
 
     /**
-     * 删除处置任务结果
+     * 更新处置任务
      *
      * @return
      */
-    @GetMapping("/result_del")
-    public ResponseResult resultDel(@RequestParam(value = "id") Long id) {
-        Integer i = tCommandService.resultDel(id);
+    @PostMapping("/result_update")
+    public ResponseResult resultUpdate(@RequestBody TCommandReport tCommandReport) {
+        Integer i = tCommandReportService.infoUpdate(tCommandReport);
         return ResponseResult.ok().setData("num", i);
     }
+
+    /**
+     * 更新处置任务
+     *
+     * @return
+     */
+    @GetMapping("/result_query")
+    public ResponseResult resultQuery(@RequestParam(value = "commandId") Long commandId) {
+        TCommandReport tCommandReport = tCommandReportService.queryInfo(commandId);
+        return ResponseResult.ok().setData("info", tCommandReport);
+    }
+
 }
