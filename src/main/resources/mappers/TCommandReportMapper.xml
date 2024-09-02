@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realtime.protection.server.v1.mapper.TCommandReportMapper">
+
+    <resultMap type="com.realtime.protection.server.v1.entity.TCommandReport" id="TCommandReportMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="commandId" column="command_id" jdbcType="INTEGER"/>
+        <result property="taskId" column="task_id" jdbcType="INTEGER"/>
+        <result property="taskName" column="task_name" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="department" column="department" jdbcType="VARCHAR"/>
+        <result property="eventType" column="event_type" jdbcType="VARCHAR"/>
+        <result property="incidence" column="incidence" jdbcType="VARCHAR"/>
+        <result property="eventLevel" column="event_level" jdbcType="VARCHAR"/>
+        <result property="eventCause" column="event_cause" jdbcType="VARCHAR"/>
+        <result property="eventImpact" column="event_impact" jdbcType="VARCHAR"/>
+        <result property="disposalMeasures" column="disposal_measures" jdbcType="VARCHAR"/>
+        <result property="taskStartTime" column="task_start_time" jdbcType="TIMESTAMP"/>
+        <result property="taskEndTime" column="task_end_time" jdbcType="TIMESTAMP"/>
+        <result property="disposalResults" column="disposal_results" jdbcType="VARCHAR"/>
+        <result property="rectificationMeasures" column="rectification_measures" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryByCommandId" resultMap="TCommandReportMap">
+        select id,
+               command_id,
+               task_id,
+               task_name,
+               user_name,
+               department,
+               event_type,
+               incidence,
+               event_level,
+               event_cause,
+               event_impact,
+               disposal_measures,
+               task_start_time,
+               task_end_time,
+               disposal_results,
+               rectification_measures,
+               create_time
+        from t_command_report
+        where command_id = #{commandId}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_command_report(command_id,
+                                   task_id,
+                                   task_name,
+                                   user_name,
+                                   department,
+                                   event_type,
+                                   incidence,
+                                   event_level,
+                                   event_cause,
+                                   event_impact,
+                                   disposal_measures,
+                                   task_start_time,
+                                   task_end_time,
+                                   disposal_results,
+                                   rectification_measures,
+                                   create_time)
+        values (#{commandId},
+                #{taskId},
+                #{taskName},
+                #{userName},
+                #{department},
+                #{eventType},
+                #{incidence},
+                #{eventLevel},
+                #{eventCause},
+                #{eventImpact},
+                #{disposalMeasures},
+                #{taskStartTime},
+                #{taskEndTime},
+                #{disposalResults},
+                #{rectificationMeasures},
+                #{createTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_command_report
+        <set>
+            <if test="taskId != null">
+                task_id = #{taskId},
+            </if>
+            <if test="taskName != null and taskName != ''">
+                task_name = #{taskName},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="department != null and department != ''">
+                department = #{department},
+            </if>
+            <if test="eventType != null and eventType != ''">
+                event_type = #{eventType},
+            </if>
+            <if test="incidence != null and incidence != ''">
+                incidence = #{incidence},
+            </if>
+            <if test="eventLevel != null and eventLevel != ''">
+                event_level = #{eventLevel},
+            </if>
+            <if test="eventCause != null and eventCause != ''">
+                event_cause = #{eventCause},
+            </if>
+            <if test="eventImpact != null and eventImpact != ''">
+                event_impact = #{eventImpact},
+            </if>
+            <if test="disposalMeasures != null and disposalMeasures != ''">
+                disposal_measures = #{disposalMeasures},
+            </if>
+            <if test="taskStartTime != null">
+                task_start_time = #{taskStartTime},
+            </if>
+            <if test="taskEndTime != null">
+                task_end_time = #{taskEndTime},
+            </if>
+            <if test="disposalResults != null and disposalResults != ''">
+                disposal_results = #{disposalResults},
+            </if>
+            <if test="rectificationMeasures != null and rectificationMeasures != ''">
+                rectification_measures = #{rectificationMeasures},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where command_id = #{commandId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from t_command_report where id = #{id}
+    </delete>
+
+</mapper>
+

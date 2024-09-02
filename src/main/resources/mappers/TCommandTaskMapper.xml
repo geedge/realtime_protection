@@ -19,13 +19,12 @@
         <result property="taskCreateDepart" column="task_create_depart" jdbcType="VARCHAR"/>
         <result property="taskDisplayId" column="task_display_id" jdbcType="VARCHAR"/>
         <result property="taskUuid" column="task_uuid" jdbcType="VARCHAR"/>
-        <result property="result" column="result" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="TCommandTaskMap">
         select
-task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid,result
+task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid
         from t_command_task
         where id = #{id}
     </select>
@@ -33,68 +32,69 @@ task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_sta
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="TCommandTaskMap">
         select
-        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid,result
-        from t_command_task
+        a.task_id,a.id,a.task_name,a.event_type,a.incidence,a.event_level,a.disposal_measures,
+        a.task_start_time,a.task_end_time,a.priority,a.file,a.task_create_time,a.task_create_username,
+        a.task_create_depart,a.task_display_id,
+        b.task_display_id task_uuid
+        from t_command_task a  left join t_task b on a.task_id=b.task_id
         <where>
             <if test="tCommandTask.taskId != null">
-                and task_id = #{tCommandTask.taskId}
+                and a.task_id = #{tCommandTask.taskId}
             </if>
             <if test="tCommandTask.id != null">
-                and id = #{tCommandTask.id}
+                and a.id = #{tCommandTask.id}
             </if>
             <if test="tCommandTask.taskName != null and tCommandTask.taskName != ''">
-                and task_name = #{tCommandTask.taskName}
+                and a.task_name = #{tCommandTask.taskName}
             </if>
             <if test="tCommandTask.taskUuid != null and tCommandTask.taskUuid != ''">
-                and task_uuid = #{tCommandTask.taskUuid}
+                and a.task_uuid = #{tCommandTask.taskUuid}
             </if>
             <if test="tCommandTask.eventType != null and tCommandTask.eventType != ''">
-                and event_type = #{tCommandTask.eventType}
+                and a.event_type = #{tCommandTask.eventType}
             </if>
             <if test="tCommandTask.incidence != null and tCommandTask.incidence != ''">
-                and incidence = #{tCommandTask.incidence}
+                and a.incidence = #{tCommandTask.incidence}
             </if>
             <if test="tCommandTask.eventLevel != null and tCommandTask.eventLevel != ''">
-                and event_level = #{tCommandTask.eventLevel}
+                and a.event_level = #{tCommandTask.eventLevel}
             </if>
             <if test="tCommandTask.disposalMeasures != null and tCommandTask.disposalMeasures != ''">
-                and disposal_measures = #{tCommandTask.disposalMeasures}
+                and a.disposal_measures = #{tCommandTask.disposalMeasures}
             </if>
             <if test="tCommandTask.taskStartTime != null and tCommandTask.taskStartTime != ''">
-                and task_start_time>#{tCommandTask.taskStartTime}
+                and a.task_start_time>#{tCommandTask.taskStartTime}
             </if>
             <if test="tCommandTask.taskEndTime != null and tCommandTask.taskEndTime != ''">
-                and #{tCommandTask.taskEndTime} > task_end_time
+                and #{tCommandTask.taskEndTime} > a.task_end_time
             </if>
             <if test="tCommandTask.priority != null and tCommandTask.priority != ''">
-                and priority = #{tCommandTask.priority}
+                and a.priority = #{tCommandTask.priority}
             </if>
             <if test="tCommandTask.file != null and tCommandTask.file != ''">
-                and file = #{tCommandTask.file}
+                and a.file = #{tCommandTask.file}
             </if>
             <if test="tCommandTask.taskCreateTime != null">
-                and task_create_time = #{tCommandTask.taskCreateTime}
+                and a.task_create_time = #{tCommandTask.taskCreateTime}
             </if>
             <if test="tCommandTask.taskCreateUsername != null and tCommandTask.taskCreateUsername != ''">
-                and task_create_username = #{tCommandTask.taskCreateUsername}
+                and a.task_create_username = #{tCommandTask.taskCreateUsername}
             </if>
             <if test="tCommandTask.taskCreateDepart != null and tCommandTask.taskCreateDepart != ''">
-                and task_create_depart = #{tCommandTask.taskCreateDepart}
+                and a.task_create_depart = #{tCommandTask.taskCreateDepart}
             </if>
             <if test="tCommandTask.taskDisplayId != null and tCommandTask.taskDisplayId != ''">
-                and task_display_id = #{tCommandTask.taskDisplayId}
+                and a.task_display_id = #{tCommandTask.taskDisplayId}
             </if>
         </where>
         order by id desc
         limit #{page}, #{pageSize}
     </select>
 
-
-
     <!--查询指定行数据-->
     <select id="queryAllByLimit1" resultMap="TCommandTaskMap">
         select
-        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid,result
+        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid
         from t_command_task where task_id IS NULL
         <if test="tCommandTask.taskId != null">
             and task_id = #{tCommandTask.taskId}
@@ -315,16 +315,7 @@ task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_sta
             <if test="taskDisplayId != null and taskDisplayId != ''">
                 task_display_id = #{taskDisplayId},
             </if>
-            <if test="result != null and result != ''">
-                result = #{result},
-            </if>
         </set>
-        where id = #{id}
-    </update>
-
-    <!--通过主键删除result数据-->
-    <update id="updateResult">
-        update t_command_task set result = NULL
         where id = #{id}
     </update>
 
