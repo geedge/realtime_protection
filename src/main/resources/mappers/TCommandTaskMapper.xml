@@ -19,6 +19,7 @@
         <result property="taskCreateDepart" column="task_create_depart" jdbcType="VARCHAR"/>
         <result property="taskDisplayId" column="task_display_id" jdbcType="VARCHAR"/>
         <result property="taskUuid" column="task_uuid" jdbcType="VARCHAR"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -34,7 +35,7 @@ task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_sta
         select
         a.task_id,a.id,a.task_name,a.event_type,a.incidence,a.event_level,a.disposal_measures,
         a.task_start_time,a.task_end_time,a.priority,a.file,a.task_create_time,a.task_create_username,
-        a.task_create_depart,a.task_display_id,
+        a.task_create_depart,a.task_display_id,a.result,
         b.task_display_id task_uuid
         from t_command_task a  left join t_task b on a.task_id=b.task_id
         <where>
@@ -94,7 +95,7 @@ task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_sta
     <!--查询指定行数据-->
     <select id="queryAllByLimit1" resultMap="TCommandTaskMap">
         select
-        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid
+        task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_start_time,task_end_time,priority,file,task_create_time,task_create_username,task_create_depart,task_display_id,task_uuid,result
         from t_command_task where task_id IS NULL
         <if test="tCommandTask.taskId != null">
             and task_id = #{tCommandTask.taskId}
@@ -314,6 +315,9 @@ task_id,id,task_name,event_type,incidence,event_level,disposal_measures,task_sta
             </if>
             <if test="taskDisplayId != null and taskDisplayId != ''">
                 task_display_id = #{taskDisplayId},
+            </if>
+            <if test="result != null and result != ''">
+                result = #{result},
             </if>
         </set>
         where id = #{id}
