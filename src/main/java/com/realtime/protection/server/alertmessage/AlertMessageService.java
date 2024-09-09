@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -122,6 +123,7 @@ public class AlertMessageService {
 //        （1）查询生成指令所需信息：和alertMessage中的fiveTuple信息 合并成 TaskCommandInfo;
 //        （2）额外信息：并额外查询templateId、protectLevel和taskStatus
         TaskCommandInfo dynamicCommandInfo = alertMessageMapper.getDynamicTaskInfos(taskId, DynamicRuleId);
+
         if (dynamicCommandInfo == null || dynamicCommandInfo.getTemplateId() == null){
             throw new IllegalArgumentException("taskId: " + taskId + " DynamicRuleId: " + DynamicRuleId + " 不正确");
         }
@@ -148,7 +150,41 @@ public class AlertMessageService {
         dynamicCommandInfo.setFiveTupleWithMask(fiveTupleWithMaskNew.get(0));
         dynamicCommandInfoList.add(dynamicCommandInfo);
 
-        return dynamicCommandInfoList;
+//        //判断局点是否为多个，包含‘,’，多个的话，生成多个指令
+//        if (dynamicCommandInfo.getDistributePoint().contains(",")){
+//            List<TaskCommandInfo> dynamicCommandInfoList2 = new ArrayList<>();
+//            for (TaskCommandInfo dynamicCommandInfo1 : dynamicCommandInfoList){
+//                String[] distributePoints = dynamicCommandInfo1.getDistributePoint().split(",");
+//                for (String distributePoint : distributePoints){
+//                    TaskCommandInfo dynamicCommandInfo2 = new TaskCommandInfo();
+//                    dynamicCommandInfo2.copyTaskCommandInfo(dynamicCommandInfo1);
+//                    dynamicCommandInfo2.setDistributePoint(distributePoint);
+//                    dynamicCommandInfoList2.add(dynamicCommandInfo2);
+//                }
+//            }
+//            dynamicCommandInfoList = dynamicCommandInfoList2;
+//        }
+        //指令拆分局点，拆分后的指令放入staticTaskCommandInfosSplitDistributePoint
+        List<TaskCommandInfo> dynamicCommandInfoListSplitDistributePoint = new ArrayList<>();
+        for (TaskCommandInfo taskCommandInfo : dynamicCommandInfoList) {
+            //判断是否多局点
+            if (taskCommandInfo.getDistributePoint().contains(",")) {
+                String[] distributePointArray = taskCommandInfo.getDistributePoint().split(",");
+                for (String distributePoint : distributePointArray) {
+                    TaskCommandInfo taskCommandInfoSplit = new TaskCommandInfo();
+                    taskCommandInfoSplit.copyTaskCommandInfo(taskCommandInfo);
+                    taskCommandInfoSplit.setDistributePoint(distributePoint);
+                    dynamicCommandInfoListSplitDistributePoint.add(taskCommandInfoSplit);
+                }
+            }
+            else{
+                dynamicCommandInfoListSplitDistributePoint.add(taskCommandInfo);
+            }
+        }
+
+
+
+        return dynamicCommandInfoListSplitDistributePoint;
     }
 
     @DSTransactional
@@ -156,8 +192,28 @@ public class AlertMessageService {
                                               Boolean isValid,
                                               Integer isJudged,
                                               AlertMessage alertMessage){
+
         List<String> commandUUIDs = new ArrayList<>();
         List<Subnet> subnetList = new ArrayList<>();
+
+
+        //更新任务 影响ip数量字段,因为dynamicTaskCommandInfoList中的指令ip相同，所以只取一个指令计算
+        TaskCommandInfo dynamicTaskCommandInfo0 = dynamicTaskCommandInfoList.get(0);
+        try {
+            //抽取告警生成的指令没有掩码
+            String sip = dynamicTaskCommandInfo0.getFiveTupleWithMask().getSourceIP();
+            String msip = "255.255.255.255";
+            String dip = dynamicTaskCommandInfo0.getFiveTupleWithMask().getDestinationIP();
+            String mdip = "255.255.255.255";
+
+            if (sip != null) subnetList.add(new Subnet(sip,msip));
+            if (dip != null) subnetList.add(new Subnet(dip,mdip));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        Long ipTotalNum = taskService.ipWithMaskToIpNums(subnetList);
+        taskService.updateTaskIpTotalNum(ipTotalNum, dynamicTaskCommandInfo0.getTaskId());
+
 
         for (TaskCommandInfo dynamicTaskCommandInfo : dynamicTaskCommandInfoList ){
             //command入库
@@ -178,22 +234,8 @@ public class AlertMessageService {
                             + String.format("%06d", counter.generateId("alert_message"))
 
             );
+            //t_alertMessage表目前唯一键导致覆盖了，加个uuid？ 也存在多次插入问题
             alertMessageMapper.insertAlertMessage(alertMessage);
-
-            try {
-                //抽取告警生成的指令没有掩码
-                String sip = dynamicTaskCommandInfo.getFiveTupleWithMask().getSourceIP();
-                String msip = "255.255.255.255";
-                String dip = dynamicTaskCommandInfo.getFiveTupleWithMask().getDestinationIP();
-                String mdip = "255.255.255.255";
-
-                if (sip != null) subnetList.add(new Subnet(sip,msip));
-                if (dip != null) subnetList.add(new Subnet(dip,mdip));
-            } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
-            }
-            Long ipTotalNum = taskService.ipWithMaskToIpNums(subnetList);
-            taskService.updateTaskIpTotalNum(ipTotalNum, dynamicTaskCommandInfo.getTaskId());
         }
 
 

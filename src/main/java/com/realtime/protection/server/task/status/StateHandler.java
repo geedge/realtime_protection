@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -218,15 +219,35 @@ public class StateHandler {
     private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Task task) {
         // 如果未能获取staticTaskCommandInfos，需要报错
         List<TaskCommandInfo> staticTaskCommandInfos = taskService.getStaticCommandInfos(task.getTaskId());
+        //判断有没有多局点
+
+
         if (staticTaskCommandInfos == null || staticTaskCommandInfos.isEmpty()) {
             throw new IllegalArgumentException("静态规则列表为空，请至少选择一个静态规则以启动任务");
+        }
+        //指令拆分局点，拆分后的指令放入staticTaskCommandInfosSplitDistributePoint
+        List<TaskCommandInfo> staticTaskCommandInfosSplitDistributePoint = new ArrayList<>();
+        for (TaskCommandInfo taskCommandInfo : staticTaskCommandInfos) {
+            //判断是否多局点
+            if (taskCommandInfo.getDistributePoint().contains(",")) {
+                List<String> distributePointArray = Arrays.asList(taskCommandInfo.getDistributePoint().split(","));
+                for (String distributePoint : distributePointArray) {
+                    TaskCommandInfo taskCommandInfoSplit = new TaskCommandInfo();
+                    taskCommandInfoSplit.copyTaskCommandInfo(taskCommandInfo);
+                    taskCommandInfoSplit.setDistributePoint(distributePoint);
+                    staticTaskCommandInfosSplitDistributePoint.add(taskCommandInfoSplit);
+                }
+            }
+            else{
+                staticTaskCommandInfosSplitDistributePoint.add(taskCommandInfo);
+            }
         }
 
         // 将所有关联的静态规则全部设置为已使用状态
 //        taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 //        taskService.changeTaskAuditStatus(task.getTaskId(), AuditStatusEnum.USING.getNum());
 
-        List<String> commandUUIDs= commandService.createCommands(staticTaskCommandInfos);
+        List<String> commandUUIDs= commandService.createCommands(staticTaskCommandInfosSplitDistributePoint);
 
         // 将command新建信号发送到c3下发程序
         try {

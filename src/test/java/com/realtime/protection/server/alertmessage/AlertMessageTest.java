@@ -58,7 +58,7 @@ public class AlertMessageTest {
                     null, null, null, null,
                     null, null, 1, 1);
             List<TemplateNew> templates = templateService.queryTemplates(
-                    null, null, null, null, null, "洪泛型DDoS", null, 1, 1);
+                    "洪泛型DDoS-日常态", null, null, null, null, null, null, 1, 1);
 
             DynamicRuleObject object = new DynamicRuleObject();
             object.setDynamicRuleName("内部-动态任务测试-"+LocalDateTime.now().toString());
@@ -73,17 +73,17 @@ public class AlertMessageTest {
 
 
             Task task = new Task();
-            task.setTaskName("内部-动态任务测试"+LocalDateTime.now().toString());
+            task.setTaskName("内部-研判后任务测试多据点"+LocalDateTime.now().toString());
             LocalDateTime taskStartTime = LocalDateTime.now().plusMinutes(1);
             LocalDateTime taskEndTime = LocalDateTime.now().plusYears(5);
             task.setTaskStartTime(taskStartTime);
             task.setTaskEndTime(taskEndTime);
             task.setTaskAct("23");
             task.setTaskType(3);
-            task.setTaskCreateUserId(1100664);
+            task.setTaskCreateUserId("1100664");
             task.setTaskCreateUsername("NSADD管理员");
             task.setTaskCreateDepart("组织树");
-            task.setTaskRange("1009");
+            task.setTaskRange("1009,1020,1027");
 
 
             task.setDynamicRuleIds(List.of(new Integer[]{dynamicRuleId}));
@@ -104,7 +104,7 @@ public class AlertMessageTest {
                 AlertMessage alert = new AlertMessage();
                 FiveTupleWithMask fiveTupleWithMask = new FiveTupleWithMask();
                 fiveTupleWithMask.setSourceIP(n+".5.1." + i);
-                fiveTupleWithMask.setDestinationIP(n+".24.2." + i);
+                fiveTupleWithMask.setDestinationIP("1.24.2.11");
                 fiveTupleWithMask.setSourcePort("111");
                 fiveTupleWithMask.setDestinationPort("80");
                 fiveTupleWithMask.setProtocol("6");

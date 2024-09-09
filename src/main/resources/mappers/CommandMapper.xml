@@ -737,6 +737,13 @@
             <if test="command_info.fiveTupleWithMask.maskProtocol != null">
                 AND MASK_PROTOCOL = #{command_info.fiveTupleWithMask.maskProtocol}
             </if>
+            <if test="command_info.taskAct != null">
+                AND TASK_ACT = #{command_info.taskAct}
+            </if>
+            <if test="command_info.distributePoint != null">
+                AND DISTRIBUTEPOINT = #{command_info.distributePoint}
+            </if>
+
         </where>
     </select>
     <select id="queryCommandTotalNum" resultType="java.lang.Integer">

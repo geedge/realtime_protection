@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.realtime.protection.configuration.entity.alert.AlertMessage;
 import com.realtime.protection.configuration.response.ResponseResult;
 import jakarta.validation.Valid;
-import jdk.jfr.DataAmount;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +15,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("alertmessage")
 @Slf4j
-public class AlertMessageController
+public class AlertMessageController implements AlertMessageControllerApi
 {
     private final AlertMessageService alertMessageService;
     public AlertMessageController(AlertMessageService alertMessageService) {
         this.alertMessageService = alertMessageService;
     }
 
+
+    @Override
     @PostMapping("/new")
     public ResponseResult receiveAlertMessage(@RequestBody @Valid AlertMessage alertMessage){
         alertMessageService.processAlertMessage(alertMessage);
