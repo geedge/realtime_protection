@@ -117,6 +117,7 @@ public class StateHandler {
 
         return true;
     }
+
     protected Boolean handleFailed(CommandService commandService, TaskService taskService, Long taskId) {
         commandService.removeCommandsByTaskId(taskId);
         taskService.updateDynamicRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
@@ -131,10 +132,9 @@ public class StateHandler {
         //查询任务状态
         Integer taskStatusNum = taskService.queryTaskStatus(taskId);
 
-        if (taskStatusNum == StateEnum.RUNNING_SUCCESS.getStateNum()){
+        if (taskStatusNum == StateEnum.RUNNING_SUCCESS.getStateNum()) {
             return true;
-        }
-        else{
+        } else {
             //修改任务状态
             taskService.changeTaskStatus(taskId, StateEnum.RUNNING_SUCCESS.getStateNum());
             //插入历史表
@@ -147,10 +147,9 @@ public class StateHandler {
         ///查询任务状态
         Integer taskStatusNum = taskService.queryTaskStatus(taskId);
 
-        if (taskStatusNum == StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum()){
+        if (taskStatusNum == StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum()) {
             return true;
-        }
-        else{
+        } else {
             //修改任务状态
             taskService.changeTaskStatus(taskId, StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum());
             //插入历史表
@@ -163,10 +162,9 @@ public class StateHandler {
         ///查询任务状态
         Integer taskStatusNum = taskService.queryTaskStatus(taskId);
 
-        if (taskStatusNum == StateEnum.RUNNING_FAILED.getStateNum()){
+        if (taskStatusNum == StateEnum.RUNNING_FAILED.getStateNum()) {
             return true;
-        }
-        else{
+        } else {
             //修改任务状态
             taskService.changeTaskStatus(taskId, StateEnum.RUNNING_FAILED.getStateNum());
             //插入历史表
@@ -193,7 +191,7 @@ public class StateHandler {
         try {
             sendFilters(taskService, task);
         } catch (Exception e) {
-            log.error(String.format("研判后任务%d 发送筛选条件出错",task.getTaskId()));
+            log.error(String.format("研判后任务%d 发送筛选条件出错", task.getTaskId()));
             log.error(e.getMessage());
             return true;
         }
@@ -207,7 +205,7 @@ public class StateHandler {
         try {
             sendFilters(taskService, task);
         } catch (Exception e) {
-            log.error(String.format("动态任务%d 发送筛选条件出错",task.getTaskId()));
+            log.error(String.format("动态任务%d 发送筛选条件出错", task.getTaskId()));
             log.error(e.getMessage());
             return true;
         }
@@ -217,6 +215,10 @@ public class StateHandler {
     }
 
     private Boolean handleStaticTaskStart(CommandService commandService, TaskService taskService, Task task) {
+        // 如果是ddos的任务，则不用对指令进行判断，直接启动就好
+        if ("ddos".equals(task.getTaskSource())) {
+            return true;
+        }
         // 如果未能获取staticTaskCommandInfos，需要报错
         List<TaskCommandInfo> staticTaskCommandInfos = taskService.getStaticCommandInfos(task.getTaskId());
         //判断有没有多局点
@@ -237,8 +239,7 @@ public class StateHandler {
                     taskCommandInfoSplit.setDistributePoint(distributePoint);
                     staticTaskCommandInfosSplitDistributePoint.add(taskCommandInfoSplit);
                 }
-            }
-            else{
+            } else {
                 staticTaskCommandInfosSplitDistributePoint.add(taskCommandInfo);
             }
         }
@@ -247,19 +248,19 @@ public class StateHandler {
 //        taskService.updateStaticRuleAuditStatusInTask(task.getTaskId(), AuditStatusEnum.USING);
 //        taskService.changeTaskAuditStatus(task.getTaskId(), AuditStatusEnum.USING.getNum());
 
-        List<String> commandUUIDs= commandService.createCommands(staticTaskCommandInfosSplitDistributePoint);
+        List<String> commandUUIDs = commandService.createCommands(staticTaskCommandInfosSplitDistributePoint);
 
         // 将command新建信号发送到c3下发程序
         try {
             sendCommandDistributeSignal(commandUUIDs);
         } catch (Exception e) {
-            log.error(String.format("静态任务%d 首次指令下发c3出错",task.getTaskId()));
+            log.error(String.format("静态任务%d 首次指令下发c3出错", task.getTaskId()));
             e.printStackTrace();
             // 将command查询RCP信号发送到RCP查询程序
             try {
                 sendCommandRcpQuerySignal(commandUUIDs);
             } catch (Exception e2) {
-                log.error(String.format("静态任务%d 首次指令查询RCP出错",task.getTaskId()));
+                log.error(String.format("静态任务%d 首次指令查询RCP出错", task.getTaskId()));
                 e.printStackTrace();
                 return true;
             }
@@ -269,13 +270,14 @@ public class StateHandler {
         try {
             sendCommandRcpQuerySignal(commandUUIDs);
         } catch (Exception e) {
-            log.error(String.format("静态任务%d 首次指令查询RCP出错",task.getTaskId()));
+            log.error(String.format("静态任务%d 首次指令查询RCP出错", task.getTaskId()));
             return true;
         }
 
 
         return true;
     }
+
     public Boolean sendCommandDistributeSignal(List<String> commandUUIDs) {
 
         List<Map<String, String>> commandIDMaps = new ArrayList<>();
