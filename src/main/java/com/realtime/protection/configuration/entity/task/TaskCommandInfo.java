@@ -139,6 +139,8 @@ public class TaskCommandInfo {
 
     private String logUUID;
 
+    private String commandGroup;
+
 
 //    private String hashValue;
 
@@ -172,6 +174,7 @@ public class TaskCommandInfo {
         this.displayId = original.displayId;
         this.sipInt = original.sipInt;
         this.dipInt = original.dipInt;
+        this.commandGroup = original.commandGroup;
     }
 
     public void setProtocolNum() {

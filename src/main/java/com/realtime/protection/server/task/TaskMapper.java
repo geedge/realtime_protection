@@ -153,4 +153,6 @@ public interface TaskMapper {
     List<Long> queryRunningTasks(Integer running, Integer allSuccess, Integer partSuccess, Integer allFail);
 
     Integer queryIpTotalNum(Long taskId);
+
+    List<Task> queryDdosTask();
 }

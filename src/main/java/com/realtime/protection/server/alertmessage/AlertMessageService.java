@@ -166,6 +166,7 @@ public class AlertMessageService {
 //        }
         //指令拆分局点，拆分后的指令放入staticTaskCommandInfosSplitDistributePoint
         List<TaskCommandInfo> dynamicCommandInfoListSplitDistributePoint = new ArrayList<>();
+        String commandGroup =UUID.randomUUID().toString();
         for (TaskCommandInfo taskCommandInfo : dynamicCommandInfoList) {
             //判断是否多局点
             if (taskCommandInfo.getDistributePoint().contains(",")) {
@@ -174,6 +175,7 @@ public class AlertMessageService {
                     TaskCommandInfo taskCommandInfoSplit = new TaskCommandInfo();
                     taskCommandInfoSplit.copyTaskCommandInfo(taskCommandInfo);
                     taskCommandInfoSplit.setDistributePoint(distributePoint);
+                    taskCommandInfoSplit.setCommandGroup(commandGroup);
                     dynamicCommandInfoListSplitDistributePoint.add(taskCommandInfoSplit);
                 }
             }

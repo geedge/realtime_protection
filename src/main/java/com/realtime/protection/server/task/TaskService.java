@@ -861,4 +861,13 @@ public class TaskService {
         ipTotalNum = ipTotalNum + taskIpNum;
         taskMapper.setIpTotalNum(ipTotalNum, taskId);
     }
+
+    public HashMap<Long, Integer> queryDdosTask() {
+        List<Task> tasks = taskMapper.queryDdosTask();
+        HashMap<Long, Integer> taskStateMap = new HashMap<>();
+        tasks.forEach(task -> {
+            taskStateMap.put(task.getTaskId(), task.getTaskAuditStatus());
+        });
+        return taskStateMap;
+    }
 }

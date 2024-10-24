@@ -20,10 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -113,7 +110,6 @@ public class StateHandler {
 
         taskService.updateStaticRuleAuditStatusInTask(taskId, AuditStatusEnum.AUDITED);
         taskService.removeStaticRuleUsedTaskIdInTask(taskId);
-
 
         return true;
     }
@@ -232,11 +228,13 @@ public class StateHandler {
         for (TaskCommandInfo taskCommandInfo : staticTaskCommandInfos) {
             //判断是否多局点
             if (taskCommandInfo.getDistributePoint().contains(",")) {
+                String commandGroup = UUID.randomUUID().toString();
                 List<String> distributePointArray = Arrays.asList(taskCommandInfo.getDistributePoint().split(","));
                 for (String distributePoint : distributePointArray) {
                     TaskCommandInfo taskCommandInfoSplit = new TaskCommandInfo();
                     taskCommandInfoSplit.copyTaskCommandInfo(taskCommandInfo);
                     taskCommandInfoSplit.setDistributePoint(distributePoint);
+                    taskCommandInfoSplit.setCommandGroup(commandGroup);
                     staticTaskCommandInfosSplitDistributePoint.add(taskCommandInfoSplit);
                 }
             } else {

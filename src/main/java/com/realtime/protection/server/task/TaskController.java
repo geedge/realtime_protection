@@ -6,6 +6,7 @@ import com.realtime.protection.configuration.entity.user.UserFull;
 import com.realtime.protection.configuration.exception.DorisStartException;
 import com.realtime.protection.configuration.response.ResponseResult;
 import com.realtime.protection.configuration.utils.File;
+import com.realtime.protection.configuration.utils.DdosUtil;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.configuration.utils.enums.audit.AuditStatusEnum;
 import com.realtime.protection.server.command.CommandService;
@@ -21,6 +22,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -37,7 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
-import java.util.Base64;
+import java.util.*;
 
 
 import javax.crypto.Mac;
@@ -45,15 +48,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/task")
 public class TaskController implements TaskControllerApi {
 
+    private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     private final TaskService taskService;
     private final StaticRuleService staticRuleService;
     private final DynamicRuleService dynamicRuleService;
@@ -64,7 +65,7 @@ public class TaskController implements TaskControllerApi {
     private final CommandService commandService;
     private final StateChangeService stateChangeService;
 
-    public TaskController(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, ProtectObjectService protectObjectService, WhiteListService whiteListService,  TemplateService templateService, CommandService commandService, StateChangeService stateChangeService) {
+    public TaskController(TaskService taskService, StaticRuleService staticRuleService, DynamicRuleService dynamicRuleService, ProtectObjectService protectObjectService, WhiteListService whiteListService, TemplateService templateService, CommandService commandService, StateChangeService stateChangeService) {
         this.taskService = taskService;
         this.staticRuleService = staticRuleService;
         this.dynamicRuleService = dynamicRuleService;
@@ -112,6 +113,7 @@ public class TaskController implements TaskControllerApi {
                 .setData("task_id", 0)
                 .setData("success", false);
     }
+
     private boolean verifyHmac(String data, String signature, String key) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
@@ -121,6 +123,7 @@ public class TaskController implements TaskControllerApi {
         System.out.println(expectedSignature);
         return expectedSignature.equals(signature);
     }
+
     // API推送Endpoint
     @Override
     @PostMapping("/api/new")
@@ -129,13 +132,13 @@ public class TaskController implements TaskControllerApi {
 
 
         String signature = request.getHeader("X-Signature");
-        if (signature == null){
+        if (signature == null) {
             throw new IllegalArgumentException("HMAC签名值为空，认证失败");
         }
         String data = String.valueOf(taskCommandInfo.hashCode());
         String apiKey = "gyusygwefweuu2135634";
         if (!verifyHmac(data, signature, apiKey)) {
-            throw new IllegalArgumentException("HMAC签名校验失败，认证失败"+String.valueOf(taskCommandInfo.hashCode()));
+            throw new IllegalArgumentException("HMAC签名校验失败，认证失败" + String.valueOf(taskCommandInfo.hashCode()));
         }
         Long taskId = taskService.newTaskUsingCommandInfo(taskCommandInfo);
 //        Long taskId =45377L;
@@ -144,18 +147,18 @@ public class TaskController implements TaskControllerApi {
                     .setData("taskId", -1)
                     .setData("success", false);
         }
-
+        taskCommandInfo.setCommandGroup(UUID.randomUUID().toString());
         commandService.createCommand(taskCommandInfo);
 
         return ResponseResult.ok()
                 .setData("taskId", taskId)
                 .setData("success", true)
-                .setData("command_hash",taskCommandInfo.hashCode());
+                .setData("command_hash", taskCommandInfo.hashCode());
     }
 
     @GetMapping("/queryAttachment")
     @Override
-    public ResponseResult queryAttachment(@RequestParam("task_id") Long taskId)  {
+    public ResponseResult queryAttachment(@RequestParam("task_id") Long taskId) {
         List<File> files = taskService.selectFilesByStaticRuleId(taskId);
 
         return ResponseResult.ok()
@@ -171,14 +174,14 @@ public class TaskController implements TaskControllerApi {
 //        String uploadPath = "d:\\";
         String uploadPath = "/task_file";
         //获取文件上传名称
-        String fileName=file.getOriginalFilename();
+        String fileName = file.getOriginalFilename();
         //获取文件保存全路径
-        String savePath=uploadPath+"/"+fileName;
+        String savePath = uploadPath + "/" + fileName;
         //获取文件大小
-        Long fileSize=file.getSize();
+        Long fileSize = file.getSize();
         //获取文件类型
-        String fileType=file.getContentType();
-        java.io.File newFile=new java.io.File(savePath);
+        String fileType = file.getContentType();
+        java.io.File newFile = new java.io.File(savePath);
         // 获取文件的父目录
         java.io.File parentDir = newFile.getParentFile();
         // 如果父目录不存在，则创建该目录
@@ -187,7 +190,7 @@ public class TaskController implements TaskControllerApi {
         }
         //TODO 注意要将文件保存到本地路径中
         file.transferTo(newFile);
-        File saveFile=new File();
+        File saveFile = new File();
         saveFile.setFileName(fileName);
         saveFile.setFileSize(fileSize);
         saveFile.setFileType(fileType);
@@ -199,24 +202,23 @@ public class TaskController implements TaskControllerApi {
     }
 
 
-
     //文件下载
     @GetMapping("downAttachment")
     @Override
     public ResponseEntity<Resource> downFile(@RequestParam Integer id) throws MalformedURLException, UnsupportedEncodingException {
         //首先根据id，从数据库获取文件信息
-        File downFile=taskService.selectFileById(id);
-        if (downFile!=null){
-            String path= downFile.getFilePath();
+        File downFile = taskService.selectFileById(id);
+        if (downFile != null) {
+            String path = downFile.getFilePath();
             //本地路径地址转为url编码路径
-            URI urlPath= Paths.get(path).toUri();
-            Resource resource=new UrlResource(urlPath);
-            if (resource.exists()){
-                HttpHeaders headers=new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM+"");
-                headers.add(HttpHeaders.CONTENT_LENGTH,downFile.getFileSize()+"");
+            URI urlPath = Paths.get(path).toUri();
+            Resource resource = new UrlResource(urlPath);
+            if (resource.exists()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM + "");
+                headers.add(HttpHeaders.CONTENT_LENGTH, downFile.getFileSize() + "");
                 //注意文件名处要改为URL编码
-                headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" +
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
                         URLEncoder.encode(downFile.getFileName(), "utf-8") + "\"");
                 return ResponseEntity.ok().headers(headers).body(resource);
             }
@@ -244,20 +246,20 @@ public class TaskController implements TaskControllerApi {
                                      @RequestParam("page_size") @Min(1) Integer pageSize) {
 
 
-        String createDateStr = null , startTimeStr = null;
+        String createDateStr = null, startTimeStr = null;
         if (createTime != null) {
             createDateStr = createTime.toString();
         }
-        if(startTime != null) {
+        if (startTime != null) {
             startTimeStr = startTime.toString();
         }
         List<Task> tasks = taskService.queryTasks(taskStatus, taskType, taskName, taskCreator, auditStatus,
                 taskAct, taskAuditor, taskSource, ruleName,
-                eventType, createDateStr, startTimeStr,protectLevel, page, pageSize);
+                eventType, createDateStr, startTimeStr, protectLevel, page, pageSize);
         return ResponseResult.ok()
                 .setData("task_list", tasks)
                 .setData("total_num", taskService.queryTaskTotalNum(taskStatus, taskType, taskName, taskCreator, auditStatus,
-                        taskAct, taskAuditor, taskSource, ruleName,eventType, createDateStr, startTimeStr,protectLevel));
+                        taskAct, taskAuditor, taskSource, ruleName, eventType, createDateStr, startTimeStr, protectLevel));
     }
 
     @Override
@@ -282,7 +284,6 @@ public class TaskController implements TaskControllerApi {
     }
 
 
-
     @Override
     @GetMapping("/{taskId}/audit/{auditStatus}")
     public ResponseResult changeTaskAuditStatus(@PathVariable @NotNull @Max(10) Integer auditStatus,
@@ -295,14 +296,25 @@ public class TaskController implements TaskControllerApi {
         String auditUserId = null;
         String auditUserDepart = null;
         if (user != null) {
-            auditUserName= user.name;
+            auditUserName = user.name;
             auditUserId = user.uid;
             auditUserDepart = user.getOrgName();
         }
+        Boolean auditState = taskService.changeTaskAuditStatus(taskId, auditStatus,
+                auditUserName, auditUserId, auditUserDepart);
+        Task task = taskService.queryTask(taskId);
+        //如果任务是ddos系统推送的，需要将审核信息发送到ddos系统
+        if (task != null && "ddos".equals(task.getTaskSource()) && auditState) {
+            try {
+                DdosUtil ddosUtil = new DdosUtil();
+                ddosUtil.sendTaskStateInfo(taskId, task.getTaskAuditStatus(), task.getTaskStatus());
+            } catch (Exception e) {
+                log.error("向ddos系统发送审核信息异常");
+            }
+        }
         return ResponseResult.ok()
                 .setData("task_id", taskId)
-                .setData("success", taskService.changeTaskAuditStatus(taskId, auditStatus,
-                        auditUserName, auditUserId, auditUserDepart))
+                .setData("success", auditState)
                 .setData("audit_status", taskService.queryTaskAuditStatus(taskId));
     }
 
@@ -354,7 +366,7 @@ public class TaskController implements TaskControllerApi {
 
     @GetMapping("/{commandId}/valid2/{isValid}")
     public ResponseResult setCommandValid(@PathVariable Integer isValid,
-                                           @PathVariable String commandId) {
+                                          @PathVariable String commandId) {
         if (isValid < 0 || isValid > 1) {
             return ResponseResult.invalid()
                     .setData("success", false)
@@ -376,7 +388,7 @@ public class TaskController implements TaskControllerApi {
     public ResponseResult updateTaskAuditStatusBatch(@RequestBody Map<Integer, Integer> idsWithAuditStatusMap,
                                                      @Autowired HttpServletRequest request) {
         List<Integer> errorIds = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry: idsWithAuditStatusMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : idsWithAuditStatusMap.entrySet()) {
             Integer id = entry.getKey();
             Integer auditStatus = entry.getValue();
             if (id <= 0 || auditStatus < 0 || auditStatus > 2) {
@@ -395,7 +407,7 @@ public class TaskController implements TaskControllerApi {
         String auditUserId = null;
         String auditUserDepart = null;
         if (user != null) {
-            auditUserName= user.name;
+            auditUserName = user.name;
             auditUserId = user.uid;
             auditUserDepart = user.getOrgName();
         }
@@ -413,18 +425,18 @@ public class TaskController implements TaskControllerApi {
     public ResponseResult statistics() {
         return ResponseResult.ok()
                 .setData("total_num", taskService.queryTaskTotalNum(null, null, null, null, null,
-                        null, null, null, null,null,null,null,null))
+                        null, null, null, null, null, null, null, null))
                 .setData("running_num",
                         taskService.queryTaskTotalNum(StateEnum.RUNNING.getStateNum(), null, null, null, null,
-                        null, null, null, null,null,null,null,null)
+                                null, null, null, null, null, null, null, null)
                                 + taskService.queryTaskTotalNum(StateEnum.RUNNING_PARTIAL_SUCCESS.getStateNum(), null, null, null, null,
-                                null, null, null, null,null,null,null,null)
+                                null, null, null, null, null, null, null, null)
                                 + taskService.queryTaskTotalNum(StateEnum.RUNNING_SUCCESS.getStateNum(), null, null, null, null,
-                                                null, null, null, null,null,null,null,null)
+                                null, null, null, null, null, null, null, null)
                                 + taskService.queryTaskTotalNum(StateEnum.RUNNING_FAILED.getStateNum(), null, null, null, null,
-                                                null, null, null, null,null,null,null,null))
+                                null, null, null, null, null, null, null, null))
                 .setData("finished_num", taskService.queryTaskTotalNum(StateEnum.FINISHED.getStateNum(), null, null, null, null,
-                        null, null, null, null,null,null,null,null))
+                        null, null, null, null, null, null, null, null))
                 .setData("unaudit_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.PENDING.getNum()))
                 .setData("audited_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.AUDITED.getNum()))
                 .setData("rejected_num", taskService.queryAuditTaskTotalNum(AuditStatusEnum.RETURNED.getNum()))
@@ -477,7 +489,7 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @PostMapping("/send-pcap")
-    public ResponseEntity<String> uploadPcap( MultipartFile file) {
+    public ResponseEntity<String> uploadPcap(MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("文件为空");
         }
@@ -493,7 +505,9 @@ public class TaskController implements TaskControllerApi {
 //            Files.write(path, file.getBytes());
 
         // Here you can add logic to send the file to a server or process it as needed
-        if(true) {throw new IllegalArgumentException("DNS报文校验失败");}
+        if (true) {
+            throw new IllegalArgumentException("DNS报文校验失败");
+        }
         return ResponseEntity.status(HttpStatus.OK).body("文件发送处置服务器成功: " + file.getOriginalFilename());
     }
 
@@ -511,7 +525,7 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @GetMapping("/auditinfo/alert/{userId}")
-    public ResponseResult auditInfoNotification(@PathVariable String userId){
+    public ResponseResult auditInfoNotification(@PathVariable String userId) {
 
         return ResponseResult.ok()
                 .setData("success", true)
@@ -521,7 +535,7 @@ public class TaskController implements TaskControllerApi {
     @Override
     @PostMapping("/result/{systemName}")
     public ResponseResult receiveOtherSystemResult(@PathVariable String systemName,
-                                                   @RequestBody Map<String, String> auditInfo){
+                                                   @RequestBody Map<String, String> auditInfo) {
 
         return ResponseResult.ok()
                 .setData("success", true)
@@ -530,10 +544,10 @@ public class TaskController implements TaskControllerApi {
 
     @Override
     @GetMapping("/query/log/status")
-    public ResponseResult queryTaskStausLog(@RequestParam("id") @Min(1) Long id ,
+    public ResponseResult queryTaskStausLog(@RequestParam("id") @Min(1) Long id,
                                             @RequestParam("page") @Min(1) Integer page,
                                             @RequestParam("page_size") @Min(1) Integer pageSize) {
-        List<Task> taskLog = taskService.queryTaskStausLog(id,page,pageSize);
+        List<Task> taskLog = taskService.queryTaskStausLog(id, page, pageSize);
 
         if (taskLog == null) {
             return ResponseResult.invalid().setMessage("无效Task ID，也许该ID对应的任务不存在？");
@@ -542,7 +556,6 @@ public class TaskController implements TaskControllerApi {
         return ResponseResult.ok().setData("task_log", taskLog)
                 .setData("total_num", taskService.queryTaskStausLogTotalNum(id));
     }
-
 
 
 }

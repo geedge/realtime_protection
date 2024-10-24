@@ -80,8 +80,7 @@ public class DdosUtil {
 
 
     public void sendTaskStateInfo(Long taskId, Integer auditStatus, Integer stateNum) throws NoSuchAlgorithmException, KeyManagementException {
-//        String token = getToken2(getToken1());
-        String token = "";
+        String token = getToken2(getToken1());
         try {
             WebClient webClient = WebClient.create();
             // 构建 form-data 请求体
@@ -92,7 +91,7 @@ public class DdosUtil {
             log.info("请求体：" + requestData);
             // 发送 POST 请求
             String block = webClient.post()
-                    .uri("https://10.58.48.92:443/api/v1/center/scrubbingmonitorgroups/status")
+                    .uri("https://10.58.48.92:443/api/v1/center/scrubbingmonitorgroups/status/")
 //                    .uri("http://127.0.0.1:8082/yy/api/algo/task2")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
@@ -118,7 +117,7 @@ public class DdosUtil {
             log.info("请求体：" + requestData);
             // 发送 POST 请求
             String block = webClient.post()
-                    .uri("http://10.58.48.92:443/api/v1/center/disposal/status")
+                    .uri("http://10.58.48.92:443/api/v1/center/disposal/status/")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .header("Authorization", "token " + token)

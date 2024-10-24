@@ -3,6 +3,7 @@ package com.realtime.protection.server.task.status;
 import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.realtime.protection.configuration.entity.task.TaskCommandInfo;
 import com.realtime.protection.configuration.exception.DorisStartException;
+import com.realtime.protection.configuration.utils.DdosUtil;
 import com.realtime.protection.configuration.utils.enums.CommandStatusEnum;
 import com.realtime.protection.configuration.utils.enums.StateEnum;
 import com.realtime.protection.server.task.status.states.State;
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,10 +110,14 @@ public class StateChangeService {
     protected void finishTasks() {
         List<Long> finishedTaskIds = taskService.getFinishedTasks();
         log.debug("成功扫描出所有需要变为结束状态的任务：{}", finishedTaskIds);
-
+        HashMap<Long, Integer> ddosTaskMap = taskService.queryDdosTask();
         for (Long taskId : finishedTaskIds) {
             try {
                 changeState(StateEnum.FINISHED.getStateNum(), taskId, true);
+                if (ddosTaskMap.get(taskId) != null) {
+                    DdosUtil ddosUtil = new DdosUtil();
+                    ddosUtil.sendTaskStateInfo(taskId, 2, StateEnum.FINISHED.getStateNum());
+                }
             } catch (Exception e) {
                 log.warn(String.format("任务%d从%s状态变为FINISHED状态遭遇异常：%s",
                         taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
@@ -128,10 +134,14 @@ public class StateChangeService {
     protected void startTasks() {
         List<Long> runnableTaskIds = taskService.getRunnableTasks();
         log.debug("成功扫描出所有需要变为开始状态的任务：{}", runnableTaskIds);
-
+        HashMap<Long, Integer> ddosTaskMap = taskService.queryDdosTask();
         for (Long taskId : runnableTaskIds) {
             try {
                 changeState(StateEnum.RUNNING.getStateNum(), taskId, true);
+                if (ddosTaskMap.get(taskId) != null) {
+                    DdosUtil ddosUtil = new DdosUtil();
+                    ddosUtil.sendTaskStateInfo(taskId, 2, StateEnum.RUNNING.getStateNum());
+                }
             } catch (Exception e) {
                 log.warn(String.format("任务%d从%s状态变为运行中RUNNING状态遭遇异常：%s",
                         taskId, taskService.queryTaskStatus(taskId), e.getMessage()));
@@ -139,6 +149,7 @@ public class StateChangeService {
 
         }
     }
+
 
     /**
      * 更新任务状态，要么加字段（运行中加两个）、“要么改状态模式（字典表也要改）”
@@ -153,7 +164,7 @@ public class StateChangeService {
         for (Long taskId : runningTaskIds) {
             //查询任务下所有的正在下发的指令（isjudge = 1 ，isvalid=1， is_deleted=0）的本次是否下发成功字段（t_command加个字段）
             List<Integer> commandStatusList = commandService.queryRunningCommandsDistributeStatusByTaskId(taskId);
-            if (commandStatusList == null){
+            if (commandStatusList.isEmpty()) {
                 continue;
             }
             //判断是否全为成功
@@ -204,7 +215,7 @@ public class StateChangeService {
         for (TaskCommandInfo taskCommandInfo : runningCommandList) {
             //查询状态表，查看本次下发周期内是否已经记录了命中状态。查询最近的两条日志记录
             List<TaskCommandInfo> commandLogs = commandService.queryCommandLogLastTwoRecord(taskCommandInfo.getUUID());
-            if (commandLogs.size()<2){
+            if (commandLogs.size() < 2) {
                 continue;
             }
             TaskCommandInfo commandLogLatest = commandLogs.get(0);
@@ -213,18 +224,17 @@ public class StateChangeService {
 
 
             //如果日志状态为SEND、SUCCESS 或者 SEND、FAIL，则要根据当前t_command表的最新记录，和上次下发状态的命中计数相比判断是否有变化
-            if (commandLogLatest2.getCommandStatus()==CommandStatusEnum.SEND.getCommandStatusNum()
-                    && (commandLogLatest.getCommandStatus()==CommandStatusEnum.SUCCESS.getCommandStatusNum()
-                    || commandLogLatest.getCommandStatus()==CommandStatusEnum.FAIL.getCommandStatusNum()))
-            {
-                log.info("rcp命中查询：{}，{}",taskCommandInfo.getRcpHitCount(), commandLogLatest.getRcpHitCount());
-                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()==null) {
+            if (commandLogLatest2.getCommandStatus() == CommandStatusEnum.SEND.getCommandStatusNum()
+                    && (commandLogLatest.getCommandStatus() == CommandStatusEnum.SUCCESS.getCommandStatusNum()
+                    || commandLogLatest.getCommandStatus() == CommandStatusEnum.FAIL.getCommandStatusNum())) {
+                log.info("rcp命中查询：{}，{}", taskCommandInfo.getRcpHitCount(), commandLogLatest.getRcpHitCount());
+                if (taskCommandInfo.getRcpHitCount() != null && commandLogLatest.getRcpHitCount() == null) {
                     //更新log表，rcp命中
                     commandService.insertCommandHistoryWithTimeWithTraffic(taskCommandInfo.getUUID(),
                             CommandStatusEnum.RCPHIT.getCommandStatusNum(), taskCommandInfo.getLastRCPQueryTime(),
                             commandLogLatest.getTotalPacketNum());
                 }
-                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()!=null) {
+                if (taskCommandInfo.getRcpHitCount() != null && commandLogLatest.getRcpHitCount() != null) {
                     if (taskCommandInfo.getRcpHitCount() > commandLogLatest.getRcpHitCount()) {
                         //更新log表，rcp命中
                         commandService.insertCommandHistoryWithTimeWithTraffic(taskCommandInfo.getUUID(),
@@ -234,17 +244,17 @@ public class StateChangeService {
                 }
 
 
-                log.info("流量命中查询：{}，{}",taskCommandInfo.getTotalPacketNum(), commandLogLatest.getTotalPacketNum());
-                if (taskCommandInfo.getTotalPacketNum()!=null && commandLogLatest.getTotalPacketNum()==null) {
+                log.info("流量命中查询：{}，{}", taskCommandInfo.getTotalPacketNum(), commandLogLatest.getTotalPacketNum());
+                if (taskCommandInfo.getTotalPacketNum() != null && commandLogLatest.getTotalPacketNum() == null) {
                     //更新log表，流量命中
                     commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
-                            CommandStatusEnum.FLOWHIT.getCommandStatusNum(),taskCommandInfo.getLastTrafficQueryTime());
+                            CommandStatusEnum.FLOWHIT.getCommandStatusNum(), taskCommandInfo.getLastTrafficQueryTime());
                 }
-                if (taskCommandInfo.getTotalPacketNum()!=null && commandLogLatest.getTotalPacketNum()!=null) {
+                if (taskCommandInfo.getTotalPacketNum() != null && commandLogLatest.getTotalPacketNum() != null) {
                     if (taskCommandInfo.getTotalPacketNum() > commandLogLatest.getTotalPacketNum()) {
                         //更新log表，流量命中
                         commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
-                                CommandStatusEnum.FLOWHIT.getCommandStatusNum(),taskCommandInfo.getLastTrafficQueryTime());
+                                CommandStatusEnum.FLOWHIT.getCommandStatusNum(), taskCommandInfo.getLastTrafficQueryTime());
                     }
                 }
 
@@ -253,19 +263,18 @@ public class StateChangeService {
 
 
             //如果日志状态为SUCCESS/FAIL、RCPHIT/UNRCPHIT，则判断是否更新流量命中状态
-            if ((commandLogLatest2.getCommandStatus()==CommandStatusEnum.SUCCESS.getCommandStatusNum()
-                    || commandLogLatest2.getCommandStatus()==CommandStatusEnum.FAIL.getCommandStatusNum())
-                    && (commandLogLatest.getCommandStatus()==CommandStatusEnum.RCPHIT.getCommandStatusNum()
-                    || commandLogLatest.getCommandStatus()==CommandStatusEnum.UNRCPHIT.getCommandStatusNum()))
-            {
+            if ((commandLogLatest2.getCommandStatus() == CommandStatusEnum.SUCCESS.getCommandStatusNum()
+                    || commandLogLatest2.getCommandStatus() == CommandStatusEnum.FAIL.getCommandStatusNum())
+                    && (commandLogLatest.getCommandStatus() == CommandStatusEnum.RCPHIT.getCommandStatusNum()
+                    || commandLogLatest.getCommandStatus() == CommandStatusEnum.UNRCPHIT.getCommandStatusNum())) {
 
-                log.info("流量命中查询：{}，{}",taskCommandInfo.getTotalPacketNum(), commandLogLatest.getTotalPacketNum());
-                if (taskCommandInfo.getTotalPacketNum()!=null && commandLogLatest.getTotalPacketNum()==null) {
+                log.info("流量命中查询：{}，{}", taskCommandInfo.getTotalPacketNum(), commandLogLatest.getTotalPacketNum());
+                if (taskCommandInfo.getTotalPacketNum() != null && commandLogLatest.getTotalPacketNum() == null) {
                     //更新log表，流量命中
                     commandService.insertCommandHistory(taskCommandInfo.getUUID(),
                             CommandStatusEnum.FLOWHIT.getCommandStatusNum());
                 }
-                if (taskCommandInfo.getTotalPacketNum()!=null && commandLogLatest.getTotalPacketNum()!=null) {
+                if (taskCommandInfo.getTotalPacketNum() != null && commandLogLatest.getTotalPacketNum() != null) {
                     if (taskCommandInfo.getTotalPacketNum() > commandLogLatest.getTotalPacketNum()) {
                         //更新log表，流量命中
                         commandService.insertCommandHistory(taskCommandInfo.getUUID(),
@@ -275,18 +284,17 @@ public class StateChangeService {
                 continue;
             }
             //如果日志状态为SUCCESS/FAIL、FLOWHIT/UNFLOWHIT，则判断是否更新rcp命中状态
-            if ((commandLogLatest2.getCommandStatus()==CommandStatusEnum.SUCCESS.getCommandStatusNum()
-                    || commandLogLatest2.getCommandStatus()==CommandStatusEnum.FAIL.getCommandStatusNum())
-                    && (commandLogLatest.getCommandStatus()==CommandStatusEnum.FLOWHIT.getCommandStatusNum()
-                    || commandLogLatest.getCommandStatus()==CommandStatusEnum.UNFLOWHIT.getCommandStatusNum()))
-            {
-                log.info("rcp命中查询：{}，{}",taskCommandInfo.getRcpHitCount(), commandLogLatest.getRcpHitCount());
-                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()==null) {
+            if ((commandLogLatest2.getCommandStatus() == CommandStatusEnum.SUCCESS.getCommandStatusNum()
+                    || commandLogLatest2.getCommandStatus() == CommandStatusEnum.FAIL.getCommandStatusNum())
+                    && (commandLogLatest.getCommandStatus() == CommandStatusEnum.FLOWHIT.getCommandStatusNum()
+                    || commandLogLatest.getCommandStatus() == CommandStatusEnum.UNFLOWHIT.getCommandStatusNum())) {
+                log.info("rcp命中查询：{}，{}", taskCommandInfo.getRcpHitCount(), commandLogLatest.getRcpHitCount());
+                if (taskCommandInfo.getRcpHitCount() != null && commandLogLatest.getRcpHitCount() == null) {
                     //更新log表，rcp命中
                     commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
                             CommandStatusEnum.RCPHIT.getCommandStatusNum(), taskCommandInfo.getLastRCPQueryTime());
                 }
-                if (taskCommandInfo.getRcpHitCount()!=null && commandLogLatest.getRcpHitCount()!=null) {
+                if (taskCommandInfo.getRcpHitCount() != null && commandLogLatest.getRcpHitCount() != null) {
                     if (taskCommandInfo.getRcpHitCount() > commandLogLatest.getRcpHitCount()) {
                         //更新log表，rcp命中
                         commandService.insertCommandHistoryWithTime(taskCommandInfo.getUUID(),
