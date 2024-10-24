@@ -34,7 +34,7 @@
                                      INVALID_TIME, IS_VALID, IS_JUDGED,
                                      CREATE_TIME, LAST_UPDATE, IS_DELETED,
                                      TASKTYPE, RULE_ID, display_id,RULE_NAME,
-                                     sip_int, dip_int)
+                                     sip_int, dip_int,,COMMAND_GROUP)
         values (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
                 #{info.frequency},
                 DEFAULT,
@@ -47,7 +47,7 @@
                 #{info.startTime}, #{info.endTime}, #{info.isValid},
                 #{info.isJudged},
                 NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
-                #{info.ruleName}, #{info.sipInt}, #{info.dipInt}
+                #{info.ruleName}, #{info.sipInt}, #{info.dipInt} ,#{info.commandGroup}
                )
     </insert>
 
@@ -102,7 +102,7 @@
         IS_JUDGED,
         CREATE_TIME, LAST_UPDATE, IS_DELETED,
         TASKTYPE, RULE_ID, display_id,RULE_NAME,
-                                     sip_int, dip_int)
+                                     sip_int, dip_int,COMMAND_GROUP)
         values
         <foreach collection="command_infos" item="info" separator=",">
             (#{info.UUID}, #{info.taskId}, #{info.taskAct}, #{info.taskName}, #{info.eventType}, #{info.taskCreateDepart}, #{info.distributePoint},
@@ -117,7 +117,7 @@
             #{info.startTime}, #{info.endTime}, #{info.isValid},
             #{info.isJudged},
             NOW(), NOW(), FALSE, #{info.taskType}, #{info.ruleId}, #{info.displayId},
-            #{info.ruleName}, #{info.sipInt}, #{info.dipInt}
+            #{info.ruleName}, #{info.sipInt}, #{info.dipInt},#{info.commandGroup}
             )
         </foreach>
     </insert>
@@ -312,7 +312,6 @@
             first_effect_time,
             last_rcp_query_time,
             last_traffic_query_time,
-
             sip_int,
             dip_int
         from t_command
