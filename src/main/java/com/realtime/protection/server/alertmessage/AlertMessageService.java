@@ -88,7 +88,7 @@ public class AlertMessageService {
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    insertAlertMessageOnly(alertMessage);
+//                    insertAlertMessageOnly(alertMessage);
                     break;
             }
         else if (taskType == TaskTypeEnum.JUDGED.getTaskType())//研判后
@@ -111,7 +111,7 @@ public class AlertMessageService {
                 default://主要是stop
                     //command不入库
                     //alertmessage入库
-                    insertAlertMessageOnly(alertMessage);
+//                    insertAlertMessageOnly(alertMessage);
             }
     }
 

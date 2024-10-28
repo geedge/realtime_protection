@@ -957,7 +957,7 @@
         )
         select
             #{log_id},
-            #{effective_time},
+            NOW(),
             NULL,
             TASK_ID,
             RULE_ID,
